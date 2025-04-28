@@ -1,26 +1,35 @@
+/* 1) Load Kanit first */
+@import url('https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+/* globals.css */
+/* 1) Tailwind import */
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* 2) Define your theme tokens */
+@theme {
+  --font-sans: var(--font-kanit), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  /* …any other tokens like colors, breakpoints… */
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+/* 3) Apply it globally in Tailwind’s base layer */
+@layer base {
+  html {
+    font-family: var(--font-sans);
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  body {
+    margin: 0;
+    padding: 0;
+    /* your background & text tokens… */
   }
 }
 
+/* Optional extra globals */
+:root {
+  --background: #ffffff;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--background);
+  color: #333333;
 }
