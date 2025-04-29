@@ -7,12 +7,12 @@ const categoryData = [
   {
     id: "industries",
     label: "Industries",
-    icon: "/icons/industry.jpg",
+    icon: "/assets/industries-logo.png",
   },
   {
     id: "families",
     label: "Product Families",
-    icon: "/icons/product-familiy.png",
+    icon: "/assets/product-families-logo.png",
   },
   // …add more here
 ];
@@ -21,37 +21,37 @@ const industries = [
   {
     id: "biotechnology",
     label: "Bio Technology",
-    image: "/assets/industy (1).png",
+    image: "/assets/industry (1).png",
   },
   {
     id: "pharma_lifesciences",
     label: "Pharma & Life Sciences",
-    image: "/assets/industy (2).png",
+    image: "/assets/industry (2).png",
   },
   {
     id: "chemical_manufacturing",
     label: "Chemical Manufacturing",
-    image: "/assets/industy (3).png",
+    image: "/assets/industry (3).png",
   },
   {
     id: "biotechnology",
     label: "Bio Technology",
-    image: "/assets/industy (1).png",
+    image: "/assets/industry (1).png",
   },
   {
     id: "pharma_lifesciences",
     label: "Pharma & Life Sciences",
-    image: "/assets/industy (2).png",
+    image: "/assets/industry (2).png",
   },
   {
     id: "chemical_manufacturing",
     label: "Chemical Manufacturing",
-    image: "/assets/industy (3).png",
+    image: "/assets/industry (3).png",
   },
   {
     id: "pharma_lifesciences",
     label: "Pharma & Life Sciences",
-    image: "/assets/industy (2).png",
+    image: "/assets/industry (2).png",
   },
 ];
 
@@ -103,15 +103,28 @@ const Categories: React.FC = () => {
           })}
         </div>
         <div>
-          {selectedCategory === "industries" ? (
-            <div className="grid grid-cols-4 gap-10 mt-10">
-              {industries.map(({ id, label, image }, index) => (
-                <CategoryCard id={id} label={label} image={image} key={index} />
-              ))}
+          <div className="grid grid-cols-4 gap-10 mt-10">
+            {selectedCategory === "industries"
+              ? industries.map(({ id, label, image }, index) => (
+                  <CategoryCard
+                    id={id}
+                    label={label}
+                    image={image}
+                    key={index}
+                  />
+                ))
+              : industries.map(({ id, label, image }, index) => (
+                  <CategoryCard
+                    id={id}
+                    label={label}
+                    image={image}
+                    key={index}
+                  />
+                ))}
+            <div className="bg-[var(--green-light)] text-white flex items-center justify-center gap-2 rounded-t-4xl rounded-b-2xl  overflow-hidden shadow-lg">
+              <h4 className="font-medium text-3xl">View All</h4>
             </div>
-          ) : (
-            <p className="text-xl">Product Families Content</p>
-          )}
+          </div>
         </div>
       </div>
     </section>
