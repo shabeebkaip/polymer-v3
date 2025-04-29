@@ -1,15 +1,16 @@
+"use client";
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 
 const Header: React.FC = () => {
   return (
-    <header className="bg-white shadow-md ">
+    <header className="bg-white shadow-xl shadow-green-600/10   ">
       <div className="container mx-auto ">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <Link href="/" className="text-2xl font-bold text-blue-600">
+            <Link href="/" className="">
               <Image
                 src="/typography.svg"
                 alt="Logo"
@@ -22,18 +23,27 @@ const Header: React.FC = () => {
 
           {/* Navigation Links */}
           <nav className="hidden md:flex space-x-8">
-            <Link href="/" className="text-gray-700 hover:text-blue-600 font-sans ">
+            <Link
+              href="/"
+              className="text-[var(--text-gray-primary)] hover:text-[var(--green-main)] font-sans "
+            >
               Home
             </Link>
-            <Link href="/brand" className="text-gray-700 hover:text-blue-600 ">
+            <Link
+              href="/brand"
+              className="text-[var(--text-gray-primary)] hover:text-[var(--green-main)] "
+            >
               Brand
             </Link>
-            <Link href="/buyers" className="text-gray-700 hover:text-blue-600 ">
+            <Link
+              href="/buyers"
+              className="text-[var(--text-gray-primary)] hover:text-[var(--green-main)] "
+            >
               Buyers
             </Link>
             <Link
               href="/supplier"
-              className="text-gray-700 hover:text-blue-600 "
+              className="text-[var(--text-gray-primary)] hover:text-[var(--green-main)]  "
             >
               Supplier
             </Link>
@@ -43,13 +53,13 @@ const Header: React.FC = () => {
           <div className="flex items-center space-x-4">
             <button
               type="button"
-              className="flex items-center px-4 py-2 border border-[#008767] text-[#008767] rounded hover:bg-green-50 transition"
+              className="flex items-center px-4 py-2 border border-[var(--green-main)] text-[var(--green-main)] rounded hover:bg-green-50 transition"
             >
               Login
             </button>
             <Link
               href="/signup"
-              className="px-4 py-3 bg-gradient-to-r from-[#3DB2A2] via-[#2CA88F] to-[#008767] text-white rounded-lg hover:opacity-90 transition"
+              className="px-4 py-3 bg-gradient-to-r from-[var(--green-gradient-from)] via-[var(--green-gradient-via)] to-[var(--green-gradient-to)] text-white rounded-lg hover:opacity-90 transition"
             >
               Sign Up for Free
             </Link>

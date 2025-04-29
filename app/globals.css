@@ -5,10 +5,24 @@
 /* 1) Tailwind import */
 @import "tailwindcss";
 
-/* 2) Define your theme tokens */
+
 @theme {
+
+  /* font */
   --font-sans: var(--font-kanit), ui-sans-serif, system-ui, -apple-system, sans-serif;
-  /* …any other tokens like colors, breakpoints… */
+
+  /* gradients  */
+  --green-gradient-from: #3DB2A2;
+  --green-gradient-via: #2CA88F;
+  --green-gradient-to: #008767;
+  /* text colors */
+
+  /* green */
+  --green-main: #008767;
+  --green-light: #009c7d;
+  /* gray */
+  --text-gray-primary: #777777;
+
 }
 
 /* 3) Apply it globally in Tailwind’s base layer */
