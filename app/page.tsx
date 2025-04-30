@@ -10,6 +10,9 @@ const FeaturedSuppliers = dynamic(
     loading: () => <p>Loading suppliers...</p>,
   }
 );
+const BeneFits = dynamic(() => import("@/components/home/Benefits"), {
+  loading: () => <p>Loading benefits...</p>,
+});
 
 export default function Home() {
   return (
@@ -17,6 +20,7 @@ export default function Home() {
       <Hero />
       <Categories />
       <FeaturedSuppliers />
+      <BeneFits />
     </div>
   );
 }
