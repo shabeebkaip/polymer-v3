@@ -10,22 +10,12 @@ interface CategoryCardProps {
 
 const CategoryCard: React.FC<CategoryCardProps> = ({ id, label, image }) => {
   return (
-    <div className="relative rounded-t-4xl rounded-b-2xl  overflow-hidden shadow-lg">
-      {/* Background image */}
-      <Image
-        src={image}
-        alt={label}
-        width={300}
-        height={200}
-        className="object-cover"
-      />
+    <div className="relative w-full aspect-[4/3] rounded-t-4xl rounded-b-3xl overflow-hidden shadow-lg">
+      {/* Background image fills card */}
+      <Image src={image} alt={label} fill className="object-cover" />
 
-      {/* Bottom green overlay */}
-      <div
-        className="absolute bottom-0 left-0 w-full bg-gradient-to-t  from-[var(--green-gradient-from)]
-              via-[var(--green-gradient-via)]
-               to-transparent  p-4"
-      >
+      {/* Bottom gradient overlay */}
+      <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-[var(--green-gradient-from)] via-[var(--green-gradient-via)] to-transparent p-4">
         <h3 className="text-white text-2xl font-semibold">{label}</h3>
       </div>
     </div>

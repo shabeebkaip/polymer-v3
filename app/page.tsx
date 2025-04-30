@@ -1,12 +1,22 @@
-import Categories from "@/components/home/Categories";
+import dynamic from "next/dynamic";
 import Hero from "@/components/home/Hero";
-import Image from "next/image";
+
+const Categories = dynamic(() => import("@/components/home/Categories"), {
+  loading: () => <p>Loading categories...</p>,
+});
+const FeaturedSuppliers = dynamic(
+  () => import("@/components/home/FeaturedSuppliers"),
+  {
+    loading: () => <p>Loading suppliers...</p>,
+  }
+);
 
 export default function Home() {
   return (
     <div className="">
       <Hero />
       <Categories />
+      <FeaturedSuppliers />
     </div>
   );
 }
