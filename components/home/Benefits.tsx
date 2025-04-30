@@ -1,6 +1,29 @@
+import { register } from "module";
 import React from "react";
 
 const Benefits: React.FC = () => {
+  const benefits = [
+    {
+      title: "Benefits for Buyers",
+      subtitle: "Free For Buyers",
+      list: [
+        "Buyers can access the platform for free, allowing them to explore a wide range of products and suppliers without any upfront costs.",
+        "Buyers can easily compare products and suppliers, helping them make informed decisions based on their specific needs.",
+        "Buyers can access a diverse range of suppliers and products, increasing their options and opportunities for sourcing materials.",
+      ],
+      registerLink: "/register?userType=buyer",
+    },
+    {
+      title: "Benefits for Sellers",
+      subtitle: "Free For Sellers",
+      list: [
+        "Sellers can showcase their products to a global audience, increasing their visibility and potential customer base.",
+        "Sellers can connect with buyers directly, facilitating communication and negotiation.",
+        "Sellers can access valuable market insights and analytics to optimize their offerings and strategies.",
+      ],
+      registerLink: "/register?userType=seller",
+    },
+  ];
   return (
     <section className="container mx-auto px-4 mt-20 mb-10">
       <div className="flex flex-col items-center gap-14">
@@ -25,12 +48,9 @@ const Benefits: React.FC = () => {
           </p>
         </div>
       </div>
-      <h2>Benefits</h2>
-      <ul>
-        <li>Benefit 1</li>
-        <li>Benefit 2</li>
-        <li>Benefit 3</li>
-      </ul>
+      <div className="">
+
+      </div>
     </section>
   );
 };
