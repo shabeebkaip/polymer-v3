@@ -18,8 +18,8 @@
   /* text colors */
 
   /* green */
-  --green-main: #008767;
-  --green-light: #009c7d;
+  --green-main: rgb(0, 135, 103); 
+  --green-light: rgb(0, 156, 125);
   /* gray */
   --text-gray-primary: #777777;
   --text-gray-secondary: #9F9F9F;

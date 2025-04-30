@@ -32,6 +32,26 @@ const industries = [
     label: "Chemical Manufacturing",
     image: "/assets/industry (3).png",
   },
+  {
+    id: "packaging",
+    label: "Packaging",
+    image: "/assets/industry (1).png",
+  },
+  {
+    id: "automotive",
+    label: "Automotive",
+    image: "/assets/industry (2).png",
+  },
+  {
+    id: "medical",
+    label: "Medical & Healthcare",
+    image: "/assets/industry (3).png",
+  },
+  {
+    id: "textile",
+    label: "Textile & Apparel",
+    image: "/assets/industry (1).png",
+  },
 ];
 
 const Categories: React.FC = () => {
@@ -66,7 +86,7 @@ const Categories: React.FC = () => {
             <CategoryCard key={id} id={id} label={label} image={image} />
           ))}
 
-          <div className="bg-[var(--green-light)] text-white flex items-center justify-center gap-2 rounded-t-4xl rounded-b-3xl overflow-hidden shadow-lg  cursor-pointer hover:opacity-90 transition">
+          <div className="bg-[var(--green-light)]  text-white flex items-center justify-center gap-2 rounded-t-4xl rounded-b-3xl overflow-hidden shadow-lg  cursor-pointer hover:opacity-90 transition">
             <h4 className="font-medium text-2xl">View All</h4>
           </div>
         </div>
