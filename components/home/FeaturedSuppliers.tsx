@@ -25,10 +25,12 @@ const FeaturedSuppliers: React.FC = () => {
             how these technologies and the traditional real estate market work.{" "}
           </p>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-8 gap-4">
-          {sellers?.map((seller, index) => (
-            <SellerLogoContainer key={index} logoUrl={seller} />
-          ))}
+        <div className="w-full ">
+          <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-8 gap-4">
+            {sellers?.map((seller, index) => (
+              <SellerLogoContainer key={index} logoUrl={seller} />
+            ))}
+          </div>
         </div>
       </div>
     </section>
