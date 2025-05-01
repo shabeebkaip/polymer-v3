@@ -31,7 +31,7 @@ const Footer: React.FC = () => {
         {/* top */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center justify-center">
           <Image
-            src="/assets/title.svg"
+            src="/assets/Title.svg"
             alt="Logo"
             width={100}
             height={100}
@@ -100,8 +100,7 @@ const Footer: React.FC = () => {
       </div>
       <div className="bg-[var(--footer-background-secondary)] text-center p-4">
         <p>
-          &copy; {new Date().getFullYear()} POLYMERS HUB. All rights
-          reserved.
+          &copy; {new Date().getFullYear()} POLYMERS HUB. All rights reserved.
         </p>
       </div>
     </footer>
