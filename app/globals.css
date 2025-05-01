@@ -35,7 +35,9 @@
   /* button */
   --button-gray: #c7c7c7;
 
-
+  /* Footer */
+  --footer-background: #090B0B;
+  --footer-background-secondary: #1C1F1F
 }
 
 /* 3) Apply it globally in Tailwind’s base layer */

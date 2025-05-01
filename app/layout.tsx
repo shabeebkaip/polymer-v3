@@ -1,19 +1,8 @@
 // app/layout.tsx
-import Header from "@/shared/Header";
+import Header from "@/components/shared/Header";
 import "./globals.css";
-import { Geist, Geist_Mono, Kanit } from "next/font/google";
-
-const geistSans = Geist({
-  subsets: ["latin"],
-  variable: "--font-geist-sans",
-  display: "swap",
-});
-
-const geistMono = Geist_Mono({
-  subsets: ["latin"],
-  variable: "--font-geist-mono",
-  display: "swap",
-});
+import { Kanit } from "next/font/google";
+import Footer from "@/components/shared/Footer";
 
 // ↓ Add this ↓
 const kanit = Kanit({
@@ -32,14 +21,13 @@ export default function RootLayout({
     <html
       lang="en"
       className={`
-      ${geistSans.variable} 
-      ${geistMono.variable} 
       ${kanit.variable}
     `}
     >
       <body className="antialiased">
         <Header />
         {children}
+        <Footer />
       </body>
     </html>
   );
