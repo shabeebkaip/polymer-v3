@@ -18,9 +18,12 @@
   /* text colors */
 
   /* green */
-  --green-main: rgb(0, 135, 103); /* #008767 */
-  --green-light: rgb(0, 156, 125); /* #009C7D */
-  --green-dark: rgb(0, 146, 10); /* #00920A */
+  --green-main: rgb(0, 135, 103);
+  /* #008767 */
+  --green-light: rgb(0, 156, 125);
+  /* #009C7D */
+  --green-dark: rgb(0, 146, 10);
+  /* #00920A */
   /* gray */
   --text-gray-primary: #777777;
   --text-gray-secondary: #9F9F9F;
@@ -28,6 +31,9 @@
 
   /* dark */
   --dark-main: #122019;
+
+  /* button */
+  --button-gray: #c7c7c7;
 
 
 }

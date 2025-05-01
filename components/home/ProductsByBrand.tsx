@@ -1,0 +1,77 @@
+"use client";
+import React, { useState } from "react";
+import Tab from "./Tab";
+import Image from "next/image";
+import ProductCard from "../Products/ProductCard";
+
+const ProductsByBrand: React.FC = () => {
+  const [selectedTab, setSelectedTab] = useState("brand1");
+  const brands = [
+    { id: "brand1", label: "Onfido", image: "/assets/brand.png" },
+    { id: "brand2", label: "Onfido", image: "/assets/brand.png" },
+    { id: "brand3", label: "Onfido", image: "/assets/brand.png" },
+    { id: "brand4", label: "Onfido", image: "/assets/brand.png" },
+    { id: "brand5", label: "Onfido", image: "/assets/brand.png" },
+    { id: "brand6", label: "Onfido", image: "/assets/brand.png" },
+    { id: "brand7", label: "Onfido", image: "/assets/brand.png" },
+  ];
+  const products = [
+    {
+      image: "/assets/house_big.png",
+      logo: "/assets/seller 1.svg",
+    },
+    {
+      image: "/assets/house_big (1).png",
+      logo: "/assets/seller 2.svg",
+    },
+    {
+      image: "/assets/house_big (2).png",
+      logo: "/assets/seller 3.svg",
+    },
+    {
+      image: "/assets/house_big (3).png",
+      logo: "/assets/seller 2.svg",
+    },
+  ];
+  return (
+    <div className="container mx-auto px-4 mt-16">
+      <div className="flex flex-col items-center gap-14">
+        <h1 className="text-[var(--dark-main)] text-5xl font-normal text-center">
+          Find Product By Brand
+        </h1>
+        <div className="flex flex-wrap gap-4 justify-center">
+          {brands.map((brand) => (
+            <Tab
+              key={brand.id}
+              label={brand.label}
+              icon={brand.image}
+              isSelected={selectedTab === brand.id}
+              onClick={() => setSelectedTab(brand.id)}
+              fontSize="text-md"
+              iconWidth="w-12"
+            />
+          ))}
+          <button
+            type="button"
+            className="flex items-center gap-4 px-4 py-2 rounded-full border-2 border-[var(--green-main)] text-[var(--green-main)] hover:bg-green-50 transition focus:outline-none"
+          >
+            See More{" "}
+            <Image
+              src="/icons/lucide_arrow-up.svg"
+              alt="Arrow Icon"
+              width={20}
+              height={20}
+            />
+          </button>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full">
+          {products.map((product, index) => (
+            <ProductCard key={index} product={product} />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ProductsByBrand;

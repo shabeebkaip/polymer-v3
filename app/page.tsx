@@ -1,5 +1,6 @@
 import dynamic from "next/dynamic";
 import Hero from "@/components/home/Hero";
+import ProductsByBrand from "@/components/home/ProductsByBrand";
 
 const Categories = dynamic(() => import("@/components/home/Categories"), {
   loading: () => <p>Loading categories...</p>,
@@ -19,6 +20,7 @@ export default function Home() {
     <div className="">
       <Hero />
       <Categories />
+      <ProductsByBrand />
       <FeaturedSuppliers />
       <BeneFits />
     </div>
