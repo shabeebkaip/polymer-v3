@@ -65,7 +65,7 @@ const Categories: React.FC = () => {
   return (
     <section className="container mx-auto px-4 mt-20 mb-10">
       <div className="flex flex-col items-center gap-14">
-        <h1 className="text-[var(--dark-main)] text-5xl font-bold text-center">
+        <h1 className="text-[var(--dark-main)] text-5xl font-normal text-center">
           Discover Our Products
         </h1>
 

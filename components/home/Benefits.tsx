@@ -1,5 +1,6 @@
 import { register } from "module";
 import React from "react";
+import BenefitCard from "./BenefitCard";
 
 const Benefits: React.FC = () => {
   const benefits = [
@@ -48,8 +49,10 @@ const Benefits: React.FC = () => {
           </p>
         </div>
       </div>
-      <div className="">
-
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mt-10">
+        {benefits.map((benefit, index) => (
+          <BenefitCard key={index} benefit={benefit} />
+        ))}
       </div>
     </section>
   );
