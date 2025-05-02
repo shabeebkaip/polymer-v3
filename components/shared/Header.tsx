@@ -21,8 +21,8 @@ const Header: React.FC = () => {
             </Link>
           </div>
 
-          {/* Navigation Links */}
-          <nav className="hidden md:flex space-x-8">
+          {/* Navigation Links Desktop */}
+          <nav className="hidden lg:flex space-x-8">
             <Link
               href="/"
               className="text-[var(--text-gray-primary)] hover:text-[var(--green-main)] font-sans "
@@ -49,8 +49,8 @@ const Header: React.FC = () => {
             </Link>
           </nav>
 
-          {/* Action Buttons */}
-          <div className="flex items-center space-x-4">
+          {/* Action Buttons Desktop */}
+          <div className="hidden lg:flex items-center space-x-4">
             <button
               type="button"
               className="flex items-center px-4 py-2 border border-[var(--green-main)] text-[var(--green-main)] rounded-lg hover:bg-green-50 transition cursor-pointer"
@@ -70,6 +70,15 @@ const Header: React.FC = () => {
             >
               Sign Up for Free
             </Link>
+          </div>
+          <div className="lg:hidden flex items-center">
+            <Image
+              src="/icons/hamburger.svg"
+              alt="Menu Icon"
+              width={100}
+              height={100}
+              className="cursor-pointer w-12 "
+            />
           </div>
         </div>
       </div>
