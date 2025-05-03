@@ -75,7 +75,7 @@ const Hero: React.FC = () => {
             />
           </div>
         </div>
-        <div className="mt-10 grid grid-cols-2  lg:grid-cols-4  justify-center gap-20 w-full">
+        <div className="mt-10 grid grid-cols-2  lg:grid-cols-4  justify-center gap-10 md:gap-20 w-full">
           {stats.map((stat, index) => (
             <div
               key={index}

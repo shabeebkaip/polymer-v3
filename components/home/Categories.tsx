@@ -65,11 +65,11 @@ const Categories: React.FC = () => {
   return (
     <section className="container mx-auto px-4 mt-20 mb-10">
       <div className="flex flex-col items-center gap-14">
-        <h1 className="text-[var(--dark-main)] text-5xl font-normal text-center">
+        <h1 className="text-[var(--dark-main)]  text-3xl md:text-5xl font-normal text-center">
           Discover Our Products
         </h1>
 
-        <div className="flex flex-wrap justify-center gap-10">
+        <div className="grid grid-cols-2 justify-center gap-2 md:gap-10">
           {categoryData.map(({ id, label, icon }) => (
             <Tab
               key={id}
@@ -77,17 +77,19 @@ const Categories: React.FC = () => {
               icon={icon}
               isSelected={selectedCategory === id}
               onClick={() => setSelectedCategory(id)}
+              iconWidth="w-10 md:w-20"
+              fontSize="text-[12px] md:text-lg lg:text-[22px]"
             />
           ))}
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10 w-full">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-10 w-full">
           {displayedItems.map(({ id, label, image }) => (
             <CategoryCard key={id} id={id} label={label} image={image} />
           ))}
 
-          <div className="bg-[var(--green-light)]  text-white flex items-center justify-center gap-2 rounded-t-4xl rounded-b-3xl overflow-hidden shadow-lg  cursor-pointer hover:opacity-90 transition">
-            <h4 className="font-medium text-2xl">View All</h4>
+          <div className="bg-[var(--green-light)]  text-white flex items-center justify-center gap-2 rounded-t-2xl rounded-b-xl md:rounded-t-4xl md:rounded-b-3xl overflow-hidden shadow-lg  cursor-pointer hover:opacity-90 transition">
+            <h4 className="font-medium text-sm md:text-2xl">View All</h4>
           </div>
         </div>
       </div>
