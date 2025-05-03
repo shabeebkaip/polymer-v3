@@ -1,7 +1,24 @@
 "use client";
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import CategoryCard from "./CategoryCard";
 import Tab from "./Tab";
+import Image from "next/image";
+
+// Hook to check if screen is mobile (<768px)
+const useIsMobile = () => {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  return isMobile;
+};
 
 const categoryData = [
   {
@@ -56,16 +73,18 @@ const industries = [
 
 const Categories: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState("industries");
+  const isMobile = useIsMobile();
 
-  // Simulated data for both categories
+  // Return only 4 items on mobile, all on larger screens
   const displayedItems = useMemo(() => {
-    return selectedCategory === "industries" ? industries : industries;
-  }, [selectedCategory]);
+    const data = selectedCategory === "industries" ? industries : industries;
+    return isMobile ? data.slice(0, 4) : data;
+  }, [selectedCategory, isMobile]);
 
   return (
     <section className="container mx-auto px-4 mt-20 mb-10">
-      <div className="flex flex-col items-center gap-14">
-        <h1 className="text-[var(--dark-main)]  text-3xl md:text-5xl font-normal text-center">
+      <div className="flex flex-col items-center gap-6 md:gap-14">
+        <h1 className="text-[var(--dark-main)] text-3xl md:text-5xl font-normal text-center">
           Discover Our Products
         </h1>
 
@@ -88,10 +107,22 @@ const Categories: React.FC = () => {
             <CategoryCard key={id} id={id} label={label} image={image} />
           ))}
 
-          <div className="bg-[var(--green-light)]  text-white flex items-center justify-center gap-2 rounded-t-2xl rounded-b-xl md:rounded-t-4xl md:rounded-b-3xl overflow-hidden shadow-lg  cursor-pointer hover:opacity-90 transition">
+          <div className="hidden md:flex bg-[var(--green-light)] text-white items-center justify-center gap-2 rounded-t-2xl rounded-b-xl md:rounded-t-4xl md:rounded-b-3xl overflow-hidden shadow-lg cursor-pointer hover:opacity-90 transition">
             <h4 className="font-medium text-sm md:text-2xl">View All</h4>
           </div>
         </div>
+        <button
+          type="button"
+          className="flex items-center gap-4 px-4 py-2 rounded-full border-2 border-[var(--green-main)] text-[var(--green-main)] hover:bg-green-50 transition focus:outline-none"
+        >
+          See More{" "}
+          <Image
+            src="/icons/lucide_arrow-up.svg"
+            alt="Arrow Icon"
+            width={20}
+            height={20}
+          />
+        </button>
       </div>
     </section>
   );
