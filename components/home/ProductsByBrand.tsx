@@ -35,8 +35,8 @@ const ProductsByBrand: React.FC = () => {
   ];
   return (
     <div className="container mx-auto px-4 mt-16">
-      <div className="flex flex-col items-center gap-14">
-        <h1 className="text-[var(--dark-main)] text-5xl font-normal text-center">
+      <div className="flex flex-col items-center gap-6 md:gap-14">
+        <h1 className="text-[var(--dark-main)] text-3xl md:text-5xl font-normal text-center">
           Find Product By Brand
         </h1>
         <div className="flex flex-wrap gap-4 justify-center">
@@ -47,13 +47,13 @@ const ProductsByBrand: React.FC = () => {
               icon={brand.image}
               isSelected={selectedTab === brand.id}
               onClick={() => setSelectedTab(brand.id)}
-              fontSize="text-md"
-              iconWidth="w-12"
+              fontSize="text-xs md:text-[22px]"
+              iconWidth="w-6 md:w-10 "
             />
           ))}
           <button
             type="button"
-            className="flex items-center gap-4 px-4 py-2 rounded-full border-2 border-[var(--green-main)] text-[var(--green-main)] hover:bg-green-50 transition focus:outline-none"
+            className="flex items-center gap-4 px-4 py-2 rounded-full border-2 border-[var(--green-main)] text-xs md:text-lg text-[var(--green-main)] hover:bg-green-50 transition focus:outline-none"
           >
             See More{" "}
             <Image
@@ -68,6 +68,11 @@ const ProductsByBrand: React.FC = () => {
           {products.map((product, index) => (
             <ProductCard key={index} product={product} />
           ))}
+        </div>
+        <div className="flex items-center justify-center ">
+          <button className="border border-[var(--green-light)] px-10 md:px-20 py-4 md:py-4 rounded-full text-[var(--green-light)] text-sm md:text-lg hover:bg-green-50 transition focus:outline-none flex items-center gap-2">
+            View All
+          </button>
         </div>
       </div>
     </div>

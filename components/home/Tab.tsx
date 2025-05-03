@@ -15,7 +15,7 @@ const Tab: React.FC<TabProps> = ({
   isSelected,
   icon,
   onClick,
-  fontSize = "text-[22px]",
+  fontSize ,
   iconWidth = "w-10",
 }) => {
   return (
@@ -37,7 +37,7 @@ const Tab: React.FC<TabProps> = ({
           className={`rounded-full object-cover ${iconWidth} `}
         />
       </div>
-      <span className={` ${fontSize} `}>{label}</span>
+      <span className={` ${fontSize}`}>{label}</span>
     </button>
   );
 };

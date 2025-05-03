@@ -23,7 +23,7 @@ const useIsMobile = () => {
 const categoryData = [
   {
     id: "industries",
-    label: "Industries",
+    label: "Product Industries",
     icon: "/assets/industries-logo.png",
   },
   {
@@ -113,7 +113,7 @@ const Categories: React.FC = () => {
         </div>
         <button
           type="button"
-          className="flex items-center gap-4 px-4 py-2 rounded-full border-2 border-[var(--green-main)] text-[var(--green-main)] hover:bg-green-50 transition focus:outline-none"
+          className="flex md:hidden items-center gap-4 px-4 py-2 rounded-full border-2 border-[var(--green-main)] text-[var(--green-main)] text-xs md:text-md hover:bg-green-50 transition focus:outline-none"
         >
           See More{" "}
           <Image
