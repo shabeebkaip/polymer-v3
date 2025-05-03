@@ -18,16 +18,16 @@ const Hero: React.FC = () => {
             alt="Hero Element 1"
             width={100}
             height={100}
-            className="absolute top-0 left-0 w-[100px] h-[300px]"
+            className=" absolute top-7 lg:top-0 lg:left-0 w-[40px] md:w-[80px] lg:w-[100px] lg:h-[300px]"
           />
           <Image
             src="/assets/hero_element_2.svg"
             alt="Hero Element 2"
             width={100}
             height={100}
-            className="absolute top-0 right-0 w-[100px] h-[300px]"
+            className="absolute top-7 lg:top-0 right-0 w-[40px] md:w-[80px] lg:w-[100px] lg:h-[300px]"
           />
-          <h1 className="text-[80px] uppercase font-semibold leading-tight">
+          <h1 className="text-2xl md:text-4xl lg:text-[80px] uppercase font-semibold leading-tight">
             Sustainable{" "}
             <span
               className="
@@ -44,7 +44,7 @@ const Hero: React.FC = () => {
             for <br /> a Better Tomorrow
           </h1>
         </div>
-        <p className="text-[var(--text-gray-secondary)] text-[20px] mt-10  max-w-4xl text-2xl font-normal">
+        <p className="text-[var(--text-gray-secondary)] text-[16px] md:text-[20px] mt-10 lg:text-2xl max-w-4xl  font-normal">
           We believe that healthy eating should be delicious and satisfying.
           Join us for a culinary experience that nourishes your body and
           delights your taste buds.
@@ -56,7 +56,7 @@ const Hero: React.FC = () => {
               from-[var(--green-gradient-from)]
               via-[var(--green-gradient-via)]
               to-[var(--green-gradient-to)]
-              rounded-full flex justify-center items-center absolute top-2 2xl:right-66 xl:right-56 lg:right-44 md:right-32 sm:right-28 right-20"
+              rounded-full flex justify-center items-center absolute top-2 2xl:right-66 xl:right-56 lg:right-44 md:right-32 sm:right-28 right-4"
           >
             <Image
               src="/icons/search.svg"
@@ -69,20 +69,20 @@ const Hero: React.FC = () => {
             <input
               type="text"
               placeholder="Search Polymers"
-              className="w-4/6 px-4 py-4
+              className="w-full md:w-4/6 px-4 py-4
             rounded-full
             border-1 border-[var(--green-light)] "
             />
           </div>
         </div>
-        <div className="mt-10 flex flex-wrap justify-center gap-20 w-full">
+        <div className="mt-10 grid grid-cols-2  lg:grid-cols-4  justify-center gap-20 w-full">
           {stats.map((stat, index) => (
             <div
               key={index}
               className="flex flex-col items-center justify-center text-center"
             >
               <h1
-                className="text-[80px] font-semibold
+                className="text-[40px]  md:text-[80px] font-semibold
                bg-gradient-to-r
               from-[var(--green-gradient-from)]
               via-[var(--green-gradient-via)]
@@ -92,7 +92,7 @@ const Hero: React.FC = () => {
               >
                 {stat.value}
               </h1>
-              <p className="text-[var(--text-gray-secondary)] text-[20px] font-normal">
+              <p className="text-[var(--text-gray-secondary)] md:text-[20px] font-normal">
                 {stat.label}
               </p>
             </div>
