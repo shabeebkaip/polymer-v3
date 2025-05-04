@@ -16,7 +16,7 @@ const Footer: React.FC = () => {
     },
     {
       label: "LinkedIn",
-      icon: "/icons/linkedin.png",
+      icon: "/icons/linkedIn.png",
       link: "https://www.linkedin.com/",
     },
     {
@@ -75,7 +75,7 @@ const Footer: React.FC = () => {
           </div>
         </div>
         {/* only for mobile device */}
-        <div className="grid grid-cols-2 gap-4 my-8  items-center ">
+        <div className="md:hidden grid grid-cols-2 gap-4 my-8  items-center ">
           <div className="flex flex-col items-center gap-2 border-r border-[#353535]   ">
             <div className="px-4 py-2 border border-white rounded-full w-fit text-xs">
               <span>+966 537346577</span>
