@@ -3,8 +3,10 @@ import React, { useState } from "react";
 import Tab from "./Tab";
 import Image from "next/image";
 import ProductCard from "../Products/ProductCard";
+import { useRouter } from "next/navigation";
 
 const ProductsByBrand: React.FC = () => {
+  const router = useRouter();
   const [selectedTab, setSelectedTab] = useState("brand1");
   const brands = [
     { id: "brand1", label: "Onfido", image: "/assets/brand.png" },
@@ -70,7 +72,7 @@ const ProductsByBrand: React.FC = () => {
           ))}
         </div>
         <div className="flex items-center justify-center ">
-          <button className="border border-[var(--green-light)] px-10 md:px-20 py-4 md:py-4 rounded-full text-[var(--green-light)] text-sm md:text-lg hover:bg-green-50 transition focus:outline-none flex items-center gap-2">
+          <button className="border border-[var(--green-light)] px-10 md:px-20 py-4 md:py-4 rounded-full text-[var(--green-light)] text-sm md:text-lg hover:bg-green-50 transition focus:outline-none flex items-center gap-2" onClick={() => router.push("/products") }>
             View All
           </button>
         </div>
