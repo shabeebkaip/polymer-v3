@@ -16,13 +16,13 @@ const BenefitCard: React.FC<BenefitCardProps> = ({ benefit }) => {
         <h3 className="text-xs font-normal text-[var(--green-main)] ">
           {benefit.subtitle}
         </h3>
-        <h2 className="text-[27px] ">{benefit.title}</h2>
+        <h2 className="md:text-[27px] ">{benefit.title}</h2>
       </div>
       <ul className="space-y-2">
         {benefit.list.map((item, index) => (
           <li
             key={index}
-            className="flex items-baselin gap-2 text-[var(--text-gray-tertiary)]"
+            className="flex items-baselin gap-2 text-[var(--text-gray-tertiary)] text-xs md:text-lg"
           >
             <Image
               src="/icons/Check icon.png"
@@ -37,7 +37,7 @@ const BenefitCard: React.FC<BenefitCardProps> = ({ benefit }) => {
       </ul>
       <a
         href={benefit.registerLink}
-        className=" px-4 py-2 bg-blue-500 text-white rounded-lg bg-gradient-to-r
+        className="text-xs md:text-lg  px-4 py-2 bg-blue-500 text-white rounded-lg bg-gradient-to-r
               from-[var(--green-gradient-from)]
               via-[var(--green-gradient-via)]
               to-[var(--green-gradient-to)]"

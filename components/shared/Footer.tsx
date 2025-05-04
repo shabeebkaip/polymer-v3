@@ -29,22 +29,27 @@ const Footer: React.FC = () => {
     <footer className="bg-[var(--footer-background)] text-white ">
       <div className="container mx-auto px-4 pt-10">
         {/* top */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center justify-center">
-          <Image
-            src="/assets/Title.svg"
-            alt="Logo"
-            width={100}
-            height={100}
-            className=" w-50 "
-          />
-          <div className="flex flex-row items-center justify-end gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+          {/* Logo - centered on mobile, left-aligned on desktop */}
+          <div className="flex justify-center md:justify-start">
+            <Image
+              src="/assets/Title.svg"
+              alt="Logo"
+              width={100}
+              height={100}
+              className="w-50"
+            />
+          </div>
+
+          {/* Socials - hidden on mobile, visible on desktop */}
+          <div className="hidden md:flex flex-row items-center justify-end gap-4">
             {socials.map((social) => (
               <a
                 key={social.label}
                 href={social.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2  "
+                className="flex items-center gap-2"
               >
                 <Image
                   src={social.icon}
@@ -60,8 +65,17 @@ const Footer: React.FC = () => {
           </div>
         </div>
         <hr className="mt-10 bg-[#353535] text-[#353535] h-px" />
+        {/*  only for mobile device */}
+        <div className="md:hidden flex flex-col items-center justify-center gap-4 mt-10">
+          <div className="flex flex-col gap-2 text-center" >
+            <h4 className="text-[#BBBABA] text-normal text-3xl">
+              How can we help you{" "}
+            </h4>
+            <h4 className="underline text-3xl ">Get in Touch</h4>
+          </div>
+        </div>
         {/* bottom */}
-        <div className="grid grid-cols-10 gap-0 h-full">
+        <div className=" md:grid grid-cols-10 gap-0 h-full">
           <div className="col-span-7 border-r-1 border-[#353535] py-16 grid grid-cols-2 items-center pr-4">
             <div className="flex flex-col gap-2 ">
               <h4 className="text-[#BBBABA] text-normal text-4xl">

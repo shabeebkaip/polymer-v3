@@ -29,7 +29,7 @@ const Benefits: React.FC = () => {
     <section className="container mx-auto px-4 mt-20 mb-10">
       <div className="flex flex-col items-center gap-14">
         <div className="flex flex-col items-center justify-center text-center gap-5">
-          <h1 className="text-5xl">
+          <h1 className="text-3xl md:text-5xl">
             Unique Advantages of{" "}
             <span
               className=" bg-gradient-to-r
@@ -42,7 +42,7 @@ const Benefits: React.FC = () => {
               Polymers Hub
             </span>
           </h1>
-          <p className="text-[var(--text-gray-tertiary)] font-normal text-lg text-center max-w-2xl">
+          <p className="text-[var(--text-gray-tertiary)] font-normal text-[16px] md:text-lg text-center max-w-2xl">
             As new technologies like cryptocurrency develop, the real estate
             sector is changing drastically. It is important to understand both
             how these technologies and the traditional real estate market work.{" "}
