@@ -26,8 +26,8 @@ const FeaturedSuppliers: React.FC = () => {
           </p>
         </div>
 
-        <div className="w-full ">
-          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-8 gap-4">
+        <div className="w-full flex md:block justify-center ">
+          <div className="grid  grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 md:gap-4 lg:gap-2 gap-2 " >
             {sellers?.map((seller, index) => (
               <SellerLogoContainer key={index} logoUrl={seller} />
             ))}
