@@ -106,7 +106,7 @@ const Categories: React.FC = () => {
 
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-10 w-full">
           {displayedItems.map(({ id, label, image }) => (
-            <CategoryCard key={id} id={id} label={label} image={image} />
+            <CategoryCard key={id} label={label} image={image} />
           ))}
 
           <div
