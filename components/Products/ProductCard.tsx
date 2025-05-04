@@ -58,13 +58,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             from-[var(--green-gradient-from)]
             via-[var(--green-gradient-via)]
             to-[var(--green-gradient-to)]
-            text-white px-4 py-2 rounded-lg w-full text-xs"
+            text-white px-4 py-3 rounded-lg w-full text-xs"
         >
           Request For Quote
         </button>
         <button
           type="button"
-          className="transition px-4 py-2 rounded-lg w-full text-xs cursor-pointer bg-[var(--button-gray)] text-white"
+          className="transition px-4 py-3 rounded-lg w-full text-xs cursor-pointer bg-[var(--button-gray)] text-white"
         >
           Request For Sample
         </button>
