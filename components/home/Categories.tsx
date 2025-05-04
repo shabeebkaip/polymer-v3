@@ -111,7 +111,13 @@ const Categories: React.FC = () => {
 
           <div
             className="hidden md:flex bg-[var(--green-light)] text-white items-center justify-center gap-2 rounded-t-2xl rounded-b-xl md:rounded-t-4xl md:rounded-b-3xl overflow-hidden shadow-lg cursor-pointer hover:opacity-90 transition"
-            onClick={() => router.push("/industries")}
+            onClick={() =>
+              router.push(
+                selectedCategory == "industries"
+                  ? "/industries"
+                  : "/product-families"
+              )
+            }
           >
             <h4 className="font-medium text-sm md:text-2xl">View All</h4>
           </div>
@@ -119,7 +125,13 @@ const Categories: React.FC = () => {
         <button
           type="button"
           className="flex md:hidden items-center gap-4 px-4 py-2 rounded-full border-2 border-[var(--green-main)] text-[var(--green-main)] text-xs md:text-md hover:bg-green-50 transition focus:outline-none"
-          onClick={() => router.push("/industries")}
+          onClick={() =>
+            router.push(
+              selectedCategory == "industries"
+                ? "/industries"
+                : "/product-families"
+            )
+          }
         >
           See More{" "}
           <Image
