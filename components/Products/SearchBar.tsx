@@ -30,7 +30,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
       <div>
         <input
           type="text"
-          placeholder="Search Polymers"
+          placeholder="Search..."
           className="w-full px-4 py-4 rounded-full border-1 border-[var(--green-light)]"
           //   value={query}
           //   onChange={handleSearch}
