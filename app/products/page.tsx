@@ -1,6 +1,6 @@
-import Filter from "@/components/Products/Filter";
-import ProductCard from "@/components/Products/ProductCard";
-import SearchBar from "@/components/Products/SearchBar";
+import Filter from "@/components/products/Filter";
+import ProductCard from "@/components/products/ProductCard";
+import SearchBar from "@/components/products/SearchBar";
 import Image from "next/image";
 import React from "react";
 

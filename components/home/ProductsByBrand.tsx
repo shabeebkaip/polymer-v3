@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import Tab from "./Tab";
 import Image from "next/image";
-import ProductCard from "../Products/ProductCard";
+import ProductCard from "../products/ProductCard";
 import { useRouter } from "next/navigation";
 
 const ProductsByBrand: React.FC = () => {
