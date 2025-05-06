@@ -2,8 +2,15 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 const Header: React.FC = () => {
+  const pathname = usePathname();
+  const router = useRouter();
+  if (pathname.includes("auth")) {
+    return null; // Don't render the header on the auth pages
+  }
   return (
     <header className="bg-white shadow-xl shadow-green-600/10   ">
       <div className="container mx-auto px-4 ">
@@ -16,6 +23,7 @@ const Header: React.FC = () => {
                 alt="Logo"
                 width={100}
                 height={50}
+                
                 className="h-10 w-auto"
               />
             </Link>
@@ -54,6 +62,7 @@ const Header: React.FC = () => {
             <button
               type="button"
               className="flex items-center px-4 py-2 border border-[var(--green-main)] text-[var(--green-main)] rounded-lg hover:bg-green-50 transition cursor-pointer"
+              onClick={() => router.push("/auth/login")}
             >
               <Image
                 src="/icons/user.svg"

@@ -1,8 +1,10 @@
-import { link } from "fs";
+"use client";
 import Image from "next/image";
 import React from "react";
+import { usePathname } from "next/navigation";
 
 const Footer: React.FC = () => {
+  const pathname = usePathname();
   const socials = [
     {
       label: "Facebook",
@@ -25,6 +27,10 @@ const Footer: React.FC = () => {
       link: "https://www.instagram.com/",
     },
   ];
+  if (pathname.includes("auth")) {
+    return null; // Don't render the footer on the auth pages
+  }
+  
   return (
     <footer className="bg-[var(--footer-background)] text-white ">
       <div className="container mx-auto px-4 pt-10">
