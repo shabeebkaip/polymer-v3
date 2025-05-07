@@ -35,7 +35,7 @@ const Input: React.FC<InputProps> = ({
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className={`border border-[var(--input-border)] rounded-lg px-2 py-4 outline-none w-full ${className}`}
+        className={`border border-[var(--input-border)] rounded-lg px-2 py-4 outline-none w-full bg-white ${className}`}
       />
       {icon && (
         <div className="absolute top-4 right-2 flex items-center justify-center">

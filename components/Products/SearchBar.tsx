@@ -8,15 +8,6 @@ interface SearchBarProps {
 
 const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
   const [query, setQuery] = useState("");
-
-  //   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //     setQuery(event.target.value);
-  //   };
-
-  //   const handleSearch = () => {
-  //     onSearch(query);
-  //   };
-
   return (
     <div className="relative">
       <div className="w-10 h-10 bg-gradient-to-r from-[var(--green-gradient-from)] via-[var(--green-gradient-via)] to-[var(--green-gradient-to)] rounded-full flex justify-center items-center absolute top-2 right-2">
