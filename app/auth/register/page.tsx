@@ -5,15 +5,21 @@ import Link from "next/link";
 import React, { useState } from "react";
 
 const Login: React.FC = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle login logic here
-    console.log("Email:", email);
-    console.log("Password:", password);
+  const [data, setData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    website: "",
+    phone: "",
+    company
+  });
+  const onFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setData((prevData) => ({ ...prevData, [name]: value }));
   };
+  const handleSubmit = (e: React.FormEvent) => {};
 
   return (
     <div className="flex flex-col items-start justify-center gap-6 ">
@@ -28,11 +34,20 @@ const Login: React.FC = () => {
       </div>
       <h4 className="text-4xl text-[var(--dark-main)]">Signup</h4>
       <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4 w-full ">
+        <div className="col-span-2">
+          <Image
+            src="/assets/Upload Photo.png"
+            alt="Logo"
+            width={100}
+            height={50}
+            className=""
+          />
+        </div>
         <Input
-          type="email"
-          id="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          type="text"
+          id="firstName"
+          value={data.firstName}
+          onChange={(e) => onFieldChange(e)}
           required
           placeholder="Email"
           className="w-full"
