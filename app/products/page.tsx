@@ -1,9 +1,9 @@
 import dynamic from "next/dynamic";
 import React from "react";
 
-const Filter = dynamic(() => import("@/components/Products/Filter"));
-const ProductCard = dynamic(() => import("@/components/Products/ProductCard"));
-const SearchBar = dynamic(() => import("@/components/Products/SearchBar"));
+const Filter = dynamic(() => import("@/components/products/Filter"));
+const ProductCard = dynamic(() => import("@/components/products/ProductCard"));
+const SearchBar = dynamic(() => import("@/components/products/SearchBar"));
 
 const ProductsPage: React.FC = () => {
   const filters = [
