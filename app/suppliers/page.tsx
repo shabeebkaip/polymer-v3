@@ -1,4 +1,4 @@
-import SearchBar from "@/components/products/SearchBar";
+import SearchBar from "@/components/Products/SearchBar";
 import SupplierCard from "@/components/suppliers/SupplierCard";
 import React from "react";
 

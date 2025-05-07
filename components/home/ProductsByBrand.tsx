@@ -5,7 +5,7 @@ import Tab from "./Tab";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
-const ProductCard = dynamic(() => import("@/components/products/ProductCard"));
+const ProductCard = dynamic(() => import("@/components/Products/ProductCard"));
 
 const ProductsByBrand: React.FC = () => {
   const router = useRouter();
