@@ -60,7 +60,10 @@ const Login: React.FC = () => {
         <hr className="w-3/4 border-t border-gray-200 " />
       </div>
       <div className="flex items-center justify-center gap-2 w-full">
-        Don't you have an account? <Link href={"/auth/user-type"} className="text-blue-600">Sign up</Link>
+        Don't you have an account?{" "}
+        <Link href={"/auth/user-type"} className="text-blue-600">
+          Sign up
+        </Link>
       </div>
     </div>
   );
