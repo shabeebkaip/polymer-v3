@@ -1,8 +1,11 @@
-import Filter from "@/components/products/Filter";
-import ProductCard from "@/components/products/ProductCard";
-import SearchBar from "@/components/products/SearchBar";
+import dynamic from "next/dynamic";
+
 import Image from "next/image";
 import React from "react";
+
+const Filter = dynamic(() => import("@/components/products/Filter"));
+const ProductCard = dynamic(() => import("@/components/products/ProductCard"));
+const SearchBar = dynamic(() => import("@/components/products/SearchBar"));
 
 const ProductsPage: React.FC = () => {
   const filters = [
