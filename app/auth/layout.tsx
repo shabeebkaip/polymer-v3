@@ -2,8 +2,8 @@ import React from "react";
 
 const AuthLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
-    <section className="flex items-center justify-center min-h-screen bg-[#f5f6f8] px-4">
-      <div className="w-full max-w-lg bg-white p-8 rounded-2xl shadow-lg">
+    <section className="flex items-center justify-center min-h-screen px-4 bg-[url('/assets/authbg.png')] bg-cover bg-center">
+      <div className="w-full max-w-lg p-8 rounded-2xl shadow-lg bg-white/10 backdrop-blur-xl border border-white/30">
         {children}
       </div>
     </section>
