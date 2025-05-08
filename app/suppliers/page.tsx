@@ -1,4 +1,4 @@
-import SearchBar from "@/components/products/SearchBar";
+// import SearchBar from "@/components/products/SearchBar";
 import SupplierCard from "@/components/suppliers/SupplierCard";
 import React from "react";
 
@@ -36,7 +36,7 @@ const SuppliersPage: React.FC = () => {
         <div className="col-span-12 grid grid-cols-12 gap-4 ">
           <div className="hidden  md:block  md:col-span-2  "></div>
           <div className="col-span-12  md:col-span-8">
-            <SearchBar />
+            {/* <SearchBar /> */}
           </div>
           <div className="hidden md:block  md:col-span-2"></div>
         </div>
