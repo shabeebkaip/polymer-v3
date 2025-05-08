@@ -1,14 +1,9 @@
 "use client";
-
 import React from "react";
 import { useSearchParams } from "next/navigation";
 import ProductCard from "@/components/product/ProductCard";
 
 const ProductsList: React.FC = () => {
-  const searchParams = useSearchParams();
-  const supplierDetail = searchParams.get("supplierDetail");
-
-  console.log("Query param supplierDetail =", supplierDetail);
 
   const products = [
     { image: "/assets/house_big.png", logo: "/assets/seller 1.svg" },

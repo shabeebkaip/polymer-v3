@@ -1,5 +1,7 @@
+//
 import React, { Suspense } from "react";
 import dynamic from "next/dynamic";
+import SupplierBasic from "@/components/suppliers/SupplierBasic";
 
 const Filter = dynamic(() => import("@/components/product/Filter"));
 const SearchBar = dynamic(() => import("@/components/product/SearchBar"));
@@ -44,6 +46,7 @@ const filters = [
 const ProductsPage = () => {
   return (
     <section className="mt-10 container mx-auto px-4">
+      <SupplierBasic />
       <div className="grid grid-cols-12 gap-4 mb-10">
         <div className="col-span-3">
           <Filter
