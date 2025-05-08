@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import React, { useState } from "react";
+import React from "react";
 import { useRouter } from "next/navigation";
 
 const Login: React.FC = () => {
@@ -30,7 +30,8 @@ const Login: React.FC = () => {
           alt="Logo"
           width={100}
           height={50}
-          className="h-16 w-auto"
+          className="h-16 w-auto cursor-pointer"
+          onClick={() => router.push("/")}
         />
       </div>
       <h4 className="text-4xl text-[var(--dark-main)]">Signup</h4>
