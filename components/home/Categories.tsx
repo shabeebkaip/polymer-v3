@@ -70,6 +70,16 @@ const industries = [
     label: "Textile & Apparel",
     image: "/assets/industry (1).png",
   },
+  {
+    id: "electronics",
+    label: "Electronics & Electrical",
+    image: "/assets/industry (2).png",
+  },
+  {
+    id: "construction",
+    label: "Construction & Building",
+    image: "/assets/industry (3).png",
+  },
 ];
 
 const Categories: React.FC = () => {
@@ -104,7 +114,7 @@ const Categories: React.FC = () => {
           ))}
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-10 w-full">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-3 w-full">
           {displayedItems.map(({ id, label, image }) => (
             <CategoryCard key={id} label={label} image={image} />
           ))}
