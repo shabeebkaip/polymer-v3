@@ -2,6 +2,7 @@
 import React, { Suspense } from "react";
 import dynamic from "next/dynamic";
 import SupplierBasic from "@/components/suppliers/SupplierBasic";
+import Image from "next/image";
 
 const Filter = dynamic(() => import("@/components/product/Filter"));
 const SearchBar = dynamic(() => import("@/components/product/SearchBar"));
@@ -49,8 +50,8 @@ const ProductsPage = () => {
       <Suspense fallback={<div>Loading...</div>}>
         <SupplierBasic />
       </Suspense>
-      <div className="grid grid-cols-12 gap-4 mb-10">
-        <div className="col-span-3">
+      <div className="grid grid-cols-1  md:grid-cols-12 gap-4 mb-10">
+        <div className="hidden  md:block md:col-span-3">
           <Filter
             filters={filters}
             onFilterChange={(selectedOption) => {
@@ -59,7 +60,10 @@ const ProductsPage = () => {
           />
         </div>
         <div className="col-span-9">
-          <SearchBar />
+          <div className="">
+            <SearchBar />
+          </div>
+
           <Suspense fallback={<div>Loading products...</div>}>
             <ProductsList />
           </Suspense>
