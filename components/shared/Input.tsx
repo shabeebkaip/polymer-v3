@@ -9,6 +9,7 @@ interface InputProps {
   id?: string;
   required?: boolean;
   icon?: React.ReactNode;
+  name?: string;
 }
 
 const Input: React.FC<InputProps> = ({
@@ -20,6 +21,7 @@ const Input: React.FC<InputProps> = ({
   id = "",
   required = false,
   icon,
+  name,
 }) => {
   return (
     <div className="relative">
@@ -32,10 +34,11 @@ const Input: React.FC<InputProps> = ({
         autoFocus={false}
         required={required}
         type={type}
+        name={name}
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className={`border border-[var(--input-border)] rounded-lg px-2 py-4 outline-none w-full bg-white ${className}`}
+        className={`border border-[var(--input-border)] rounded-lg px-2 py-4 outline-none w-full bg-white ${className} text-[var(--text-gray-tertiary)] placeholder:text-[var(--text-gray-tertiary)]`}
       />
       {icon && (
         <div className="absolute top-4 right-2 flex items-center justify-center">
