@@ -1,5 +1,5 @@
 import React from "react";
-import FilterItem from "./FilterItem";
+import FilterItem from "@/components/product/FilterItem";
 
 interface Option {
   name: string;
