@@ -42,7 +42,7 @@ const Page: React.FC = () => {
   return (
     <div className="container mx-auto px-4 my-10 ">
       <h1 className="text-4xl text-[var(--dark-main)]">Product Familes</h1>
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-10">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-10">
         {productFamilies.map((family, index) => (
           <CategoryCard
             label={family?.label}
