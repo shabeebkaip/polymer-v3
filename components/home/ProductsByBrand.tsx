@@ -5,7 +5,7 @@ import Tab from "./Tab";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
-const ProductCard = dynamic(() => import("@/components/products/ProductCard"));
+// const ProductCard = dynamic(() => import("@/components/products/ProductCard"));
 
 const ProductsByBrand: React.FC = () => {
   const router = useRouter();
@@ -68,11 +68,11 @@ const ProductsByBrand: React.FC = () => {
             />
           </button>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full">
+        {/* <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full">
           {products.map((product, index) => (
             <ProductCard key={index} product={product} />
           ))}
-        </div>
+        </div> */}
         <div className="flex items-center justify-center ">
           <button
             className="border border-[var(--green-light)] px-10 md:px-20 py-4 md:py-4 rounded-full text-[var(--green-light)] text-sm md:text-lg hover:bg-green-50 transition focus:outline-none flex items-center gap-2"
