@@ -46,7 +46,9 @@ const filters = [
 const ProductsPage = () => {
   return (
     <section className="mt-10 container mx-auto px-4">
-      <SupplierBasic />
+      <Suspense fallback={<div>Loading...</div>}>
+        <SupplierBasic />
+      </Suspense>
       <div className="grid grid-cols-12 gap-4 mb-10">
         <div className="col-span-3">
           <Filter
