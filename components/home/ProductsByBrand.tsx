@@ -47,7 +47,7 @@ const ProductsByBrand: React.FC = () => {
           {brands.map((brand) => (
             <Tab
               key={brand.id}
-              label={brand.label}
+              name={brand.label}
               icon={brand.image}
               isSelected={selectedTab === brand.id}
               onClick={() => setSelectedTab(brand.id)}
