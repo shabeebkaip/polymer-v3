@@ -4,94 +4,74 @@ import CategoryCard from "./CategoryCard";
 import Tab from "./Tab";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import useIsMobile from "@/lib/useIsMobile";
 
-// Hook to check if screen is mobile (<768px)
-const useIsMobile = () => {
-  const [isMobile, setIsMobile] = useState(false);
+import {
+  getIndustryList,
+  getProductFamilies,
+} from "@/apiServices/shared/apiServices";
 
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
+// Types
+interface CategoryData {
+  id: string;
+  name: string;
+  icon: string;
+}
 
-  return isMobile;
-};
+interface IndustryItem {
+  _id: string;
+  name: string;
+  bg: string;
+  image: string; // normalized from bg
+}
 
-const categoryData = [
+interface ProductFamily {
+  _id: string;
+  name: string;
+  image: string;
+}
+
+const categoryData: CategoryData[] = [
   {
     id: "industries",
-    label: "Product Industries",
+    name: "Product Industries",
     icon: "/assets/industries-logo.png",
   },
   {
     id: "families",
-    label: "Product Families",
+    name: "Product Families",
     icon: "/assets/product-families-logo.png",
   },
 ];
 
-const industries = [
-  {
-    id: "biotech",
-    label: "Bio Technology",
-    image: "/assets/industry (1).png",
-  },
-  {
-    id: "pharma",
-    label: "Pharma & Life Sciences",
-    image: "/assets/industry (2).png",
-  },
-  {
-    id: "chemical",
-    label: "Chemical Manufacturing",
-    image: "/assets/industry (3).png",
-  },
-  {
-    id: "packaging",
-    label: "Packaging",
-    image: "/assets/industry (1).png",
-  },
-  {
-    id: "automotive",
-    label: "Automotive",
-    image: "/assets/industry (2).png",
-  },
-  {
-    id: "medical",
-    label: "Medical & Healthcare",
-    image: "/assets/industry (3).png",
-  },
-  {
-    id: "textile",
-    label: "Textile & Apparel",
-    image: "/assets/industry (1).png",
-  },
-  {
-    id: "electronics",
-    label: "Electronics & Electrical",
-    image: "/assets/industry (2).png",
-  },
-  {
-    id: "construction",
-    label: "Construction & Building",
-    image: "/assets/industry (3).png",
-  },
-];
-
 const Categories: React.FC = () => {
-  const [selectedCategory, setSelectedCategory] = useState("industries");
+  const [selectedCategory, setSelectedCategory] =
+    useState<string>("industries");
+  const [industriesList, setIndustriesList] = useState<IndustryItem[]>([]);
+  const [productFamilies, setProductFamilies] = useState<ProductFamily[]>([]);
   const isMobile = useIsMobile();
   const router = useRouter();
 
-  // Return only 4 items on mobile, all on larger screens
   const displayedItems = useMemo(() => {
-    const data = selectedCategory === "industries" ? industries : industries;
+    const data =
+      selectedCategory === "industries" ? industriesList : productFamilies;
     return isMobile ? data.slice(0, 4) : data;
-  }, [selectedCategory, isMobile]);
+  }, [selectedCategory, isMobile, industriesList, productFamilies]);
+
+  useEffect(() => {
+    getIndustryList().then((response) => {
+      setIndustriesList(
+        response?.data?.map((item: IndustryItem) => ({
+          ...item,
+          image: item.bg,
+        }))
+      );
+    });
+
+    getProductFamilies().then((response) => {
+      setProductFamilies(response?.data);
+    });
+  }, []);
 
   return (
     <section className="container mx-auto px-4 mt-20 mb-10">
@@ -101,10 +81,10 @@ const Categories: React.FC = () => {
         </h1>
 
         <div className="grid grid-cols-2 justify-center gap-2 md:gap-10">
-          {categoryData.map(({ id, label, icon }) => (
+          {categoryData.map(({ id, name, icon }) => (
             <Tab
               key={id}
-              label={label}
+              name={name}
               icon={icon}
               isSelected={selectedCategory === id}
               onClick={() => setSelectedCategory(id)}
@@ -115,15 +95,15 @@ const Categories: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-3 w-full">
-          {displayedItems.map(({ id, label, image }) => (
-            <CategoryCard key={id} label={label} image={image} />
+          {displayedItems.map(({ name, image }, index) => (
+            <CategoryCard key={index} name={name} image={image} />
           ))}
 
           <div
             className="hidden md:flex bg-[var(--green-light)] text-white items-center justify-center gap-2 rounded-t-2xl rounded-b-xl md:rounded-t-4xl md:rounded-b-3xl overflow-hidden shadow-lg cursor-pointer hover:opacity-90 transition"
             onClick={() =>
               router.push(
-                selectedCategory == "industries"
+                selectedCategory === "industries"
                   ? "/industries"
                   : "/product-families"
               )
@@ -132,12 +112,13 @@ const Categories: React.FC = () => {
             <h4 className="font-medium text-sm md:text-2xl">View All</h4>
           </div>
         </div>
+
         <button
           type="button"
           className="flex md:hidden items-center gap-4 px-4 py-2 rounded-full border-2 border-[var(--green-main)] text-[var(--green-main)] text-xs md:text-md hover:bg-green-50 transition focus:outline-none"
           onClick={() =>
             router.push(
-              selectedCategory == "industries"
+              selectedCategory === "industries"
                 ? "/industries"
                 : "/product-families"
             )

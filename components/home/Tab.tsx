@@ -2,7 +2,7 @@ import Image from "next/image";
 import React from "react";
 
 interface TabProps {
-  label: string;
+  name: string;
   isSelected: boolean;
   onClick: () => void;
   icon: string;
@@ -11,11 +11,11 @@ interface TabProps {
 }
 
 const Tab: React.FC<TabProps> = ({
-  label,
+  name,
   isSelected,
   icon,
   onClick,
-  fontSize ,
+  fontSize,
   iconWidth = "w-10",
 }) => {
   return (
@@ -31,13 +31,13 @@ const Tab: React.FC<TabProps> = ({
       <div className="flex-shrink-0  rounded-full flex items-center justify-center">
         <Image
           src={icon}
-          alt={label}
+          alt={"Icon"}
           width={64}
           height={64}
           className={`rounded-full object-cover ${iconWidth} `}
         />
       </div>
-      <span className={` ${fontSize}`}>{label}</span>
+      <span className={` ${fontSize}`}>{name}</span>
     </button>
   );
 };
