@@ -22,7 +22,7 @@ interface IndustryItem {
   _id: string;
   name: string;
   bg: string;
-  image: string; // normalized from bg
+  image: string;
 }
 
 interface ProductFamily {
@@ -55,8 +55,15 @@ const Categories: React.FC = () => {
   const displayedItems = useMemo(() => {
     const data =
       selectedCategory === "industries" ? industriesList : productFamilies;
-    return isMobile ? data.slice(0, 4) : data;
+
+    const sliced = data.length > 9 ? data.slice(0, 9) : data;
+    return isMobile ? sliced.slice(0, 4) : sliced;
   }, [selectedCategory, isMobile, industriesList, productFamilies]);
+
+  const shouldShowViewAll =
+    (selectedCategory === "industries"
+      ? industriesList.length
+      : productFamilies.length) > 9 && !isMobile;
 
   useEffect(() => {
     getIndustryList().then((response) => {
@@ -69,7 +76,14 @@ const Categories: React.FC = () => {
     });
 
     getProductFamilies().then((response) => {
-      setProductFamilies(response?.data);
+      const simplifiedFamilies: ProductFamily[] = response?.data?.map(
+        (item: any) => ({
+          _id: item._id,
+          name: item.name,
+          image: item.image,
+        })
+      );
+      setProductFamilies(simplifiedFamilies);
     });
   }, []);
 
@@ -95,22 +109,24 @@ const Categories: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-3 w-full">
-          {displayedItems.map(({ name, image }, index) => (
-            <CategoryCard key={index} name={name} image={image} />
+          {displayedItems.map(({ name, image, _id }, index) => (
+            <CategoryCard key={_id || index} name={name} image={image} />
           ))}
 
-          <div
-            className="hidden md:flex bg-[var(--green-light)] text-white items-center justify-center gap-2 rounded-t-2xl rounded-b-xl md:rounded-t-4xl md:rounded-b-3xl overflow-hidden shadow-lg cursor-pointer hover:opacity-90 transition"
-            onClick={() =>
-              router.push(
-                selectedCategory === "industries"
-                  ? "/industries"
-                  : "/product-families"
-              )
-            }
-          >
-            <h4 className="font-medium text-sm md:text-2xl">View All</h4>
-          </div>
+          {shouldShowViewAll && (
+            <div
+              className="hidden md:flex bg-[var(--green-light)] text-white items-center justify-center gap-2 rounded-t-2xl rounded-b-xl md:rounded-t-4xl md:rounded-b-3xl overflow-hidden shadow-lg cursor-pointer hover:opacity-90 transition"
+              onClick={() =>
+                router.push(
+                  selectedCategory === "industries"
+                    ? "/industries"
+                    : "/product-families"
+                )
+              }
+            >
+              <h4 className="font-medium text-sm md:text-2xl">View All</h4>
+            </div>
+          )}
         </div>
 
         <button
