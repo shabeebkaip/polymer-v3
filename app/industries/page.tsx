@@ -1,53 +1,39 @@
+"use client";
+import React, { useEffect, useState } from "react";
 import CategoryCard from "@/components/home/CategoryCard";
-import React from "react";
+import { getIndustryList } from "@/apiServices/shared/apiServices";
+
+interface IndustryItem {
+  _id: string;
+  name: string;
+  bg: string;
+  image: string;
+}
 
 const Page: React.FC = () => {
-  const industries = [
-    {
-      id: "biotech",
-      label: "Bio Technology",
-      image: "/assets/industry (1).png",
-    },
-    {
-      id: "pharma",
-      label: "Pharma & Life Sciences",
-      image: "/assets/industry (2).png",
-    },
-    {
-      id: "chemical",
-      label: "Chemical Manufacturing",
-      image: "/assets/industry (3).png",
-    },
-    {
-      id: "packaging",
-      label: "Packaging",
-      image: "/assets/industry (1).png",
-    },
-    {
-      id: "automotive",
-      label: "Automotive",
-      image: "/assets/industry (2).png",
-    },
-    {
-      id: "medical",
-      label: "Medical & Healthcare",
-      image: "/assets/industry (3).png",
-    },
-    {
-      id: "textile",
-      label: "Textile & Apparel",
-      image: "/assets/industry (1).png",
-    },
-  ];
+  const [industries, setIndustries] = useState<IndustryItem[]>([]);
+
+  useEffect(() => {
+    getIndustryList().then((response) => {
+      const data = response?.data?.map((item: any) => ({
+        _id: item._id,
+        name: item.name,
+        image: item.bg, // Normalizing bg to image
+        bg: item.bg,
+      }));
+      setIndustries(data);
+    });
+  }, []);
+
   return (
-    <div className="container mx-auto px-4 my-10 ">
+    <div className="container mx-auto px-4 my-10">
       <h1 className="text-4xl text-[var(--dark-main)]">Industries</h1>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-10">
-        {industries.map((industry, index) => (
+        {industries.map((industry) => (
           <CategoryCard
-            label={industry?.label}
-            image={industry?.image}
-            key={index}
+            key={industry._id}
+            name={industry.name}
+            image={industry.image}
           />
         ))}
       </div>
