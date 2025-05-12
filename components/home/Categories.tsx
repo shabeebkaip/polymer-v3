@@ -9,7 +9,7 @@ import useIsMobile from "@/lib/useIsMobile";
 import {
   getIndustryList,
   getProductFamilies,
-} from "@/apiServices/shared/apiServices";
+} from "@/apiServices/shared";
 
 // Types
 interface CategoryData {

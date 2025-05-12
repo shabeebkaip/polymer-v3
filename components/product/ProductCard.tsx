@@ -1,9 +1,9 @@
 import Image from "next/image";
 import React from "react";
 
+// Define a proper type for product props
 interface Product {
-  image: string;
-  logo: string;
+  [key: string]: any;
 }
 
 interface ProductCardProps {
@@ -11,46 +11,49 @@ interface ProductCardProps {
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+  console.log("ProductCard", product?.createdBy?.company_logo);
   return (
     <div className="rounded-xl p-2 shadow-lg hover:shadow-xl transition-shadow duration-300 h-full flex flex-col justify-between">
       <div className="flex flex-col gap-4">
+        {/* Product image */}
         <img
-          src={product.image}
+          src={product?.productImages?.[0]}
+          alt="Product"
           className="w-full h-32 object-cover rounded-md"
         />
-        <div className="flex items-center gap-4 ">
-          <Image
-            src={product.logo}
-            alt="Seller Icon"
-            width={20}
-            height={20}
-            className="w-20 h-20"
+
+        {/* Seller Info */}
+        <div className="flex items-center gap-4">
+          <img
+            src={product?.createdBy?.company_logo}
+            className="w-20 h-20 object-contain"
           />
           <div className="flex flex-col justify-center">
-            <h4 className="font-normal text-lg">
-              Pure Health Ingredients (shanghi) co,Itd
-            </h4>
-            <p>Shanghai, China </p>
+            <h4 className="font-normal text-lg">{product?.productName}</h4>
+            <p className="text-sm text-gray-600">{product?.location}</p>
           </div>
         </div>
+
         <hr className="h-px bg-gray-200 border-0" />
-        <div className="flex flex-col gap-2">
-          <p className="text-[var(--text-gray-tertiary)] font-normal">
+
+        {/* Product Info */}
+        <div className="flex flex-col gap-2 text-sm">
+          <p className="text-[var(--text-gray-tertiary)]">
             <span className="text-[var(--dark-main)]">Chemical Name:</span>{" "}
-            Polyethlene Glycol
+            {product.chemicalName}
           </p>
-          <p className="text-[var(--text-gray-tertiary)] font-normal">
-            <span className="text-[var(--dark-main)]">Polymer Type:</span> Water
-            Soluble Polymer
+          <p className="text-[var(--text-gray-tertiary)]">
+            <span className="text-[var(--dark-main)]">Polymer Type:</span>{" "}
+            {product.polymerType?.name}
           </p>
-          <p className="text-[var(--text-gray-tertiary)] font-normal">
-            <span className="text-[var(--dark-main)]">Industry:</span> Cosmetic
-            & Personal Care
-          </p>
+          {/* <p className="text-[var(--text-gray-tertiary)]">
+            <span className="text-[var(--dark-main)]">Industry:</span>{" "}
+            {product.industry}
+          </p> */}
         </div>
       </div>
 
-      {/* Buttons Section - always pinned at bottom */}
+      {/* CTA Buttons */}
       <div className="grid grid-cols-2 gap-2 mt-4">
         <button
           type="button"

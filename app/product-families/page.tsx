@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import CategoryCard from "@/components/home/CategoryCard";
-import { getProductFamilies } from "@/apiServices/shared/apiServices";
+import { getProductFamilies } from "@/apiServices/shared";
 
 interface ProductFamily {
   _id: string;

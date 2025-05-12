@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import CategoryCard from "@/components/home/CategoryCard";
-import { getIndustryList } from "@/apiServices/shared/apiServices";
+import { getIndustryList } from "@/apiServices/shared";
 
 interface IndustryItem {
   _id: string;
