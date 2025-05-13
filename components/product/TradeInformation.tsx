@@ -7,24 +7,21 @@ interface NamedItem {
 }
 
 interface Product {
-  productName: string;
-  chemicalName?: string;
-  tradeName?: string;
-  description?: string;
-  chemicalFamily?: NamedItem;
-  polymerType?: NamedItem;
-  industry?: NamedItem[];
-  grade?: NamedItem[];
-  manufacturingMethod?: string;
-  physicalForm?: NamedItem;
-  countryOfOrigin?: string;
-  color?: string;
-  density?: string | number;
-  mfi?: string | number;
-  tensileStrength?: string | number;
-  elongationAtBreak?: string | number;
-  shoreHardness?: string | number;
-  waterAbsorption?: string | number;
+  minimum_order_quantity?: number;
+  uom?: string;
+  stock?: number;
+  price?: string | number;
+  priceTerms?: string;
+  incoterms?: NamedItem[];
+  leadTime?: string | Date;
+  packagingType?: NamedItem[];
+  packagingWeight?: string;
+  storageConditions?: string;
+  shelfLife?: string;
+  recyclable?: boolean;
+  bioDegradable?: boolean;
+  fdaApproved?: boolean;
+  medicalGrade?: boolean;
   [key: string]: any;
 }
 
