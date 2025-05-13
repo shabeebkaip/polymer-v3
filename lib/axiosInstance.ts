@@ -1,5 +1,6 @@
-// src/instance/axios.ts
 import axios from "axios";
+import Cookies from "js-cookie";
+
 const BASE_URL = "https://polymer-backend.code-ox.com/api/";
 
 const axiosInstance = axios.create({
@@ -7,15 +8,14 @@ const axiosInstance = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
-  timeout: 10000, // 10 seconds timeout
+  timeout: 10000,
 });
 
-// Optional: Add request interceptor for auth tokens
+// ✅ Request interceptor to add token from cookies
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token =
-      typeof window !== "undefined" ? localStorage.getItem("token") : null;
-    if (token) {
+    const token = Cookies.get("token"); // 🔐 read from cookies
+    if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
