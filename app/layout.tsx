@@ -3,6 +3,7 @@ import Header from "@/components/shared/Header";
 import "./globals.css";
 import { Kanit } from "next/font/google";
 import Footer from "@/components/shared/Footer";
+import { Toaster } from "sonner";
 
 // ↓ Add this ↓
 const kanit = Kanit({
@@ -26,6 +27,7 @@ export default function RootLayout({
     >
       <body className="antialiased">
         <Header />
+        <Toaster richColors position="top-right" />
         {children}
         <Footer />
       </body>

@@ -21,7 +21,6 @@ export default function Home() {
       <Hero />
       <Categories />
       <ProductsByBrand />
-      <FeaturedSuppliers />
       <BeneFits />
     </div>
   );

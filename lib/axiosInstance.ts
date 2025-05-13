@@ -1,7 +1,6 @@
 // src/instance/axios.ts
 import axios from "axios";
-
-export const BASE_URL = "https://polymer-backend.code-ox.com/api/";
+const BASE_URL = "https://polymer-backend.code-ox.com/api/";
 
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
