@@ -1,38 +1,18 @@
-"use client";
-
 import { getProductDetails } from "@/apiServices/products";
-import CompanyDetails from "@/components/product/CompanyDetails";
-import ImageContainers from "@/components/product/ImageContainers";
-import React, { use, useEffect, useState } from "react";
+import ProductDetailClient from "@/components/product/ProductClient"; // adjust import path if needed
 
-interface ProductDetailProps {
-  params: Promise<{ id: string }>;
+interface PageProps {
+  params: {
+    id: string;
+  };
 }
 
-const ProductDetail: React.FC<ProductDetailProps> = ({ params }) => {
-  const { id } = use(params);
-  const [product, setProduct] = useState({});
+const ProductPage = async ({ params }: PageProps) => {
+  const { id } = await params;
+  const response = await getProductDetails(id);
+  const product = response.data;
 
-  useEffect(() => {
-    getProductDetails(id).then((response) => {
-      setProduct(response.data);
-    });
-  }, [id]);
-  console.log(product, "product");
-
-  return (
-    <section className="mt-10 container mx-auto px-4 pb-12">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-10">
-        <div className="flex flex-col gap-4">
-          <h1 className="text-4xl font-normal text-[var(--dark-main)]">
-            {product?.productName}
-          </h1>
-          <ImageContainers productImages={product?.productImages} />
-        </div>
-        <CompanyDetails companyDetails={product?.createdBy} />
-      </div>
-    </section>
-  );
+  return <ProductDetailClient product={product} />;
 };
 
-export default ProductDetail;
+export default ProductPage;

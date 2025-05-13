@@ -71,7 +71,7 @@ const ImageContainers: React.FC<ImageContainersProps> = ({ productImages }) => {
             <img
               src={image.fileUrl}
               alt={`Product Image ${index + 1}`}
-              className="w-full h-50 object-contain rounded"
+              className="w-full h-60 object-contain rounded"
             />
           </div>
         ))}
