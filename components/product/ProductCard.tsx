@@ -17,7 +17,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       <div className="flex flex-col gap-4">
         {/* Product image */}
         <img
-          src={product?.productImages?.[0]}
+          src={product?.productImages?.[0]?.fileUrl}
           alt="Product"
           className="w-full h-32 object-cover rounded-md"
         />
@@ -30,7 +30,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           />
           <div className="flex flex-col justify-center">
             <h4 className="font-normal text-lg">{product?.productName}</h4>
-            <p className="text-sm text-gray-600">{product?.location}</p>
+            <p className="text-sm text-gray-600">{product?.countryOfOrigin}</p>
           </div>
         </div>
 

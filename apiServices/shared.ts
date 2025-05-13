@@ -19,3 +19,13 @@ export const getProductFamilies = async () => {
     throw error;
   }
 };
+
+export const getSellers = async () => {
+  try {
+    const response = await axiosInstance.get("user/seller/list");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching sellers:", error);
+    throw error;
+  }
+};

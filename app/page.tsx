@@ -20,6 +20,7 @@ export default function Home() {
     <div className="">
       <Hero />
       <Categories />
+      <ProductsByBrand />
       <FeaturedSuppliers />
       <BeneFits />
     </div>
