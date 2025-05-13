@@ -43,3 +43,13 @@ export const getProductFilters = async () => {
     throw error;
   }
 };
+
+export const getProductDetails = async (productId: string) => {
+  try {
+    const response = await axiosInstance.get(`product/detail/${productId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching product details:", error);
+    throw error;
+  }
+};

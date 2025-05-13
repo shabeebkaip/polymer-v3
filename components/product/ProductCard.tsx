@@ -58,7 +58,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       <div className="grid grid-cols-2 gap-2 mt-4">
         <button
           type="button"
-          className="border border-[var(--green-main)] text-[var(--green-main)] px-4 py-3 rounded-lg w-full text-xs hover:bg-green-50 transition"
+          className=" px-4 py-2 bg-gradient-to-r from-[var(--green-gradient-from)] via-[var(--green-gradient-via)] to-[var(--green-gradient-to)] text-white rounded-lg hover:opacity-90 transition cursor-pointer text-xs"
         >
           Request For Quote
         </button>
@@ -71,9 +71,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         </button>
       </div>
       <button
-        className="mt-4 px-4 py-2 bg-gradient-to-r from-[var(--green-gradient-from)] via-[var(--green-gradient-via)] to-[var(--green-gradient-to)] text-white rounded-lg hover:opacity-90 transition cursor-pointer"
+        className="mt-4 border border-[var(--green-main)] text-[var(--green-main)] px-4 py-3 rounded-lg w-full  hover:bg-green-50 transition"
         onClick={() => {
-          router.push(`/product/${product._id}`);
+          router.push(`/products/${product._id}`);
         }}
       >
         View Product
