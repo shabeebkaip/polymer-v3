@@ -3,8 +3,8 @@ import React from "react";
 
 const stats = [
   { value: "1000+", label: "Products" },
-  { value: "100+", label: "Trusted Brands" },
-  { value: "300+", label: "Verified Sellers" },
+  // { value: "100+", label: "Trusted Brands" },
+  { value: "300+", label: "Verified Suppliers" },
   { value: "24/7", label: "Expert Support" },
 ];
 
@@ -75,7 +75,7 @@ const Hero: React.FC = () => {
             />
           </div>
         </div>
-        <div className="mt-10 grid grid-cols-2  lg:grid-cols-4  justify-center gap-10 md:gap-20 w-full">
+        <div className="mt-10 grid grid-cols-2  lg:grid-cols-3  justify-center gap-10 md:gap-20 w-full">
           {stats.map((stat, index) => (
             <div
               key={index}

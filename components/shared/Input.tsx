@@ -10,6 +10,8 @@ interface InputProps {
   required?: boolean;
   icon?: React.ReactNode;
   name?: string;
+  autoComplete?: string;
+
 }
 
 const Input: React.FC<InputProps> = ({
@@ -22,12 +24,13 @@ const Input: React.FC<InputProps> = ({
   required = false,
   icon,
   name,
+  autoComplete = "off",
 }) => {
   return (
     <div className="relative">
       <input
         id={id}
-        autoComplete="off"
+        autoComplete={autoComplete}
         autoCorrect="off"
         spellCheck="false"
         autoCapitalize="none"

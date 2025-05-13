@@ -4,7 +4,7 @@
 /* globals.css */
 /* 1) Tailwind import */
 @import "tailwindcss";
-@import "tw-animate-css";
+/* @import "tw-animate-css"; */
 
 @custom-variant dark (&:is(.dark *));
 

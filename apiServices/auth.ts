@@ -28,3 +28,15 @@ export const login = async (email: string, password: string) => {
     };
   }
 };
+
+export const register = async (data: any) => {
+  try {
+    const response = await axiosInstance.post("auth/user/register", data);
+    return response.data;
+  } catch (error: any) {
+    return {
+      status: false,
+      message: error.response?.data?.message || "An unexpected error occurred.",
+    };
+  }
+};
