@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState, ChangeEvent } from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Cookies from "js-cookie";
 import { toast } from "sonner";
 import { Eye, EyeOff } from "lucide-react";
@@ -39,10 +39,15 @@ interface RegisterData {
   address: string;
   location: string;
   company_logo: string;
+  user_type?: string;
+  vat_number?: string;
 }
 
 const Register: React.FC = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const userType = searchParams.get("role");
+  console.log("userType", userType);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [industryList, setIndustryList] = useState<Industry[]>([]);
@@ -61,8 +66,9 @@ const Register: React.FC = () => {
     industry: "",
     address: "",
     location: "",
-    company_logo:
-      "https://media.knowde.com/image/upload/f_auto,q_auto,dpr_auto,c_limit,w_112/c_scale,w_112/v1729086403/production/Company/50022/logo/image",
+    company_logo: "https://media.knowde.com/image/upload/f_auto,q_auto,dpr_auto,c_limit,w_112/c_scale,w_112/v1729086403/production/Company/50022/logo/image",
+    vat_number : "123445566777",
+    user_type: userType || "buyer"
   });
 
   const countriesList: Country[] = countryCodesList.all().map((country) => ({
