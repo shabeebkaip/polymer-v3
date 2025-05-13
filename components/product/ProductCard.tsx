@@ -1,5 +1,5 @@
-import Image from "next/image";
 import React from "react";
+import { useRouter } from "next/navigation";
 
 // Define a proper type for product props
 interface Product {
@@ -11,6 +11,7 @@ interface ProductCardProps {
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+  const router = useRouter();
   console.log("ProductCard", product?.createdBy?.company_logo);
   return (
     <div className="rounded-xl p-2 shadow-lg hover:shadow-xl transition-shadow duration-300 h-full flex flex-col justify-between">
@@ -57,14 +58,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       <div className="grid grid-cols-2 gap-2 mt-4">
         <button
           type="button"
-          className="bg-gradient-to-r
-            from-[var(--green-gradient-from)]
-            via-[var(--green-gradient-via)]
-            to-[var(--green-gradient-to)]
-            text-white px-4 py-3 rounded-lg w-full text-xs"
+          className="border border-[var(--green-main)] text-[var(--green-main)] px-4 py-3 rounded-lg w-full text-xs hover:bg-green-50 transition"
         >
           Request For Quote
         </button>
+
         <button
           type="button"
           className="transition px-4 py-3 rounded-lg w-full text-xs cursor-pointer bg-[var(--button-gray)] text-white"
@@ -72,6 +70,14 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           Request For Sample
         </button>
       </div>
+      <button
+        className="mt-4 px-4 py-2 bg-gradient-to-r from-[var(--green-gradient-from)] via-[var(--green-gradient-via)] to-[var(--green-gradient-to)] text-white rounded-lg hover:opacity-90 transition cursor-pointer"
+        onClick={() => {
+          router.push(`/product/${product._id}`);
+        }}
+      >
+        View Product
+      </button>
     </div>
   );
 };
