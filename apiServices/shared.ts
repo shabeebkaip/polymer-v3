@@ -29,3 +29,33 @@ export const getSellers = async () => {
     throw error;
   }
 };
+
+export const getGrades = async () => {
+  try {
+    const response = await axiosInstance.get("grade/list");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching grades:", error);
+    throw error;
+  }
+};
+
+export const getIncoterms = async () => {
+  try {
+    const response = await axiosInstance.get("incoterm/list");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching incoterms:", error);
+    throw error;
+  }
+};
+
+export const getPackagingTypes = async () => {
+  try {
+    const response = await axiosInstance.get("packaging-type/list");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching packaging types:", error);
+    throw error;
+  }
+};

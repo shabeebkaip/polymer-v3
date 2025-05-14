@@ -1,6 +1,7 @@
 import dynamic from "next/dynamic";
 import Hero from "@/components/home/Hero";
 import ProductsByBrand from "@/components/home/ProductsByBrand";
+import QuoteRequestModal from "@/components/shared/QuoteRequestModal";
 
 const Categories = dynamic(() => import("@/components/home/Categories"), {
   loading: () => <p>Loading categories...</p>,
@@ -22,6 +23,7 @@ export default function Home() {
       <Categories />
       <ProductsByBrand />
       <BeneFits />
+      <QuoteRequestModal />
     </div>
   );
 }
