@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
@@ -56,7 +56,7 @@ const Header: React.FC = () => {
           {token && userInfo && (
             <button
               type="button"
-              onClick={() => router.push("/auth/profile")}
+              onClick={() => router.push("/user/profile")}
               className="flex items-center px-4 py-2 border border-[var(--green-main)] text-[var(--green-main)] rounded-lg hover:bg-green-50 transition cursor-pointer"
             >
               <Image
