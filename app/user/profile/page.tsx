@@ -12,15 +12,19 @@ const Profile = () => {
   return (
     <div className="container mx-auto px-4">
       <div className="grid grid-cols-2 gap-4">
-        <div className="col-span-2">
-          <div className="flex items-center gap-4">
-            <Avatar className="w-16 h-16">
-              <AvatarImage src={user?.company_logo} alt="Company Logo" />
-              <AvatarFallback>{user?.company?.charAt(0) || "C"}</AvatarFallback>
-            </Avatar>
-            <p className="text-lg text-gray-700">{user?.company}</p>
+        {user?.user_type === "seller" ? (
+          <div className="col-span-2">
+            <div className="flex items-center gap-4">
+              <Avatar className="w-16 h-16">
+                <AvatarImage src={user?.company_logo} alt="Company Logo" />
+                <AvatarFallback>
+                  {user?.company?.charAt(0) || "C"}
+                </AvatarFallback>
+              </Avatar>
+              <p className="text-lg text-gray-700">{user?.company}</p>
+            </div>
           </div>
-        </div>
+        ) : null}
         <div>
           <Label htmlFor="firstName" className="block mb-1">
             First Name
