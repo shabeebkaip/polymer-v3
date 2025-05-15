@@ -29,3 +29,23 @@ export const getUserInfo = async () => {
     throw error;
   }
 };
+
+export const getUserQuoteRequests = async () => {
+  try {
+    const response = await axiosInstance.get("/quote-request/history");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching user quote requests:", error);
+    throw error;
+  }
+};
+
+export const getUserSampleRequests = async () => {
+  try {
+    const response = await axiosInstance.get("/sample-request/history");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching user sample requests:", error);
+    throw error;
+  }
+};
