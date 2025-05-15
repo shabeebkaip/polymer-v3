@@ -105,7 +105,7 @@ const ProductsByBrand: React.FC = () => {
             className="border border-[var(--green-light)] px-10 md:px-20 py-4 rounded-full text-[var(--green-light)] text-sm md:text-lg hover:bg-green-50 transition focus:outline-none flex items-center gap-2"
             onClick={() => router.push("/products")}
           >
-            View All
+            Explore All Products
           </button>
         </div>
       </div>

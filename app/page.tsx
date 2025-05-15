@@ -23,7 +23,6 @@ export default function Home() {
       <Categories />
       <ProductsByBrand />
       <BeneFits />
-      <QuoteRequestModal />
     </div>
   );
 }
