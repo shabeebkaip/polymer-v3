@@ -1,6 +1,7 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import QuoteRequestModal from "../shared/QuoteRequestModal";
+import SampleRequestModal from "../shared/SampleRequestModal";
 // Define a proper type for product props
 interface Product {
   [key: string]: any;
@@ -62,12 +63,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           uom={product?.uom}
         />
 
-        <button
-          type="button"
-          className="transition px-4 py-3 rounded-lg w-full text-xs cursor-pointer bg-[var(--button-gray)] text-white"
-        >
-          Request For Sample
-        </button>
+        <SampleRequestModal
+          className="border border-[var(--green-main)] text-[var(--green-main)] px-4 py-2 rounded-lg hover:bg-green-50 transition cursor-pointer text-xs"
+          productId={product?._id}
+          uom={product?.uom}
+        />
       </div>
       <button
         className="mt-4 border border-[var(--green-main)] text-[var(--green-main)] px-4 py-3 rounded-lg w-full  hover:bg-green-50 transition"
