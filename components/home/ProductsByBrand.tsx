@@ -82,6 +82,7 @@ const ProductsByBrand: React.FC = () => {
           ))}
           <button
             type="button"
+            onClick={() => router.push("/suppliers")}
             className="flex items-center gap-4 px-4 py-2 rounded-full border-2 border-[var(--green-main)] text-xs md:text-lg text-[var(--green-main)] hover:bg-green-50 transition focus:outline-none"
           >
             See More{" "}
