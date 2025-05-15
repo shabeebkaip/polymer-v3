@@ -9,16 +9,10 @@ import Cookies from "js-cookie";
 const Header: React.FC = () => {
   const pathname = usePathname();
   const router = useRouter();
-
-  const [token, setToken] = useState<string | null>(null);
-  const [userInfo, setUserInfo] = useState<any>(null);
-
-  useEffect(() => {
-    const token = Cookies.get("token");
-    const userInfo = Cookies.get("userInfo");
-    setToken(token || null);
-    setUserInfo(userInfo ? JSON.parse(userInfo) : null);
-  }, []);
+  const token = Cookies.get("token");
+  const userInfo = Cookies.get("userInfo")
+    ? JSON.parse(Cookies.get("userInfo")!)
+    : null;
 
   if (pathname.includes("auth")) {
     return null; // Don't render on auth pages
@@ -39,9 +33,24 @@ const Header: React.FC = () => {
           </Link>
 
           <nav className="hidden lg:flex space-x-8">
-            <p onClick={() => router.push("/")} className="hover:text-[var(--green-main)] cursor-pointer">Home</p>
-            <p onClick={() => router.push("/products")} className="hover:text-[var(--green-main)] cursor-pointer">Products</p>
-            <p onClick={() => router.push("/suppliers")} className="hover:text-[var(--green-main)] cursor-pointer">Suppliers</p>
+            <p
+              onClick={() => router.push("/")}
+              className="hover:text-[var(--green-main)] cursor-pointer"
+            >
+              Home
+            </p>
+            <p
+              onClick={() => router.push("/products")}
+              className="hover:text-[var(--green-main)] cursor-pointer"
+            >
+              Products
+            </p>
+            <p
+              onClick={() => router.push("/suppliers")}
+              className="hover:text-[var(--green-main)] cursor-pointer"
+            >
+              Suppliers
+            </p>
           </nav>
 
           {token && userInfo && (
@@ -50,7 +59,13 @@ const Header: React.FC = () => {
               onClick={() => router.push("/auth/profile")}
               className="flex items-center px-4 py-2 border border-[var(--green-main)] text-[var(--green-main)] rounded-lg hover:bg-green-50 transition cursor-pointer"
             >
-              <Image src="/icons/user.svg" alt="User" width={20} height={20} className="mr-2" />
+              <Image
+                src="/icons/user.svg"
+                alt="User"
+                width={20}
+                height={20}
+                className="mr-2"
+              />
               Hello {userInfo?.firstName} {userInfo?.lastName}
             </button>
           )}
@@ -61,7 +76,13 @@ const Header: React.FC = () => {
                 onClick={() => router.push("/auth/login")}
                 className="flex items-center px-4 py-2 border border-[var(--green-main)] text-[var(--green-main)] rounded-lg hover:bg-green-50 transition"
               >
-                <Image src="/icons/user.svg" alt="User" width={20} height={20} className="mr-2" />
+                <Image
+                  src="/icons/user.svg"
+                  alt="User"
+                  width={20}
+                  height={20}
+                  className="mr-2"
+                />
                 Login
               </button>
               <Link
