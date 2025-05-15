@@ -1,7 +1,6 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import QuoteRequestModal from "../shared/QuoteRequestModal";
-import c
 // Define a proper type for product props
 interface Product {
   [key: string]: any;
@@ -57,7 +56,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
       {/* CTA Buttons */}
       <div className="grid grid-cols-2 gap-2 mt-4">
-        <QuoteRequestModal className=" px-4 py-2 bg-gradient-to-r from-[var(--green-gradient-from)] via-[var(--green-gradient-via)] to-[var(--green-gradient-to)] text-white rounded-lg hover:opacity-90 transition cursor-pointer text-xs" productId={product?._id} />
+        <QuoteRequestModal
+          className=" px-4 py-2 bg-gradient-to-r from-[var(--green-gradient-from)] via-[var(--green-gradient-via)] to-[var(--green-gradient-to)] text-white rounded-lg hover:opacity-90 transition cursor-pointer text-xs"
+          productId={product?._id}
+          uom={product?.uom}
+        />
 
         <button
           type="button"
