@@ -11,10 +11,16 @@ interface VisitShopButtonProps {
 const VisitShopButton: React.FC<VisitShopButtonProps> = ({ supplierId }) => {
   const router = useRouter();
 
+  const handleClick = () => {
+    if (supplierId) {
+      router.push(`/products?supplier=${supplierId}`);
+    }
+  };
+
   return (
     <button
-      onClick={() => router.push(`/products?supplier=${supplierId}`)}
-      className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg bg-white shadow-sm hover:shadow-md transition duration-300 w-fit hover:opacity-90 hover:bg-gray-50"
+      onClick={handleClick}
+      className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg bg-white shadow-sm hover:shadow-md transition duration-300 w-fit hover:opacity-90 hover:bg-gray-50 mt-2 cursor-pointer"
     >
       <Image
         src="/icons/shop.png"
