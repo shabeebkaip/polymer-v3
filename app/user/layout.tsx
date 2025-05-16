@@ -8,12 +8,14 @@ interface UserLayoutProps {
 const UserLayout: React.FC<UserLayoutProps> = ({ children }) => {
   return (
     <div className="container mx-auto px-4 min-h-screen">
-      <div className="grid grid-cols-12 gap-4 mt-10 ">
-        <div className="col-span-3  ">
+      <div className="grid grid-cols-12 gap-4 mt-10">
+        {/* Sidebar: full width on mobile, 3 columns on md+ */}
+        <div className="col-span-12 md:col-span-3">
           <Sidebar />
         </div>
-        {/* You can add a header or sidebar here if needed */}
-        <main className="col-span-9">{children}</main>
+
+        {/* Main Content: full width on mobile, 9 columns on md+ */}
+        <main className="col-span-12 md:col-span-9">{children}</main>
       </div>
     </div>
   );

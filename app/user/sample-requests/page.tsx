@@ -9,29 +9,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { set } from "date-fns";
+import { format } from "date-fns";
 import { useEffect, useState } from "react";
-
-const dummyData = [
-  {
-    id: 1,
-    name: "Alice Johnson",
-    company: "Innovatech Ltd.",
-    email: "alice@innovatech.com",
-  },
-  {
-    id: 2,
-    name: "Bob Smith",
-    company: "TechCorp Inc.",
-    email: "bob@techcorp.com",
-  },
-  {
-    id: 3,
-    name: "Charlie Lee",
-    company: "Alpha Systems",
-    email: "charlie@alpha.com",
-  },
-];
 
 const SampleRequest = () => {
   const [requests, setRequests] = useState<any[]>([]);
@@ -51,6 +30,7 @@ const SampleRequest = () => {
             <TableHead>Product</TableHead>
             <TableHead>Quantity</TableHead>
             <TableHead>Company</TableHead>
+            <TableHead>Date</TableHead>
             <TableHead>Status</TableHead>
           </TableRow>
         </TableHeader>
@@ -62,7 +42,13 @@ const SampleRequest = () => {
               <TableCell>
                 {item.quantity} {item?.uom}
               </TableCell>
-              <TableCell>{item.company || "--"}</TableCell>
+              <TableCell>{item.createdBy?.company || "--"}</TableCell>
+              <TableCell>
+                {item.createdAt
+                  ? format(new Date(item.createdAt), "MMM dd, yyyy")
+                  : "--"}
+              </TableCell>
+
               <TableCell className="capitalize">{item.status}</TableCell>
             </TableRow>
           ))}

@@ -74,7 +74,7 @@ const Header: React.FC = () => {
             <div className="hidden lg:flex items-center space-x-4">
               <button
                 onClick={() => router.push("/auth/login")}
-                className="flex items-center px-4 py-2 border border-[var(--green-main)] text-[var(--green-main)] rounded-lg hover:bg-green-50 transition"
+                className="flex items-center px-4 py-2 border border-[var(--green-main)] text-[var(--green-main)] rounded-lg hover:bg-green-50 transition cursor-pointer"
               >
                 <Image
                   src="/icons/user.svg"
@@ -85,12 +85,12 @@ const Header: React.FC = () => {
                 />
                 Login
               </button>
-              <Link
-                href="/signup"
-                className="px-4 py-2 bg-gradient-to-r from-[var(--green-gradient-from)] via-[var(--green-gradient-via)] to-[var(--green-gradient-to)] text-white rounded-lg hover:opacity-90"
+              <button
+                onClick={() => router.push("/auth/user-type")}
+                className="px-4 py-2 bg-gradient-to-r from-[var(--green-gradient-from)] via-[var(--green-gradient-via)] to-[var(--green-gradient-to)] text-white rounded-lg hover:opacity-90 cursor-pointer"
               >
                 Sign Up for Free
-              </Link>
+              </button>
             </div>
           )}
 

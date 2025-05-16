@@ -59,3 +59,33 @@ export const getPackagingTypes = async () => {
     throw error;
   }
 };
+
+export const getChemicalFamilies = async () => {
+  try {
+    const response = await axiosInstance.get("chemical-family/list");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching chemical families:", error);
+    throw error;
+  }
+};
+
+export const getPolymersType = async () => {
+  try {
+    const response = await axiosInstance.get("polymer-type/list");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching polymers type:", error);
+    throw error;
+  }
+};
+
+export const getPhysicalForms = async () => {
+  try {
+    const response = await axiosInstance.get("physical-form/list");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching physical forms:", error);
+    throw error;
+  }
+};
