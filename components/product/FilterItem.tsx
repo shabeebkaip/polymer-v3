@@ -16,7 +16,7 @@ interface FilterItemProps {
 }
 
 const FilterItem: React.FC<FilterItemProps> = ({ filter }) => {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
 
   return (
     <div className="border border-[#c4c4c4] rounded-2xl overflow-hidden">

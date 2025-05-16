@@ -1,6 +1,5 @@
 "use client";
 import { getProductList } from "@/apiServices/products";
-import ProductsList from "@/components/product/ProductsList";
 import { Button } from "@/components/ui/button";
 import UserProductCard from "@/components/user/UserProductCard";
 import { useUserInfo } from "@/lib/useUserInfo";

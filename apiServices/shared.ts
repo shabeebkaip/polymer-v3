@@ -89,3 +89,22 @@ export const getPhysicalForms = async () => {
     throw error;
   }
 };
+export const getPaymentTerms = async () => {
+  try {
+    const response = await axiosInstance.get("payment-terms/list");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching payment terms:", error);
+    throw error;
+  }
+};
+
+export const postFileUpload = async (data) => {
+  try {
+    const response = await axiosInstance.post(`/file/upload`, data);
+    return response;
+  } catch (error) {
+    console.error("Error uploading :", error);
+    throw error;
+  }
+};

@@ -3,8 +3,6 @@ import { useRouter } from "next/navigation";
 import QuoteRequestModal from "../shared/QuoteRequestModal";
 import SampleRequestModal from "../shared/SampleRequestModal";
 import { useUserInfo } from "@/lib/useUserInfo";
-import { Button } from "../ui/button";
-import { Delete, Pencil } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 // Define a proper type for product props
@@ -60,52 +58,25 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
       {/* CTA Buttons */}
       <div className="grid grid-cols-2 gap-2 mt-4">
-        {userType === "seller" && pathname?.includes("user/products") ? null : (
-          <QuoteRequestModal
-            className=" px-4 py-2 bg-gradient-to-r from-[var(--green-gradient-from)] via-[var(--green-gradient-via)] to-[var(--green-gradient-to)] text-white rounded-lg hover:opacity-90 transition cursor-pointer text-xs"
-            productId={product?._id}
-            uom={product?.uom}
-          />
-        )}
-        {userType === "seller" && pathname?.includes("user/products") ? null : (
-          <SampleRequestModal
-            className="border border-[var(--green-main)] text-[var(--green-main)] px-4 py-2 rounded-lg hover:bg-green-50 transition cursor-pointer text-xs"
-            productId={product?._id}
-            uom={product?.uom}
-          />
-        )}
-        {userType === "seller" && pathname?.includes("user/products") ? (
-          <Button
-            variant={"secondary"}
-            color="green"
-            className="cursor-pointer"
-            onClick={() => {
-              router.push(`/user/products/${product._id}`);
-            }}
-          >
-            <Pencil /> Edit
-          </Button>
-        ) : null}
-        {/* {userType === "seller" && pathname?.includes("user/products") ? (
-          <Button
-            variant={"destructive"}
-            className="cursor-pointer"
-          
-          >
-            <Delete /> Delete
-          </Button>
-        ) : null} */}
+        <QuoteRequestModal
+          className=" px-4 py-2 bg-gradient-to-r from-[var(--green-gradient-from)] via-[var(--green-gradient-via)] to-[var(--green-gradient-to)] text-white rounded-lg hover:opacity-90 transition cursor-pointer text-xs"
+          productId={product?._id}
+          uom={product?.uom}
+        />
+        <SampleRequestModal
+          className="border border-[var(--green-main)] text-[var(--green-main)] px-4 py-2 rounded-lg hover:bg-green-50 transition cursor-pointer text-xs"
+          productId={product?._id}
+          uom={product?.uom}
+        />
       </div>
-      {userType === "seller" && pathname?.includes("user/products") ? null : (
-        <button
-          className="mt-4 border border-[var(--green-main)] text-[var(--green-main)] px-4 py-3 rounded-lg w-full  hover:bg-green-50 transition"
-          onClick={() => {
-            router.push(`/products/${product._id}`);
-          }}
-        >
-          View Product
-        </button>
-      )}
+      <button
+        className="mt-4 border border-[var(--green-main)] text-[var(--green-main)] px-4 py-3 rounded-lg w-full  hover:bg-green-50 transition"
+        onClick={() => {
+          router.push(`/products/${product._id}`);
+        }}
+      >
+        View Product
+      </button>
     </div>
   );
 };
