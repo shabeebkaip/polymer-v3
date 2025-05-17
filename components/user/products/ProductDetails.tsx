@@ -9,6 +9,8 @@ import {
 } from "../../ui/select";
 import { Input } from "../../ui/input";
 import { useDropdowns } from "@/lib/useDropdowns";
+import { ProductFormData } from "@/types/product";
+import MultiSelect from "@/components/shared/MultiSelect";
 
 interface DropdownItem {
   _id: string;
@@ -16,18 +18,8 @@ interface DropdownItem {
 }
 
 interface ProductDetailsProps {
-  data: {
-    manufacturingMethod?: string;
-    countryOfOrigin?: string;
-    color?: string;
-    chemicalFamily?: string;
-    productFamily?: string;
-    polymerType?: string;
-    industry?: string;
-    physicalForm?: string;
-    [key: string]: any;
-  };
-  onFieldChange: (field: string, value: string) => void;
+  data: ProductFormData;
+  onFieldChange: (field: keyof ProductFormData, value: any) => void;
 }
 
 const ProductDetails: React.FC<ProductDetailsProps> = ({
@@ -53,7 +45,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
           Chemical Family
         </Label>
         <Select
-          value={data?.chemicalFamily || ""}
+          value={data.chemicalFamily || ""}
           onValueChange={(val) => onFieldChange("chemicalFamily", val)}
         >
           <SelectTrigger className="px-4 w-full">
@@ -70,24 +62,13 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
       </div>
 
       <div>
-        <Label htmlFor="productFamily" className="block mb-1">
-          Product Family
-        </Label>
-        <Select
-          value={data?.productFamily || ""}
-          onValueChange={(val) => onFieldChange("productFamily", val)}
-        >
-          <SelectTrigger className="px-4 w-full">
-            <SelectValue placeholder="Select Product Family" />
-          </SelectTrigger>
-          <SelectContent>
-            {productFamilies.map((family: DropdownItem) => (
-              <SelectItem key={family._id} value={family._id}>
-                {family.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <MultiSelect
+          label="Product Families"
+          placeholder="Select Product Family"
+          options={productFamilies}
+          selected={data.productFamily || []}
+          onChange={(selected) => onFieldChange("productFamily", selected)}
+        />
       </div>
 
       <div>
@@ -95,7 +76,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
           Polymer Type
         </Label>
         <Select
-          value={data?.polymerType || ""}
+          value={data.polymerType || ""}
           onValueChange={(val) => onFieldChange("polymerType", val)}
         >
           <SelectTrigger className="px-4 w-full">
@@ -112,24 +93,13 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
       </div>
 
       <div>
-        <Label htmlFor="industry" className="block mb-1">
-          Industry
-        </Label>
-        <Select
-          value={data?.industry || ""}
-          onValueChange={(val) => onFieldChange("industry", val)}
-        >
-          <SelectTrigger className="px-4 w-full h-full">
-            <SelectValue placeholder="Select Industry" />
-          </SelectTrigger>
-          <SelectContent>
-            {industry.map((ind: DropdownItem) => (
-              <SelectItem key={ind._id} value={ind._id}>
-                {ind.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <MultiSelect
+          label="Industries"
+          placeholder="Select Industry"
+          options={industry}
+          selected={data.industry || []}
+          onChange={(selected) => onFieldChange("industry", selected)}
+        />
       </div>
 
       <div>
@@ -139,7 +109,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
         <Input
           className="text-lg px-4"
           placeholder="Manufacturing Method"
-          value={data?.manufacturingMethod || ""}
+          value={data.manufacturingMethod || ""}
           onChange={(e) => onFieldChange("manufacturingMethod", e.target.value)}
         />
       </div>
@@ -149,7 +119,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
           Physical Form
         </Label>
         <Select
-          value={data?.physicalForm || ""}
+          value={data.physicalForm || ""}
           onValueChange={(val) => onFieldChange("physicalForm", val)}
         >
           <SelectTrigger className="px-4 w-full">
@@ -172,7 +142,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
         <Input
           className="text-lg px-4"
           placeholder="Country of Origin"
-          value={data?.countryOfOrigin || ""}
+          value={data.countryOfOrigin || ""}
           onChange={(e) => onFieldChange("countryOfOrigin", e.target.value)}
         />
       </div>
@@ -184,7 +154,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
         <Input
           className="text-lg px-4"
           placeholder="Color"
-          value={data?.color || ""}
+          value={data.color || ""}
           onChange={(e) => onFieldChange("color", e.target.value)}
         />
       </div>

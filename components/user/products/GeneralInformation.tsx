@@ -2,16 +2,11 @@ import React from "react";
 import { Label } from "../../ui/label";
 import { Input } from "../../ui/input";
 import { Textarea } from "../../ui/textarea";
+import { ProductFormData } from "@/types/product";
 
 interface GeneralInformationProps {
-  data: {
-    productName?: string;
-    chemicalName?: string;
-    tradeName?: string;
-    description?: string;
-    [key: string]: any; // allows flexibility
-  };
-  onFieldChange: (field: string, value: string) => void;
+  data: ProductFormData;
+  onFieldChange: (field: keyof ProductFormData, value: any) => void;
 }
 
 const GeneralInformation: React.FC<GeneralInformationProps> = ({
@@ -20,9 +15,10 @@ const GeneralInformation: React.FC<GeneralInformationProps> = ({
 }) => {
   return (
     <>
-      <div className="col-span-3 ">
+      <div className="col-span-3">
         <h4 className="text-xl">General Information</h4>
       </div>
+
       <div>
         <Label htmlFor="productName" className="block mb-1">
           Product Name
@@ -30,10 +26,11 @@ const GeneralInformation: React.FC<GeneralInformationProps> = ({
         <Input
           className="text-lg px-4"
           placeholder="Product Name"
-          value={data?.productName || ""}
+          value={data.productName || ""}
           onChange={(e) => onFieldChange("productName", e.target.value)}
         />
       </div>
+
       <div>
         <Label htmlFor="chemicalName" className="block mb-1">
           Chemical Name
@@ -41,10 +38,11 @@ const GeneralInformation: React.FC<GeneralInformationProps> = ({
         <Input
           className="text-lg px-4"
           placeholder="Chemical Name"
-          value={data?.chemicalName || ""}
+          value={data.chemicalName || ""}
           onChange={(e) => onFieldChange("chemicalName", e.target.value)}
         />
       </div>
+
       <div>
         <Label htmlFor="tradeName" className="block mb-1">
           Trade Name
@@ -52,10 +50,11 @@ const GeneralInformation: React.FC<GeneralInformationProps> = ({
         <Input
           className="text-lg px-4"
           placeholder="Trade Name"
-          value={data?.tradeName || ""}
+          value={data.tradeName || ""}
           onChange={(e) => onFieldChange("tradeName", e.target.value)}
         />
       </div>
+
       <div className="col-span-3">
         <Label htmlFor="description" className="block mb-1">
           Description
@@ -63,7 +62,7 @@ const GeneralInformation: React.FC<GeneralInformationProps> = ({
         <Textarea
           className="text-lg px-4"
           placeholder="Description"
-          value={data?.description || ""}
+          value={data.description || ""}
           onChange={(e) => onFieldChange("description", e.target.value)}
         />
       </div>

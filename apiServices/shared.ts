@@ -1,4 +1,10 @@
 import axiosInstance from "@/lib/axiosInstance";
+export interface UploadedFile {
+  id: string;
+  fileUrl: string;
+  type?: string;
+  name?: string;
+}
 
 export const getIndustryList = async () => {
   try {
@@ -99,12 +105,31 @@ export const getPaymentTerms = async () => {
   }
 };
 
-export const postFileUpload = async (data) => {
+export const postFileUpload = async (data: FormData): Promise<UploadedFile> => {
   try {
-    const response = await axiosInstance.post(`/file/upload`, data);
-    return response;
+    const response = await axiosInstance.post<{ data: UploadedFile }>(
+      "/file/upload",
+      data,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    return response.data.data;
   } catch (error) {
-    console.error("Error uploading :", error);
+    console.error("Error uploading:", error);
     throw error;
   }
+};
+
+// Fix this in shared.ts
+export const imageUpload = async (data: FormData): Promise<UploadedFile> => {
+  const response = await axiosInstance.post<{ fileUrl: string; id: string }>(
+    "/file/upload",
+    data,
+    { headers: { "Content-Type": "multipart/form-data" } }
+  );
+
+  return response.data; // <- return raw data directly
 };

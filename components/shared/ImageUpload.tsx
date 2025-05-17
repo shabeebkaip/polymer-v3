@@ -4,7 +4,7 @@ import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { X } from "lucide-react";
 import Image from "next/image";
-import { postFileUpload } from "@/apiServices/shared";
+import { imageUpload, postFileUpload } from "@/apiServices/shared";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -13,8 +13,6 @@ import { cn } from "@/lib/utils";
 interface UploadedFile {
   fileUrl: string;
   id: string;
-  type: string;
-  name: string;
 }
 
 interface ImageUploadProps {
@@ -48,13 +46,10 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         formData.append("file", file);
 
         try {
-          const response = await postFileUpload(formData);
-          const { fileUrl, id, type, name } = response.data;
+          const { fileUrl, id } = await imageUpload(formData);
           uploadedFiles.push({
             fileUrl,
             id,
-            type: type || file.type.split("/")[1],
-            name: name || file.name,
           });
         } catch (error) {
           console.error("Error uploading file:", error);
@@ -126,7 +121,12 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         </ScrollArea>
       ) : (
         <div className="flex items-center gap-2">
-          <Image src="/assets/drop.svg" alt="upload icon" width={30} height={30} />
+          <Image
+            src="/assets/drop.svg"
+            alt="upload icon"
+            width={30}
+            height={30}
+          />
           <span className="text-sm font-medium">Upload Images</span>
         </div>
       )}
@@ -135,3 +135,12 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 };
 
 export default ImageUpload;
+// Usage example
+// <ImageUpload
+//   onFilesUpload={(files) => console.log(files)}
+//   previews={previews}
+//   setPreviews={setPreviews}
+//   onImageClick={(index) => console.log(`Image ${index} clicked`)}
+//   width="100%"
+//   height="150px"
+// />
