@@ -26,7 +26,7 @@ export interface ProductQuery {
 // API function using the defined type
 export const getProductList = async (query: ProductQuery) => {
   try {
-    const response = await axiosInstance.post("product/list", query);
+    const response = await axiosInstance.post("/product/list", query);
     return response.data;
   } catch (error) {
     console.error("Error fetching product list:", error);
@@ -36,7 +36,7 @@ export const getProductList = async (query: ProductQuery) => {
 
 export const getProductFilters = async () => {
   try {
-    const response = await axiosInstance.get("product/filter");
+    const response = await axiosInstance.get("/product/filter");
     return response.data;
   } catch (error) {
     console.error("Error fetching product filters:", error);
@@ -46,7 +46,7 @@ export const getProductFilters = async () => {
 
 export const getProductDetails = async (productId: string) => {
   try {
-    const response = await axiosInstance.get(`product/detail/${productId}`);
+    const response = await axiosInstance.get(`/product/detail/${productId}`);
     return response.data;
   } catch (error) {
     console.error("Error fetching product details:", error);
@@ -56,7 +56,7 @@ export const getProductDetails = async (productId: string) => {
 
 export const createProduct = async (data: any) => {
   try {
-    const response = await axiosInstance.post("product/create", data);
+    const response = await axiosInstance.post("/product/create", data);
     return response.data;
   } catch (error) {
     console.error("Error creating product:", error);
@@ -67,7 +67,7 @@ export const createProduct = async (data: any) => {
 export const updateProduct = async (productId: string, data: any) => {
   try {
     const response = await axiosInstance.put(
-      `product/edit/${productId}`,
+      `/product/edit/${productId}`,
       data
     );
     return response.data;

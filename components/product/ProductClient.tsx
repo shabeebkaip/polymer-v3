@@ -53,7 +53,11 @@ const ProductDetailClient: React.FC<ProductDetailClientProps> = ({
           <ImageContainers productImages={product.productImages} />
         ) : null}
         {product.createdBy && (
-          <CompanyDetails companyDetails={product.createdBy} />
+          <CompanyDetails
+            companyDetails={product.createdBy}
+            productId={product?._id}
+            uom={product?.uom}
+          />
         )}
       </div>
 

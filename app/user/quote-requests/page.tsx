@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  getUserQuoteRequests,
-  getUserSampleRequests,
-} from "@/apiServices/user";
+import { getUserQuoteRequests } from "@/apiServices/user";
 import {
   Table,
   TableBody,

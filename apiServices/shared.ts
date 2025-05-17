@@ -8,7 +8,7 @@ export interface UploadedFile {
 
 export const getIndustryList = async () => {
   try {
-    const response = await axiosInstance.get("industry/list");
+    const response = await axiosInstance.get("/industry/list");
     return response.data;
   } catch (error) {
     console.error("Error fetching industry list:", error);
@@ -18,7 +18,7 @@ export const getIndustryList = async () => {
 
 export const getProductFamilies = async () => {
   try {
-    const response = await axiosInstance.get("product-family/list");
+    const response = await axiosInstance.get("/product-family/list");
     return response.data;
   } catch (error) {
     console.error("Error fetching product families:", error);
@@ -28,7 +28,7 @@ export const getProductFamilies = async () => {
 
 export const getSellers = async () => {
   try {
-    const response = await axiosInstance.get("user/seller/list");
+    const response = await axiosInstance.get("/user/seller/list");
     return response.data;
   } catch (error) {
     console.error("Error fetching sellers:", error);
@@ -38,7 +38,7 @@ export const getSellers = async () => {
 
 export const getGrades = async () => {
   try {
-    const response = await axiosInstance.get("grade/list");
+    const response = await axiosInstance.get("/grade/list");
     return response.data;
   } catch (error) {
     console.error("Error fetching grades:", error);
@@ -48,7 +48,7 @@ export const getGrades = async () => {
 
 export const getIncoterms = async () => {
   try {
-    const response = await axiosInstance.get("incoterm/list");
+    const response = await axiosInstance.get("/incoterm/list");
     return response.data;
   } catch (error) {
     console.error("Error fetching incoterms:", error);
@@ -58,7 +58,7 @@ export const getIncoterms = async () => {
 
 export const getPackagingTypes = async () => {
   try {
-    const response = await axiosInstance.get("packaging-type/list");
+    const response = await axiosInstance.get("/packaging-type/list");
     return response.data;
   } catch (error) {
     console.error("Error fetching packaging types:", error);
@@ -68,7 +68,7 @@ export const getPackagingTypes = async () => {
 
 export const getChemicalFamilies = async () => {
   try {
-    const response = await axiosInstance.get("chemical-family/list");
+    const response = await axiosInstance.get("/chemical-family/list");
     return response.data;
   } catch (error) {
     console.error("Error fetching chemical families:", error);
@@ -78,7 +78,7 @@ export const getChemicalFamilies = async () => {
 
 export const getPolymersType = async () => {
   try {
-    const response = await axiosInstance.get("polymer-type/list");
+    const response = await axiosInstance.get("/polymer-type/list");
     return response.data;
   } catch (error) {
     console.error("Error fetching polymers type:", error);
@@ -88,7 +88,7 @@ export const getPolymersType = async () => {
 
 export const getPhysicalForms = async () => {
   try {
-    const response = await axiosInstance.get("physical-form/list");
+    const response = await axiosInstance.get("/physical-form/list");
     return response.data;
   } catch (error) {
     console.error("Error fetching physical forms:", error);
@@ -97,7 +97,7 @@ export const getPhysicalForms = async () => {
 };
 export const getPaymentTerms = async () => {
   try {
-    const response = await axiosInstance.get("payment-terms/list");
+    const response = await axiosInstance.get("/payment-terms/list");
     return response.data;
   } catch (error) {
     console.error("Error fetching payment terms:", error);

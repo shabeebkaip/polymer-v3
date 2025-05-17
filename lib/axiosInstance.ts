@@ -1,7 +1,7 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 
-const BASE_URL = "https://polymer-backend.code-ox.com/api/";
+const BASE_URL = "https://polymer-backend.code-ox.com/api";
 
 const axiosInstance = axios.create({
   baseURL: BASE_URL,

@@ -12,7 +12,7 @@ const Benefits: React.FC = () => {
         "Buyers can easily compare products and suppliers, helping them make informed decisions based on their specific needs.",
         "Buyers can access a diverse range of suppliers and products, increasing their options and opportunities for sourcing materials.",
       ],
-      registerLink: "/register?userType=buyer",
+      registerLink: "/auth/register?role=buyer",
     },
     {
       title: "Benefits for Sellers",
@@ -22,7 +22,7 @@ const Benefits: React.FC = () => {
         "Sellers can connect with buyers directly, facilitating communication and negotiation.",
         "Sellers can access valuable market insights and analytics to optimize their offerings and strategies.",
       ],
-      registerLink: "/register?userType=seller",
+      registerLink: "auth/register?role=seller",
     },
   ];
   return (

@@ -20,6 +20,16 @@ export const createSampleRequest = async (data: any) => {
   }
 };
 
+export const createFinanceRequest = async (data: any) => {
+  try {
+    const response = await axiosInstance.post("/finance/create", data);
+    return response.data;
+  } catch (error) {
+    console.error("Error creating finance request:", error);
+    throw error;
+  }
+}
+
 export const getUserInfo = async () => {
   try {
     const response = await axiosInstance.get("/user/profile");

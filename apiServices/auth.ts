@@ -2,7 +2,7 @@ import axiosInstance from "@/lib/axiosInstance";
 
 export const login = async (email: string, password: string) => {
   try {
-    const response = await axiosInstance.post("auth/user/login", {
+    const response = await axiosInstance.post("/auth/user/login", {
       email,
       password,
     });
@@ -31,7 +31,7 @@ export const login = async (email: string, password: string) => {
 
 export const register = async (data: any) => {
   try {
-    const response = await axiosInstance.post("auth/user/register", data);
+    const response = await axiosInstance.post("/auth/user/register", data);
     return response.data;
   } catch (error: any) {
     return {
