@@ -9,14 +9,19 @@ import { Eye, EyeOff } from "lucide-react";
 import countryCodesList from "country-codes-list";
 
 import Input from "@/components/shared/Input";
-import { getIndustryList } from "@/apiServices/shared";
+import { getIndustryList, imageUpload } from "@/apiServices/shared";
 import { register } from "@/apiServices/auth";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface Industry {
   _id: string;
   name: string;
   bg: string;
   image?: string;
+}
+interface UploadedFile {
+  fileUrl: string;
+  id: string;
 }
 
 interface Country {
@@ -47,7 +52,6 @@ const Register: React.FC = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const userType = searchParams.get("role");
-  console.log("userType", userType);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [industryList, setIndustryList] = useState<Industry[]>([]);
@@ -66,9 +70,9 @@ const Register: React.FC = () => {
     industry: "",
     address: "",
     location: "",
-    company_logo: "https://media.knowde.com/image/upload/f_auto,q_auto,dpr_auto,c_limit,w_112/c_scale,w_112/v1729086403/production/Company/50022/logo/image",
-    vat_number : "123445566777",
-    user_type: userType || "buyer"
+    company_logo: "",
+    vat_number: "",
+    user_type: userType || "buyer",
   });
 
   const countriesList: Country[] = countryCodesList.all().map((country) => ({
@@ -96,10 +100,25 @@ const Register: React.FC = () => {
     setData((prev) => ({ ...prev, [id]: value }));
   };
 
-  const onFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] || null;
-    // TODO: Upload logic
-    // setData((prev) => ({ ...prev, companyLogo: file }));
+  const handleAvatarClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const onFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    const formData = new FormData();
+    formData.append("file", files[0]);
+
+    try {
+      const { fileUrl } = await imageUpload(formData);
+      // ✅ Update state with uploaded URL
+      setData((prev) => ({ ...prev, company_logo: fileUrl }));
+    } catch (error) {
+      console.error("File upload failed", error);
+      // optionally show toast or error message
+    }
   };
 
   const handleSubmit = async () => {
@@ -107,15 +126,16 @@ const Register: React.FC = () => {
 
     try {
       const response = await register(data);
+
       toast.dismiss(toastId);
 
-      if (response.status) {
+      if (response?.status) {
         toast.success("Registration successful");
         Cookies.set("token", response.token);
         Cookies.set("userInfo", JSON.stringify(response.userInfo));
         setTimeout(() => router.push("/"), 1000);
       } else {
-        toast.error(response.message || "Registration failed.");
+        toast.error(response?.message || "Registration failed.");
       }
     } catch (error) {
       toast.dismiss(toastId);
@@ -123,7 +143,7 @@ const Register: React.FC = () => {
       toast.error("An unexpected error occurred during registration.");
     }
   };
-
+  console.log("data", data);
   return (
     <div className="flex flex-col items-start justify-center gap-6">
       <Image
@@ -139,30 +159,69 @@ const Register: React.FC = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
         <div className="col-span-2">
-          <div
-            className="relative w-fit cursor-pointer"
-            onClick={() => fileInputRef.current?.click()}
-          >
-            <Image
-              src="/assets/Upload Photo.png"
-              alt="Upload"
-              width={100}
-              height={50}
-              className="rounded-md"
-            />
-            <input
-              type="file"
-              accept="image/*"
-              ref={fileInputRef}
-              onChange={onFileChange}
-              className="hidden"
-            />
-          </div>
+          {data?.company_logo ? (
+            <>
+              <Avatar
+                className="w-16 h-16"
+                onClick={handleAvatarClick}
+                style={{ cursor: "pointer" }}
+              >
+                <AvatarImage src={data?.company_logo} alt="Company Logo" />
+                <AvatarFallback>
+                  {data?.company?.charAt(0) || "C"}
+                </AvatarFallback>
+              </Avatar>
+
+              <input
+                type="file"
+                accept="image/*"
+                ref={fileInputRef}
+                onChange={onFileChange}
+                className="hidden"
+              />
+            </>
+          ) : (
+            <div
+              className="relative w-fit cursor-pointer"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              <Image
+                src="/assets/Upload Photo.png"
+                alt="Upload"
+                width={100}
+                height={50}
+                className="rounded-md"
+              />
+              <input
+                type="file"
+                accept="image/*"
+                ref={fileInputRef}
+                onChange={onFileChange}
+                className="hidden"
+              />
+            </div>
+          )}
         </div>
 
-        <Input id="firstName" placeholder="First Name" value={data.firstName} onChange={onFieldChange} />
-        <Input id="lastName" placeholder="Last Name" value={data.lastName} onChange={onFieldChange} />
-        <Input id="email" type="email" placeholder="Email" value={data.email} onChange={onFieldChange} />
+        <Input
+          id="firstName"
+          placeholder="First Name"
+          value={data.firstName}
+          onChange={onFieldChange}
+        />
+        <Input
+          id="lastName"
+          placeholder="Last Name"
+          value={data.lastName}
+          onChange={onFieldChange}
+        />
+        <Input
+          id="email"
+          type="email"
+          placeholder="Email"
+          value={data.email}
+          onChange={onFieldChange}
+        />
 
         <div className="w-full flex">
           <select
@@ -187,8 +246,24 @@ const Register: React.FC = () => {
           />
         </div>
 
-        <Input id="company" placeholder="Company" value={data.company} onChange={onFieldChange} />
-        <Input id="website" placeholder="Website" value={data.website} onChange={onFieldChange} />
+        <Input
+          id="company"
+          placeholder="Company"
+          value={data.company}
+          onChange={onFieldChange}
+        />
+        <Input
+          id="website"
+          placeholder="Website"
+          value={data.website}
+          onChange={onFieldChange}
+        />
+        <Input
+          id="vat_number"
+          placeholder="VAT Number"
+          value={data.vat_number || ""}
+          onChange={onFieldChange}
+        />
 
         <select
           id="industry"
@@ -218,7 +293,13 @@ const Register: React.FC = () => {
           ))}
         </select>
 
-        <Input id="address" placeholder="Address" value={data.address} onChange={onFieldChange} className="col-span-2" />
+        <Input
+          id="address"
+          placeholder="Address"
+          value={data.address}
+          onChange={onFieldChange}
+          className="col-span-2"
+        />
 
         <div className="relative w-full">
           <Input
