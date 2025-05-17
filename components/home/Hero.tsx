@@ -49,7 +49,7 @@ const Hero: React.FC = () => {
           Join us for a culinary experience that nourishes your body and
           delights your taste buds.
         </p>
-        <div className="mt-10 w-full relative ">
+        {/* <div className="mt-10 w-full relative ">
           <div
             className="w-10 h-10
               bg-gradient-to-r
@@ -74,7 +74,7 @@ const Hero: React.FC = () => {
             border-1 border-[var(--green-light)] "
             />
           </div>
-        </div>
+        </div> */}
         <div className="mt-10 grid grid-cols-2  lg:grid-cols-3  justify-center gap-10 md:gap-20 w-full">
           {stats.map((stat, index) => (
             <div
