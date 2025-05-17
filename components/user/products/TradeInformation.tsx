@@ -25,6 +25,8 @@ interface TradeInformationProps {
   onFieldChange: (field: keyof ProductFormData, value: any) => void;
   incoterms?: DropdownItem[];
   paymentTerms?: DropdownItem[];
+  error: Partial<Record<keyof ProductFormData, string>>;
+  onFieldError: (field: keyof ProductFormData) => void;
 }
 
 const TradeInformation: React.FC<TradeInformationProps> = ({
@@ -32,6 +34,8 @@ const TradeInformation: React.FC<TradeInformationProps> = ({
   onFieldChange,
   incoterms = [],
   paymentTerms = [],
+  error,
+  onFieldError,
 }) => {
   const [calendarOpen, setCalendarOpen] = useState(false);
 
@@ -52,6 +56,11 @@ const TradeInformation: React.FC<TradeInformationProps> = ({
           onChange={(e) =>
             onFieldChange("minimum_order_quantity", Number(e.target.value))
           }
+          onFocus={() => onFieldError("minimum_order_quantity")} // Clear error on focus
+          error={error?.minimum_order_quantity ? true : false} // Show error state
+          helperText={error?.minimum_order_quantity} // Show error message
+
+
         />
       </div>
 
@@ -64,6 +73,9 @@ const TradeInformation: React.FC<TradeInformationProps> = ({
           placeholder="Stock"
           value={data.stock ?? ""}
           onChange={(e) => onFieldChange("stock", Number(e.target.value))}
+          onFocus={() => onFieldError("stock")} // Clear error on focus
+          error={error?.stock ? true : false} // Show error state
+          helperText={error?.stock} // Show error message
         />
       </div>
 
@@ -75,7 +87,11 @@ const TradeInformation: React.FC<TradeInformationProps> = ({
           value={data.uom}
           onValueChange={(val) => onFieldChange("uom", val)}
         >
-          <SelectTrigger className="px-4 w-full">
+          <SelectTrigger className="px-4 w-full"
+            onFocus={() => onFieldError("uom")} // Clear error on focus
+            error={error?.uom ? true : false} // Show error state
+            helperText={error?.uom} // Show error message
+          >
             <SelectValue placeholder="Select UOM" />
           </SelectTrigger>
           <SelectContent>
@@ -97,6 +113,9 @@ const TradeInformation: React.FC<TradeInformationProps> = ({
           placeholder="Price"
           value={data.price ?? ""}
           onChange={(e) => onFieldChange("price", Number(e.target.value))}
+          onFocus={() => onFieldError("price")} // Clear error on focus
+          error={error?.price ? true : false} // Show error state
+          helperText={error?.price} // Show error message
         />
       </div>
 

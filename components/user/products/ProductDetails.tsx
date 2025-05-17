@@ -25,6 +25,8 @@ interface ProductDetailsProps {
   industry: DropdownItem[];
   physicalForms: DropdownItem[];
   productFamilies: DropdownItem[];
+  onFieldError: (field: keyof ProductFormData) => void;
+  error: Partial<Record<keyof ProductFormData, string>>;
 }
 
 const ProductDetails: React.FC<ProductDetailsProps> = ({
@@ -35,6 +37,8 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
   industry,
   physicalForms,
   productFamilies,
+  onFieldError,
+  error,
 }) => {
   return (
     <>
@@ -50,7 +54,12 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
           value={data.chemicalFamily || ""}
           onValueChange={(val) => onFieldChange("chemicalFamily", val)}
         >
-          <SelectTrigger className="px-4 w-full">
+          <SelectTrigger
+            className="px-4 w-full"
+            onFocus={() => onFieldError("chemicalFamily")} // Clear error on focus
+            error={error.chemicalFamily ? true : false} // Show error state
+            helperText={error.chemicalFamily} // Show error message
+          >
             <SelectValue placeholder="Select Chemical Family" />
           </SelectTrigger>
           <SelectContent>
@@ -68,8 +77,8 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
           label="Product Families"
           placeholder="Select Product Family"
           options={productFamilies}
-          selected={data.productFamily || []}
-          onChange={(selected) => onFieldChange("productFamily", selected)}
+          selected={data.product_family || []}
+          onChange={(selected) => onFieldChange("product_family", selected)}
         />
       </div>
 
@@ -81,7 +90,12 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
           value={data.polymerType || ""}
           onValueChange={(val) => onFieldChange("polymerType", val)}
         >
-          <SelectTrigger className="px-4 w-full">
+          <SelectTrigger
+            className="px-4 w-full"
+            onFocus={() => onFieldError("polymerType")} // Clear error on focus
+            error={error.polymerType ? true : false} // Show error state
+            helperText={error.polymerType} // Show error message
+          >
             <SelectValue placeholder="Select Polymer Type" />
           </SelectTrigger>
           <SelectContent>
@@ -101,6 +115,9 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
           options={industry}
           selected={data.industry || []}
           onChange={(selected) => onFieldChange("industry", selected)}
+          error={!!error.industry}
+          helperText={error.industry}
+          onFocus={() => onFieldError("industry")} // Clear error on focus
         />
       </div>
 
@@ -124,7 +141,12 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
           value={data.physicalForm || ""}
           onValueChange={(val) => onFieldChange("physicalForm", val)}
         >
-          <SelectTrigger className="px-4 w-full">
+          <SelectTrigger
+            className="px-4 w-full"
+            onFocus={() => onFieldError("physicalForm")} // Clear error on focus
+            error={error.physicalForm ? true : false} // Show error state
+            helperText={error.physicalForm} // Show error message
+          >
             <SelectValue placeholder="Select Physical Form" />
           </SelectTrigger>
           <SelectContent>

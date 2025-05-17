@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, FocusEventHandler } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { ChevronDown } from "lucide-react";
@@ -15,6 +15,9 @@ interface MultiSelectProps {
   options: DropdownItem[];
   selected: string[];
   onChange: (selected: string[]) => void;
+  error?: boolean;
+  helperText?: string;
+  onFocus?: FocusEventHandler<HTMLDivElement>; // 👈 added here
 }
 
 const MultiSelect: React.FC<MultiSelectProps> = ({
@@ -23,6 +26,9 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
   options,
   selected,
   onChange,
+  error = false,
+  helperText,
+  onFocus,
 }) => {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -38,7 +44,6 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
     .filter((opt) => selected.includes(opt._id))
     .map((opt) => opt.name);
 
-  // ✅ Close dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -61,15 +66,18 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
   }, [open]);
 
   return (
-    <div className="relative" ref={containerRef}>
+    <div className="relative space-y-1" ref={containerRef}>
       <Label className="mb-1 block">{label}</Label>
 
       <div
         className={cn(
           "flex justify-between items-center px-4 py-2 border rounded-md bg-white cursor-pointer text-sm",
-          open && "ring-1 ring-ring"
+          open && "ring-1 ring-ring",
+          error && "border-destructive ring-destructive/20"
         )}
         onClick={() => setOpen((prev) => !prev)}
+        onFocus={onFocus} // 👈 now triggers when tabbed into
+        tabIndex={0} // 👈 makes the div focusable via keyboard
       >
         <span className="truncate">
           {selectedLabels.length > 0 ? selectedLabels.join(", ") : placeholder}
@@ -92,6 +100,10 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
             </label>
           ))}
         </div>
+      )}
+
+      {error && helperText && (
+        <p className="text-sm text-destructive mt-1">{helperText}</p>
       )}
     </div>
   );

@@ -15,12 +15,21 @@ import { ProductFormData } from "@/types/product";
 import { Button } from "../ui/button";
 import { createProduct } from "@/apiServices/products";
 import { initialFormData } from "@/apiServices/constants/userProductCrud";
+import { toast } from "sonner";
+import { useRouter, usePathname } from "next/navigation";
 
 // 🛠️ Interface to type the error state
 type ValidationErrors = Partial<Record<keyof ProductFormData, string>>;
+interface RequiredField {
+  field: keyof ProductFormData;
+  label: string;
+}
 
 const AddEditProduct = () => {
   const { id } = useParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const isEditMode = pathname.includes("edit");
   const {
     chemicalFamilies,
     polymersTypes,
@@ -42,7 +51,7 @@ const AddEditProduct = () => {
       [key]: value,
     }));
   };
-  const onFieldError = (key: keyof ProductFormData, value: any) => {
+  const onFieldError = (key: keyof ProductFormData) => {
     setError((prev) => ({
       ...prev,
       [key]: "",
@@ -50,32 +59,32 @@ const AddEditProduct = () => {
   };
 
   const handleSubmit = () => {
+    const toastId = toast.loading("Creating product...");
     const validationErrors: ValidationErrors = {};
 
-    const requiredFields: (keyof ProductFormData)[] = [
-      "productName",
-      "chemicalName",
-      "chemicalFamily",
-      "polymerType",
-      "physicalForm",
-      "minimum_order_quantity",
-      "stock",
-      "uom",
-      "price",
-      "createdBy",
+    const requiredFields: RequiredField[] = [
+      { field: "productName", label: "Product Name" },
+      { field: "chemicalName", label: "Chemical Name" },
+      { field: "tradeName", label: "Trade Name" },
+      { field: "chemicalFamily", label: "Chemical Family" },
+      { field: "product_family", label: "Product Family" },
+      { field: "polymerType", label: "Polymer Type" },
+      { field: "physicalForm", label: "Physical Form" },
+      { field: "minimum_order_quantity", label: "Minimum Order Quantity" },
+      { field: "stock", label: "Stock" },
+      { field: "uom", label: "UOM" },
+      { field: "price", label: "Price" },
     ];
 
-    requiredFields.forEach((field) => {
+    requiredFields.forEach(({ field, label }) => {
+      const value = data[field];
       if (
-        data[field] === undefined ||
-        data[field] === null ||
-        data[field] === "" ||
-        (Array.isArray(data[field]) && data[field].length === 0)
+        value === undefined ||
+        value === null ||
+        value === "" ||
+        (Array.isArray(value) && value.length === 0)
       ) {
-        validationErrors[field] = `${String(field).replace(
-          /_/g,
-          " "
-        )} is required`;
+        validationErrors[field] = `${label} is required`;
       }
     });
 
@@ -93,18 +102,38 @@ const AddEditProduct = () => {
 
     if (Object.keys(validationErrors).length > 0) {
       console.warn("Validation errors:", validationErrors);
+      toast.error("Please fill in all required fields", {
+        id: toastId,
+      });
+
       setError(validationErrors);
       return;
     }
 
     createProduct(data)
       .then((res) => {
-        console.log("Product created successfully", res);
+        if (res?.success) {
+          toast.success("Product created successfully", {
+            id: toastId,
+          });
+          setData(initialFormData);
+          setTimeout(() => {
+            router.push("/user/products");
+          }, 1000);
+        } else {
+          toast.error("Error creating product", {
+            id: toastId,
+          });
+        }
       })
       .catch((err) => {
         console.error("Error creating product", err);
+        toast.error("Error creating product", {
+          id: toastId,
+        });
       });
   };
+
   console.log("Errors", error);
   return (
     <div className="container mx-auto px-4 pb-6">
@@ -123,6 +152,8 @@ const AddEditProduct = () => {
           industry={industry}
           physicalForms={physicalForms}
           productFamilies={productFamilies}
+          error={error}
+          onFieldError={onFieldError}
         />
         <ProductImages data={data} onFieldChange={onFieldChange} />
         <TechnicalProperties
@@ -135,6 +166,8 @@ const AddEditProduct = () => {
           onFieldChange={onFieldChange}
           incoterms={incoterms}
           paymentTerms={paymentTerms}
+          error={error}
+          onFieldError={onFieldError}
         />
         <PackageInformation
           data={data}
