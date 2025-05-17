@@ -70,6 +70,34 @@ const Sidebar = () => {
         />
       ),
     },
+    {
+      name: "Sample  Enquiries",
+      path: "/user/sample-enquiries",
+      user: "seller",
+      icon: (
+        <ClipboardList
+          className={` ${
+            pathname.includes("/user/sample-enquiries")
+              ? "text-[var(--green-main)]"
+              : "text-[#A8A8A8]"
+          }`}
+        />
+      ),
+    },
+    {
+      name: "Quote Enquiries",
+      path: "/user/quote-enquiries",
+      user: "seller",
+      icon: (
+        <ClipboardList
+          className={` ${
+            pathname.includes("/user/quote-enquiries")
+              ? "text-[var(--green-main)]"
+              : "text-[#A8A8A8]"
+          }`}
+        />
+      ),
+    },
   ];
   const handleLogout = () => {
     Cookies.remove("token");
@@ -105,7 +133,7 @@ const Sidebar = () => {
           </div>
         ))}
       </div>
-      
+
       <div className="p-4 flex items-center justify-start gap-2 ">
         <Button
           variant={"outline"}

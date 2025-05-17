@@ -49,3 +49,23 @@ export const getUserSampleRequests = async () => {
     throw error;
   }
 };
+
+export const getUserSampleEnquiries = async () => {
+  try {
+    const response = await axiosInstance.get("/sample-request/received");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching user sample enquiries:", error);
+    throw error;
+  }
+};
+
+export const getUserQuoteEnquiries = async () => {
+  try {
+    const response = await axiosInstance.get("/quote-request/received");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching user quote enquiries:", error);
+    throw error;
+  }
+};
