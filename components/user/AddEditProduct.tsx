@@ -13,10 +13,10 @@ import Certification from "./products/Certifications";
 import Documents from "./products/Documents";
 import { ProductFormData } from "@/types/product";
 import { Button } from "../ui/button";
-import { createProduct } from "@/apiServices/products";
+import { createProduct, updateProduct } from "@/apiServices/products";
 import { initialFormData } from "@/apiServices/constants/userProductCrud";
 import { toast } from "sonner";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 // 🛠️ Interface to type the error state
 type ValidationErrors = Partial<Record<keyof ProductFormData, string>>;
@@ -24,12 +24,15 @@ interface RequiredField {
   field: keyof ProductFormData;
   label: string;
 }
+interface AddEditProductProps {
+  product?: ProductFormData;
+  id?: string;
+}
 
-const AddEditProduct = () => {
-  const { id } = useParams();
+const AddEditProduct = ({ product, id }: AddEditProductProps) => {
   const router = useRouter();
-  const pathname = usePathname();
-  const isEditMode = pathname.includes("edit");
+  const isEditMode = id ? true : false;
+
   const {
     chemicalFamilies,
     polymersTypes,
@@ -42,7 +45,9 @@ const AddEditProduct = () => {
     productFamilies,
   } = useDropdowns();
 
-  const [data, setData] = useState<ProductFormData>(initialFormData);
+  const [data, setData] = useState<ProductFormData>(
+    product ? product : initialFormData
+  );
   const [error, setError] = useState<ValidationErrors>({});
 
   const onFieldChange = (key: keyof ProductFormData, value: any) => {
@@ -59,7 +64,9 @@ const AddEditProduct = () => {
   };
 
   const handleSubmit = () => {
-    const toastId = toast.loading("Creating product...");
+    const toastId = toast.loading(
+      isEditMode ? "Updating Product" : "Creating product..."
+    );
     const validationErrors: ValidationErrors = {};
 
     const requiredFields: RequiredField[] = [
@@ -109,8 +116,10 @@ const AddEditProduct = () => {
       setError(validationErrors);
       return;
     }
+    const apiCall = () =>
+      isEditMode ? updateProduct(id as string, data) : createProduct(data);
 
-    createProduct(data)
+    apiCall()
       .then((res) => {
         if (res?.success) {
           toast.success("Product created successfully", {

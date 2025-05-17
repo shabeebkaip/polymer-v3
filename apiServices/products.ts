@@ -63,3 +63,16 @@ export const createProduct = async (data: any) => {
     throw error;
   }
 };
+
+export const updateProduct = async (productId: string, data: any) => {
+  try {
+    const response = await axiosInstance.put(
+      `product/edit/${productId}`,
+      data
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error updating product:", error);
+    throw error;
+  }
+};

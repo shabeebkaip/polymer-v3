@@ -1,14 +1,7 @@
 import React from "react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../../ui/select";
 import { Label } from "../../ui/label";
 import { Input } from "../../ui/input";
-import { useDropdowns } from "@/lib/useDropdowns";
+import MultiSelect from "@/components/shared/MultiSelect";
 
 interface PackagingType {
   _id: string;
@@ -17,13 +10,13 @@ interface PackagingType {
 
 interface PackageInformationProps {
   data: {
-    packageType?: string;
-    packageWeight?: string;
+    packagingType?: string[]; // ✅ this should match actual usage
+    packagingWeight?: string;
     storageConditions?: string;
     shelfLife?: string;
     [key: string]: any;
   };
-  onFieldChange: (field: string, value: string) => void;
+  onFieldChange: (field: string, value: any) => void;
   packagingTypes?: PackagingType[];
 }
 
@@ -39,35 +32,24 @@ const PackageInformation: React.FC<PackageInformationProps> = ({
       </div>
 
       <div>
-        <Label htmlFor="packagingType" className="block mb-1">
-          Package Type
-        </Label>
-        <Select
-          value={data?.packageType || ""}
-          onValueChange={(val) => onFieldChange("packagingType", val)}
-        >
-          <SelectTrigger className="px-4 w-full">
-            <SelectValue placeholder="Select Package Type" />
-          </SelectTrigger>
-          <SelectContent>
-            {packagingTypes.map((type: PackagingType) => (
-              <SelectItem key={type._id} value={type._id}>
-                {type.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <MultiSelect
+          label="Packaging Type"
+          placeholder="Select Packaging Type"
+          options={packagingTypes}
+          selected={data.packagingType || []}
+          onChange={(selected) => onFieldChange("packagingType", selected)}
+        />
       </div>
 
       <div>
-        <Label htmlFor="packageWeight" className="block mb-1">
+        <Label htmlFor="packagingWeight" className="block mb-1">
           Package Weight
         </Label>
         <Input
           className="text-lg px-4"
           placeholder="Package Weight"
-          value={data?.packageWeight || ""}
-          onChange={(e) => onFieldChange("packageWeight", e.target.value)}
+          value={data?.packagingWeight || ""}
+          onChange={(e) => onFieldChange("packagingWeight", e.target.value)}
         />
       </div>
 
