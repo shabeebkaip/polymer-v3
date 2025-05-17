@@ -1,6 +1,5 @@
 "use client";
 import React, { useState } from "react";
-import { useParams } from "next/navigation";
 import { useDropdowns } from "@/lib/useDropdowns";
 import GeneralInformation from "./products/GeneralInformation";
 import ProductDetails from "./products/ProductDetails";
