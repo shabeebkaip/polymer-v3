@@ -20,20 +20,22 @@ interface DropdownItem {
 interface ProductDetailsProps {
   data: ProductFormData;
   onFieldChange: (field: keyof ProductFormData, value: any) => void;
+  chemicalFamilies: DropdownItem[];
+  polymersTypes: DropdownItem[];
+  industry: DropdownItem[];
+  physicalForms: DropdownItem[];
+  productFamilies: DropdownItem[];
 }
 
 const ProductDetails: React.FC<ProductDetailsProps> = ({
   data,
   onFieldChange,
+  chemicalFamilies,
+  polymersTypes,
+  industry,
+  physicalForms,
+  productFamilies,
 }) => {
-  const {
-    chemicalFamilies,
-    polymersTypes,
-    industry,
-    physicalForms,
-    productFamilies,
-  } = useDropdowns();
-
   return (
     <>
       <div className="col-span-3 my-4">

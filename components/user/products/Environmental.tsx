@@ -1,13 +1,11 @@
 import React from "react";
 import { Checkbox } from "../../ui/checkbox";
 import { Label } from "../../ui/label";
+import { ProductFormData } from "@/types/product"; // Adjust the path if necessary
 
 interface EnvironmentalProps {
-  data: {
-    recyclable?: boolean;
-    bioDegradable?: boolean;
-  };
-  onFieldChange: (field: string, value: boolean) => void;
+  data: ProductFormData;
+  onFieldChange: (field: keyof ProductFormData, value: boolean) => void;
 }
 
 const Environmental: React.FC<EnvironmentalProps> = ({
@@ -23,7 +21,7 @@ const Environmental: React.FC<EnvironmentalProps> = ({
         <div className="flex items-center space-x-2">
           <Checkbox
             id="recyclable"
-            checked={data.recyclable || false}
+            checked={data.recyclable}
             onCheckedChange={(checked) =>
               onFieldChange("recyclable", Boolean(checked))
             }
@@ -33,7 +31,7 @@ const Environmental: React.FC<EnvironmentalProps> = ({
         <div className="flex items-center space-x-2">
           <Checkbox
             id="bioDegradable"
-            checked={data.bioDegradable || false}
+            checked={data.bioDegradable}
             onCheckedChange={(checked) =>
               onFieldChange("bioDegradable", Boolean(checked))
             }

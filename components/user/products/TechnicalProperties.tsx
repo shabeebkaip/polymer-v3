@@ -9,32 +9,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../ui/select";
+import { ProductFormData } from "@/types/product"; // adjust the path as needed
+import MultiSelectTrigger from "@/components/shared/MultiSelect";
+import MultiSelect from "@/components/shared/MultiSelect";
 
-interface Grade {
+interface DropdownItem {
   _id: string;
   name: string;
 }
 
 interface TechnicalPropertiesProps {
-  data: {
-    density?: string;
-    mfi?: string;
-    tensileStrength?: string;
-    elongationAtBreak?: string;
-    shoreHardness?: string;
-    waterAbsorption?: string;
-    grade?: string;
-    [key: string]: any;
-  };
-  onFieldChange: (field: string, value: string) => void;
+  data: ProductFormData;
+  onFieldChange: (field: keyof ProductFormData, value: any) => void;
+  grades?: DropdownItem[];
 }
 
 const TechnicalProperties: React.FC<TechnicalPropertiesProps> = ({
   data,
   onFieldChange,
+  grades = [],
 }) => {
-  const { grades } = useDropdowns();
-
   return (
     <>
       <div className="col-span-3 my-4">
@@ -60,8 +54,9 @@ const TechnicalProperties: React.FC<TechnicalPropertiesProps> = ({
         <Input
           className="text-lg px-4"
           placeholder="MFI"
-          value={data?.mfi || ""}
-          onChange={(e) => onFieldChange("mfi", e.target.value)}
+          type="number"
+          value={data?.mfi ?? ""}
+          onChange={(e) => onFieldChange("mfi", parseFloat(e.target.value))}
         />
       </div>
 
@@ -72,8 +67,11 @@ const TechnicalProperties: React.FC<TechnicalPropertiesProps> = ({
         <Input
           className="text-lg px-4"
           placeholder="Tensile Strength"
-          value={data?.tensileStrength || ""}
-          onChange={(e) => onFieldChange("tensileStrength", e.target.value)}
+          type="number"
+          value={data?.tensileStrength ?? ""}
+          onChange={(e) =>
+            onFieldChange("tensileStrength", parseFloat(e.target.value))
+          }
         />
       </div>
 
@@ -84,8 +82,11 @@ const TechnicalProperties: React.FC<TechnicalPropertiesProps> = ({
         <Input
           className="text-lg px-4"
           placeholder="Elongation at Break"
-          value={data?.elongationAtBreak || ""}
-          onChange={(e) => onFieldChange("elongationAtBreak", e.target.value)}
+          type="number"
+          value={data?.elongationAtBreak ?? ""}
+          onChange={(e) =>
+            onFieldChange("elongationAtBreak", parseFloat(e.target.value))
+          }
         />
       </div>
 
@@ -96,8 +97,11 @@ const TechnicalProperties: React.FC<TechnicalPropertiesProps> = ({
         <Input
           className="text-lg px-4"
           placeholder="Shore Hardness"
-          value={data?.shoreHardness || ""}
-          onChange={(e) => onFieldChange("shoreHardness", e.target.value)}
+          type="number"
+          value={data?.shoreHardness ?? ""}
+          onChange={(e) =>
+            onFieldChange("shoreHardness", parseFloat(e.target.value))
+          }
         />
       </div>
 
@@ -108,30 +112,22 @@ const TechnicalProperties: React.FC<TechnicalPropertiesProps> = ({
         <Input
           className="text-lg px-4"
           placeholder="Water Absorption"
-          value={data?.waterAbsorption || ""}
-          onChange={(e) => onFieldChange("waterAbsorption", e.target.value)}
+          type="number"
+          value={data?.waterAbsorption ?? ""}
+          onChange={(e) =>
+            onFieldChange("waterAbsorption", parseFloat(e.target.value))
+          }
         />
       </div>
 
       <div>
-        <Label htmlFor="grade" className="block mb-1">
-          Grade
-        </Label>
-        <Select
-          value={data?.grade || ""}
-          onValueChange={(val) => onFieldChange("grade", val)}
-        >
-          <SelectTrigger className="px-4 w-full">
-            <SelectValue placeholder="Select Grade" />
-          </SelectTrigger>
-          <SelectContent>
-            {grades?.map((grade: Grade) => (
-              <SelectItem key={grade._id} value={grade._id}>
-                {grade.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <MultiSelect
+          label="Grades"
+          placeholder="Select Grades"
+          options={grades}
+          selected={data.grades || []}
+          onChange={(selected) => onFieldChange("grades", selected)}
+        />
       </div>
     </>
   );

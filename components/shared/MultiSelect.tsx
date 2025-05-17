@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { ChevronDown } from "lucide-react";
@@ -9,7 +9,7 @@ interface DropdownItem {
   name: string;
 }
 
-interface MultiSelectTriggerProps {
+interface MultiSelectProps {
   label: string;
   placeholder?: string;
   options: DropdownItem[];
@@ -17,7 +17,7 @@ interface MultiSelectTriggerProps {
   onChange: (selected: string[]) => void;
 }
 
-const MultiSelectTrigger: React.FC<MultiSelectTriggerProps> = ({
+const MultiSelect: React.FC<MultiSelectProps> = ({
   label,
   placeholder = "Select",
   options,
@@ -25,6 +25,7 @@ const MultiSelectTrigger: React.FC<MultiSelectTriggerProps> = ({
   onChange,
 }) => {
   const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const toggleOption = (id: string) => {
     const updated = selected.includes(id)
@@ -37,8 +38,30 @@ const MultiSelectTrigger: React.FC<MultiSelectTriggerProps> = ({
     .filter((opt) => selected.includes(opt._id))
     .map((opt) => opt.name);
 
+  // ✅ Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
+        setOpen(false);
+      }
+    };
+
+    if (open) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [open]);
+
   return (
-    <div className="relative">
+    <div className="relative" ref={containerRef}>
       <Label className="mb-1 block">{label}</Label>
 
       <div
@@ -74,4 +97,4 @@ const MultiSelectTrigger: React.FC<MultiSelectTriggerProps> = ({
   );
 };
 
-export default MultiSelectTrigger;
+export default MultiSelect;

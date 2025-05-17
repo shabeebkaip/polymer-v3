@@ -1,20 +1,15 @@
-export interface AdditionalInfo {
-  title: string;
-  description: string;
-}
-
 export interface UploadedFile {
   id: string;
   fileUrl: string;
   type?: string;
   name?: string;
+  [key: string]: any; // fallback for dynamic keys
 }
 
 export interface ProductFormData {
   productName: string;
   chemicalName: string;
   description: string;
-  additionalInfo: AdditionalInfo[];
 
   tradeName: string;
   chemicalFamily: string;
@@ -22,8 +17,7 @@ export interface ProductFormData {
 
   industry: string[]; // Array of industry IDs
   grade: string[]; // Array of grade IDs
-  productFamily: string[]; // Array of family IDs
-  
+
   manufacturingMethod: string;
   physicalForm: string;
   countryOfOrigin: string;

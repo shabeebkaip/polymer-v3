@@ -11,30 +11,29 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
 import { format } from "date-fns";
 import { Calendar } from "../../ui/calendar";
-import { useDropdowns } from "@/lib/useDropdowns";
 import { uomDropdown } from "@/lib/utils";
+import { ProductFormData } from "@/types/product"; // update with your actual path
+import MultiSelect from "@/components/shared/MultiSelect";
+
+interface DropdownItem {
+  _id: string;
+  name: string;
+}
 
 interface TradeInformationProps {
-  data: {
-    minimum_order_quantity?: string;
-    stock?: string;
-    uom?: string;
-    price?: string;
-    priceTerms?: string;
-    incoterms?: string;
-    leadTime?: Date;
-    paymentTerms?: string;
-    [key: string]: any;
-  };
-  onFieldChange: (field: string, value: any) => void;
+  data: ProductFormData;
+  onFieldChange: (field: keyof ProductFormData, value: any) => void;
+  incoterms?: DropdownItem[];
+  paymentTerms?: DropdownItem[];
 }
 
 const TradeInformation: React.FC<TradeInformationProps> = ({
   data,
   onFieldChange,
+  incoterms = [],
+  paymentTerms = [],
 }) => {
   const [calendarOpen, setCalendarOpen] = useState(false);
-  const { incoterms, paymentTerms } = useDropdowns();
 
   return (
     <>
@@ -49,9 +48,9 @@ const TradeInformation: React.FC<TradeInformationProps> = ({
         <Input
           className="text-lg px-4"
           placeholder="Minimum Order Quantity"
-          value={data?.minimum_order_quantity || ""}
+          value={data.minimum_order_quantity ?? ""}
           onChange={(e) =>
-            onFieldChange("minimum_order_quantity", e.target.value)
+            onFieldChange("minimum_order_quantity", Number(e.target.value))
           }
         />
       </div>
@@ -63,8 +62,8 @@ const TradeInformation: React.FC<TradeInformationProps> = ({
         <Input
           className="text-lg px-4"
           placeholder="Stock"
-          value={data?.stock || ""}
-          onChange={(e) => onFieldChange("stock", e.target.value)}
+          value={data.stock ?? ""}
+          onChange={(e) => onFieldChange("stock", Number(e.target.value))}
         />
       </div>
 
@@ -73,14 +72,14 @@ const TradeInformation: React.FC<TradeInformationProps> = ({
           UOM
         </Label>
         <Select
-          value={data?.uom || ""}
+          value={data.uom}
           onValueChange={(val) => onFieldChange("uom", val)}
         >
           <SelectTrigger className="px-4 w-full">
             <SelectValue placeholder="Select UOM" />
           </SelectTrigger>
           <SelectContent>
-            {uomDropdown?.map((uom: string) => (
+            {uomDropdown.map((uom: string) => (
               <SelectItem key={uom} value={uom}>
                 {uom}
               </SelectItem>
@@ -96,8 +95,8 @@ const TradeInformation: React.FC<TradeInformationProps> = ({
         <Input
           className="text-lg px-4"
           placeholder="Price"
-          value={data?.price || ""}
-          onChange={(e) => onFieldChange("price", e.target.value)}
+          value={data.price ?? ""}
+          onChange={(e) => onFieldChange("price", Number(e.target.value))}
         />
       </div>
 
@@ -106,8 +105,10 @@ const TradeInformation: React.FC<TradeInformationProps> = ({
           Price Terms
         </Label>
         <Select
-          value={data?.priceTerms || ""}
-          onValueChange={(val) => onFieldChange("priceTerms", val)}
+          value={data.priceTerms}
+          onValueChange={(val) =>
+            onFieldChange("priceTerms", val as "fixed" | "negotiable")
+          }
         >
           <SelectTrigger className="px-4 w-full">
             <SelectValue placeholder="Select Price Terms" />
@@ -120,24 +121,13 @@ const TradeInformation: React.FC<TradeInformationProps> = ({
       </div>
 
       <div>
-        <Label htmlFor="incoterms" className="block mb-1">
-          Incoterms
-        </Label>
-        <Select
-          value={data?.incoterms || ""}
-          onValueChange={(val) => onFieldChange("incoterms", val)}
-        >
-          <SelectTrigger className="px-4 w-full">
-            <SelectValue placeholder="Select Incoterms" />
-          </SelectTrigger>
-          <SelectContent>
-            {incoterms?.map((term) => (
-              <SelectItem key={term._id} value={term._id}>
-                {term.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <MultiSelect
+          label="Incoterms"
+          placeholder="Select Incoterms"
+          options={incoterms}
+          selected={data.incoterms || []}
+          onChange={(val) => onFieldChange("incoterms", val)}
+        />
       </div>
 
       <div>
@@ -149,8 +139,8 @@ const TradeInformation: React.FC<TradeInformationProps> = ({
             <Input
               readOnly
               value={
-                data?.leadTime
-                  ? format(data.leadTime, "MMM dd, yyyy")
+                data.leadTime
+                  ? format(new Date(data.leadTime), "MMM dd, yyyy")
                   : "Select Lead Time"
               }
               className="bg-white cursor-pointer text-lg px-4"
@@ -159,7 +149,7 @@ const TradeInformation: React.FC<TradeInformationProps> = ({
           <PopoverContent className="p-0">
             <Calendar
               mode="single"
-              selected={data.leadTime}
+              selected={data.leadTime ? new Date(data.leadTime) : undefined}
               onSelect={(date) => {
                 onFieldChange("leadTime", date);
                 setCalendarOpen(false);
@@ -174,14 +164,14 @@ const TradeInformation: React.FC<TradeInformationProps> = ({
           Payment Terms
         </Label>
         <Select
-          value={data?.paymentTerms || ""}
+          value={data.paymentTerms}
           onValueChange={(val) => onFieldChange("paymentTerms", val)}
         >
           <SelectTrigger className="px-4 w-full">
             <SelectValue placeholder="Select Payment Terms" />
           </SelectTrigger>
           <SelectContent>
-            {paymentTerms?.map((term) => (
+            {paymentTerms.map((term) => (
               <SelectItem key={term._id} value={term._id}>
                 {term.name}
               </SelectItem>

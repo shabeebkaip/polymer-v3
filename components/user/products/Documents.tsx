@@ -1,16 +1,10 @@
 import React from "react";
 import FileUpload from "@/components/shared/FileUpload";
-
-interface UploadedFile {
-  id: string;
-  fileUrl: string;
-  type?: string;
-  name?: string;
-}
+import { UploadedFile, ProductFormData } from "@/types/product"; // Adjust path as needed
 
 interface DocumentsProps {
-  data?: any; // Update this with a stricter type if you plan to use it
-  onFieldChange?: (field: string, value: UploadedFile[]) => void;
+  data: ProductFormData;
+  onFieldChange: (field: keyof ProductFormData, value: UploadedFile[]) => void;
 }
 
 const Documents: React.FC<DocumentsProps> = ({ data, onFieldChange }) => {
@@ -22,12 +16,13 @@ const Documents: React.FC<DocumentsProps> = ({ data, onFieldChange }) => {
 
       <div className="col-span-3">
         <FileUpload
-          onFileUpload={(file) => {
-            console.log("File uploaded:", file);
-            onFieldChange?.("safetyDataSheet", file);
+          onFileUpload={(files) => {
+            onFieldChange("safety_data_sheet", files);
           }}
           buttonText="Upload Safety Data Sheet"
-          existingFiles={[]}
+          existingFiles={
+            Array.isArray(data.safety_data_sheet) ? data.safety_data_sheet : []
+          }
           multiple={false}
           setCloudinaryImage={(url) => {
             console.log("Cloudinary image URL:", url);
@@ -37,12 +32,15 @@ const Documents: React.FC<DocumentsProps> = ({ data, onFieldChange }) => {
 
       <div className="col-span-3">
         <FileUpload
-          onFileUpload={(file) => {
-            console.log("File uploaded:", file);
-            onFieldChange?.("technicalDataSheet", file);
+          onFileUpload={(files) => {
+            onFieldChange("technical_data_sheet", files);
           }}
           buttonText="Upload Technical Data Sheet"
-          existingFiles={[]}
+          existingFiles={
+            Array.isArray(data.technical_data_sheet)
+              ? data.technical_data_sheet
+              : []
+          }
           multiple={false}
           setCloudinaryImage={(url) => {
             console.log("Cloudinary image URL:", url);
@@ -52,12 +50,15 @@ const Documents: React.FC<DocumentsProps> = ({ data, onFieldChange }) => {
 
       <div className="col-span-3">
         <FileUpload
-          onFileUpload={(file) => {
-            console.log("File uploaded:", file);
-            onFieldChange?.("certificateOfAnalysis", file);
+          onFileUpload={(files) => {
+            onFieldChange("certificate_of_analysis", files);
           }}
           buttonText="Upload Certificate of Analysis"
-          existingFiles={[]}
+          existingFiles={
+            Array.isArray(data.certificate_of_analysis)
+              ? data.certificate_of_analysis
+              : []
+          }
           multiple={false}
           setCloudinaryImage={(url) => {
             console.log("Cloudinary image URL:", url);

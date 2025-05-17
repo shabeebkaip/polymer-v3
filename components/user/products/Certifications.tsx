@@ -1,16 +1,14 @@
 import React from "react";
 import { Checkbox } from "../../ui/checkbox";
 import { Label } from "../../ui/label";
+import { ProductFormData } from "@/types/product"; // Adjust path if needed
 
-interface CertificationsProps {
-  data: {
-    fdaApproved?: boolean;
-    medicalGrade?: boolean;
-  };
-  onFieldChange: (field: string, value: boolean) => void;
+interface CertificationProps {
+  data: ProductFormData;
+  onFieldChange: (field: keyof ProductFormData, value: boolean) => void;
 }
 
-const Certification: React.FC<CertificationsProps> = ({
+const Certification: React.FC<CertificationProps> = ({
   data,
   onFieldChange,
 }) => {
@@ -23,7 +21,7 @@ const Certification: React.FC<CertificationsProps> = ({
         <div className="flex items-center space-x-2">
           <Checkbox
             id="fdaApproved"
-            checked={data.fdaApproved || false}
+            checked={data.fdaApproved}
             onCheckedChange={(checked) =>
               onFieldChange("fdaApproved", Boolean(checked))
             }
@@ -33,7 +31,7 @@ const Certification: React.FC<CertificationsProps> = ({
         <div className="flex items-center space-x-2">
           <Checkbox
             id="medicalGrade"
-            checked={data.medicalGrade || false}
+            checked={data.medicalGrade}
             onCheckedChange={(checked) =>
               onFieldChange("medicalGrade", Boolean(checked))
             }

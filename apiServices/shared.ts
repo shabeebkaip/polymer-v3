@@ -107,7 +107,7 @@ export const getPaymentTerms = async () => {
 
 export const postFileUpload = async (data: FormData): Promise<UploadedFile> => {
   try {
-    const response = await axiosInstance.post<{ data: UploadedFile }>(
+    const response = await axiosInstance.post<{ fileUrl: string; id: string }>(
       "/file/upload",
       data,
       {
@@ -116,7 +116,7 @@ export const postFileUpload = async (data: FormData): Promise<UploadedFile> => {
         },
       }
     );
-    return response.data.data;
+    return response.data;
   } catch (error) {
     console.error("Error uploading:", error);
     throw error;

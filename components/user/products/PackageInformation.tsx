@@ -24,14 +24,14 @@ interface PackageInformationProps {
     [key: string]: any;
   };
   onFieldChange: (field: string, value: string) => void;
+  packagingTypes?: PackagingType[];
 }
 
 const PackageInformation: React.FC<PackageInformationProps> = ({
   data,
   onFieldChange,
+  packagingTypes = [],
 }) => {
-  const { packagingTypes } = useDropdowns();
-
   return (
     <>
       <div className="col-span-3">
@@ -39,12 +39,12 @@ const PackageInformation: React.FC<PackageInformationProps> = ({
       </div>
 
       <div>
-        <Label htmlFor="packageType" className="block mb-1">
+        <Label htmlFor="packagingType" className="block mb-1">
           Package Type
         </Label>
         <Select
           value={data?.packageType || ""}
-          onValueChange={(val) => onFieldChange("packageType", val)}
+          onValueChange={(val) => onFieldChange("packagingType", val)}
         >
           <SelectTrigger className="px-4 w-full">
             <SelectValue placeholder="Select Package Type" />

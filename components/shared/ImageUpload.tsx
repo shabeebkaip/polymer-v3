@@ -4,7 +4,7 @@ import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { X } from "lucide-react";
 import Image from "next/image";
-import { imageUpload, postFileUpload } from "@/apiServices/shared";
+import { imageUpload } from "@/apiServices/shared";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -13,6 +13,9 @@ import { cn } from "@/lib/utils";
 interface UploadedFile {
   fileUrl: string;
   id: string;
+  name: string;
+  type: string;
+  [key: string]: any;
 }
 
 interface ImageUploadProps {
@@ -50,6 +53,8 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
           uploadedFiles.push({
             fileUrl,
             id,
+            name: "file",
+            type: "image",
           });
         } catch (error) {
           console.error("Error uploading file:", error);
@@ -135,12 +140,3 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 };
 
 export default ImageUpload;
-// Usage example
-// <ImageUpload
-//   onFilesUpload={(files) => console.log(files)}
-//   previews={previews}
-//   setPreviews={setPreviews}
-//   onImageClick={(index) => console.log(`Image ${index} clicked`)}
-//   width="100%"
-//   height="150px"
-// />

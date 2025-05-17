@@ -53,3 +53,13 @@ export const getProductDetails = async (productId: string) => {
     throw error;
   }
 };
+
+export const createProduct = async (data: any) => {
+  try {
+    const response = await axiosInstance.post("product/create", data);
+    return response.data;
+  } catch (error) {
+    console.error("Error creating product:", error);
+    throw error;
+  }
+};

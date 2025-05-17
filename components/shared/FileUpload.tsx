@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { postFileUpload } from "@/apiServices/shared";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 
@@ -55,13 +55,10 @@ const FileUpload: React.FC<FileUploadProps> = ({
         const formData = new FormData();
         formData.append("file", file);
         try {
-          const response = await postFileUpload(formData);
-          const { fileUrl, id, type, name } = response;
+          const { fileUrl, id } = await postFileUpload(formData);
           const uploadedFile: UploadedFile = {
             fileUrl,
             id,
-            type: type || file.type.split("/")[1],
-            name: name || file.name,
           };
           newFiles.push(uploadedFile);
         } catch (error) {
@@ -130,7 +127,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
           >
             {getFileIcon(file.type)}
             <span className="truncate text-xs w-full mt-1">
-              {file.name || `File ${index + 1}`}
+              view
             </span>
             <Button
               size="icon"
@@ -149,7 +146,9 @@ const FileUpload: React.FC<FileUploadProps> = ({
 
       <Dialog open={!!previewFile} onOpenChange={() => setPreviewFile(null)}>
         {previewFile && (
-          <DialogContent className="w-full max-w-4xl h-[80vh] flex items-center justify-center">
+          <DialogContent className="w-full max-w-4xl h-[80vh] flex flex-col items-center justify-center">
+            <DialogTitle className="sr-only">File Preview</DialogTitle>
+
             {previewFile.fileUrl?.endsWith(".pdf") ? (
               <iframe
                 src={previewFile.fileUrl}
