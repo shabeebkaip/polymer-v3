@@ -7,11 +7,15 @@ import { ProductFormData } from "@/types/product";
 interface GeneralInformationProps {
   data: ProductFormData;
   onFieldChange: (field: keyof ProductFormData, value: any) => void;
+  onFieldError: (field: keyof ProductFormData) => void;
+  error: Partial<Record<keyof ProductFormData, string>>;
 }
 
 const GeneralInformation: React.FC<GeneralInformationProps> = ({
   data,
   onFieldChange,
+  error,
+  onFieldError,
 }) => {
   return (
     <>
@@ -28,6 +32,11 @@ const GeneralInformation: React.FC<GeneralInformationProps> = ({
           placeholder="Product Name"
           value={data.productName || ""}
           onChange={(e) => onFieldChange("productName", e.target.value)}
+          error={error.productName ? true : false}
+          helperText={error.productName}
+          onFocus={() => onFieldError("productName")} // Clear error on focus
+
+          // Clear error on focus
         />
       </div>
 
@@ -40,6 +49,9 @@ const GeneralInformation: React.FC<GeneralInformationProps> = ({
           placeholder="Chemical Name"
           value={data.chemicalName || ""}
           onChange={(e) => onFieldChange("chemicalName", e.target.value)}
+          error={error.chemicalName ? true : false}
+          helperText={error.chemicalName}
+          onFocus={() => onFieldError("chemicalName")} // Clear error on focus
         />
       </div>
 
@@ -52,6 +64,9 @@ const GeneralInformation: React.FC<GeneralInformationProps> = ({
           placeholder="Trade Name"
           value={data.tradeName || ""}
           onChange={(e) => onFieldChange("tradeName", e.target.value)}
+          error={error.tradeName ? true : false}
+          helperText={error.tradeName}
+          onFocus={() => onFieldError("tradeName")} // Clear error on focus
         />
       </div>
 

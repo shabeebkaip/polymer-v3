@@ -42,6 +42,12 @@ const AddEditProduct = () => {
       [key]: value,
     }));
   };
+  const onFieldError = (key: keyof ProductFormData, value: any) => {
+    setError((prev) => ({
+      ...prev,
+      [key]: "",
+    }));
+  };
 
   const handleSubmit = () => {
     const validationErrors: ValidationErrors = {};
@@ -99,11 +105,16 @@ const AddEditProduct = () => {
         console.error("Error creating product", err);
       });
   };
-    console.log("Errors", error);
+  console.log("Errors", error);
   return (
     <div className="container mx-auto px-4 pb-6">
       <div className="grid grid-cols-3 gap-4">
-        <GeneralInformation data={data} onFieldChange={onFieldChange} />
+        <GeneralInformation
+          data={data}
+          onFieldChange={onFieldChange}
+          error={error}
+          onFieldError={onFieldError}
+        />
         <ProductDetails
           data={data}
           onFieldChange={onFieldChange}

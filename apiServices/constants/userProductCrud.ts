@@ -1,6 +1,6 @@
 import { ProductFormData, UploadedFile } from "@/types/product";
 
-const initialFormData: ProductFormData = {
+export const initialFormData: ProductFormData = {
   productName: "",
   chemicalName: "",
   description: "",
