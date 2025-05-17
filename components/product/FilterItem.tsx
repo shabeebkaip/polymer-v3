@@ -1,4 +1,5 @@
 "use client";
+
 import Image from "next/image";
 import React, { useState } from "react";
 
@@ -13,9 +14,10 @@ interface FilterItemProps {
     displayName: string;
     data: Data[];
   };
+  onFilterChange: (name: string, id: string, isChecked: boolean) => void;
 }
 
-const FilterItem: React.FC<FilterItemProps> = ({ filter }) => {
+const FilterItem: React.FC<FilterItemProps> = ({ filter, onFilterChange }) => {
   const [open, setOpen] = useState(false);
 
   return (
@@ -35,31 +37,17 @@ const FilterItem: React.FC<FilterItemProps> = ({ filter }) => {
         />
       </div>
 
-      {/* Content with animation */}
+      {/* Content */}
       <div
         className={`transition-all duration-500 ease-in-out ${
           open ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0"
         }`}
       >
         <div className="flex flex-col gap-2 px-3 pb-3">
-          {/* Optional Search */}
-          {/* {filter.searchable && (
-            <input
-              type="text"
-              placeholder="Search..."
-              className="border border-[#E8E8E8] rounded-xl p-2 text-sm outline-none w-full"
-            />
-          )} */}
-
-          {/* Checkbox options */}
           <div className="flex flex-col gap-2 pt-2">
-            {filter?.data?.map((option: any, index: number) => {
-              const id =
-                typeof option === "object"
-                  ? option._id || option.name
-                  : String(option);
-              const label =
-                typeof option === "object" ? option.name : String(option);
+            {filter?.data?.map((option, index) => {
+              const id = option._id || option.name;
+              const label = option.name;
 
               return (
                 <label
@@ -72,6 +60,9 @@ const FilterItem: React.FC<FilterItemProps> = ({ filter }) => {
                     id={id}
                     name={label}
                     value={id}
+                    onChange={(e) =>
+                      onFilterChange(filter.name, id, e.target.checked)
+                    }
                     className="w-5 h-5 rounded border-gray-300 accent-[var(--green-light)]"
                   />
                   {label}

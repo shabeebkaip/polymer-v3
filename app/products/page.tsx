@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
 import SupplierBasic from "@/components/suppliers/SupplierBasic";
 import { getProductFilters, getProductList } from "@/apiServices/products";
+import { set } from "date-fns";
 
 // --- Types ---
 interface ProductFilter {
@@ -67,6 +68,30 @@ const ProductsPage: React.FC = () => {
     });
   }, [query]);
 
+  const handleFilter = (name: string, id: string, isChecked: boolean) => {
+    setQuery((prev) => {
+      const existing = prev[name] || [];
+
+      if (isChecked) {
+        // Add the ID if not already present
+        return {
+          ...prev,
+          [name]: existing.includes(id) ? existing : [...existing, id],
+        };
+      } else {
+        // Remove the ID; delete the key if the array becomes empty
+        const updated = existing.filter((val: string) => val !== id);
+        const newQuery = { ...prev, [name]: updated };
+
+        if (updated.length === 0) {
+          delete newQuery[name];
+        }
+
+        return newQuery;
+      }
+    });
+  };
+
   return (
     <section className="mt-10 container mx-auto px-4">
       <Suspense fallback={<div>Loading...</div>}>
@@ -75,13 +100,7 @@ const ProductsPage: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mb-10">
         <div className="hidden md:block md:col-span-3">
           <Suspense fallback={<div>Loading filters...</div>}>
-            <Filter
-              filters={filters}
-              onFilterChange={(selectedOption: string) => {
-                console.log("Selected filter option:", selectedOption);
-                // Update query logic can go here if needed
-              }}
-            />
+            <Filter filters={filters} onFilterChange={handleFilter} />
           </Suspense>
         </div>
         <div className="col-span-9">

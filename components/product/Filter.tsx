@@ -13,7 +13,7 @@ interface ProductFilter {
 
 interface FilterProps {
   filters: ProductFilter[];
-  onFilterChange: (selectedOption: string) => void;
+  onFilterChange: (name: string, id: string, isChecked: boolean) => void;
 }
 
 const Filter: React.FC<FilterProps> = ({ filters, onFilterChange }) => {
@@ -22,7 +22,11 @@ const Filter: React.FC<FilterProps> = ({ filters, onFilterChange }) => {
       <h2 className="text-[var(--dark-main)] text-xl mb-4">Filter</h2>
       <div className="flex flex-col gap-4">
         {filters.map((filter, index) => (
-          <FilterItem key={index} filter={filter} />
+          <FilterItem
+            key={index}
+            filter={filter}
+            onFilterChange={onFilterChange}
+          />
         ))}
       </div>
     </div>
