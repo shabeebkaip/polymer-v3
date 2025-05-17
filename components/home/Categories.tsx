@@ -6,10 +6,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import useIsMobile from "@/lib/useIsMobile";
 
-import {
-  getIndustryList,
-  getProductFamilies,
-} from "@/apiServices/shared";
+import { getIndustryList, getProductFamilies } from "@/apiServices/shared";
 
 // Types
 interface CategoryData {
@@ -110,7 +107,13 @@ const Categories: React.FC = () => {
 
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-3 w-full">
           {displayedItems.map(({ name, image, _id }, index) => (
-            <CategoryCard key={_id || index} name={name} image={image} />
+            <CategoryCard
+              key={_id || index}
+              name={name}
+              image={image}
+              id={_id}
+              selectedCategory={selectedCategory}
+            />
           ))}
 
           {shouldShowViewAll && (

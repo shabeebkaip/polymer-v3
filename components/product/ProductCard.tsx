@@ -2,8 +2,6 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import QuoteRequestModal from "../shared/QuoteRequestModal";
 import SampleRequestModal from "../shared/SampleRequestModal";
-import { useUserInfo } from "@/lib/useUserInfo";
-import { usePathname } from "next/navigation";
 
 // Define a proper type for product props
 interface Product {
@@ -16,9 +14,6 @@ interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const router = useRouter();
-  const { user } = useUserInfo();
-  const pathname = usePathname();
-  const userType = user?.user_type;
   return (
     <div className="rounded-xl p-2 shadow-lg hover:shadow-xl transition-shadow duration-300 h-full flex flex-col justify-between">
       <div className="flex flex-col gap-4">

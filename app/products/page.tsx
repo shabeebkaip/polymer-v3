@@ -1,6 +1,8 @@
 "use client";
+
 import React, { Suspense, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
+import { useSearchParams } from "next/navigation";
 import SupplierBasic from "@/components/suppliers/SupplierBasic";
 import { getProductFilters, getProductList } from "@/apiServices/products";
 
@@ -9,7 +11,7 @@ interface ProductFilter {
   name: string;
   displayName: string;
   component: string;
-  data: Array<any>; // Can replace `any` with a proper data shape later
+  data: Array<any>;
 }
 
 interface Product {
@@ -32,19 +34,36 @@ const ProductsList = dynamic(() => import("@/components/product/ProductsList"));
 
 // --- Component ---
 const ProductsPage: React.FC = () => {
-  const [query, setQuery] = useState<Record<string, any>>({});
+  const searchParams = useSearchParams();
+
+  // --- Extract initial filter parameters ---
+  const initialIndustry = searchParams.get("industry");
+  const initialProductFamily = searchParams.get("productFamily");
+  const initialCreatedBy = searchParams.get("createdBy");
+
+  // --- Construct initial query object ---
+  const initialQuery: Record<string, any> = {};
+  if (initialCreatedBy) initialQuery.createdBy = [initialCreatedBy];
+  if (initialIndustry) initialQuery.industry = [initialIndustry];
+  if (initialProductFamily) initialQuery.productFamily = [initialProductFamily];
+
+  const [query, setQuery] = useState<Record<string, any>>(initialQuery);
   const [products, setProducts] = useState<Product[]>([]);
   const [pagination, setPagination] = useState<Pagination | null>(null);
   const [filters, setFilters] = useState<ProductFilter[]>([]);
 
+  // --- Fetch filters only once ---
+  useEffect(() => {
+    getProductFilters().then((response) => {
+      setFilters(response.filter);
+    });
+  }, []);
+
+  // --- Fetch products on query change ---
   useEffect(() => {
     getProductList(query).then((response) => {
       setProducts(response.data);
       setPagination(response.pagination);
-    });
-
-    getProductFilters().then((response) => {
-      setFilters(response.filter);
     });
   }, [query]);
 
@@ -60,6 +79,7 @@ const ProductsPage: React.FC = () => {
               filters={filters}
               onFilterChange={(selectedOption: string) => {
                 console.log("Selected filter option:", selectedOption);
+                // Update query logic can go here if needed
               }}
             />
           </Suspense>

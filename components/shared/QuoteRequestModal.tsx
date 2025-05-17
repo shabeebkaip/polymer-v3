@@ -143,7 +143,6 @@ const QuoteRequestModal = ({
       toast.error("Something went wrong while creating the quote request.");
     }
   };
-  console.log("QuoteRequestModal", incoterms);
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild onClick={handletrigger}>
