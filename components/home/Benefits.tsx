@@ -1,4 +1,3 @@
-import { register } from "module";
 import React from "react";
 import BenefitCard from "./BenefitCard";
 
