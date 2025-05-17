@@ -14,11 +14,16 @@ interface FilterItemProps {
     displayName: string;
     data: Data[];
   };
+  query: Record<string, any>;
   onFilterChange: (name: string, id: string, isChecked: boolean) => void;
 }
 
-const FilterItem: React.FC<FilterItemProps> = ({ filter, onFilterChange }) => {
-  const [open, setOpen] = useState(false);
+const FilterItem: React.FC<FilterItemProps> = ({
+  filter,
+  onFilterChange,
+  query,
+}) => {
+  const [open, setOpen] = useState(true);
 
   return (
     <div className="border border-[#c4c4c4] rounded-2xl overflow-hidden">
@@ -45,9 +50,13 @@ const FilterItem: React.FC<FilterItemProps> = ({ filter, onFilterChange }) => {
       >
         <div className="flex flex-col gap-2 px-3 pb-3">
           <div className="flex flex-col gap-2 pt-2">
-            {filter?.data?.map((option, index) => {
-              const id = option._id || option.name;
-              const label = option.name;
+            {filter?.data?.map((option: any, index: number) => {
+              const id =
+                typeof option === "object"
+                  ? option._id || option.name
+                  : String(option);
+              const label =
+                typeof option === "object" ? option.name : String(option);
 
               return (
                 <label
@@ -60,12 +69,15 @@ const FilterItem: React.FC<FilterItemProps> = ({ filter, onFilterChange }) => {
                     id={id}
                     name={label}
                     value={id}
+                    checked={query[filter.name]?.includes(id) || false}
                     onChange={(e) =>
                       onFilterChange(filter.name, id, e.target.checked)
                     }
                     className="w-5 h-5 rounded border-gray-300 accent-[var(--green-light)]"
                   />
-                  {label}
+                  {label || (
+                    <span className="italic text-gray-400">Unnamed</span>
+                  )}
                 </label>
               );
             })}

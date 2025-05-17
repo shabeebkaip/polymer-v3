@@ -13,10 +13,11 @@ interface ProductFilter {
 
 interface FilterProps {
   filters: ProductFilter[];
+  query: Record<string, any>;
   onFilterChange: (name: string, id: string, isChecked: boolean) => void;
 }
 
-const Filter: React.FC<FilterProps> = ({ filters, onFilterChange }) => {
+const Filter: React.FC<FilterProps> = ({ filters, onFilterChange, query }) => {
   return (
     <div>
       <h2 className="text-[var(--dark-main)] text-xl mb-4">Filter</h2>
@@ -25,6 +26,7 @@ const Filter: React.FC<FilterProps> = ({ filters, onFilterChange }) => {
           <FilterItem
             key={index}
             filter={filter}
+            query={query}
             onFilterChange={onFilterChange}
           />
         ))}

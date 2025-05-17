@@ -100,7 +100,7 @@ const ProductsPage: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mb-10">
         <div className="hidden md:block md:col-span-3">
           <Suspense fallback={<div>Loading filters...</div>}>
-            <Filter filters={filters} onFilterChange={handleFilter} />
+            <Filter filters={filters} onFilterChange={handleFilter} query={query} />
           </Suspense>
         </div>
         <div className="col-span-9">
