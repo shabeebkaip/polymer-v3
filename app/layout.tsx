@@ -28,7 +28,9 @@ export default function RootLayout({
       <body className="antialiased">
         <Header />
         <Toaster richColors position="top-right" />
-        {children}
+        <div className="min-h-screen flex flex-col justify-between">
+          <main className="flex-grow">{children}</main>
+        </div>
         <Footer />
       </body>
     </html>
