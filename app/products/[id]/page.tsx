@@ -1,14 +1,8 @@
 import { getProductDetails } from "@/apiServices/products";
 import ProductDetailClient from "@/components/product/ProductClient";
 
-interface PageProps {
-  params: {
-    id: string;
-  };
-}
-
-const ProductPage = async ({ params }: PageProps) => {
-  const { id } = params; // ✅ FIXED: removed "await"
+const ProductPage = async ({ params }: { params: { id: string } }) => {
+  const { id } = params;
   const response = await getProductDetails(id);
   const product = response.data;
 
