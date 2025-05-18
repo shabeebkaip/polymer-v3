@@ -1,13 +1,12 @@
 "use client";
 import React, { useState } from "react";
-import { format } from "date-fns";
+
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
-  DialogDescription,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -28,8 +27,7 @@ import {
 import { getGrades } from "@/apiServices/shared";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
-import { create } from "domain";
-import { createQuoteRequest, createSampleRequest } from "@/apiServices/user";
+import { createSampleRequest } from "@/apiServices/user";
 
 interface Grade {
   _id: string;
@@ -193,7 +191,11 @@ const SampleRequestModal = ({
                 readOnly
                 value={
                   data?.orderDate
-                    ? format(data?.neededBy, "MMM dd, yyyy")
+                    ? new Date(data?.neededBy).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                      })
                     : "Needed By"
                 }
                 className="bg-white cursor-pointer"
@@ -217,7 +219,11 @@ const SampleRequestModal = ({
                 readOnly
                 value={
                   data?.orderDate
-                    ? format(data?.orderDate, "MMM dd, yyyy")
+                    ? new Date(data?.orderDate).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                      })
                     : "When do you plan to order?"
                 }
                 className="bg-white cursor-pointer"

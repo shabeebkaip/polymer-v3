@@ -9,7 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { format } from "date-fns";
+
 import { useEffect, useState } from "react";
 
 const QuoteEnquiries = () => {
@@ -46,7 +46,11 @@ const QuoteEnquiries = () => {
               </TableCell>
               <TableCell>
                 {item.createdAt
-                  ? format(new Date(item.createdAt), "MMM dd, yyyy")
+                  ? new Date(item.createdAt).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "2-digit",
+                      day: "2-digit",
+                    })
                   : "--"}
               </TableCell>
               <TableCell>{item?.status}</TableCell>

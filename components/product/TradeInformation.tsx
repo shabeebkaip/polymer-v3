@@ -1,6 +1,5 @@
 import React from "react";
 import LabelValue from "../shared/LabelValue";
-import { format } from "date-fns";
 
 interface NamedItem {
   name: string;
@@ -58,7 +57,7 @@ const TradeInformation: React.FC<GeneralTabInformationProps> = ({
       {renderIfExists("Price per Unit", product.price)}
       {renderIfExists("Price Terms", product.priceTerms)}
       {renderArray("Incoterms", product.incoterms)}
-      {renderIfExists("Lead Time", format(new Date(), "MMM dd, yyyy"))}
+      {/* {renderIfExists("Lead Time", format(new Date(), "MMM dd, yyyy"))} */}
 
       {/* Divider */}
       <hr className="my-6" />

@@ -1,6 +1,5 @@
 "use client";
 import React, { useState } from "react";
-import { format } from "date-fns";
 import {
   Dialog,
   DialogContent,
@@ -273,7 +272,14 @@ const QuoteRequestModal = ({
                 readOnly
                 value={
                   data?.delivery_date
-                    ? format(data?.delivery_date, "MMM dd, yyyy")
+                    ? new Date(data?.delivery_date).toLocaleDateString(
+                        "en-US",
+                        {
+                          year: "numeric",
+                          month: "2-digit",
+                          day: "2-digit",
+                        }
+                      )
                     : "Select Delivery Date"
                 }
                 className="bg-white cursor-pointer"

@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  getUserSampleEnquiries,
-  getUserSampleRequests,
-} from "@/apiServices/user";
+import { getUserSampleEnquiries } from "@/apiServices/user";
 import {
   Table,
   TableBody,
@@ -12,7 +9,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { format } from "date-fns";
 import { useEffect, useState } from "react";
 
 const SampleEnquiries = () => {
@@ -22,7 +18,6 @@ const SampleEnquiries = () => {
       setEnquiries(response.data);
     });
   }, []);
-    console.log("enquiries", enquiries);
   return (
     <div className="container mx-auto py-6">
       <h4 className="mb-6 text-xl text-[var(--dark-main)] ">
@@ -49,10 +44,14 @@ const SampleEnquiries = () => {
               </TableCell>
               <TableCell>
                 {item.createdAt
-                  ? format(new Date(item.createdAt), "MMM dd, yyyy")
+                  ? new Date(item.createdAt).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "2-digit",
+                      day: "2-digit",
+                    })
                   : "--"}
               </TableCell>
-               <TableCell>{item?.status}</TableCell>     
+              <TableCell>{item?.status}</TableCell>
               <TableCell className="capitalize">{item?.user?.email}</TableCell>
             </TableRow>
           ))}

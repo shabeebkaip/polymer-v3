@@ -9,7 +9,6 @@ import {
   SelectValue,
 } from "../../ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
-import { format } from "date-fns";
 import { Calendar } from "../../ui/calendar";
 import { uomDropdown } from "@/lib/utils";
 import { ProductFormData } from "@/types/product"; // update with your actual path
@@ -59,8 +58,6 @@ const TradeInformation: React.FC<TradeInformationProps> = ({
           onFocus={() => onFieldError("minimum_order_quantity")} // Clear error on focus
           error={error?.minimum_order_quantity ? true : false} // Show error state
           helperText={error?.minimum_order_quantity} // Show error message
-
-
         />
       </div>
 
@@ -87,7 +84,8 @@ const TradeInformation: React.FC<TradeInformationProps> = ({
           value={data.uom}
           onValueChange={(val) => onFieldChange("uom", val)}
         >
-          <SelectTrigger className="px-4 w-full"
+          <SelectTrigger
+            className="px-4 w-full"
             onFocus={() => onFieldError("uom")} // Clear error on focus
             error={error?.uom ? true : false} // Show error state
             helperText={error?.uom} // Show error message
@@ -159,7 +157,11 @@ const TradeInformation: React.FC<TradeInformationProps> = ({
               readOnly
               value={
                 data.leadTime
-                  ? format(new Date(data.leadTime), "MMM dd, yyyy")
+                  ? new Date(data.leadTime).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "2-digit",
+                      day: "2-digit",
+                    })
                   : "Select Lead Time"
               }
               className="bg-white cursor-pointer text-lg px-4"
