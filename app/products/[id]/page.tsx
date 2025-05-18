@@ -1,12 +1,41 @@
+"use client";
+
+import { Suspense, useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 import { getProductDetails } from "@/apiServices/products";
-import ProductDetailClient from "@/components/product/ProductClient";
+import ProductDetailClient from "@/components/product/ProductDetailClient";
 
-const ProductPage = async ({ params }: { params: { id: string } }) => {
-  const { id } = params;
-  const response = await getProductDetails(id);
-  const product = response.data;
+export default function ProductPage() {
+  const params = useParams();
+  const id = (params as { id?: string })?.id;
 
-  return <ProductDetailClient product={product} />;
-};
+  const [product, setProduct] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-export default ProductPage;
+  useEffect(() => {
+    if (!id) {
+      setError("Product ID not found.");
+      setLoading(false);
+      return;
+    }
+
+    getProductDetails(id)
+      .then((res) => setProduct(res.data))
+      .catch((err) => {
+        console.error("Failed to fetch product:", err);
+        setError("Failed to load product.");
+      })
+      .finally(() => setLoading(false));
+  }, [id]);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>{error}</div>;
+  if (!product) return <div>Product not found.</div>;
+
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ProductDetailClient product={product} />
+    </Suspense>
+  );
+}

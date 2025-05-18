@@ -32,6 +32,7 @@ const Page: React.FC = () => {
             key={family._id}
             name={family.name}
             image={family.image}
+            id={family._id}
           />
         ))}
       </div>

@@ -34,6 +34,7 @@ const Page: React.FC = () => {
             key={industry._id}
             name={industry.name}
             image={industry.image}
+            id={industry._id}
           />
         ))}
       </div>

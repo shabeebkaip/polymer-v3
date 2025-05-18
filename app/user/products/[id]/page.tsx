@@ -1,32 +1,52 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 import { getProductDetails } from "@/apiServices/products";
-import ProductDetailClient from "@/components/product/ProductClient"; // adjust import path if needed
 import AddEditProduct from "@/components/user/AddEditProduct";
 
-interface PageProps {
-  params: {
-    id: string;
-  };
+export default function ProductPage() {
+  const { id } = useParams() as { id: string };
+
+  const [product, setProduct] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchProduct() {
+      try {
+        const response = await getProductDetails(id);
+        const product = response.data;
+
+        const data = {
+          ...product,
+          chemicalFamily: product?.chemicalFamily?._id,
+          grade: product?.grade?.map((item: any) => item._id),
+          incoterms: product?.incoterms?.map((item: any) => item._id),
+          industry: product?.industry?.map((item: any) => item._id),
+          packagingType: product?.packagingType?.map((item: any) => item._id),
+          paymentTerms: product?.paymentTerms?._id,
+          physicalForm: product?.physicalForm?._id,
+          polymerType: product?.polymerType?._id,
+          product_family: product?.product_family?.map((item: any) => item._id),
+        };
+
+        setProduct(data);
+      } catch (err) {
+        console.error("Failed to fetch product:", err);
+        setError("Failed to load product.");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchProduct();
+  }, [id]);
+
+  if (loading) return <div className="p-4 text-center">Loading...</div>;
+  if (error) return <div className="p-4 text-center text-red-600">{error}</div>;
+  if (!product)
+    return <div className="p-4 text-center">Product not found.</div>;
+
+  return <AddEditProduct product={product} id={id} />;
 }
-
-const ProductPage = async ({ params }: PageProps) => {
-  const { id } = await params;
-  const response = await getProductDetails(id);
-  const product = response.data;
-  console.log("Product Details:", product);
-  let data = Object.assign({}, product);
-  data = {
-    ...data,
-    chemicalFamily: data?.chemicalFamily?._id,
-    grade: data?.grade?.map((item: any) => item._id),
-    incoterms: data?.incoterms?.map((item: any) => item._id),
-    industry: data?.industry?.map((item: any) => item._id),
-    packagingType: data?.packagingType?.map((item: any) => item._id),
-    paymentTerms: data?.paymentTerms?._id,
-    physicalForm: data?.physicalForm?._id,
-    polymerType: data?.polymerType?._id,
-    product_family: data?.product_family?.map((item: any) => item._id),
-  };
-  return <AddEditProduct product={data} id={id} />;
-};
-
-export default ProductPage;
