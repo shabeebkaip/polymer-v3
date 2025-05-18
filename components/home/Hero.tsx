@@ -2,7 +2,7 @@ import Image from "next/image";
 import React from "react";
 
 const stats = [
-  { value: "1001+", label: "Products" },
+  { value: "1000+", label: "Products" },
   // { value: "100+", label: "Trusted Brands" },
   { value: "300+", label: "Verified Suppliers" },
   { value: "24/7", label: "Expert Support" },
