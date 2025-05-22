@@ -32,6 +32,7 @@ import {
 import { Button } from "../ui/button";
 import { toast } from "sonner";
 import { create } from "domain";
+import { Calendar as CalendarIcon } from "lucide-react";
 import { createQuoteRequest } from "@/apiServices/user";
 
 interface Grade {
@@ -155,7 +156,7 @@ const QuoteRequestModal = ({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
           <div className="flex gap-2">
             <div className="relative w-full">
               <Input
@@ -170,6 +171,7 @@ const QuoteRequestModal = ({
               </span>
             </div>
           </div>
+
           <Select
             value={data.grade}
             onValueChange={(value) => onFieldChange("grade", value)}
@@ -204,28 +206,31 @@ const QuoteRequestModal = ({
 
           <Input
             placeholder="Enter Country"
-            className="bg-white"
+            className="bg-white w-full"
             type="text"
             onChange={(e) => onFieldChange("country", e.target.value)}
             value={data?.country}
           />
+
           <Input
             placeholder="Enter City"
-            className="bg-white"
+            className="bg-white w-full"
             type="text"
             onChange={(e) => onFieldChange("city", e.target.value)}
             value={data?.city}
           />
+
           <Input
             placeholder="Enter Postal Code"
-            className="bg-white"
+            className="bg-white w-full"
             type="text"
             onChange={(e) => onFieldChange("postCode", e.target.value)}
             value={data?.postCode}
           />
+
           <Input
             placeholder="Enter Destination"
-            className="bg-white"
+            className="bg-white w-full"
             type="text"
             onChange={(e) => onFieldChange("destination", e.target.value)}
             value={data?.destination}
@@ -246,9 +251,10 @@ const QuoteRequestModal = ({
               ))}
             </SelectContent>
           </Select>
+
           <Input
             placeholder="Enter Packaging Size"
-            className="bg-white"
+            className="bg-white w-full"
             type="text"
             onChange={(e) => onFieldChange("packaging_size", e.target.value)}
             value={data?.packaging_size}
@@ -256,8 +262,8 @@ const QuoteRequestModal = ({
 
           <div className="relative w-full">
             <Input
-              placeholder="Expecte Annual Quantity"
-              className=" bg-white"
+              placeholder="Expected Annual Quantity"
+              className="bg-white w-full"
               type="number"
               onChange={(e) =>
                 onFieldChange("expected_annual_volume", e.target.value)
@@ -268,22 +274,25 @@ const QuoteRequestModal = ({
 
           <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
             <PopoverTrigger asChild>
+               <div className="relative w-full">
               <Input
                 readOnly
                 value={
                   data?.delivery_date
                     ? new Date(data?.delivery_date).toLocaleDateString(
-                        "en-US",
-                        {
-                          year: "numeric",
-                          month: "2-digit",
-                          day: "2-digit",
-                        }
-                      )
+                      "en-US",
+                      {
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                      }
+                    )
                     : "Select Delivery Date"
                 }
-                className="bg-white cursor-pointer"
+                className="bg-white cursor-pointer w-full"
               />
+              <CalendarIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none" size={18} />
+               </div>
             </PopoverTrigger>
             <PopoverContent className="p-0">
               <Calendar
@@ -291,15 +300,15 @@ const QuoteRequestModal = ({
                 selected={data?.delivery_date}
                 onSelect={(date) => {
                   onFieldChange("delivery_date", date);
-
                   setCalendarOpen(false);
                 }}
               />
             </PopoverContent>
           </Popover>
+
           <Input
             placeholder="Price"
-            className="bg-white"
+            className="bg-white w-full"
             type="number"
             onChange={(e) => onFieldChange("pricing", e.target.value)}
             value={data?.pricing}
@@ -307,14 +316,14 @@ const QuoteRequestModal = ({
 
           <Textarea
             placeholder="What will this product be used for?"
-            className="col-span-2 bg-white"
+            className="col-span-1 lg:col-span-2 bg-white w-full"
             onChange={(e) => onFieldChange("application", e.target.value)}
             value={data?.application}
           />
 
           <Textarea
             placeholder="Add additional information to the supplier"
-            className="col-span-2 bg-white"
+            className="col-span-1 lg:col-span-2 bg-white w-full"
             rows={3}
             onChange={(e) => onFieldChange("message", e.target.value)}
             value={data?.message}

@@ -8,8 +8,8 @@ interface LabelValueProps {
 const LabelValue: React.FC<LabelValueProps> = ({ label, value }) => {
   return (
     <div className="flex">
-      <span className="w-60 font-normal text-[#555353]">{label}</span>
-      <span className="text-[var(--text-gray-primary)]">: {value}</span>
+      <span className="md:w-60 w-[50%] font-normal text-[#555353]">{label}</span>
+      <span className="w-[50%] text-[var(--text-gray-primary)]">: {value}</span>
     </div>
   );
 };

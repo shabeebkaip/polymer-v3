@@ -11,8 +11,8 @@ interface SearchBarProps {
 const SearchBar: React.FC<SearchBarProps> = ({ onSearch, query }) => {
   
   return (
-    <div className="relative">
-      <div className="w-10 h-10 bg-gradient-to-r from-[var(--green-gradient-from)] via-[var(--green-gradient-via)] to-[var(--green-gradient-to)] rounded-full flex justify-center items-center absolute top-2 right-2">
+    <div className="relative w-full">
+      <div className="md:w-10 md:h-10 w-7 h-7 bg-gradient-to-r from-[var(--green-gradient-from)] via-[var(--green-gradient-via)] to-[var(--green-gradient-to)] rounded-full flex justify-center items-center absolute top-2 right-2">
         <Image
           src="/icons/search.svg"
           alt="Arrow Icon"
@@ -24,7 +24,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, query }) => {
         <input
           type="text"
           placeholder="Search..."
-          className="w-full px-4 py-4 rounded-full border-1 border-[var(--green-light)]"
+          className="w-full px-4 md:py-4 py-[8px] rounded-full border-1 border-[var(--green-light)]"
           value={query?.search || ""}
           onChange={(e) => onSearch?.(e.target.value)}
         />

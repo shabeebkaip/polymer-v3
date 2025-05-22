@@ -1,22 +1,88 @@
 "use client";
 
-import React from "react";
+import React, { useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import { Button } from "../ui/button";
+
+const NavbarLink = ({ href, label, isActive, onClick }) => (
+  <span
+    onClick={() => onClick(href)}
+    className={`inline-flex items-center px-1 pt-1 xl:text-[18px] text-[15px] font-[300] cursor-pointer relative
+            ${isActive
+        ? "text-[var(--green-main)] hover:text-[var(--green-main)] after:absolute after:bottom-[-8px] after:left-0 after:w-full after:h-[2px] after:bg-[var(--green-main)]"
+        : "text-[var(--green-main)] hover:text-[var(--green-main)]"
+      }`}
+  >
+    {label}
+  </span>
+);
 
 const Header: React.FC = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+  const [isLanguagePopupOpen, setIsLanguagePopupOpen] = useState(false);
+  const language = 'en'
   const pathname = usePathname();
   const router = useRouter();
+  const languagePopupRef = useRef(null);
   const token = Cookies.get("token");
   const userInfo = Cookies.get("userInfo")
     ? JSON.parse(Cookies.get("userInfo")!)
     : null;
 
   if (pathname.includes("auth")) {
-    return null; // Don't render on auth pages
+    return null;
   }
+
+  const toggleMenu = () => {
+    setIsOpen((prev) => !prev);
+    // setIsLanguagePopupOpen(false);
+    // setIsProfilePopupOpen(false);
+  };
+
+  const handleLogout = () => {
+    Cookies.remove("token");
+    Cookies.remove("userInfo");
+    router.refresh();
+    router.push("/");
+  };
+
+  const handleNavigate = (href) => {
+    setIsOpen(false);
+    // setIsLanguagePopupOpen(false);
+    // setIsProfilePopupOpen(false);
+    if (href) {
+      router.push(href);
+    }
+  };
+
+  const changeLanguage = async (selectedLanguage) => {
+    // try {
+    //   localStorage.setItem("lang", selectedLanguage);
+    //   window.location.reload();
+    // } catch (error) {
+    //   console.error("Error updating language:", error.message);
+    // }
+  };
+
+  const toggleVisibility = () => {
+    setIsVisible(!isVisible);
+  };
+
+  const toggleLanguagePopup = () => {
+    setIsLanguagePopupOpen((prev) => !prev);
+    // setIsProfilePopupOpen(false);
+  };
+
+  const links = [
+    { href: "/", label: "Home" },
+    { href: "/products", label: "Products" },
+    { href: "/suppliers", label: "Suppliers" },
+
+  ];
 
   return (
     <header className="bg-white shadow-xl shadow-green-600/10">
@@ -28,7 +94,7 @@ const Header: React.FC = () => {
               alt="Logo"
               width={100}
               height={50}
-              className="h-10 w-auto"
+              className="md:h-10 h-7 w-auto"
             />
           </Link>
 
@@ -51,13 +117,57 @@ const Header: React.FC = () => {
             >
               Suppliers
             </p>
+            <div className="relative" ref={languagePopupRef}>
+              <div
+                className="flex items-center gap-2 cursor-pointer"
+                onClick={toggleLanguagePopup}
+              >
+                <img src="/globes.svg" alt="" />
+                <span>{language === "en" ? "English" : "العربية"}</span>
+                <img src="/arrow.svg" alt="" />
+              </div>
+              {isLanguagePopupOpen && (
+                <div
+                  className={`absolute ${language === "ar" ? "left-0" : "right-0"
+                    } mt-2 w-32 bg-white shadow-lg rounded-md border z-10 px-3 top-[35px]`}
+                >
+                  <div className="py-2">
+                    <button
+                      onClick={() => changeLanguage("ar")}
+                      className="group px-4 py-2 text-sm text-[#737791] hover:text-white hover:bg-[var(--green-main)] w-full rounded-lg text-left flex gap-2 items-center"
+                    >
+                      العربية
+                    </button>
+                    <button
+                      onClick={() => changeLanguage("en")}
+                      className="px-4 py-2 text-sm text-[#737791] hover:text-white hover:bg-[var(--green-main)] rounded-lg w-full text-left flex items-center gap-2"
+                    >
+                      English
+                    </button>
+                    <button
+                      onClick={() => changeLanguage("de")}
+                      className="px-4 py-2 text-sm text-[#737791] hover:text-white hover:bg-[var(--green-main)] rounded-lg w-full text-left flex items-center gap-2"
+                    >
+                      Deutsch
+                    </button>
+                    <button
+                      onClick={() => changeLanguage("zh")}
+                      className="px-4 py-2 text-sm text-[#737791] hover:text-white hover:bg-[var(--green-main)] rounded-lg w-full text-left flex items-center gap-2"
+                    >
+                      中文
+                    </button>
+                  </div>
+                </div>
+              )}
+
+            </div>
           </nav>
 
           {token && userInfo && (
             <button
               type="button"
               onClick={() => router.push("/user/profile")}
-              className="flex items-center px-4 py-2 border border-[var(--green-main)] text-[var(--green-main)] rounded-lg hover:bg-green-50 transition cursor-pointer"
+              className="md:flex hidden items-center px-4 py-2 border border-[var(--green-main)] text-[var(--green-main)] rounded-lg hover:bg-green-50 transition cursor-pointer"
             >
               <Image
                 src="/icons/user.svg"
@@ -94,14 +204,153 @@ const Header: React.FC = () => {
             </div>
           )}
 
-          <div className="lg:hidden flex items-center">
-            <Image
-              src="/icons/hamburger.svg"
-              alt="Menu Icon"
-              width={100}
-              height={100}
-              className="cursor-pointer w-12"
-            />
+          <div className="flex items-center -mr-2 lg:hidden">
+            <button
+              onClick={toggleMenu}
+              className="inline-flex items-center justify-center p-2 text-[var(--green-main)] rounded-md relative z-[2]"
+            >
+              <svg
+                className="w-8 h-8"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d={isOpen ? "" : "M4 6h16M4 12h16M4 18h16"}
+                />
+              </svg>
+            </button>
+          </div>
+
+          <div
+            className={`fixed inset-y-0 right-0 bg-white opacity-90 z-10 transform rounded-l-2xl shadow-2xl w-[200px] ${isOpen ? 'translate-x-0' : 'translate-x-full'} transition-transform duration-300 ease-in-out lg:hidden flex flex-col px-4 py-6 space-y-4 overflow-y-auto`}
+            style={{ maxHeight: '100vh' }}
+          >
+            <button
+              onClick={toggleMenu}
+              className="self-end p-2 text-[var(--green-main)] hover:text-[var(--green-main)]"
+            >
+              <svg
+                className="w-6 h-6 sm:h-8 sm:w-8"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+
+            {links.map((link) => (
+              <NavbarLink
+                key={link.href}
+                href={link.href}
+                label={link.label}
+                isActive={link.href === pathname}
+                onClick={handleNavigate}
+              />
+            ))}
+            {userInfo ? (
+              <NavbarLink
+                href="/user/profile"
+                label={"Profile"}
+                isActive={'/user/profile' === pathname}
+                onClick={handleNavigate}
+              />
+            ) : null}
+            <div
+              className="flex items-center gap-2 cursor-pointer"
+              onClick={toggleVisibility}
+            >
+              <span className="inline-flex items-center px-1 pt-1 xl:text-[18px] text-[15px] font-[300] text-[var(--green-main)]">
+                {language === "en" ? "English" : "العربية"}
+              </span>
+              <img src="/arrow.svg" alt="arrow" />
+            </div>
+            {isVisible && (
+              <div
+                className="flex items-center gap-4 mt-2 transition-all duration-1000 ease-out transform scale-95 opacity-0"
+                style={{
+                  opacity: isVisible ? 1 : 0,
+                  transform: isVisible ? "scale(1)" : "scale(0.95)",
+                }}
+              >
+                <div
+                  className={`cursor-pointer px-4 py-2 rounded-md text-sm ${language === "ar"
+                    ? "bg-[var(--green-main)] text-white"
+                    : "text-[#737791]"
+                    } hover:bg-[var(--green-main)] hover:text-white`}
+                  onClick={() => changeLanguage("ar")}
+                >
+                  العربية
+                </div>
+
+                <div
+                  className={`cursor-pointer px-4 py-2 rounded-md text-sm ${language === "en"
+                    ? "bg-[var(--green-main)] text-white"
+                    : "text-[var(--green-main)]"
+                    } hover:bg-[var(--green-main)] hover:text-white`}
+                  onClick={() => changeLanguage("en")}
+                >
+                  English
+                </div>
+
+                <div
+                  className={`cursor-pointer px-4 py-2 rounded-md text-sm ${language === "de"
+                    ? "bg-[var(--green-main)] text-white"
+                    : "text-[var(--green-main)]"
+                    } hover:bg-[var(--green-main)] hover:text-white`}
+                  onClick={() => changeLanguage("de")}
+                >
+                  Deutsch
+                </div>
+
+                <div
+                  className={`cursor-pointer px-4 py-2 rounded-md text-sm ${language === "zh"
+                    ? "bg-[var(--green-main)] text-white"
+                    : "text-[var(--green-main)]"
+                    } hover:bg-[var(--green-main)] hover:text-white`}
+                  onClick={() => changeLanguage("zh")}
+                >
+                  中文
+                </div>
+              </div>
+            )}
+
+
+            {token && userInfo ? (
+              <Button
+                variant={"outline"}
+                className="cursor-pointer"
+                onClick={handleLogout}
+              >
+                Logout
+              </Button>
+            ) : (
+              <NavbarLink
+                href="/auth/login"
+                label="Register/Login"
+                isActive={false}
+                onClick={handleNavigate}
+              />
+            )}
+            {!token && (
+              <button
+                onClick={() => handleNavigate("/auth/user-type")}
+                className="px-4 py-2 bg-gradient-to-r from-[var(--green-gradient-from)] via-[var(--green-gradient-via)] to-[var(--green-gradient-to)] text-white rounded-lg hover:opacity-90 cursor-pointer"
+              >
+                Sign Up for Free
+              </button>
+            )}
           </div>
         </div>
       </div>
