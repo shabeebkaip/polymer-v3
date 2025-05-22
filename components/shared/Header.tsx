@@ -85,7 +85,7 @@ const Header: React.FC = () => {
   ];
 
   return (
-    <header className="bg-white shadow-xl shadow-green-600/10">
+    <header className="bg-white shadow-xl shadow-green-600/10 sticky top-0 z-20">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-16">
           <Link href="/">
@@ -278,7 +278,7 @@ const Header: React.FC = () => {
             </div>
             {isVisible && (
               <div
-                className="flex items-center gap-4 mt-2 transition-all duration-1000 ease-out transform scale-95 opacity-0"
+                className="flex items-center flex-wrap gap-4 mt-2 transition-all duration-1000 ease-out transform scale-95 opacity-0"
                 style={{
                   opacity: isVisible ? 1 : 0,
                   transform: isVisible ? "scale(1)" : "scale(0.95)",
