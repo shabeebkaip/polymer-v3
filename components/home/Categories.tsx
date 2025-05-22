@@ -8,7 +8,6 @@ import useIsMobile from "@/lib/useIsMobile";
 
 import { getIndustryList, getProductFamilies } from "@/apiServices/shared";
 
-// Types
 interface CategoryData {
   id: string;
   name: string;
@@ -91,20 +90,19 @@ const Categories: React.FC = () => {
           Discover Our Products
         </h1>
 
-        <div className="grid grid-cols-2 justify-center gap-2 md:gap-10">
-          {categoryData.map(({ id, name, icon }) => (
-            <Tab
-              key={id}
-              name={name}
-              icon={icon}
-              isSelected={selectedCategory === id}
-              onClick={() => setSelectedCategory(id)}
-              iconWidth="w-10 md:w-20"
-              fontSize="text-[12px] md:text-lg lg:text-[22px]"
-            />
-          ))}
-        </div>
-
+<div className="grid grid-cols-2 justify-center gap-2 md:gap-10">
+  {categoryData.map(({ id, name, icon }) => (
+    <Tab
+      key={id}
+      name={name}
+      icon={icon}
+      isSelected={selectedCategory === id}
+      onClick={() => setSelectedCategory(id)}
+      iconWidth="w-8 md:w-12 lg:w-14"
+      fontSize="text-[10px] md:text-sm lg:text-base" 
+    />
+  ))}
+</div>
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-3 w-full">
           {displayedItems.map(({ name, image, _id }, index) => (
             <CategoryCard
@@ -127,7 +125,10 @@ const Categories: React.FC = () => {
                 )
               }
             >
-              <h4 className="font-medium text-sm md:text-2xl">View All</h4>
+<button className="font-medium text-sm md:text-2xl flex items-center gap-1 text-white hover:underline">
+  View All <span>→</span>
+</button> 
+             
             </div>
           )}
         </div>

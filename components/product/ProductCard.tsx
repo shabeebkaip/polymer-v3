@@ -39,7 +39,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         <hr className="h-px bg-gray-200 border-0" />
 
         {/* Product Info */}
-        <div className="flex flex-col gap-2 text-sm">
+        <div className="flex flex-col gap-2 text-sm px-4">
           <p className="text-[var(--text-gray-tertiary)]">
             <span className="text-[var(--dark-main)]">Chemical Name:</span>{" "}
             {product.chemicalName}

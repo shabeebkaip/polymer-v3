@@ -1,4 +1,3 @@
-// components/CategoryCard.tsx
 import Image from "next/image";
 import React from "react";
 import { useRouter } from "next/navigation";
@@ -29,12 +28,10 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
       className="relative w-full aspect-[4/3] rounded-t-2xl rounded-b-xl md:rounded-t-4xl md:rounded-b-3xl overflow-hidden shadow-lg cursor-pointer"
       onClick={handleClick}
     >
-      {/* Background image fills card */}
       <Image src={image} alt={"category"} fill className="object-cover" />
 
-      {/* Bottom gradient overlay */}
       <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-[var(--green-gradient-from)] via-[var(--green-gradient-via)] to-transparent p-4">
-        <h3 className="text-white text-sm md:text-2xl md:font-semibold">
+        <h3 className="text-white text-sm md:text-2xl md:font-semibold whitespace-nowrap overflow-hidden text-ellipsis">
           {name}
         </h3>
       </div>
