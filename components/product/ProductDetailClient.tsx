@@ -48,7 +48,7 @@ const ProductDetailClient: React.FC<ProductDetailClientProps> = ({
         {product.productName}
       </h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-10">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mt-10">
         {product?.productImages && product?.productImages?.length ? (
           <ImageContainers productImages={product.productImages} />
         ) : null}
@@ -63,16 +63,15 @@ const ProductDetailClient: React.FC<ProductDetailClientProps> = ({
 
       {/* Tabs */}
       <div className="mt-10">
-        <div className="border-b border-gray-300 flex space-x-8  ">
+        <div className="border-b border-gray-300 flex md:gap-8 gap-5">
           {tabs.map((tab) => (
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`pb-2 text-2xl cursor-pointer ${
-                activeTab === tab.key
+              className={`pb-2 md:text-2xl sm:text-xl text-base cursor-pointer ${activeTab === tab.key
                   ? "text-[var(--dark-main)] border-b-2 border-[var(--green-main)]"
                   : "text-[var(--text-gray-primary)]"
-              }`}
+                }`}
             >
               {tab.label}
             </button>

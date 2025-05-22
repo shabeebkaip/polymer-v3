@@ -22,7 +22,7 @@ const QuoteRequests = () => {
   }, []);
 
   return (
-    <div className="container mx-auto py-6">
+    <div className="container md:mx-auto px-4 py-6">
       <h4 className="mb-4 text-xl font-semibold text-[var(--dark-main)]">
         Quote Requests
       </h4>

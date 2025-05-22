@@ -19,7 +19,7 @@ const SampleRequest = () => {
     });
   }, []);
   return (
-    <div className="container mx-auto py-6">
+    <div className="container md:mx-auto px-4 py-6">
       <h4 className="mb-6 text-xl text-[var(--dark-main)] ">Sample Requests</h4>
       <Table className="border">
         <TableHeader>

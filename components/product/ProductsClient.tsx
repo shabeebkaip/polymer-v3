@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
 import SupplierBasic from "@/components/suppliers/SupplierBasic";
 import { getProductFilters, getProductList } from "@/apiServices/products";
+import FilterModal from "./FilterModal";
 
 // --- Types ---
 interface ProductFilter {
@@ -49,6 +50,7 @@ const ProductsClient: React.FC = () => {
 
   const [query, setQuery] = useState<Record<string, any>>(initialQuery);
   const [products, setProducts] = useState<Product[]>([]);
+  const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
   const [pagination, setPagination] = useState<Pagination | null>(null);
   const [filters, setFilters] = useState<ProductFilter[]>([]);
 
@@ -106,11 +108,35 @@ const ProductsClient: React.FC = () => {
             />
           </Suspense>
         </div>
-        <div className="col-span-9">
-          <SearchBar
-            onSearch={(value) => setQuery({ ...query, search: value })}
-            query={query}
-          />
+
+        <div className="col-span-1 md:col-span-9">
+
+          <div className="flex items-center gap-5">
+            <div className="flex items-center md:hidden">
+              <button
+                className="py-2 px-4 bg-gradient-to-r from-[var(--green-gradient-from)] via-[var(--green-gradient-via)] to-[var(--green-gradient-to)] text-white rounded shadow font-semibold"
+                onClick={() => setMobileFilterOpen(true)}
+              >
+                Filter
+              </button>
+            </div>
+            <SearchBar
+              onSearch={(value) => setQuery({ ...query, search: value })}
+              query={query}
+            />
+          </div>
+          <FilterModal open={mobileFilterOpen} onClose={() => setMobileFilterOpen(false)}>
+            <Suspense fallback={<div>Loading filters...</div>}>
+              <Filter
+                filters={filters}
+                onFilterChange={(name, id, isChecked) => {
+                  handleFilter(name, id, isChecked);
+                }}
+                query={query}
+              />
+            </Suspense>
+          </FilterModal>
+
           <Suspense fallback={<div>Loading products...</div>}>
             <ProductsList products={products} />
           </Suspense>

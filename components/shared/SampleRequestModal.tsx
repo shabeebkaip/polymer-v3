@@ -12,6 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
+import { Calendar as CalendarIcon } from "lucide-react";
 import {
   Select,
   SelectTrigger,
@@ -140,12 +141,12 @@ const SampleRequestModal = ({
           <DialogTitle className="text-3xl">Request For Sample</DialogTitle>
         </DialogHeader>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
           <div className="flex gap-2">
             <div className="relative w-full">
               <Input
                 placeholder="Enter the Quantity"
-                className="pr-16 bg-white"
+                className="pr-16 bg-white w-full"
                 type="number"
                 onChange={(e) => onFieldChange("quantity", e.target.value)}
                 value={data?.quantity}
@@ -155,6 +156,7 @@ const SampleRequestModal = ({
               </span>
             </div>
           </div>
+
           <Select
             value={data.grade}
             onValueChange={(value) => onFieldChange("grade", value)}
@@ -170,64 +172,77 @@ const SampleRequestModal = ({
               ))}
             </SelectContent>
           </Select>
+
           <Input
-            placeholder="Expecte Annual Quantity"
-            className=" bg-white"
+            placeholder="Expected Annual Quantity"
+            className="bg-white w-full"
             type="number"
             onChange={(e) =>
               onFieldChange("expected_annual_volume", e.target.value)
             }
             value={data?.expected_annual_volume}
           />
+
           <Textarea
             placeholder="What will this product be used for?"
-            className="col-span-2 bg-white"
+            className="col-span-1 lg:col-span-2 bg-white w-full"
             onChange={(e) => onFieldChange("application", e.target.value)}
             value={data?.application}
           />
+
           <Popover open={calendarOpen2} onOpenChange={setCalendarOpen2}>
             <PopoverTrigger asChild>
-              <Input
-                readOnly
-                value={
-                  data?.orderDate
-                    ? new Date(data?.neededBy).toLocaleDateString("en-US", {
+              <div className="relative w-full">
+                <Input
+                  readOnly
+                  value={
+                    data?.neededBy
+                      ? new Date(data?.neededBy).toLocaleDateString("en-US", {
                         year: "numeric",
                         month: "2-digit",
                         day: "2-digit",
                       })
-                    : "Needed By"
-                }
-                className="bg-white cursor-pointer"
-              />
+                      : ""
+                  }
+                  placeholder="Needed By"
+                  className="bg-white cursor-pointer w-full pr-10"
+                />
+                <CalendarIcon
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
+                  size={18}
+                />
+              </div>
             </PopoverTrigger>
             <PopoverContent className="p-0">
               <Calendar
                 mode="single"
-                selected={data?.orderDate}
+                selected={data?.neededBy}
                 onSelect={(date) => {
                   onFieldChange("neededBy", date);
-
                   setCalendarOpen2(false);
                 }}
               />
             </PopoverContent>
           </Popover>
+
           <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
             <PopoverTrigger asChild>
-              <Input
-                readOnly
-                value={
-                  data?.orderDate
-                    ? new Date(data?.orderDate).toLocaleDateString("en-US", {
+              <div className="relative w-full">
+                <Input
+                  readOnly
+                  value={
+                    data?.orderDate
+                      ? new Date(data?.orderDate).toLocaleDateString("en-US", {
                         year: "numeric",
                         month: "2-digit",
                         day: "2-digit",
                       })
-                    : "When do you plan to order?"
-                }
-                className="bg-white cursor-pointer"
-              />
+                      : "When do you plan to order?"
+                  }
+                  className="bg-white cursor-pointer w-full pr-10" // add padding for icon space
+                />
+                <CalendarIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none" size={18} />
+              </div>
             </PopoverTrigger>
             <PopoverContent className="p-0">
               <Calendar
@@ -235,50 +250,54 @@ const SampleRequestModal = ({
                 selected={data?.orderDate}
                 onSelect={(date) => {
                   onFieldChange("orderDate", date);
-
                   setCalendarOpen(false);
                 }}
               />
             </PopoverContent>
           </Popover>
+
           <Input
             placeholder="Enter Street Name"
-            className="bg-white"
+            className="bg-white w-full"
             type="text"
             onChange={(e) => onFieldChange("streetName", e.target.value)}
             value={data?.streetName}
           />
+
           <Input
             placeholder="Enter City"
-            className="bg-white"
+            className="bg-white w-full"
             type="text"
             onChange={(e) => onFieldChange("city", e.target.value)}
             value={data?.city}
           />
+
           <Input
             placeholder="Enter Postal Code"
-            className="bg-white"
+            className="bg-white w-full"
             type="text"
             onChange={(e) => onFieldChange("postCode", e.target.value)}
             value={data?.postCode}
           />
+
           <Input
             placeholder="Enter Country"
-            className="bg-white"
+            className="bg-white w-full"
             type="text"
             onChange={(e) => onFieldChange("country", e.target.value)}
             value={data?.country}
           />
+
           <Textarea
             placeholder="Enter Address"
-            className="bg-white col-span-2"
+            className="bg-white col-span-1 lg:col-span-2 w-full"
             onChange={(e) => onFieldChange("address", e.target.value)}
             value={data?.address}
           />
 
           <Textarea
             placeholder="Add additional information to the supplier"
-            className="col-span-2 bg-white"
+            className="col-span-1 lg:col-span-2 bg-white w-full"
             rows={3}
             onChange={(e) => onFieldChange("message", e.target.value)}
             value={data?.message}
