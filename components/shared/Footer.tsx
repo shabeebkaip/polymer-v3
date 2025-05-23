@@ -32,187 +32,166 @@ const Footer: React.FC = () => {
 
   if (pathname.includes("auth")) return null;
 
+  const navigateTo = (path: string) => {
+    router.push(path);
+  };
+
   return (
     <footer className="bg-[var(--footer-background)] text-white">
-      <div className="container mx-auto px-6 py-12">
-        {/* Desktop View */}
-        <div className="hidden md:flex justify-between gap-20">
-          {/* Logo & Contact Info */}
-          <div className="flex flex-col gap-6 w-[260px] items-start">
+      <div className="container mx-auto px-4 pt-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+          <div className="flex justify-center md:justify-start">
             <Image
               src="/assets/Title.svg"
-              alt="Polymer Hub Logo"
-              width={180}
-              height={150}
-              className="object-contain"
+              alt="Logo"
+              width={100}
+              height={100}
+              className="w-50"
             />
-            <h3 className="text-[#BBBABA] text-2xl font-semibold leading-tight">
-              How can we help you
-            </h3>
-            <div className="flex flex-col gap-3">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center">
-                  <Image src="/icons/phone-call.png" alt="Phone" width={24} height={24} />
-                </div>
-                <a href="tel:+966537346577" className="text-base font-medium hover:underline">
-                  +966 537346577
-                </a>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center">
-                  <Image src="/icons/mail.png" alt="Email" width={16} height={16} />
-                </div>
-                <a
-                  href="mailto:info@polymershub.com"
-                  className="text-base font-medium hover:underline"
-                >
-                  info@polymershub.com
-                </a>
-              </div>
-            </div>
           </div>
 
-          {/* Useful Links */}
-          <div className="flex flex-col gap-4 w-[180px] items-start">
-            <h3 className="font-semibold text-xl">USEFUL LINKS</h3>
-            <ul className="flex flex-col gap-2 text-sm font-thin">
-              <li
-                onClick={() => router.push("/")}
-                className="cursor-pointer hover:font-normal transition"
+          <div className="hidden md:flex flex-row items-center justify-end gap-4">
+            {socials.map((social) => (
+              <a
+                key={social.label}
+                href={social.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2"
               >
-                Home
-              </li>
-              <li
-                onClick={() => router.push("/suppliers")}
-                className="cursor-pointer hover:font-normal transition"
-              >
-                Suppliers
-              </li>
-              <li
-                onClick={() => router.push("/products")}
-                className="cursor-pointer hover:font-normal transition"
-              >
-                Products
-              </li>
-            </ul>
-          </div>
-
-          {/* Social Icons */}
-          <div className="flex flex-col gap-6 w-[200px] items-start">
-            <h3 className="font-semibold text-xl">FOLLOW US</h3>
-            <div className="flex flex-col gap-4">
-              {socials.map(({ label, icon, link }) => (
-                <a
-                  key={label}
-                  href={link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-3 hover:opacity-80 transition-opacity"
-                >
-                  <Image
-                    src={icon}
-                    alt={label}
-                    width={28}
-                    height={28}
-                    className="object-contain"
-                    quality={100}
-                  />
-                  <span className="text-sm">{label}</span>
-                </a>
-              ))}
-            </div>
+                <Image
+                  src={social.icon}
+                  alt={social.label}
+                  width={100}
+                  height={100}
+                  quality={100}
+                  className="w-6 h-6"
+                />
+                <span className="text-sm">{social.label}</span>
+              </a>
+            ))}
           </div>
         </div>
 
-        {/* Mobile View */}
-        <div className="md:hidden flex flex-col items-center gap-10 text-center">
-          <Image
-            src="/assets/Title.svg"
-            alt="Polymer Hub Logo"
-            width={140}
-            height={120}
-            className="object-contain"
-          />
+        <hr className="mt-10 bg-[#353535] text-[#353535] h-px" />
 
-          <div>
-            <h3 className="text-[#BBBABA] text-2xl font-semibold mb-3">
-              How can we help you
-            </h3>
-            <div className="flex flex-col gap-4 items-center">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center">
-                  <Image src="/icons/phone-call.png" alt="Phone" width={16} height={16} />
+        {/* Mobile Layout */}
+        <div className="md:hidden">
+          <div className="flex flex-col items-center justify-center gap-4 mt-10 text-center">
+            <h4 className="text-[#BBBABA] text-3xl">How can we help you</h4>
+            <h4 className="underline text-3xl">Get in touch</h4>
+          </div>
+
+          <div className="relative flex gap-4 my-8">
+            <div className="absolute top-0 bottom-0 left-1/2 transform -translate-x-1/2 w-px bg-[#353535]" />
+
+            <div className="flex-1 flex justify-end pr-4">
+              <div className="flex flex-col items-end gap-3 pr-2">
+                <div className="px-9 py-2 border border-white rounded-full text-xs text-nowrap">
+                  +91 1234567890
                 </div>
-                <a href="tel:+966537346577" className="text-sm font-medium hover:underline">
-                  +966 537346577
-                </a>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center">
-                  <Image src="/icons/mail.png" alt="Email" width={16} height={16} />
-                </div>
-                <a
-                  href="mailto:info@polymershub.com"
-                  className="text-sm font-medium hover:underline"
-                >
+                <div className="px-3.5 py-2 border border-white rounded-full text-xs text-nowrap">
                   info@polymershub.com
-                </a>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex-1 flex items-center pl-2">
+              <div className="flex flex-col gap-2">
+                <h4 className="text-white font-medium">USEFUL LINKS</h4>
+                <ul className="flex flex-col gap-1 text-sm text-center">
+                  <li
+                    className="font-thin hover:font-normal cursor-pointer"
+                    onClick={() => navigateTo("/")}
+                  >
+                    Home
+                  </li>
+                  <li
+                    className="font-thin hover:font-normal cursor-pointer"
+                    onClick={() => navigateTo("/brands")}
+                  >
+                    Brand
+                  </li>
+                  <li
+                    className="font-thin hover:font-normal cursor-pointer"
+                    onClick={() => navigateTo("/products")}
+                  >
+                    Product
+                  </li>
+                </ul>
               </div>
             </div>
           </div>
 
-          <div>
-            <h3 className="font-semibold text-lg mb-2">USEFUL LINKS</h3>
-            <ul className="space-y-1 text-sm font-thin">
-              <li
-                onClick={() => router.push("/")}
-                className="cursor-pointer hover:font-normal transition"
-              >
-                Home
-              </li>
-              <li
-                onClick={() => router.push("/suppliers")}
-                className="cursor-pointer hover:font-normal transition"
-              >
-                Suppliers
-              </li>
-              <li
-                onClick={() => router.push("/products")}
-                className="cursor-pointer hover:font-normal transition"
-              >
-                Products
-              </li>
-            </ul>
-          </div>
-
-          <div className="flex gap-6">
-            {socials.map(({ label, icon, link }) => (
+          <div className="flex justify-center gap-6 mb-8">
+            {socials.map((social) => (
               <a
-                key={label}
-                href={link}
+                key={social.label}
+                href={social.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:opacity-80 transition-opacity"
+                className="flex items-center"
               >
                 <Image
-                  src={icon}
-                  alt={label}
-                  width={28}
-                  height={28}
-                  className="object-contain"
+                  src={social.icon}
+                  alt={social.label}
+                  width={24}
+                  height={24}
                   quality={100}
+                  className="w-6 h-6"
                 />
               </a>
             ))}
           </div>
         </div>
+
+        {/* Desktop Layout */}
+        <div className="hidden md:grid grid-cols-10 gap-0 h-full">
+          <div className="col-span-7 border-r border-[#353535] py-16 grid grid-cols-2 items-center pr-4">
+            <div className="flex flex-col gap-2">
+              <h4 className="text-[#BBBABA] text-4xl">How can we help you</h4>
+              <h4 className="underline text-4xl">Get in Touch</h4>
+            </div>
+            <div className="flex flex-col gap-3">
+              <div className="px-11 py-2 border border-white rounded-full w-fit text-sm">
+                +966 537346577
+              </div>
+              <div className="px-5 py-2 border border-white rounded-full w-fit text-sm">
+                info@polymershub.com
+              </div>
+            </div>
+          </div>
+
+          <div className="col-span-3 p-4 flex items-center justify-center">
+            <div className="flex flex-col gap-2">
+              <h4 className="text-white font-medium">USEFUL LINKS</h4>
+              <ul className="text-sm flex flex-col gap-1">
+                <li
+                  className="font-thin hover:font-normal cursor-pointer"
+                  onClick={() => navigateTo("/")}
+                >
+                  Home
+                </li>
+                <li
+                  className="font-thin hover:font-normal cursor-pointer"
+                  onClick={() => navigateTo("/brands")}
+                >
+                  Brands
+                </li>
+                <li
+                  className="font-thin hover:font-normal cursor-pointer"
+                  onClick={() => navigateTo("/products")}
+                >
+                  Products
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Bottom Line */}
-      <div className="bg-[var(--footer-background-secondary)] text-center p-6 mt-12">
-        <p className="text-lg font-semibold tracking-wide">
-          &copy; {new Date().getFullYear()} POLYMERS HUB. All rights reserved.
-        </p>
+      <div className="bg-[var(--footer-background-secondary)] text-center p-4">
+        <p>&copy; {new Date().getFullYear()} linkup. All rights reserved.</p>
       </div>
     </footer>
   );
