@@ -198,10 +198,10 @@ const SampleRequestModal = ({
                   value={
                     data?.neededBy
                       ? new Date(data?.neededBy).toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "2-digit",
-                        day: "2-digit",
-                      })
+                          year: "numeric",
+                          month: "2-digit",
+                          day: "2-digit",
+                        })
                       : ""
                   }
                   placeholder="Needed By"
@@ -216,7 +216,7 @@ const SampleRequestModal = ({
             <PopoverContent className="p-0">
               <Calendar
                 mode="single"
-                selected={data?.neededBy}
+                selected={data?.neededBy ? new Date(data.neededBy) : undefined}
                 onSelect={(date) => {
                   onFieldChange("neededBy", date);
                   setCalendarOpen2(false);
@@ -233,15 +233,18 @@ const SampleRequestModal = ({
                   value={
                     data?.orderDate
                       ? new Date(data?.orderDate).toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "2-digit",
-                        day: "2-digit",
-                      })
+                          year: "numeric",
+                          month: "2-digit",
+                          day: "2-digit",
+                        })
                       : "When do you plan to order?"
                   }
                   className="bg-white cursor-pointer w-full pr-10" // add padding for icon space
                 />
-                <CalendarIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none" size={18} />
+                <CalendarIcon
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none"
+                  size={18}
+                />
               </div>
             </PopoverTrigger>
             <PopoverContent className="p-0">

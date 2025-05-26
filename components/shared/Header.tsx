@@ -7,14 +7,30 @@ import { usePathname, useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { Button } from "../ui/button";
 
-const NavbarLink = ({ href, label, isActive, onClick }) => (
+// --- TypeScript Types ---
+type NavbarLinkProps = {
+  href: string;
+  label: string;
+  isActive: boolean;
+  onClick: (href: string) => void;
+};
+
+type Language = "en" | "ar" | "de" | "zh";
+
+const NavbarLink: React.FC<NavbarLinkProps> = ({
+  href,
+  label,
+  isActive,
+  onClick,
+}) => (
   <span
     onClick={() => onClick(href)}
     className={`inline-flex items-center px-1 pt-1 xl:text-[18px] text-[15px] font-[300] cursor-pointer relative
-            ${isActive
-        ? "text-[var(--green-main)] hover:text-[var(--green-main)] after:absolute after:bottom-[-8px] after:left-0 after:w-full after:h-[2px] after:bg-[var(--green-main)]"
-        : "text-[var(--green-main)] hover:text-[var(--green-main)]"
-      }`}
+            ${
+              isActive
+                ? "text-[var(--green-main)] hover:text-[var(--green-main)] after:absolute after:bottom-[-8px] after:left-0 after:w-full after:h-[2px] after:bg-[var(--green-main)]"
+                : "text-[var(--green-main)] hover:text-[var(--green-main)]"
+            }`}
   >
     {label}
   </span>
@@ -24,14 +40,18 @@ const Header: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [isLanguagePopupOpen, setIsLanguagePopupOpen] = useState(false);
-  const language = 'en'
+  // Correct language typing
+  const [language, setLanguage] = useState<Language>("en");
+
   const pathname = usePathname();
   const router = useRouter();
-  const languagePopupRef = useRef(null);
+  const languagePopupRef = useRef<HTMLDivElement>(null);
+
   const token = Cookies.get("token");
-  const userInfo = Cookies.get("userInfo")
-    ? JSON.parse(Cookies.get("userInfo")!)
-    : null;
+  const userInfo: { firstName?: string; lastName?: string } | null =
+    Cookies.get("userInfo")
+      ? JSON.parse(Cookies.get("userInfo") as string)
+      : null;
 
   if (pathname.includes("auth")) {
     return null;
@@ -39,8 +59,6 @@ const Header: React.FC = () => {
 
   const toggleMenu = () => {
     setIsOpen((prev) => !prev);
-    // setIsLanguagePopupOpen(false);
-    // setIsProfilePopupOpen(false);
   };
 
   const handleLogout = () => {
@@ -50,22 +68,18 @@ const Header: React.FC = () => {
     router.push("/");
   };
 
-  const handleNavigate = (href) => {
+  const handleNavigate = (href: string) => {
     setIsOpen(false);
-    // setIsLanguagePopupOpen(false);
-    // setIsProfilePopupOpen(false);
     if (href) {
       router.push(href);
     }
   };
 
-  const changeLanguage = async (selectedLanguage) => {
-    // try {
-    //   localStorage.setItem("lang", selectedLanguage);
-    //   window.location.reload();
-    // } catch (error) {
-    //   console.error("Error updating language:", error.message);
-    // }
+  const changeLanguage = (selectedLanguage: Language) => {
+    setLanguage(selectedLanguage);
+    // Example: Save to localStorage or make API call here if needed
+    // localStorage.setItem("lang", selectedLanguage);
+    // window.location.reload();
   };
 
   const toggleVisibility = () => {
@@ -74,14 +88,12 @@ const Header: React.FC = () => {
 
   const toggleLanguagePopup = () => {
     setIsLanguagePopupOpen((prev) => !prev);
-    // setIsProfilePopupOpen(false);
   };
 
   const links = [
     { href: "/", label: "Home" },
     { href: "/products", label: "Products" },
     { href: "/suppliers", label: "Suppliers" },
-
   ];
 
   return (
@@ -99,24 +111,15 @@ const Header: React.FC = () => {
           </Link>
 
           <nav className="hidden lg:flex space-x-8">
-            <p
-              onClick={() => router.push("/")}
-              className="hover:text-[var(--green-main)] cursor-pointer"
-            >
-              Home
-            </p>
-            <p
-              onClick={() => router.push("/products")}
-              className="hover:text-[var(--green-main)] cursor-pointer"
-            >
-              Products
-            </p>
-            <p
-              onClick={() => router.push("/suppliers")}
-              className="hover:text-[var(--green-main)] cursor-pointer"
-            >
-              Suppliers
-            </p>
+            {links.map((link) => (
+              <p
+                key={link.href}
+                onClick={() => router.push(link.href)}
+                className="hover:text-[var(--green-main)] cursor-pointer"
+              >
+                {link.label}
+              </p>
+            ))}
             <div className="relative" ref={languagePopupRef}>
               <div
                 className="flex items-center gap-2 cursor-pointer"
@@ -128,8 +131,9 @@ const Header: React.FC = () => {
               </div>
               {isLanguagePopupOpen && (
                 <div
-                  className={`absolute ${language === "ar" ? "left-0" : "right-0"
-                    } mt-2 w-32 bg-white shadow-lg rounded-md border z-10 px-3 top-[35px]`}
+                  className={`absolute ${
+                    language === "ar" ? "left-0" : "right-0"
+                  } mt-2 w-32 bg-white shadow-lg rounded-md border z-10 px-3 top-[35px]`}
                 >
                   <div className="py-2">
                     <button
@@ -159,7 +163,6 @@ const Header: React.FC = () => {
                   </div>
                 </div>
               )}
-
             </div>
           </nav>
 
@@ -227,8 +230,10 @@ const Header: React.FC = () => {
           </div>
 
           <div
-            className={`fixed inset-y-0 right-0 bg-white opacity-90 z-10 transform rounded-l-2xl shadow-2xl w-[200px] ${isOpen ? 'translate-x-0' : 'translate-x-full'} transition-transform duration-300 ease-in-out lg:hidden flex flex-col px-4 py-6 space-y-4 overflow-y-auto`}
-            style={{ maxHeight: '100vh' }}
+            className={`fixed inset-y-0 right-0 bg-white opacity-90 z-10 transform rounded-l-2xl shadow-2xl w-[200px] ${
+              isOpen ? "translate-x-0" : "translate-x-full"
+            } transition-transform duration-300 ease-in-out lg:hidden flex flex-col px-4 py-6 space-y-4 overflow-y-auto`}
+            style={{ maxHeight: "100vh" }}
           >
             <button
               onClick={toggleMenu}
@@ -263,7 +268,7 @@ const Header: React.FC = () => {
               <NavbarLink
                 href="/user/profile"
                 label={"Profile"}
-                isActive={'/user/profile' === pathname}
+                isActive={"/user/profile" === pathname}
                 onClick={handleNavigate}
               />
             ) : null}
@@ -285,47 +290,50 @@ const Header: React.FC = () => {
                 }}
               >
                 <div
-                  className={`cursor-pointer px-4 py-2 rounded-md text-sm ${language === "ar"
-                    ? "bg-[var(--green-main)] text-white"
-                    : "text-[#737791]"
-                    } hover:bg-[var(--green-main)] hover:text-white`}
+                  className={`cursor-pointer px-4 py-2 rounded-md text-sm ${
+                    language === "ar"
+                      ? "bg-[var(--green-main)] text-white"
+                      : "text-[#737791]"
+                  } hover:bg-[var(--green-main)] hover:text-white`}
                   onClick={() => changeLanguage("ar")}
                 >
                   العربية
                 </div>
 
                 <div
-                  className={`cursor-pointer px-4 py-2 rounded-md text-sm ${language === "en"
-                    ? "bg-[var(--green-main)] text-white"
-                    : "text-[var(--green-main)]"
-                    } hover:bg-[var(--green-main)] hover:text-white`}
+                  className={`cursor-pointer px-4 py-2 rounded-md text-sm ${
+                    language === "en"
+                      ? "bg-[var(--green-main)] text-white"
+                      : "text-[var(--green-main)]"
+                  } hover:bg-[var(--green-main)] hover:text-white`}
                   onClick={() => changeLanguage("en")}
                 >
                   English
                 </div>
 
                 <div
-                  className={`cursor-pointer px-4 py-2 rounded-md text-sm ${language === "de"
-                    ? "bg-[var(--green-main)] text-white"
-                    : "text-[var(--green-main)]"
-                    } hover:bg-[var(--green-main)] hover:text-white`}
+                  className={`cursor-pointer px-4 py-2 rounded-md text-sm ${
+                    language === "de"
+                      ? "bg-[var(--green-main)] text-white"
+                      : "text-[var(--green-main)]"
+                  } hover:bg-[var(--green-main)] hover:text-white`}
                   onClick={() => changeLanguage("de")}
                 >
                   Deutsch
                 </div>
 
                 <div
-                  className={`cursor-pointer px-4 py-2 rounded-md text-sm ${language === "zh"
-                    ? "bg-[var(--green-main)] text-white"
-                    : "text-[var(--green-main)]"
-                    } hover:bg-[var(--green-main)] hover:text-white`}
+                  className={`cursor-pointer px-4 py-2 rounded-md text-sm ${
+                    language === "zh"
+                      ? "bg-[var(--green-main)] text-white"
+                      : "text-[var(--green-main)]"
+                  } hover:bg-[var(--green-main)] hover:text-white`}
                   onClick={() => changeLanguage("zh")}
                 >
                   中文
                 </div>
               </div>
             )}
-
 
             {token && userInfo ? (
               <Button
