@@ -75,11 +75,22 @@ const Register: React.FC = () => {
     user_type: userType || "buyer",
   });
 
-  const countriesList: Country[] = countryCodesList?.all().map((country) => ({
-    code: country.countryCode,
-    dialCode: `+${country.countryCallingCode}`,
-    name: country.countryNameEn,
-  }));
+  const countriesList: Country[] = Array.isArray(countryCodesList?.all())
+    ? countryCodesList.all().map(
+        (country): Country => ({
+          code:
+            typeof country?.countryCode === "string" ? country.countryCode : "",
+          dialCode:
+            typeof country?.countryCallingCode === "string"
+              ? `+${country.countryCallingCode}`
+              : "",
+          name:
+            typeof country?.countryNameEn === "string"
+              ? country.countryNameEn
+              : "",
+        })
+      )
+    : [];
 
   useEffect(() => {
     getIndustryList().then((response) => {
