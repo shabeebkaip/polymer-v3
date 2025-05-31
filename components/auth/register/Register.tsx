@@ -75,7 +75,7 @@ const Register: React.FC = () => {
     user_type: userType || "buyer",
   });
 
-  const countriesList: Country[] = countryCodesList.all().map((country) => ({
+  const countriesList: Country[] = countryCodesList?.all().map((country) => ({
     code: country.countryCode,
     dialCode: `+${country.countryCallingCode}`,
     name: country.countryNameEn,
