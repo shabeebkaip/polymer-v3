@@ -75,7 +75,7 @@ const Register: React.FC = () => {
     user_type: userType || "buyer",
   });
 
-  const countriesList: Country[] = Array.isArray(countryCodesList?.all())
+  const countriesList: Country[] = countryCodesList?.all()
     ? countryCodesList.all().map(
         (country): Country => ({
           code:
@@ -168,8 +168,8 @@ const Register: React.FC = () => {
 
       <h4 className="text-4xl text-[var(--dark-main)]">Signup</h4>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
-        <div className="col-span-2">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
+        <div className="col-span-3">
           {data?.company_logo ? (
             <>
               <Avatar
@@ -201,7 +201,7 @@ const Register: React.FC = () => {
                 alt="Upload"
                 width={100}
                 height={50}
-                className="rounded-md"
+                className="rounded-md object-contain"
               />
               <input
                 type="file"
