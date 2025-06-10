@@ -76,7 +76,7 @@ const Register: React.FC = () => {
   });
 
   const countriesList: Country[] = Object.values(
-    countryCodesList.customList(
+    countryCodesList?.customList(
       "countryCode",
       "{countryNameEn}|||{countryCallingCode}"
     )
