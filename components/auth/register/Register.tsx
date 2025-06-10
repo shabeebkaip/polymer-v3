@@ -66,7 +66,7 @@ const Register: React.FC = () => {
     website: "",
     phone: "",
     company: "",
-    country_code: "+966",
+    country_code: "966",
     industry: "",
     address: "",
     location: "",
@@ -75,19 +75,12 @@ const Register: React.FC = () => {
     user_type: userType || "buyer",
   });
 
-  const countriesList: Country[] = Object.values(
-    countryCodesList?.customList(
-      "countryCode",
-      "{countryNameEn}|||{countryCallingCode}"
-    )
-  ).map((entry: string) => {
-    const [name, dialCode] = entry.split("|||");
-    return {
-      code: "", // You can set country code if needed, or extract it from the key
-      name,
-      dialCode: `+${dialCode}`,
-    };
-  });
+  const countriesList: Country[] = countryCodesList.all().map((country) => ({
+    code: country.countryCode,
+    dialCode: country.countryCallingCode,
+    name: country.countryNameEn,
+  }));
+
   console.log("countriesList", countriesList);
 
   useEffect(() => {
