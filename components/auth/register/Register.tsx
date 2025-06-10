@@ -75,7 +75,7 @@ const Register: React.FC = () => {
     user_type: userType || "buyer",
   });
 
-  const countriesList: Country[] = countryCodesList.all().map((country) => ({
+  const countriesList: Country[] = countryCodesList?.all().map((country) => ({
     code: country.countryCode,
     dialCode: country.countryCallingCode,
     name: country.countryNameEn,
@@ -232,7 +232,7 @@ const Register: React.FC = () => {
             onChange={onFieldChange}
             className="rounded-l-lg border border-gray-300 px-3 py-2 bg-white text-sm"
           >
-            {countriesList.map((c, idx) => (
+            {countriesList?.map((c, idx) => (
               <option key={idx} value={c.dialCode}>
                 {c.code} {c.dialCode}
               </option>
