@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useEffect, useRef, useState, ChangeEvent } from "react";
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  ChangeEvent,
+  useMemo,
+} from "react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import Cookies from "js-cookie";
@@ -12,6 +18,7 @@ import Input from "@/components/shared/Input";
 import { getIndustryList, imageUpload } from "@/apiServices/shared";
 import { register } from "@/apiServices/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { getCountryList } from "@/lib/useCountries";
 
 interface Industry {
   _id: string;
@@ -26,8 +33,8 @@ interface UploadedFile {
 
 interface Country {
   code: string;
-  dialCode: string;
   name: string;
+  dialCode: string;
 }
 
 interface RegisterData {
@@ -66,7 +73,7 @@ const Register: React.FC = () => {
     website: "",
     phone: "",
     company: "",
-    country_code: "966",
+    country_code: "+966",
     industry: "",
     address: "",
     location: "",
@@ -75,13 +82,11 @@ const Register: React.FC = () => {
     user_type: userType || "buyer",
   });
 
-  const countriesList: Country[] = countryCodesList?.all().map((country) => ({
-    code: country.countryCode,
-    dialCode: country.countryCallingCode,
-    name: country.countryNameEn,
-  }));
+  const countries = useMemo<Country[]>(() => {
+    return getCountryList().filter((c): c is Country => c !== null);
+  }, []);
 
-  console.log("countriesList", countriesList);
+  console.log("countriesList", countries);
 
   useEffect(() => {
     getIndustryList().then((response) => {
@@ -232,7 +237,7 @@ const Register: React.FC = () => {
             onChange={onFieldChange}
             className="rounded-l-lg border border-gray-300 px-3 py-2 bg-white text-sm"
           >
-            {countriesList?.map((c, idx) => (
+            {countries?.map((c, idx) => (
               <option key={idx} value={c.dialCode}>
                 {c.code} {c.dialCode}
               </option>
@@ -288,7 +293,7 @@ const Register: React.FC = () => {
           className="w-full border border-gray-300 rounded-md px-4 py-2"
         >
           <option value="">Select Location</option>
-          {countriesList.map((c, idx) => (
+          {countries.map((c, idx) => (
             <option key={idx} value={c.name}>
               {c.name}
             </option>
