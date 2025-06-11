@@ -27,6 +27,11 @@ interface ProductFamily {
   image: string;
 }
 
+interface CategoriesProps {
+  industries: IndustryItem[];
+  productFamiliesList: ProductFamily[];
+}
+
 const categoryData: CategoryData[] = [
   {
     id: "industries",
@@ -40,49 +45,27 @@ const categoryData: CategoryData[] = [
   },
 ];
 
-const Categories: React.FC = () => {
+const Categories: React.FC<CategoriesProps> = ({
+  industries,
+  productFamiliesList,
+}) => {
   const [selectedCategory, setSelectedCategory] =
     useState<string>("industries");
-  const [industriesList, setIndustriesList] = useState<IndustryItem[]>([]);
-  const [productFamilies, setProductFamilies] = useState<ProductFamily[]>([]);
   const isMobile = useIsMobile();
   const router = useRouter();
 
   const displayedItems = useMemo(() => {
     const data =
-      selectedCategory === "industries" ? industriesList : productFamilies;
+      selectedCategory === "industries" ? industries : productFamiliesList;
 
     const sliced = data.length > 9 ? data.slice(0, 9) : data;
     return isMobile ? sliced.slice(0, 4) : sliced;
-  }, [selectedCategory, isMobile, industriesList, productFamilies]);
+  }, [selectedCategory, isMobile, industries, productFamiliesList]);
 
   const shouldShowViewAll =
     (selectedCategory === "industries"
-      ? industriesList.length
-      : productFamilies.length) > 9 && !isMobile;
-
-  useEffect(() => {
-    getIndustryList().then((response) => {
-      setIndustriesList(
-        response?.data?.map((item: IndustryItem) => ({
-          ...item,
-          image: item.bg,
-        }))
-      );
-    });
-
-    getProductFamilies().then((response) => {
-      const simplifiedFamilies: ProductFamily[] = response?.data?.map(
-        (item: any) => ({
-          _id: item._id,
-          name: item.name,
-          image: item.image,
-        })
-      );
-      setProductFamilies(simplifiedFamilies);
-    });
-  }, []);
-
+      ? industries.length
+      : productFamiliesList.length) > 9 && !isMobile;
   return (
     <section className="container mx-auto px-4 mt-20 mb-10">
       <div className="flex flex-col items-center gap-6 md:gap-14">
@@ -90,26 +73,30 @@ const Categories: React.FC = () => {
           Discover Our Products
         </h1>
 
-<div className="grid grid-cols-2 justify-center gap-2 md:gap-10">
-  {categoryData.map(({ id, name, icon }) => (
-    <Tab
-      key={id}
-      name={name}
-      icon={icon}
-      isSelected={selectedCategory === id}
-      onClick={() => setSelectedCategory(id)}
-      iconWidth="w-8 md:w-12 lg:w-14"
-      fontSize="text-[10px] md:text-sm lg:text-base" 
-    />
-  ))}
-</div>
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-3 w-full">
-          {displayedItems.map(({ name, image, _id }, index) => (
-            <CategoryCard
-              key={_id || index}
+        <div className="grid grid-cols-2 justify-center gap-2 md:gap-10">
+          {categoryData.map(({ id, name, icon }) => (
+            <Tab
+              key={id}
               name={name}
-              image={image}
-              id={_id}
+              icon={icon}
+              isSelected={selectedCategory === id}
+              onClick={() => setSelectedCategory(id)}
+              iconWidth="w-8 md:w-12 lg:w-14"
+              fontSize="text-[10px] md:text-sm lg:text-base"
+            />
+          ))}
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-3 w-full">
+          {displayedItems.map((item, index) => (
+            <CategoryCard
+              key={item?._id || index}
+              name={item?.name}
+              image={
+                selectedCategory === "industries"
+                  ? (item as IndustryItem).bg
+                  : (item as ProductFamily).image
+              }
+              id={item?._id}
               selectedCategory={selectedCategory}
             />
           ))}
@@ -125,10 +112,9 @@ const Categories: React.FC = () => {
                 )
               }
             >
-<button className="font-medium text-sm md:text-2xl flex items-center gap-1 text-white hover:underline">
-  View All <span>→</span>
-</button> 
-             
+              <button className="font-medium text-sm md:text-2xl flex items-center gap-1 text-white hover:underline">
+                View All <span>→</span>
+              </button>
             </div>
           )}
         </div>

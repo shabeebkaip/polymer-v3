@@ -1,27 +1,36 @@
 import dynamic from "next/dynamic";
 import Hero from "@/components/home/Hero";
 import ProductsByBrand from "@/components/home/ProductsByBrand";
-import QuoteRequestModal from "@/components/shared/QuoteRequestModal";
+import {
+  getIndustryList,
+  getProductFamilies,
+  getSellers,
+} from "@/apiServices/shared";
+import { get } from "http";
 
-const Categories = dynamic(() => import("@/components/home/Categories"), {
-  loading: () => <p>Loading categories...</p>,
-});
-const FeaturedSuppliers = dynamic(
-  () => import("@/components/home/FeaturedSuppliers"),
-  {
-    loading: () => <p>Loading suppliers...</p>,
-  }
-);
-const BeneFits = dynamic(() => import("@/components/home/Benefits"), {
-  loading: () => <p>Loading benefits...</p>,
-});
+const Categories = dynamic(() => import("@/components/home/Categories"));
 
-export default function Home() {
+const BeneFits = dynamic(() => import("@/components/home/Benefits"));
+
+export default async function HomePage() {
+  const [industriesRes, familiesRes, sellersRes] = await Promise.all([
+    getIndustryList(),
+    getProductFamilies(),
+    getSellers(),
+  ]);
+
+  const industries = industriesRes?.data || [];
+  const productFamilies = familiesRes?.data || [];
+  const sellers = sellersRes?.data || [];
+
   return (
-    <div className="">
+    <div>
       <Hero />
-      <Categories />
-      <ProductsByBrand />
+      <Categories
+        industries={industries}
+        productFamiliesList={productFamilies}
+      />
+      <ProductsByBrand sellers={sellers} />
       <BeneFits />
     </div>
   );
