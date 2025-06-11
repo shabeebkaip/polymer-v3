@@ -17,7 +17,7 @@ const Login: React.FC = () => {
       name: "Seller",
       description:
         "As a seller, you can list your products and manage your sales.",
-      icon: "/icons/seller.svg",
+      icon: "/icons/Seller.svg",
       link: "/auth/register?role=seller",
     },
   ];
