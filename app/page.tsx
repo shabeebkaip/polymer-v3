@@ -1,4 +1,6 @@
-import dynamic from "next/dynamic";
+export const dynamic = "force-dynamic";
+
+import nextDynamic from "next/dynamic";
 import Hero from "@/components/home/Hero";
 import ProductsByBrand from "@/components/home/ProductsByBrand";
 import {
@@ -6,12 +8,10 @@ import {
   getProductFamilies,
   getSellers,
 } from "@/apiServices/shared";
-import { get } from "http";
 import { getBenefitsOfBuyers, getBenefitsOfSuppliers } from "@/apiServices/cms";
 
-const Categories = dynamic(() => import("@/components/home/Categories"));
-
-const BeneFits = dynamic(() => import("@/components/home/Benefits"));
+const Categories = nextDynamic(() => import("@/components/home/Categories"));
+const BeneFits = nextDynamic(() => import("@/components/home/Benefits"));
 
 export default async function HomePage() {
   const [
@@ -42,7 +42,10 @@ export default async function HomePage() {
         productFamiliesList={productFamilies}
       />
       <ProductsByBrand sellers={sellers} />
-      <BeneFits buyersBenefits={buyersBenefits} suppliersBenefits={suppliersBenefits}  />
+      <BeneFits
+        buyersBenefits={buyersBenefits}
+        suppliersBenefits={suppliersBenefits}
+      />
     </div>
   );
 }

@@ -11,8 +11,10 @@ interface BenefitsProps {
   buyersBenefits?: BenefitsContent;
   suppliersBenefits?: BenefitsContent;
 }
-
-const Benefits: React.FC<BenefitsProps> = ({ buyersBenefits, suppliersBenefits }) => {
+const Benefits: React.FC<BenefitsProps> = ({
+  buyersBenefits,
+  suppliersBenefits,
+}) => {
   return (
     <section className="container mx-auto px-4 mt-20 mb-10">
       <div className="flex flex-col items-center gap-14">
