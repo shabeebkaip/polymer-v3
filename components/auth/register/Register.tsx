@@ -85,9 +85,6 @@ const Register: React.FC = () => {
   const countries = useMemo<Country[]>(() => {
     return getCountryList().filter((c): c is Country => c !== null);
   }, []);
-
-  console.log("countriesList", countries);
-
   useEffect(() => {
     getIndustryList().then((response) => {
       const industries = response?.data?.map((item: any) => ({
