@@ -19,3 +19,13 @@ export const getBenefitsOfSuppliers = async () => {
     throw error;
   }
 };
+
+export const getSocialLinks = async () => {
+  try {
+    const response = await axiosInstance.get("/cms/list/socialMedia");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching social links:", error);
+    throw error;
+  }
+};

@@ -26,10 +26,6 @@ interface Industry {
   bg: string;
   image?: string;
 }
-interface UploadedFile {
-  fileUrl: string;
-  id: string;
-}
 
 interface Country {
   code: string;

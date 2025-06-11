@@ -1,10 +1,12 @@
 "use client";
 import Image from "next/image";
-import React from "react";
+import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { getSocialLinks } from "@/apiServices/cms";
 
 const Footer: React.FC = () => {
   const router = useRouter();
+  const [socialLinks, setSocialLinks] = React.useState<any[]>([]);
 
   const socials = [
     {
@@ -29,10 +31,16 @@ const Footer: React.FC = () => {
     },
   ];
 
+  useEffect(() => {
+    getSocialLinks().then((response) => {
+      setSocialLinks(response?.data);
+    });
+  }, []);
+
   const navigateTo = (path: string) => {
     router.push(path);
   };
-
+  console.log("Social Links:", socialLinks);
   return (
     <footer className="bg-[var(--footer-background)] text-white">
       <div className="container mx-auto px-4 pt-10">
