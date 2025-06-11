@@ -1,6 +1,20 @@
 "use client";
 import React, { useState } from "react";
-
+import Cookies from "js-cookie";
+import { toast } from "sonner";
+import { Input } from "@/components/ui/input";
+import { Button } from "../ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Calendar } from "@/components/ui/calendar";
+import { getGrades } from "@/apiServices/shared";
+import { createSampleRequest } from "@/apiServices/user";
+import { Calendar as CalendarIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Dialog,
   DialogContent,
@@ -9,10 +23,6 @@ import {
   DialogFooter,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Calendar } from "@/components/ui/calendar";
-import { Calendar as CalendarIcon } from "lucide-react";
 import {
   Select,
   SelectTrigger,
@@ -20,15 +30,6 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { getGrades } from "@/apiServices/shared";
-import { Button } from "../ui/button";
-import { toast } from "sonner";
-import { createSampleRequest } from "@/apiServices/user";
 
 interface Grade {
   _id: string;
@@ -53,6 +54,8 @@ const SampleRequestModal = ({
   productId,
   uom,
 }: SampleRequestModalProps) => {
+  const token = Cookies.get("token");
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [data, setData] = useState({
     product: productId,
@@ -78,14 +81,20 @@ const SampleRequestModal = ({
   const [calendarOpen2, setCalendarOpen2] = useState(false);
 
   const handletrigger = () => {
-    setOpen(true);
-    Promise.all([getGrades()])
-      .then(([gradesRes]) => {
-        setGrades(gradesRes.data);
-      })
-      .catch((err) => {
-        console.error("Error fetching dropdowns", err);
-      });
+    if (token) {
+      setOpen(true);
+      Promise.all([getGrades()])
+        .then(([gradesRes]) => {
+          setGrades(gradesRes.data);
+        })
+        .catch((err) => {
+          console.error("Error fetching dropdowns", err);
+        });
+    } else {
+      toast.error("Please login to request a sample.");
+      setOpen(false);
+      router.push("/auth/login");
+    }
   };
 
   const onFieldChange = (field: string, value: string | Date | undefined) => {
@@ -118,9 +127,7 @@ const SampleRequestModal = ({
 
     try {
       // Proceed with the request if no errors
-      console.log("All validations passed. Proceeding...");
       createSampleRequest(data).then((response) => {
-        console.log("Quote request created successfully:", response);
         toast.dismiss(toastId);
         toast.success("Quote request created successfully.");
         setOpen(false); // Close the modal

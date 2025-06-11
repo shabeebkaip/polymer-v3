@@ -31,9 +31,11 @@ import {
 } from "@/apiServices/shared";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
-import { create } from "domain";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { createQuoteRequest } from "@/apiServices/user";
+import { useUserInfo } from "@/lib/useUserInfo";
+import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 
 interface Grade {
   _id: string;
@@ -58,6 +60,8 @@ const QuoteRequestModal = ({
   productId,
   uom,
 }: QuoteRequestModalProps) => {
+  const token = Cookies.get("token");
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [data, setData] = useState({
     product: productId, // id
@@ -85,16 +89,22 @@ const QuoteRequestModal = ({
   const [calendarOpen, setCalendarOpen] = useState(false);
 
   const handletrigger = () => {
-    setOpen(true);
-    Promise.all([getGrades(), getIncoterms(), getPackagingTypes()])
-      .then(([gradesRes, incotermsRes, packagingRes]) => {
-        setGrades(gradesRes.data);
-        setIncoterms(incotermsRes.data);
-        setPackagingTypes(packagingRes.data);
-      })
-      .catch((err) => {
-        console.error("Error fetching dropdowns", err);
-      });
+    if (token) {
+      setOpen(true);
+      Promise.all([getGrades(), getIncoterms(), getPackagingTypes()])
+        .then(([gradesRes, incotermsRes, packagingRes]) => {
+          setGrades(gradesRes.data);
+          setIncoterms(incotermsRes.data);
+          setPackagingTypes(packagingRes.data);
+        })
+        .catch((err) => {
+          console.error("Error fetching dropdowns", err);
+        });
+    } else {
+      toast.error("Please login to request a quote.");
+      setOpen(false);
+      router.push("/auth/login");
+    }
   };
 
   const onFieldChange = (field: string, value: string | Date | undefined) => {
@@ -274,25 +284,28 @@ const QuoteRequestModal = ({
 
           <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
             <PopoverTrigger asChild>
-               <div className="relative w-full">
-              <Input
-                readOnly
-                value={
-                  data?.delivery_date
-                    ? new Date(data?.delivery_date).toLocaleDateString(
-                      "en-US",
-                      {
-                        year: "numeric",
-                        month: "2-digit",
-                        day: "2-digit",
-                      }
-                    )
-                    : "Select Delivery Date"
-                }
-                className="bg-white cursor-pointer w-full"
-              />
-              <CalendarIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none" size={18} />
-               </div>
+              <div className="relative w-full">
+                <Input
+                  readOnly
+                  value={
+                    data?.delivery_date
+                      ? new Date(data?.delivery_date).toLocaleDateString(
+                          "en-US",
+                          {
+                            year: "numeric",
+                            month: "2-digit",
+                            day: "2-digit",
+                          }
+                        )
+                      : "Select Delivery Date"
+                  }
+                  className="bg-white cursor-pointer w-full"
+                />
+                <CalendarIcon
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none"
+                  size={18}
+                />
+              </div>
             </PopoverTrigger>
             <PopoverContent className="p-0">
               <Calendar
