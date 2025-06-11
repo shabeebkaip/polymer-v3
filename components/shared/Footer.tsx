@@ -1,10 +1,9 @@
 "use client";
 import Image from "next/image";
 import React from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 const Footer: React.FC = () => {
-  const pathname = usePathname();
   const router = useRouter();
 
   const socials = [
@@ -29,8 +28,6 @@ const Footer: React.FC = () => {
       link: "https://www.instagram.com/",
     },
   ];
-
-  if (pathname.includes("auth")) return null;
 
   const navigateTo = (path: string) => {
     router.push(path);
@@ -101,19 +98,19 @@ const Footer: React.FC = () => {
                 <h4 className="text-white font-medium">USEFUL LINKS</h4>
                 <ul className="flex flex-col gap-1 text-sm text-center">
                   <li
-                    className="font-thin hover:font-normal cursor-pointer"
+                    className="font-normal hover:font-semibold cursor-pointer"
                     onClick={() => navigateTo("/")}
                   >
                     Home
                   </li>
                   <li
-                    className="font-thin hover:font-normal cursor-pointer"
-                    onClick={() => navigateTo("/brands")}
+                    className="font-normal hover:font-semibold cursor-pointer"
+                    onClick={() => navigateTo("/suppliers")}
                   >
-                    Brand
+                    Suppliers
                   </li>
                   <li
-                    className="font-thin hover:font-normal cursor-pointer"
+                    className="font-normal hover:font-semibold cursor-pointer"
                     onClick={() => navigateTo("/products")}
                   >
                     Product
@@ -167,19 +164,19 @@ const Footer: React.FC = () => {
               <h4 className="text-white font-medium">USEFUL LINKS</h4>
               <ul className="text-sm flex flex-col gap-1">
                 <li
-                  className="font-thin hover:font-normal cursor-pointer"
+                  className="font-normal hover:font-semibold cursor-pointer"
                   onClick={() => navigateTo("/")}
                 >
                   Home
                 </li>
                 <li
-                  className="font-thin hover:font-normal cursor-pointer"
-                  onClick={() => navigateTo("/brands")}
+                  className="font-normal hover:font-semibold cursor-pointer"
+                  onClick={() => navigateTo("/suppliers")}
                 >
-                  Brands
+                  Suppliers
                 </li>
                 <li
-                  className="font-thin hover:font-normal cursor-pointer"
+                  className="font-normal hover:font-semibold cursor-pointer"
                   onClick={() => navigateTo("/products")}
                 >
                   Products
@@ -191,7 +188,9 @@ const Footer: React.FC = () => {
       </div>
 
       <div className="bg-[var(--footer-background-secondary)] text-center p-4">
-        <p>&copy; {new Date().getFullYear()} linkup. All rights reserved.</p>
+        <p>
+          &copy; {new Date().getFullYear()} POLYMERS HUB. All rights reserved.
+        </p>
       </div>
     </footer>
   );

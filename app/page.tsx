@@ -7,21 +7,32 @@ import {
   getSellers,
 } from "@/apiServices/shared";
 import { get } from "http";
+import { getBenefitsOfBuyers, getBenefitsOfSuppliers } from "@/apiServices/cms";
 
 const Categories = dynamic(() => import("@/components/home/Categories"));
 
 const BeneFits = dynamic(() => import("@/components/home/Benefits"));
 
 export default async function HomePage() {
-  const [industriesRes, familiesRes, sellersRes] = await Promise.all([
+  const [
+    industriesRes,
+    familiesRes,
+    sellersRes,
+    buyersBenefitsRes,
+    supplierBenefitsRes,
+  ] = await Promise.all([
     getIndustryList(),
     getProductFamilies(),
     getSellers(),
+    getBenefitsOfBuyers(),
+    getBenefitsOfSuppliers(),
   ]);
 
   const industries = industriesRes?.data || [];
   const productFamilies = familiesRes?.data || [];
   const sellers = sellersRes?.data || [];
+  const buyersBenefits = buyersBenefitsRes?.data || [];
+  const suppliersBenefits = supplierBenefitsRes?.data || [];
 
   return (
     <div>
@@ -31,7 +42,7 @@ export default async function HomePage() {
         productFamiliesList={productFamilies}
       />
       <ProductsByBrand sellers={sellers} />
-      <BeneFits />
+      <BeneFits buyersBenefits={buyersBenefits} suppliersBenefits={suppliersBenefits}  />
     </div>
   );
 }

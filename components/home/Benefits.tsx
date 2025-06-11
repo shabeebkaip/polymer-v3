@@ -1,29 +1,18 @@
 import React from "react";
 import BenefitCard from "./BenefitCard";
 
-const Benefits: React.FC = () => {
-  const benefits = [
-    {
-      title: "Benefits for Buyers",
-      subtitle: "Free For Buyers",
-      list: [
-        "Buyers can access the platform for free, allowing them to explore a wide range of products and suppliers without any upfront costs.",
-        "Buyers can easily compare products and suppliers, helping them make informed decisions based on their specific needs.",
-        "Buyers can access a diverse range of suppliers and products, increasing their options and opportunities for sourcing materials.",
-      ],
-      registerLink: "/auth/register?role=buyer",
-    },
-    {
-      title: "Benefits for Sellers",
-      subtitle: "Free For Sellers",
-      list: [
-        "Sellers can showcase their products to a global audience, increasing their visibility and potential customer base.",
-        "Sellers can connect with buyers directly, facilitating communication and negotiation.",
-        "Sellers can access valuable market insights and analytics to optimize their offerings and strategies.",
-      ],
-      registerLink: "auth/register?role=seller",
-    },
-  ];
+type BenefitsContent = {
+  content?: {
+    description?: string[];
+  };
+};
+
+interface BenefitsProps {
+  buyersBenefits?: BenefitsContent;
+  suppliersBenefits?: BenefitsContent;
+}
+
+const Benefits: React.FC<BenefitsProps> = ({ buyersBenefits, suppliersBenefits }) => {
   return (
     <section className="container mx-auto px-4 mt-20 mb-10">
       <div className="flex flex-col items-center gap-14">
@@ -49,9 +38,18 @@ const Benefits: React.FC = () => {
         </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mt-10">
-        {benefits.map((benefit, index) => (
-          <BenefitCard key={index} benefit={benefit} />
-        ))}
+        <BenefitCard
+          subtitle="Free For Buyers"
+          title="Benefits for Buyers"
+          registerLink="auth/register?role=buyer"
+          benefits={buyersBenefits?.content?.description || []}
+        />
+        <BenefitCard
+          subtitle="Free For Suppliers"
+          title="Benefits for Suppliers"
+          registerLink="auth/register?role=seller"
+          benefits={suppliersBenefits?.content?.description || []}
+        />
       </div>
     </section>
   );
