@@ -57,11 +57,6 @@ const CompanyDetails: React.FC<CompanyDetailsProps> = ({
         <SampleRequestModal
           productId={productId}
           uom={uom}
-          className="transition px-4 py-2 rounded-lg w-full cursor-pointer bg-[var(--button-gray)] text-white"
-        />
-        <RequestFinanceModal
-          productId={productId}
-          uom={uom}
           className="w-full flex items-center justify-center px-4 py-2 border border-[var(--green-main)] text-[var(--green-main)] rounded-lg hover:bg-green-50 transition cursor-pointer"
         />
       </div>

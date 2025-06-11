@@ -33,6 +33,7 @@ const Page: React.FC = () => {
             name={family.name}
             image={family.image}
             id={family._id}
+            selectedCategory="product-families"
           />
         ))}
       </div>

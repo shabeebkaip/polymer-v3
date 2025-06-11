@@ -29,12 +29,13 @@ const Page: React.FC = () => {
     <div className="container mx-auto px-4 my-10">
       <h1 className="text-4xl text-[var(--dark-main)]">Industries</h1>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-10">
-        {industries.map((industry) => (
+        {industries?.map((industry) => (
           <CategoryCard
             key={industry._id}
             name={industry.name}
             image={industry.image}
             id={industry._id}
+            selectedCategory="industries"
           />
         ))}
       </div>

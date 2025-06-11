@@ -67,11 +67,14 @@ const ImageContainers: React.FC<ImageContainersProps> = ({ productImages }) => {
     <div className="w-full  rounded-lg shadow p-4 overflow-hidden">
       <div ref={sliderRef} className="keen-slider">
         {productImages.map((image, index) => (
-          <div className="keen-slider__slide" key={index}>
+          <div
+            className="keen-slider__slide flex justify-center items-center h-60"
+            key={index}
+          >
             <img
               src={image.fileUrl}
               alt={`Product Image ${index + 1}`}
-              className="w-full h-60 object-contain rounded"
+              className="object-contain  rounded"
             />
           </div>
         ))}
