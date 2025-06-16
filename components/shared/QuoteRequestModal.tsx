@@ -8,6 +8,7 @@ import {
   DialogFooter,
   DialogDescription,
   DialogTrigger,
+  DialogClose,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -290,13 +291,13 @@ const QuoteRequestModal = ({
                   value={
                     data?.delivery_date
                       ? new Date(data?.delivery_date).toLocaleDateString(
-                          "en-US",
-                          {
-                            year: "numeric",
-                            month: "2-digit",
-                            day: "2-digit",
-                          }
-                        )
+                        "en-US",
+                        {
+                          year: "numeric",
+                          month: "2-digit",
+                          day: "2-digit",
+                        }
+                      )
                       : "Select Delivery Date"
                   }
                   className="bg-white cursor-pointer w-full"
@@ -318,15 +319,6 @@ const QuoteRequestModal = ({
               />
             </PopoverContent>
           </Popover>
-
-          <Input
-            placeholder="Price"
-            className="bg-white w-full"
-            type="number"
-            onChange={(e) => onFieldChange("pricing", e.target.value)}
-            value={data?.pricing}
-          />
-
           <Textarea
             placeholder="What will this product be used for?"
             className="col-span-1 lg:col-span-2 bg-white w-full"
@@ -344,12 +336,14 @@ const QuoteRequestModal = ({
         </div>
 
         <DialogFooter className="mt-4 flex justify-between">
-          <Button
-            variant={"outline"}
-            className="border border-[var(--green-main)] text-[var(--green-main)] rounded-lg hover:bg-green-50 transition hover:text-[var(--green-main)]"
-          >
-            Cancel
-          </Button>
+          <DialogClose asChild>
+            <Button
+              variant={"outline"}
+              className="border border-[var(--green-main)] text-[var(--green-main)] rounded-lg hover:bg-green-50 transition hover:text-[var(--green-main)]"
+            >
+              Cancel
+            </Button>
+          </DialogClose>
           <Button
             type="submit"
             onClick={handleSubmit}

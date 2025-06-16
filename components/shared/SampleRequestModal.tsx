@@ -22,6 +22,7 @@ import {
   DialogTitle,
   DialogFooter,
   DialogTrigger,
+  DialogClose,
 } from "@/components/ui/dialog";
 import {
   Select,
@@ -205,10 +206,10 @@ const SampleRequestModal = ({
                   value={
                     data?.neededBy
                       ? new Date(data?.neededBy).toLocaleDateString("en-US", {
-                          year: "numeric",
-                          month: "2-digit",
-                          day: "2-digit",
-                        })
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                      })
                       : ""
                   }
                   placeholder="Needed By"
@@ -240,10 +241,10 @@ const SampleRequestModal = ({
                   value={
                     data?.orderDate
                       ? new Date(data?.orderDate).toLocaleDateString("en-US", {
-                          year: "numeric",
-                          month: "2-digit",
-                          day: "2-digit",
-                        })
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                      })
                       : "When do you plan to order?"
                   }
                   className="bg-white cursor-pointer w-full pr-10" // add padding for icon space
@@ -315,12 +316,14 @@ const SampleRequestModal = ({
         </div>
 
         <DialogFooter className="mt-4 flex justify-between">
-          <Button
-            variant={"outline"}
-            className="border border-[var(--green-main)] text-[var(--green-main)] rounded-lg hover:bg-green-50 transition hover:text-[var(--green-main)]"
-          >
-            Cancel
-          </Button>
+          <DialogClose asChild>
+            <Button
+              variant={"outline"}
+              className="border border-[var(--green-main)] text-[var(--green-main)] rounded-lg hover:bg-green-50 transition hover:text-[var(--green-main)]"
+            >
+              Cancel
+            </Button>
+          </DialogClose>
           <Button
             type="submit"
             onClick={handleSubmit}
