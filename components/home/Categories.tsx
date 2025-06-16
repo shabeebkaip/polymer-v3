@@ -103,7 +103,7 @@ const Categories: React.FC<CategoriesProps> = ({
 
           {shouldShowViewAll && (
             <div
-              className="hidden md:flex bg-[var(--green-light)] text-white items-center justify-center gap-2 rounded-t-2xl rounded-b-xl md:rounded-t-4xl md:rounded-b-3xl overflow-hidden shadow-lg cursor-pointer hover:opacity-90 transition"
+              className="hidden md:flex  border border-green-500  items-center justify-center gap-2 rounded-t-2xl rounded-b-xl md:rounded-t-4xl md:rounded-b-3xl overflow-hidden  cursor-pointer hover:opacity-90 transition"
               onClick={() =>
                 router.push(
                   selectedCategory === "industries"
@@ -112,7 +112,7 @@ const Categories: React.FC<CategoriesProps> = ({
                 )
               }
             >
-              <button className="font-medium text-sm md:text-2xl flex items-center gap-1 text-white hover:underline">
+              <button className=" text-sm md:text-2xl flex items-center gap-1  ">
                 View All <span>→</span>
               </button>
             </div>

@@ -30,7 +30,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
     >
       <Image src={image} alt={"category"} fill className="object-cover" />
 
-      <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-[var(--green-gradient-from)] via-[var(--green-gradient-via)] to-transparent p-4">
+      <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/20 via-black/60 to-transparent p-4">
         <h3 className="text-white text-sm md:text-2xl md:font-semibold whitespace-nowrap overflow-hidden text-ellipsis">
           {name}
         </h3>
