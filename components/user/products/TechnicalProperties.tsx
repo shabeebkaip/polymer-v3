@@ -47,9 +47,9 @@ const TechnicalProperties: React.FC<TechnicalPropertiesProps> = ({
         />
       </div>
 
-      <div>
+      <div className="relative">
         <Label htmlFor="mfi" className="block mb-1">
-          Melt Flow Index
+          MFI (g/10 min)
         </Label>
         <Input
           className="text-lg px-4"
