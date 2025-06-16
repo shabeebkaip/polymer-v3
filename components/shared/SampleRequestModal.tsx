@@ -245,7 +245,7 @@ const SampleRequestModal = ({
                         month: "2-digit",
                         day: "2-digit",
                       })
-                      : "When do you plan to order?"
+                      : "Expected Purchase Date"
                   }
                   className="bg-white cursor-pointer w-full pr-10" // add padding for icon space
                 />
