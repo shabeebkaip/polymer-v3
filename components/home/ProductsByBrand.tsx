@@ -3,7 +3,6 @@ import dynamic from "next/dynamic";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { getSellers } from "@/apiServices/shared";
 
 const ProductCard = dynamic(() => import("@/components/product/ProductCard"));
 
@@ -66,11 +65,10 @@ const ProductsByBrand: React.FC<ProductsByBrandProps> = ({ sellers }) => {
               key={seller._id}
               type="button"
               onClick={() => handleTabClick(seller)}
-              className={`flex items-center gap-2 px-3 py-2 rounded-full transition focus:outline-none w-[48%] sm:w-auto md:min-w-48 md:min-h-16 ${
-                selectedTab === seller._id
+              className={`flex items-center gap-2 px-3 py-2 rounded-full transition focus:outline-none w-[48%] sm:w-auto md:min-w-48 md:min-h-16 ${selectedTab === seller._id
                   ? "bg-gradient-to-r from-[var(--green-gradient-from)] via-[var(--green-gradient-via)] to-[var(--green-gradient-to)] text-white"
                   : "border-2 border-[var(--green-main)] text-[var(--green-main)] hover:bg-green-50"
-              }`}
+                }`}
             >
               <div className="flex-shrink-0 w-8 h-8 md:w-12 md:h-12 rounded-full flex items-center justify-center overflow-hidden">
                 <Image
