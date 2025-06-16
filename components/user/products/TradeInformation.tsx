@@ -102,19 +102,24 @@ const TradeInformation: React.FC<TradeInformationProps> = ({
         </Select>
       </div>
 
-      <div>
+      <div className="relative">
         <Label htmlFor="price" className="block mb-1">
           Price
         </Label>
         <Input
           className="text-lg px-4"
           placeholder="Price"
+          type="number"
+
           value={data.price ?? ""}
-          onChange={(e) => onFieldChange("price", Number(e.target.value))}
+          onChange={(e) => onFieldChange("price", e.target.value)}
           onFocus={() => onFieldError("price")} // Clear error on focus
           error={error?.price ? true : false} // Show error state
           helperText={error?.price} // Show error message
         />
+        <span className="absolute right-4 top-6 text-sm text-gray-500 pointer-events-none border-l pl-2">
+          USD / <span>{data.uom}</span>
+        </span>
       </div>
 
       <div>

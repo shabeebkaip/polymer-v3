@@ -26,7 +26,7 @@ export const initialFormData: ProductFormData = {
   certificate_of_analysis: {},
   minimum_order_quantity: null,
   stock: null,
-  uom: "",
+  uom: "Metric Ton",
   price: null,
   priceTerms: "fixed",
   incoterms: [],
