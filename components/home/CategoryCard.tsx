@@ -25,7 +25,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
   };
   return (
     <div
-      className="relative w-full aspect-[4/3] rounded-t-2xl rounded-b-xl md:rounded-t-4xl md:rounded-b-3xl overflow-hidden shadow-lg cursor-pointer"
+      className="relative w-full aspect-[4/3] rounded-t-2xl rounded-b-xl md:rounded-t-4xl md:rounded-b-3xl overflow-hidden shadow-lg cursor-pointer hover:scale-105 duration-300 transition" 
       onClick={handleClick}
     >
       <Image src={image} alt={"category"} fill className="object-cover" />
