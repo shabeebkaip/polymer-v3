@@ -1,9 +1,12 @@
+"use client";
 import Image from "next/image";
-import React from "react";
+import React, { useState } from "react";
 import { cn } from "@/lib/utils";
-import { Particles } from "@/components/magicui/particles";
+// import { Particles } from "@/components/magicui/particles";
 import { NumberTicker } from "../magicui/number-ticker";
 import { DotPattern } from "../magicui/dot-pattern";
+import HeroSearch from "./HeroSearch";
+
 
 
 const stats = [
@@ -23,14 +26,6 @@ const gradientTextClass = `
 const Hero: React.FC = () => {
   return (
     <section className="relative w-full overflow-hidden pb-6">
-      {/* Particles Background */}
-      {/* <Particles
-        className="absolute inset-0 z-0"
-        quantity={100}
-        ease={80}
-        color="#00FF7F"
-        refresh
-      /> */}
       <DotPattern
         className={cn(
           "[mask-image:radial-gradient(600px_circle_at_center,white,transparent)]",
@@ -71,6 +66,7 @@ const Hero: React.FC = () => {
             Join us for a culinary experience that nourishes your body and
             delights your taste buds.
           </p>
+          <HeroSearch />
 
           <div className="mt-10 grid grid-cols-2 lg:grid-cols-3 justify-center gap-10 md:gap-20 w-full">
             {stats.map((stat, index) => (

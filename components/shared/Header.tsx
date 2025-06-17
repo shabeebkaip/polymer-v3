@@ -125,7 +125,7 @@ const Header: React.FC = () => {
                 className="flex items-center gap-2 cursor-pointer"
                 onClick={toggleLanguagePopup}
               >
-                <img src="/globes.svg" alt="" />
+                {/* <img src="/globes.svg" alt="" /> */}
                 <span>{language === "en" ? "English" : "العربية"}</span>
                 <img src="/arrow.svg" alt="" />
               </div>
