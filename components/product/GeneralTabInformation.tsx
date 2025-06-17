@@ -93,23 +93,29 @@ const GeneralTabInformation: React.FC<GeneralTabInformationProps> = ({
       <hr className="my-6" />
 
       {/* Additional Information */}
-      <h4 className="font-normal text-2xl text-[var(--dark-main)]">
-        Documents
-      </h4>
-      <div className="flex items-center mb-2 cursor-pointer">
-        <FileText
-          className="inline-block mr-2 text-gray-500"
-          size={24}
-        />
-        <FileViewer
-          previewFile={product?.technical_data_sheet}
-          triggerComp={
-            <span className="text-gray-700">
-              {product?.technical_data_sheet?.name || "Technical Data Sheet"}
-            </span>
-          }
-        />
-      </div>
+      {
+        product?.technical_data_sheet &&
+        <div>
+          <h4 className="font-normal text-2xl text-[var(--dark-main)]">
+            Documents
+          </h4>
+          <div className="flex items-center mb-2 cursor-pointer">
+            <FileText
+              className="inline-block mr-2 text-gray-500"
+              size={24}
+            />
+            <FileViewer
+              previewFile={product?.technical_data_sheet}
+              triggerComp={
+                <span className="text-gray-700 hover:text-[var(--dark-main)]"> 
+                  {product?.technical_data_sheet?.name}
+                </span>
+              }
+            />
+          </div>
+        </div>
+      }
+
 
     </div>
   );
