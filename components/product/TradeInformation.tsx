@@ -52,7 +52,7 @@ const TradeInformation: React.FC<GeneralTabInformationProps> = ({
         "Minimum Order Quantity (MOQ)",
         `${product.minimum_order_quantity} ${product.uom}`
       )}
-      {renderIfExists("Available Quantity", `${product.stock} ${product.uom}`)}
+      {renderIfExists("Available Quantity", product?.stock ? `${product.stock} ${product.uom} (In Stock)` : "Out of Stock")}
       {renderIfExists("Unit of Sale (KG, Ton, Bag, etc)", product.uom)}
       {renderIfExists("Price per Unit", product.price)}
       {renderIfExists("Price Terms", product.priceTerms)}
