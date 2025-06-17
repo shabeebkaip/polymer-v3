@@ -73,7 +73,7 @@ const Categories: React.FC<CategoriesProps> = ({
           Discover Our Products
         </h1>
 
-        <div className="grid grid-cols-2 justify-center gap-2 md:gap-10">
+        <div className="grid grid-cols-2 justify-center gap-2 ">
           {categoryData.map(({ id, name, icon }) => (
             <Tab
               key={id}
@@ -103,7 +103,7 @@ const Categories: React.FC<CategoriesProps> = ({
 
           {shouldShowViewAll && (
             <div
-              className="hidden md:flex  border border-green-500  items-center justify-center gap-2 rounded-t-2xl rounded-b-xl md:rounded-t-4xl md:rounded-b-3xl overflow-hidden  cursor-pointer hover:opacity-90 transition"
+              className="hidden md:flex  border border-green-500  items-center justify-center gap-2 rounded-t-2xl rounded-b-xl md:rounded-t-4xl md:rounded-b-3xl overflow-hidden  cursor-pointer hover:opacity-90 transition hover:scale-105 duration-300"
               onClick={() =>
                 router.push(
                   selectedCategory === "industries"

@@ -66,8 +66,8 @@ const ProductsByBrand: React.FC<ProductsByBrandProps> = ({ sellers }) => {
               type="button"
               onClick={() => handleTabClick(seller)}
               className={`flex items-center gap-2 px-3 py-2 rounded-full transition focus:outline-none w-[48%] sm:w-auto md:min-w-48 md:min-h-16 ${selectedTab === seller._id
-                  ? "bg-gradient-to-r from-[var(--green-gradient-from)] via-[var(--green-gradient-via)] to-[var(--green-gradient-to)] text-white"
-                  : "border-2 border-[var(--green-main)] text-[var(--green-main)] hover:bg-green-50"
+                ? "bg-gradient-to-r from-[var(--green-gradient-from)] via-[var(--green-gradient-via)] to-[var(--green-gradient-to)] text-white"
+                : "border-2 border-[var(--green-main)] text-[var(--green-main)] hover:bg-green-50"
                 }`}
             >
               <div className="flex-shrink-0 w-8 h-8 md:w-12 md:h-12 rounded-full flex items-center justify-center overflow-hidden">
@@ -109,7 +109,7 @@ const ProductsByBrand: React.FC<ProductsByBrandProps> = ({ sellers }) => {
 
         <div className="flex items-center justify-center">
           <button
-            className="border border-[var(--green-light)] px-10 md:px-20 py-4 rounded-full text-[var(--green-light)] text-sm md:text-lg hover:bg-green-50 transition focus:outline-none flex items-center gap-2"
+            className="border border-[var(--green-light)] px-10 md:px-20 py-4 rounded-full text-[var(--green-light)] text-sm md:text-lg hover:bg-green-50 transition focus:outline-none flex items-center gap-2 hover:scale-105 duration-300 "
             onClick={() => router.push("/products")}
           >
             Explore All Products
