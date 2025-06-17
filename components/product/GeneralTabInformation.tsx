@@ -99,7 +99,7 @@ const GeneralTabInformation: React.FC<GeneralTabInformationProps> = ({
           <h4 className="font-normal text-2xl text-[var(--dark-main)]">
             Documents
           </h4>
-          <div className="flex items-center mb-2 cursor-pointer">
+          <div className="flex items-center mb-2 cursor-pointer mt-4">
             <FileText
               className="inline-block mr-2 text-gray-500"
               size={24}
