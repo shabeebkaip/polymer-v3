@@ -71,9 +71,9 @@ const SampleRequestModal = ({
     application: "",
     expected_annual_volume: "",
     orderDate: undefined as Date | undefined,
+    neededBy: undefined as Date | undefined,
     samplePrice: "",
     forFree: false,
-    neededBy: "",
     message: "",
     request_document: "",
   });
@@ -197,76 +197,78 @@ const SampleRequestModal = ({
             onChange={(e) => onFieldChange("application", e.target.value)}
             value={data?.application}
           />
+          <div className="relative w-full" >
+            <Input
+              readOnly
+              value={
+                data?.neededBy
+                  ? new Date(data?.neededBy).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                  })
+                  : ""
+              }
+              placeholder="Needed By"
+              className="bg-white cursor-pointer w-full pr-10"
+              onFocus={() => setCalendarOpen2(true)}
+            />
+            <CalendarIcon
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
+              size={18}
+            />
+            {
+              calendarOpen2 && (
+                <div className="absolute z-10 bg-white shadow-lg rounded-lg p-4">
+                  <Calendar
+                    mode="single"
+                    selected={data?.neededBy ? new Date(data.neededBy) : undefined}
+                    onSelect={(date) => {
+                      onFieldChange("neededBy", date);
+                      setCalendarOpen2(false);
+                    }}
+                  />
+                </div>
+              )
+            }
+            <div >
 
-          <Popover open={calendarOpen2} onOpenChange={setCalendarOpen2}>
-            <PopoverTrigger asChild>
-              <div className="relative w-full">
-                <Input
-                  readOnly
-                  value={
-                    data?.neededBy
-                      ? new Date(data?.neededBy).toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "2-digit",
-                        day: "2-digit",
-                      })
-                      : ""
-                  }
-                  placeholder="Needed By"
-                  className="bg-white cursor-pointer w-full pr-10"
-                />
-                <CalendarIcon
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
-                  size={18}
-                />
-              </div>
-            </PopoverTrigger>
-            <PopoverContent className="p-0">
-              <Calendar
-                mode="single"
-                selected={data?.neededBy ? new Date(data.neededBy) : undefined}
-                onSelect={(date) => {
-                  onFieldChange("neededBy", date);
-                  setCalendarOpen2(false);
-                }}
-              />
-            </PopoverContent>
-          </Popover>
-
-          <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
-            <PopoverTrigger asChild>
-              <div className="relative w-full">
-                <Input
-                  readOnly
-                  value={
-                    data?.orderDate
-                      ? new Date(data?.orderDate).toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "2-digit",
-                        day: "2-digit",
-                      })
-                      : "Expected Purchase Date"
-                  }
-                  className="bg-white cursor-pointer w-full pr-10" // add padding for icon space
-                />
-                <CalendarIcon
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none"
-                  size={18}
-                />
-              </div>
-            </PopoverTrigger>
-            <PopoverContent className="p-0">
-              <Calendar
-                mode="single"
-                selected={data?.orderDate}
-                onSelect={(date) => {
-                  onFieldChange("orderDate", date);
-                  setCalendarOpen(false);
-                }}
-              />
-            </PopoverContent>
-          </Popover>
-
+            </div>
+          </div>
+          <div className="relative w-full">
+            <Input
+              readOnly
+              value={
+                data?.orderDate
+                  ? new Date(data?.orderDate).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                  })
+                  : "Expected Purchase Date"
+              }
+              className="bg-white cursor-pointer w-full pr-10" // add padding for icon space
+              onFocus={() => setCalendarOpen(true)}
+            />
+            <CalendarIcon
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none"
+              size={18}
+            />
+            {
+              calendarOpen && (
+                <div className="absolute z-10 bg-white shadow-lg rounded-lg p-4">
+                  <Calendar
+                    mode="single"
+                    selected={data?.orderDate ? new Date(data.orderDate) : undefined}
+                    onSelect={(date) => {
+                      onFieldChange("orderDate", date);
+                      setCalendarOpen(false);
+                    }}
+                  />
+                </div>
+              )
+            }
+          </div>
           <Input
             placeholder="Enter Street Name"
             className="bg-white w-full"
