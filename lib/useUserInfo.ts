@@ -9,15 +9,17 @@ export interface UserInfo {
 
 export function useUserInfo() {
   const [user, setUser] = useState<UserInfo | null>(null);
+  const [userLoading, setUserLoading] = useState<boolean>(true);
 
   useEffect(() => {
     getUserInfo().then((response) => {
       setUser(response.userInfo);
+      setUserLoading(false);
     });
   }, []);
 
-  return { user };
+  return { user, userLoading };
 }
 
 // Usage example
-// const { user } = useUserInfo();
+// const { user, userLoading } = useUserInfo();
