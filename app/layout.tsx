@@ -4,8 +4,8 @@ import "./globals.css";
 import { Kanit } from "next/font/google";
 import Footer from "@/components/shared/Footer";
 import { Toaster } from "sonner";
+import PageNavigationLoader from "@/components/shared/PageNaigationLoader"; // ✅ Add this
 
-// ↓ Add this ↓
 const kanit = Kanit({
   subsets: ["latin"],
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
@@ -19,14 +19,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html
-      lang="en"
-      className={`
-      ${kanit.variable}
-    `}
-    >
+    <html lang="en" className={`${kanit.variable}`}>
       <body className="antialiased">
         <Header />
+        <PageNavigationLoader /> {/* ✅ Loader inserted here */}
         <Toaster richColors position="top-right" />
         <div className="md:min-h-screen flex flex-col justify-between">
           <main className="flex-grow">{children}</main>
