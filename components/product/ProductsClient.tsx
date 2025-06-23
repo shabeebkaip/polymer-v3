@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import SupplierBasic from "@/components/suppliers/SupplierBasic";
 import { getProductFilters, getProductList } from "@/apiServices/products";
 import FilterModal from "./FilterModal";
+import { useUserInfo } from "@/lib/useUserInfo";
 
 // --- Types ---
 interface ProductFilter {
@@ -35,6 +36,7 @@ const ProductsList = dynamic(() => import("@/components/product/ProductsList"));
 
 // --- Component ---
 const ProductsClient: React.FC = () => {
+  const { user } = useUserInfo();
   const searchParams = useSearchParams();
 
   // --- Extract initial filter parameters ---
@@ -53,19 +55,25 @@ const ProductsClient: React.FC = () => {
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
   const [pagination, setPagination] = useState<Pagination | null>(null);
   const [filters, setFilters] = useState<ProductFilter[]>([]);
+  const [loader, setLoader] = useState(true);
+  const [filterLoader, setFilterLoader] = useState(true);
 
   // --- Fetch filters only once ---
   useEffect(() => {
+    setFilterLoader(true); // Start loading state for filters
     getProductFilters().then((response) => {
       setFilters(response.filter);
+      setFilterLoader(false); // End loading state for filters
     });
   }, []);
 
   // --- Fetch products on query change ---
   useEffect(() => {
+    setLoader(true); // Start loading state
     getProductList(query).then((response) => {
       setProducts(response.data);
       setPagination(response.pagination);
+      setLoader(false); // End loading state
     });
   }, [query]);
 
@@ -110,7 +118,6 @@ const ProductsClient: React.FC = () => {
         </div>
 
         <div className="col-span-1 md:col-span-9">
-
           <div className="flex items-center gap-5">
             <div className="flex items-center md:hidden">
               <button
@@ -125,7 +132,10 @@ const ProductsClient: React.FC = () => {
               query={query}
             />
           </div>
-          <FilterModal open={mobileFilterOpen} onClose={() => setMobileFilterOpen(false)}>
+          <FilterModal
+            open={mobileFilterOpen}
+            onClose={() => setMobileFilterOpen(false)}
+          >
             <Suspense fallback={<div>Loading filters...</div>}>
               <Filter
                 filters={filters}
@@ -138,7 +148,11 @@ const ProductsClient: React.FC = () => {
           </FilterModal>
 
           <Suspense fallback={<div>Loading products...</div>}>
-            <ProductsList products={products} />
+            <ProductsList
+              products={products}
+              loader={loader}
+              userType={user?.user_type}
+            />
           </Suspense>
         </div>
       </div>

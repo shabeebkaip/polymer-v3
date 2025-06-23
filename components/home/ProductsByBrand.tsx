@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { getSellers } from "@/apiServices/shared";
+import { useUserInfo } from "@/lib/useUserInfo";
 
 const ProductCard = dynamic(() => import("@/components/product/ProductCard"));
 
@@ -32,6 +33,8 @@ interface ProductsByBrandProps {
 }
 
 const ProductsByBrand: React.FC<ProductsByBrandProps> = ({ sellers }) => {
+  const { user } = useUserInfo();
+  console.log("User Info:", user);
   const router = useRouter();
   const [selectedTab, setSelectedTab] = useState<string>(
     sellers?.[0]?._id || ""
@@ -105,7 +108,11 @@ const ProductsByBrand: React.FC<ProductsByBrandProps> = ({ sellers }) => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full">
           {products?.slice(0, 4).map((product) => (
-            <ProductCard key={product._id} product={product} />
+            <ProductCard
+              key={product._id}
+              product={product}
+              userType={user?.user_type}
+            />
           ))}
         </div>
 

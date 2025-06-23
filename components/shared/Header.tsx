@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { Button } from "../ui/button";
+import { useUserInfo } from "@/lib/useUserInfo";
 
 // --- TypeScript Types ---
 type NavbarLinkProps = {
@@ -37,58 +38,41 @@ const NavbarLink: React.FC<NavbarLinkProps> = ({
 );
 
 const Header: React.FC = () => {
+  const pathname = usePathname(); // ✅ must be at top
+  const { user, logout, loadUserFromCookies } = useUserInfo(); // ✅ must be at top
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [isLanguagePopupOpen, setIsLanguagePopupOpen] = useState(false);
-  // Correct language typing
   const [language, setLanguage] = useState<Language>("en");
-
-  const pathname = usePathname();
-  const router = useRouter();
   const languagePopupRef = useRef<HTMLDivElement>(null);
 
-  const token = Cookies.get("token");
-  const userInfo: { firstName?: string; lastName?: string } | null =
-    Cookies.get("userInfo")
-      ? JSON.parse(Cookies.get("userInfo") as string)
-      : null;
+  useEffect(() => {
+    loadUserFromCookies(); // hydrate on mount
+  }, [loadUserFromCookies]);
 
-  if (pathname.includes("auth")) {
-    return null;
-  }
+  // ✅ Safe early return AFTER hooks
+  if (pathname.includes("auth")) return null;
 
-  const toggleMenu = () => {
-    setIsOpen((prev) => !prev);
-  };
+  const toggleMenu = () => setIsOpen((prev) => !prev);
 
   const handleLogout = () => {
-    Cookies.remove("token");
-    Cookies.remove("userInfo");
+    logout();
     router.refresh();
     router.push("/");
   };
 
   const handleNavigate = (href: string) => {
     setIsOpen(false);
-    if (href) {
-      router.push(href);
-    }
+    router.push(href);
   };
 
   const changeLanguage = (selectedLanguage: Language) => {
     setLanguage(selectedLanguage);
-    // Example: Save to localStorage or make API call here if needed
-    // localStorage.setItem("lang", selectedLanguage);
-    // window.location.reload();
   };
 
-  const toggleVisibility = () => {
-    setIsVisible(!isVisible);
-  };
-
-  const toggleLanguagePopup = () => {
-    setIsLanguagePopupOpen((prev) => !prev);
-  };
+  const toggleVisibility = () => setIsVisible(!isVisible);
+  const toggleLanguagePopup = () => setIsLanguagePopupOpen((prev) => !prev);
 
   const links = [
     { href: "/", label: "Home" },
@@ -166,7 +150,7 @@ const Header: React.FC = () => {
             </div>
           </nav>
 
-          {token && userInfo && (
+          {user && (
             <button
               type="button"
               onClick={() => router.push("/user/profile")}
@@ -179,11 +163,11 @@ const Header: React.FC = () => {
                 height={20}
                 className="mr-2"
               />
-              Hello {userInfo?.firstName} {userInfo?.lastName}
+              Hello {user?.firstName} {user?.lastName}
             </button>
           )}
 
-          {!token && (
+          {!user && (
             <div className="hidden lg:flex items-center space-x-4">
               <button
                 onClick={() => router.push("/auth/login")}
@@ -264,7 +248,7 @@ const Header: React.FC = () => {
                 onClick={handleNavigate}
               />
             ))}
-            {userInfo ? (
+            {user ? (
               <NavbarLink
                 href="/user/profile"
                 label={"Profile"}
@@ -335,7 +319,7 @@ const Header: React.FC = () => {
               </div>
             )}
 
-            {token && userInfo ? (
+            {user ? (
               <Button
                 variant={"outline"}
                 className="cursor-pointer"
@@ -351,7 +335,7 @@ const Header: React.FC = () => {
                 onClick={handleNavigate}
               />
             )}
-            {!token && (
+            {!user && (
               <button
                 onClick={() => handleNavigate("/auth/user-type")}
                 className="px-4 py-2 bg-gradient-to-r from-[var(--green-gradient-from)] via-[var(--green-gradient-via)] to-[var(--green-gradient-to)] text-white rounded-lg hover:opacity-90 cursor-pointer"

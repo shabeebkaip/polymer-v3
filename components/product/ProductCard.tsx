@@ -10,9 +10,10 @@ interface Product {
 
 interface ProductCardProps {
   product: Product;
+  userType?: string; // Optional prop for user type
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+const ProductCard: React.FC<ProductCardProps> = ({ product, userType }) => {
   const router = useRouter();
   return (
     <div className="rounded-xl p-2 shadow-lg hover:shadow-xl transition-shadow duration-300 h-full flex flex-col justify-between">
@@ -52,18 +53,20 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       </div>
 
       {/* CTA Buttons */}
-      <div className="grid grid-cols-2 gap-2 mt-4">
-        <QuoteRequestModal
-          className=" px-4 py-3 bg-gradient-to-r from-[var(--green-gradient-from)] via-[var(--green-gradient-via)] to-[var(--green-gradient-to)] text-white rounded-lg hover:opacity-90 transition cursor-pointer text-sm "
-          productId={product?._id}
-          uom={product?.uom}
-        />
-        <SampleRequestModal
-          className="border border-[var(--green-main)] text-[var(--green-main)] px-4 py-3 rounded-lg hover:bg-green-50 transition cursor-pointer text-sm "
-          productId={product?._id}
-          uom={product?.uom}
-        />
-      </div>
+      {userType === "buyer" && (
+        <div className="grid grid-cols-2 gap-2 mt-4">
+          <QuoteRequestModal
+            className=" px-4 py-3 bg-gradient-to-r from-[var(--green-gradient-from)] via-[var(--green-gradient-via)] to-[var(--green-gradient-to)] text-white rounded-lg hover:opacity-90 transition cursor-pointer text-sm "
+            productId={product?._id}
+            uom={product?.uom}
+          />
+          <SampleRequestModal
+            className="border border-[var(--green-main)] text-[var(--green-main)] px-4 py-3 rounded-lg hover:bg-green-50 transition cursor-pointer text-sm "
+            productId={product?._id}
+            uom={product?.uom}
+          />
+        </div>
+      )}
       <button
         className="mt-2 border border-[var(--green-main)] text-[var(--green-main)] px-4 py-3 rounded-lg w-full  hover:bg-green-50 transition text-sm"
         onClick={() => {

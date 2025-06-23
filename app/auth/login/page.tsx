@@ -9,9 +9,11 @@ import { toast } from "sonner";
 import { Eye, EyeOff } from "lucide-react";
 import Input from "@/components/shared/Input";
 import { login } from "@/apiServices/auth";
+import { useUserInfo } from "@/lib/useUserInfo";
 
 const Login: React.FC = () => {
   const router = useRouter();
+  const { setUser } = useUserInfo();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -27,6 +29,7 @@ const Login: React.FC = () => {
       if (response.status) {
         Cookies.set("token", response.token);
         Cookies.set("userInfo", JSON.stringify(response.userInfo));
+        setUser(response.userInfo); 
 
         toast.success("Login successful");
 

@@ -5,6 +5,7 @@ import CompanyDetails from "@/components/product/CompanyDetails";
 import ImageContainers from "@/components/product/ImageContainers";
 import GeneralTabInformation from "./GeneralTabInformation";
 import TradeInformation from "./TradeInformation";
+import { useUserInfo } from "@/lib/useUserInfo";
 
 // Interfaces
 interface ProductImage {
@@ -36,6 +37,7 @@ const ProductDetailClient: React.FC<ProductDetailClientProps> = ({
   product,
 }) => {
   const [activeTab, setActiveTab] = useState<"general" | "trade">("general");
+  const { user } = useUserInfo();
 
   const tabs = [
     { key: "general", label: "General Product Information" },
@@ -57,6 +59,7 @@ const ProductDetailClient: React.FC<ProductDetailClientProps> = ({
             companyDetails={product.createdBy}
             productId={product?._id}
             uom={product?.uom}
+            userType={user?.user_type}
           />
         )}
       </div>
@@ -68,10 +71,11 @@ const ProductDetailClient: React.FC<ProductDetailClientProps> = ({
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`pb-2 md:text-2xl sm:text-xl text-base cursor-pointer ${activeTab === tab.key
+              className={`pb-2 md:text-2xl sm:text-xl text-base cursor-pointer ${
+                activeTab === tab.key
                   ? "text-[var(--dark-main)] border-b-2 border-[var(--green-main)]"
                   : "text-[var(--text-gray-primary)]"
-                }`}
+              }`}
             >
               {tab.label}
             </button>

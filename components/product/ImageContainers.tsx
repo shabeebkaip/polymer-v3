@@ -68,7 +68,7 @@ const ImageContainers: React.FC<ImageContainersProps> = ({ productImages }) => {
       <div ref={sliderRef} className="keen-slider">
         {productImages.map((image, index) => (
           <div
-            className="keen-slider__slide flex justify-center items-center h-60"
+            className="keen-slider__slide flex justify-center items-center "
             key={index}
           >
             <img

@@ -15,6 +15,7 @@ interface FilterProps {
   filters: ProductFilter[];
   query: Record<string, any>;
   onFilterChange: (name: string, id: string, isChecked: boolean) => void;
+  loader?: boolean;
 }
 
 const Filter: React.FC<FilterProps> = ({ filters, onFilterChange, query }) => {

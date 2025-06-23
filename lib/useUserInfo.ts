@@ -1,23 +1,38 @@
-"use client";
-
-import { getUserInfo } from "@/apiServices/user";
-import { useState, useEffect } from "react";
+import { create } from "zustand";
+import Cookies from "js-cookie";
 
 export interface UserInfo {
-  [Key: string]: any;
+  firstName?: string;
+  lastName?: string;
+  [key: string]: any;
 }
 
-export function useUserInfo() {
-  const [user, setUser] = useState<UserInfo | null>(null);
-
-  useEffect(() => {
-    getUserInfo().then((response) => {
-      setUser(response.userInfo);
-    });
-  }, []);
-
-  return { user };
+interface UserStore {
+  user: UserInfo | null;
+  setUser: (user: UserInfo | null) => void;
+  loadUserFromCookies: () => void;
+  logout: () => void;
 }
 
-// Usage example
-// const { user } = useUserInfo();
+export const useUserInfo = create<UserStore>((set) => ({
+  user: null,
+  setUser: (user) => set({ user }),
+  loadUserFromCookies: () => {
+    const token = Cookies.get("token");
+    const userInfo = Cookies.get("userInfo");
+    if (token && userInfo) {
+      try {
+        set({ user: JSON.parse(userInfo) });
+      } catch {
+        set({ user: null });
+      }
+    } else {
+      set({ user: null });
+    }
+  },
+  logout: () => {
+    Cookies.remove("token");
+    Cookies.remove("userInfo");
+    set({ user: null });
+  },
+}));

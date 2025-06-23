@@ -19,6 +19,7 @@ import { getIndustryList, imageUpload } from "@/apiServices/shared";
 import { register } from "@/apiServices/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getCountryList } from "@/lib/useCountries";
+import { useUserInfo } from "@/lib/useUserInfo";
 
 interface Industry {
   _id: string;
@@ -53,6 +54,7 @@ interface RegisterData {
 
 const Register: React.FC = () => {
   const router = useRouter();
+  const { setUser } = useUserInfo();
   const searchParams = useSearchParams();
   const userType = searchParams.get("role");
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -133,6 +135,7 @@ const Register: React.FC = () => {
         toast.success("Registration successful");
         Cookies.set("token", response.token);
         Cookies.set("userInfo", JSON.stringify(response.userInfo));
+        setUser(response.userInfo);
         setTimeout(() => router.push("/"), 1000);
       } else {
         toast.error(response?.message || "Registration failed.");
