@@ -1,4 +1,5 @@
 import axiosInstance from "@/lib/axiosInstance";
+
 export interface UploadedFile {
   id: string;
   fileUrl: string;
@@ -6,36 +7,47 @@ export interface UploadedFile {
   name?: string;
 }
 
+// ✅ SSR-friendly API using fetch with revalidate
 export const getIndustryList = async () => {
-  try {
-    const response = await axiosInstance.get("/industry/list");
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching industry list:", error);
-    throw error;
-  }
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/industry/list`,
+    {
+      headers: { "Content-Type": "application/json" },
+      next: { revalidate: 60 },
+    }
+  );
+
+  if (!res.ok) throw new Error("Failed to fetch industry list");
+  return res.json();
 };
 
 export const getProductFamilies = async () => {
-  try {
-    const response = await axiosInstance.get("/product-family/list");
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching product families:", error);
-    throw error;
-  }
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/product-family/list`,
+    {
+      headers: { "Content-Type": "application/json" },
+      next: { revalidate: 60 },
+    }
+  );
+
+  if (!res.ok) throw new Error("Failed to fetch product families");
+  return res.json();
 };
 
 export const getSellers = async () => {
-  try {
-    const response = await axiosInstance.get("/user/seller/list");
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching sellers:", error);
-    throw error;
-  }
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/user/seller/list`,
+    {
+      headers: { "Content-Type": "application/json" },
+      next: { revalidate: 60 },
+    }
+  );
+
+  if (!res.ok) throw new Error("Failed to fetch sellers");
+  return res.json();
 };
 
+// ✅ These remain client-side (no need to switch)
 export const getGrades = async () => {
   try {
     const response = await axiosInstance.get("/grade/list");
@@ -95,6 +107,7 @@ export const getPhysicalForms = async () => {
     throw error;
   }
 };
+
 export const getPaymentTerms = async () => {
   try {
     const response = await axiosInstance.get("/payment-terms/list");
@@ -123,7 +136,6 @@ export const postFileUpload = async (data: FormData): Promise<UploadedFile> => {
   }
 };
 
-// Fix this in shared.ts
 export const imageUpload = async (data: FormData): Promise<UploadedFile> => {
   const response = await axiosInstance.post<{ fileUrl: string; id: string }>(
     "/file/upload",
@@ -131,5 +143,5 @@ export const imageUpload = async (data: FormData): Promise<UploadedFile> => {
     { headers: { "Content-Type": "multipart/form-data" } }
   );
 
-  return response.data; // <- return raw data directly
+  return response.data;
 };

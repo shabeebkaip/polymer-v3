@@ -1,6 +1,6 @@
-export const dynamic = "force-dynamic";
+export const revalidate = 60; // Revalidate the whole page every 60 seconds
 
-import nextDynamic from "next/dynamic";
+import dynamic from "next/dynamic";
 import Hero from "@/components/home/Hero";
 import ProductsByBrand from "@/components/home/ProductsByBrand";
 import {
@@ -10,8 +10,13 @@ import {
 } from "@/apiServices/shared";
 import { getBenefitsOfBuyers, getBenefitsOfSuppliers } from "@/apiServices/cms";
 
-const Categories = nextDynamic(() => import("@/components/home/Categories"));
-const BeneFits = nextDynamic(() => import("@/components/home/Benefits"));
+// Dynamic imports with SSR enabled
+const Categories = dynamic(() => import("@/components/home/Categories"), {
+  ssr: true,
+});
+const BeneFits = dynamic(() => import("@/components/home/Benefits"), {
+  ssr: true,
+});
 
 export default async function HomePage() {
   const [

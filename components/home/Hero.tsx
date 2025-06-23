@@ -1,13 +1,11 @@
 "use client";
 import Image from "next/image";
 import React, { useState } from "react";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 // import { Particles } from "@/components/magicui/particles";
-import { NumberTicker } from "../magicui/number-ticker";
 import { DotPattern } from "../magicui/dot-pattern";
 import HeroSearch from "./HeroSearch";
-
-
 
 const stats = [
   { value: 1000, label: "Products" },
@@ -28,7 +26,7 @@ const Hero: React.FC = () => {
     <section className="relative w-full overflow-hidden pb-6">
       <DotPattern
         className={cn(
-          "[mask-image:radial-gradient(600px_circle_at_center,white,transparent)]",
+          "[mask-image:radial-gradient(600px_circle_at_center,white,transparent)]"
         )}
         glow={true}
       />
@@ -50,15 +48,15 @@ const Hero: React.FC = () => {
               height={100}
               className="absolute top-7 lg:top-0 right-0 w-[40px] md:w-[80px] lg:w-[100px] lg:h-[300px]"
             />
-            <h1 className="text-2xl md:text-4xl lg:text-[80px] uppercase font-semibold leading-tight">
-              Sustainable{" "}
-              <span
-                className={gradientTextClass}
-              >
-                POLYMERS
-              </span>{" "}
+            <motion.h1
+              initial={{ opacity: 0, filter: "blur(8px)", y: 10 }}
+              animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+              className="text-2xl md:text-4xl lg:text-[80px] uppercase font-semibold leading-tight"
+            >
+              Sustainable <span className={gradientTextClass}>POLYMERS</span>{" "}
               for <br /> a Better Tomorrow
-            </h1>
+            </motion.h1>
           </div>
 
           <p className="text-[var(--text-gray-secondary)] text-[16px] md:text-[20px] mt-10 lg:text-2xl max-w-4xl font-normal">
@@ -74,31 +72,12 @@ const Hero: React.FC = () => {
                 key={index}
                 className="flex flex-col items-center justify-center text-center"
               >
-                {
-                  typeof stat.value === "string" && (
-                    <h1
-                      className={`text-[40px] md:text-[80px] font-semibold ${gradientTextClass}`}
-                    >
-                      {stat.value}
-                    </h1>
-                  )
-                }
-                {
-                  typeof stat.value === "number" && (
-                    <div className="flex items-center">
-                      <NumberTicker
-                        value={stat.value}
-                        className={`text-[40px] md:text-[80px] font-semibold ${gradientTextClass}`}
-                      />
-                      <span
-                        className={`text-[40px] md:text-[80px] font-semibold ${gradientTextClass}`}
-                      >
-                        +
-                      </span>
-                    </div>
+                <h1
+                  className={`text-[40px] md:text-[80px] font-semibold ${gradientTextClass}`}
+                >
+                  {stat.value}
+                </h1>
 
-                  )
-                }
                 <p className="text-[var(--text-gray-secondary)] md:text-[20px] font-normal">
                   {stat.label}
                 </p>
