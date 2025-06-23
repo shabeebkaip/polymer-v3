@@ -50,7 +50,7 @@ const GeneralTabInformation: React.FC<GeneralTabInformationProps> = ({
       />
     ) : null;
 
-
+  console.log("Product Data:", product?.technical_data_sheet?.[0]?.fileUrl);
   return (
     <div className="grid grid-cols-1 text-gray-700 gap-2">
       {/* Basic Info */}
@@ -105,10 +105,10 @@ const GeneralTabInformation: React.FC<GeneralTabInformationProps> = ({
               size={24}
             />
             <FileViewer
-              previewFile={product?.technical_data_sheet}
+              previewFile={product?.technical_data_sheet?.[0]?.fileUrl}
               triggerComp={
-                <span className="text-gray-700 hover:text-[var(--dark-main)]"> 
-                  {product?.technical_data_sheet?.name}
+                <span className="text-gray-700 hover:text-[var(--dark-main)]">
+                  Technical Data Sheet
                 </span>
               }
             />
