@@ -72,9 +72,7 @@ const Hero: React.FC = () => {
                 key={index}
                 className="flex flex-col items-center justify-center text-center"
               >
-                <h1
-                  className={`text-[40px] md:text-[80px] font-semibold ${gradientTextClass}`}
-                >
+                <h1 className={`text-[40px] md:text-[80px] font-semibold `}>
                   {stat.value}
                 </h1>
 

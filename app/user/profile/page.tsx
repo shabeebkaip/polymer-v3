@@ -7,7 +7,8 @@ import React from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const Profile = () => {
-  const { user, userLoading } = useUserInfo();
+  const { user } = useUserInfo();
+  const userLoading = !user;
   console.log(user, "user");
 
   return (
@@ -27,29 +28,30 @@ const Profile = () => {
           </div>
         ) : null}
 
-        {
-          userLoading ?
-            <div className="flex flex-col gap-1">
-              <Skeleton className="h-4 w-32 " />      {/* Label skeleton */}
-              <Skeleton className="h-12 w-full " />   {/* Input skeleton */}
-            </div> :
-            <div>
-              <Label htmlFor="firstName" className="block mb-1">
-                First Name
-              </Label>
-              <Input
-                className="h-12 text-lg px-4"
-                placeholder="First Name"
-                value={user?.firstName}
-                readOnly
-              />
-            </div>
-        }
-        {userLoading ?
+        {userLoading ? (
           <div className="flex flex-col gap-1">
-            <Skeleton className="h-4 w-32 " />      {/* Label skeleton */}
-            <Skeleton className="h-12 w-full " />   {/* Input skeleton */}
-          </div> :
+            <Skeleton className="h-4 w-32 " /> {/* Label skeleton */}
+            <Skeleton className="h-12 w-full " /> {/* Input skeleton */}
+          </div>
+        ) : (
+          <div>
+            <Label htmlFor="firstName" className="block mb-1">
+              First Name
+            </Label>
+            <Input
+              className="h-12 text-lg px-4"
+              placeholder="First Name"
+              value={user?.firstName}
+              readOnly
+            />
+          </div>
+        )}
+        {userLoading ? (
+          <div className="flex flex-col gap-1">
+            <Skeleton className="h-4 w-32 " /> {/* Label skeleton */}
+            <Skeleton className="h-12 w-full " /> {/* Input skeleton */}
+          </div>
+        ) : (
           <div>
             <Label htmlFor="lastName" className="block mb-1">
               Last Name
@@ -61,121 +63,120 @@ const Profile = () => {
               readOnly
             />
           </div>
-        }
-        {
-          userLoading ?
-            <div className="flex flex-col gap-1">
-              <Skeleton className="h-4 w-32 " />      {/* Label skeleton */}
-              <Skeleton className="h-12 w-full " />   {/* Input skeleton */}
-            </div> :
-            <div>
-              <Label htmlFor="email" className="block mb-1">
-                Email
-              </Label>
-              <Input
-                className="h-12 text-lg px-4"
-                placeholder="Email"
-                value={user?.email}
-                readOnly
-              />
-            </div>
-        }
-        {
-          userLoading ?
-            <div className="flex flex-col gap-1">
-              <Skeleton className="h-4 w-32 " />      {/* Label skeleton */}
-              <Skeleton className="h-12 w-full " />   {/* Input skeleton */}
-            </div> :
-            <div>
-              <Label htmlFor="phone" className="block mb-1">
-                Phone
-              </Label>
-              <Input
-                id="phone"
-                className="h-12 text-lg px-4"
-                placeholder="Phone"
-                value={`${user?.country_code || ""} ${user?.phone || ""}`}
-                readOnly
-              />
-            </div>
-        }
-        {
-          userLoading ?
-            <div className="flex flex-col gap-1">
-              <Skeleton className="h-4 w-32 " />      {/* Label skeleton */}
-              <Skeleton className="h-12 w-full " />   {/* Input skeleton */}
-            </div> :
-            <div>
-              <Label htmlFor="company" className="block mb-1">
-                Company
-              </Label>
-              <Input
-                id="company"
-                className="h-12 text-lg px-4"
-                placeholder="Company"
-                value={user?.company}
-                readOnly
-              />
-            </div>
-        }
-        {
-          userLoading ?
-            <div className="flex flex-col gap-1">
-              <Skeleton className="h-4 w-32 " />      {/* Label skeleton */}
-              <Skeleton className="h-12 w-full " />   {/* Input skeleton */}
-            </div> :
-            <div>
-              <Label htmlFor="country" className="block mb-1">
-                Country
-              </Label>
-              <Input
-                id="country"
-                className="h-12 text-lg px-4"
-                placeholder="Country"
-                value={user?.location}
-                readOnly
-              />
-            </div>
-        }
-        {
-          userLoading ?
-            <div className="flex flex-col gap-1">
-              <Skeleton className="h-4 w-32 " />      {/* Label skeleton */}
-              <Skeleton className="h-12 w-full " />   {/* Input skeleton */}
-            </div> :
-            <div>
-              <Label htmlFor="address" className="block mb-1">
-                Address
-              </Label>
-              <Input
-                id="address"
-                className="h-12 text-lg px-4"
-                placeholder="Address"
-                value={user?.address}
-                readOnly
-              />
-            </div>
-        }
-        {
-          userLoading ?
-            <div className="flex flex-col gap-1">
-              <Skeleton className="h-4 w-32 " />      {/* Label skeleton */}
-              <Skeleton className="h-12 w-full " />   {/* Input skeleton */}
-            </div> :
-            <div>
-              <Label htmlFor="city" className="block mb-1">
-                Website
-              </Label>
-              <Input
-                id="city"
-                className="h-12 text-lg px-4"
-                placeholder="City"
-                value={user?.website}
-                readOnly
-              />
-            </div>
-        }
-
+        )}
+        {userLoading ? (
+          <div className="flex flex-col gap-1">
+            <Skeleton className="h-4 w-32 " /> {/* Label skeleton */}
+            <Skeleton className="h-12 w-full " /> {/* Input skeleton */}
+          </div>
+        ) : (
+          <div>
+            <Label htmlFor="email" className="block mb-1">
+              Email
+            </Label>
+            <Input
+              className="h-12 text-lg px-4"
+              placeholder="Email"
+              value={user?.email}
+              readOnly
+            />
+          </div>
+        )}
+        {userLoading ? (
+          <div className="flex flex-col gap-1">
+            <Skeleton className="h-4 w-32 " /> {/* Label skeleton */}
+            <Skeleton className="h-12 w-full " /> {/* Input skeleton */}
+          </div>
+        ) : (
+          <div>
+            <Label htmlFor="phone" className="block mb-1">
+              Phone
+            </Label>
+            <Input
+              id="phone"
+              className="h-12 text-lg px-4"
+              placeholder="Phone"
+              value={`${user?.country_code || ""} ${user?.phone || ""}`}
+              readOnly
+            />
+          </div>
+        )}
+        {userLoading ? (
+          <div className="flex flex-col gap-1">
+            <Skeleton className="h-4 w-32 " /> {/* Label skeleton */}
+            <Skeleton className="h-12 w-full " /> {/* Input skeleton */}
+          </div>
+        ) : (
+          <div>
+            <Label htmlFor="company" className="block mb-1">
+              Company
+            </Label>
+            <Input
+              id="company"
+              className="h-12 text-lg px-4"
+              placeholder="Company"
+              value={user?.company}
+              readOnly
+            />
+          </div>
+        )}
+        {userLoading ? (
+          <div className="flex flex-col gap-1">
+            <Skeleton className="h-4 w-32 " /> {/* Label skeleton */}
+            <Skeleton className="h-12 w-full " /> {/* Input skeleton */}
+          </div>
+        ) : (
+          <div>
+            <Label htmlFor="country" className="block mb-1">
+              Country
+            </Label>
+            <Input
+              id="country"
+              className="h-12 text-lg px-4"
+              placeholder="Country"
+              value={user?.location}
+              readOnly
+            />
+          </div>
+        )}
+        {userLoading ? (
+          <div className="flex flex-col gap-1">
+            <Skeleton className="h-4 w-32 " /> {/* Label skeleton */}
+            <Skeleton className="h-12 w-full " /> {/* Input skeleton */}
+          </div>
+        ) : (
+          <div>
+            <Label htmlFor="address" className="block mb-1">
+              Address
+            </Label>
+            <Input
+              id="address"
+              className="h-12 text-lg px-4"
+              placeholder="Address"
+              value={user?.address}
+              readOnly
+            />
+          </div>
+        )}
+        {userLoading ? (
+          <div className="flex flex-col gap-1">
+            <Skeleton className="h-4 w-32 " /> {/* Label skeleton */}
+            <Skeleton className="h-12 w-full " /> {/* Input skeleton */}
+          </div>
+        ) : (
+          <div>
+            <Label htmlFor="city" className="block mb-1">
+              Website
+            </Label>
+            <Input
+              id="city"
+              className="h-12 text-lg px-4"
+              placeholder="City"
+              value={user?.website}
+              readOnly
+            />
+          </div>
+        )}
       </div>
     </div>
   );
