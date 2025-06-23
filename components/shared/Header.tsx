@@ -4,9 +4,10 @@ import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import Cookies from "js-cookie";
 import { Button } from "../ui/button";
 import { useUserInfo } from "@/lib/useUserInfo";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 // --- TypeScript Types ---
 type NavbarLinkProps = {
@@ -151,20 +152,82 @@ const Header: React.FC = () => {
           </nav>
 
           {user && (
-            <button
-              type="button"
-              onClick={() => router.push("/user/profile")}
-              className="md:flex hidden items-center px-4 py-2 border border-[var(--green-main)] text-[var(--green-main)] rounded-lg hover:bg-green-50 transition cursor-pointer"
-            >
-              <Image
-                src="/icons/user.svg"
-                alt="User"
-                width={20}
-                height={20}
-                className="mr-2"
-              />
-              Hello {user?.firstName} {user?.lastName}
-            </button>
+            <Popover>
+              <PopoverTrigger asChild>
+                <button
+                  type="button"
+                  className="md:flex hidden items-center px-4 py-2 border border-[var(--green-main)] text-[var(--green-main)] rounded-lg hover:bg-green-50 transition cursor-pointer"
+                >
+                  <Image
+                    src="/icons/user.svg"
+                    alt="User"
+                    width={20}
+                    height={20}
+                    className="mr-2"
+                  />
+                  Hello {user?.firstName} {user?.lastName}
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="">
+                <div className="flex flex-col space-y-3 ">
+                  <div className="flex items-center gap-4  mb-2 border-b pb-4">
+                    <Avatar className="w-10 h-10">
+                      <AvatarImage
+                        src={user?.company_logo || "/default-avatar.png"}
+                        alt="User Avatar"
+                      />
+                      <AvatarFallback>
+                        {user?.firstName?.charAt(0)?.toUpperCase() || ""}
+                        {user?.lastName?.charAt(0)?.toUpperCase() || ""}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="">
+                      {user?.firstName} {user?.lastName}
+                    </div>
+                  </div>
+                  <Link
+                    href="/user/profile"
+                    className={`  ${
+                      pathname === "/user/profile"
+                        ? "text-[var(--green-main)] "
+                        : "text-gray-700 hover:text-[var(--green-main)] "
+                    } `}
+                    onClick={() => handleNavigate("/user/profile")}
+                  >
+                    Profile
+                  </Link>
+                  <Link
+                    href="/user/sample-requests"
+                    className={`  ${
+                      pathname === "/user/sample-requests"
+                        ? "text-[var(--green-main)] "
+                        : "text-gray-700 hover:text-[var(--green-main)]"
+                    } `}
+                    onClick={() => handleNavigate("/user/sample-request")}
+                  >
+                    Sample Request
+                  </Link>
+                  <Link
+                    href="/user/quote-requests"
+                    className={`  ${
+                      pathname === "/user/quote-requests"
+                        ? "text-[var(--green-main)] font-semibold"
+                        : "text-gray-700 hover:text-[var(--green-main)]"
+                    }`}
+                    onClick={() => handleNavigate("/user/quote-requests")}
+                  >
+                    Quote Requests
+                  </Link>
+                  <Button
+                    variant="outline"
+                    className="w-full mt-2"
+                    onClick={handleLogout}
+                  >
+                    Logout
+                  </Button>
+                </div>
+              </PopoverContent>
+            </Popover>
           )}
 
           {!user && (
