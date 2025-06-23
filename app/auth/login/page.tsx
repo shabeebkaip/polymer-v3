@@ -10,17 +10,19 @@ import { Eye, EyeOff } from "lucide-react";
 import Input from "@/components/shared/Input";
 import { login } from "@/apiServices/auth";
 import { useUserInfo } from "@/lib/useUserInfo";
+import { set } from "nprogress";
 
 const Login: React.FC = () => {
   const router = useRouter();
   const { setUser } = useUserInfo();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
   const handleSubmit = async () => {
     const toastId = toast.loading("Authenticating user..."); // Show loading toast
-
+    setIsLoading(true);
     try {
       const response = await login(email, password);
 
@@ -29,19 +31,21 @@ const Login: React.FC = () => {
       if (response.status) {
         Cookies.set("token", response.token);
         Cookies.set("userInfo", JSON.stringify(response.userInfo));
-        setUser(response.userInfo); 
+        setUser(response.userInfo);
 
         toast.success("Login successful");
 
         setTimeout(() => {
           router.push("/");
-        }, 1000);
+        }, 500);
       } else {
+        setIsLoading(false);
         toast.error(
           response.message || "Login failed. Please check your credentials."
         );
       }
     } catch (error: any) {
+      setIsLoading(false);
       toast.dismiss(toastId); // Also dismiss on error
       console.error("Login error:", error);
 
@@ -109,7 +113,7 @@ const Login: React.FC = () => {
           onClick={handleSubmit}
           className="mt-4 px-4 py-3 bg-gradient-to-r from-[var(--green-gradient-from)] via-[var(--green-gradient-via)] to-[var(--green-gradient-to)] text-white rounded-lg hover:opacity-90 transition cursor-pointer"
         >
-          Login
+          {isLoading ? "Loging in..." : "Login"}
         </button>
       </div>
 

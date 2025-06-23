@@ -77,7 +77,7 @@ const HeroSearch = () => {
             </div>
             {
                 searchQuery &&
-                <div className="bg-white shadow-md md:w-4/6 ">
+                <div className="bg-white shadow-md rounded-4xl md:w-4/6 ">
                     {loading ? (
                         <div className="p-4 text-center text-gray-500">Loading...</div>
                     ) : products?.length > 0 ? (

@@ -8,8 +8,8 @@ import { DotPattern } from "../magicui/dot-pattern";
 import HeroSearch from "./HeroSearch";
 
 const stats = [
-  { value: 1000, label: "Products" },
-  { value: 300, label: "Verified Suppliers" },
+  { value: "1000+", label: "Products" },
+  { value: "300+", label: "Verified Suppliers" },
   { value: "24/7", label: "Expert Support" },
 ];
 const gradientTextClass = `
