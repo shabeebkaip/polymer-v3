@@ -29,7 +29,7 @@ const VisitShopButton: React.FC<VisitShopButtonProps> = ({ supplierId }) => {
         height={24}
         className="w-4 h-4"
       />
-      <span className="text-sm text-gray-600">Visit Shop</span>
+      <span className="text-sm text-gray-600">Visit Supplier Profile</span>
     </button>
   );
 };

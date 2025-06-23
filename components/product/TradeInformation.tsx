@@ -43,7 +43,28 @@ const TradeInformation: React.FC<GeneralTabInformationProps> = ({
         value={data.map((item) => item.name).join(", ")}
       />
     ) : null;
-  console.log("Product", product);
+
+  // Available quantity logic with color
+  const renderAvailableQuantity = () => {
+    if (product?.stock && product.stock > 0) {
+      return (
+        <LabelValue
+          label="Available Quantity"
+          value={
+            <span className=" ">
+              {product.stock} {product.uom} <span className="text-green-600">(In Stock)</span>
+            </span>
+          }
+        />
+      );
+    }
+    return (
+      <LabelValue
+        label="Available Quantity"
+        value={<span className="text-red-600 ">Out of Stock</span>}
+      />
+    );
+  };
 
   return (
     <div className="grid grid-cols-1 text-gray-700 gap-2">
@@ -52,7 +73,9 @@ const TradeInformation: React.FC<GeneralTabInformationProps> = ({
         "Minimum Order Quantity (MOQ)",
         `${product.minimum_order_quantity} ${product.uom}`
       )}
-      {renderIfExists("Available Quantity", `${product.stock} ${product.uom}`)}
+
+      {renderAvailableQuantity()}
+
       {renderIfExists("Unit of Sale (KG, Ton, Bag, etc)", product.uom)}
       {renderIfExists("Price per Unit", product.price)}
       {renderIfExists("Price Terms", product.priceTerms)}
@@ -83,6 +106,7 @@ const TradeInformation: React.FC<GeneralTabInformationProps> = ({
 
       {/* Divider */}
       <hr className="my-6" />
+
       {/* Certification Details */}
       <h4 className="font-normal text-2xl text-[var(--dark-main)]">
         Certification Details

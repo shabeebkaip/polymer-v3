@@ -102,19 +102,24 @@ const TradeInformation: React.FC<TradeInformationProps> = ({
         </Select>
       </div>
 
-      <div>
+      <div className="relative">
         <Label htmlFor="price" className="block mb-1">
           Price
         </Label>
         <Input
           className="text-lg px-4"
           placeholder="Price"
+          type="number"
+
           value={data.price ?? ""}
-          onChange={(e) => onFieldChange("price", Number(e.target.value))}
+          onChange={(e) => onFieldChange("price", e.target.value)}
           onFocus={() => onFieldError("price")} // Clear error on focus
           error={error?.price ? true : false} // Show error state
           helperText={error?.price} // Show error message
         />
+        <span className="absolute right-4 top-6 text-sm text-gray-500 pointer-events-none border-l pl-2">
+          USD / <span>{data.uom}</span>
+        </span>
       </div>
 
       <div>
@@ -147,37 +152,22 @@ const TradeInformation: React.FC<TradeInformationProps> = ({
         />
       </div>
 
-      <div>
+      <div className="relative">
         <Label htmlFor="leadTime" className="block mb-1">
           Lead Time
         </Label>
-        <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
-          <PopoverTrigger asChild>
-            <Input
-              readOnly
-              value={
-                data.leadTime
-                  ? new Date(data.leadTime).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "2-digit",
-                      day: "2-digit",
-                    })
-                  : "Select Lead Time"
-              }
-              className="bg-white cursor-pointer text-lg px-4"
-            />
-          </PopoverTrigger>
-          <PopoverContent className="p-0">
-            <Calendar
-              mode="single"
-              selected={data.leadTime ? new Date(data.leadTime) : undefined}
-              onSelect={(date) => {
-                onFieldChange("leadTime", date);
-                setCalendarOpen(false);
-              }}
-            />
-          </PopoverContent>
-        </Popover>
+        <Input
+          className="text-lg px-4"
+          placeholder="Lead Time"
+          value={data.leadTime ?? ""}
+          onChange={(e) => onFieldChange("leadTime", e.target.value)}
+          onFocus={() => onFieldError("leadTime")} // Clear error on focus
+          error={error?.leadTime ? true : false} // Show error state
+          helperText={error?.leadTime} // Show error message
+        />
+        <span className="absolute right-4  top-6 text-sm text-gray-500 pointer-events-none border-l pl-2">
+          days
+        </span>
       </div>
 
       <div>

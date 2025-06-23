@@ -8,6 +8,7 @@ import {
   DialogFooter,
   DialogDescription,
   DialogTrigger,
+  DialogClose,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -344,13 +345,66 @@ const QuoteRequestModal = ({
             />
           </div>
 
+          <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+            <PopoverTrigger asChild>
+              <div className="relative w-full">
+                <Input
+                  readOnly
+                  value={
+                    data?.delivery_date
+                      ? new Date(data?.delivery_date).toLocaleDateString(
+                          "en-US",
+                          {
+                            year: "numeric",
+                            month: "2-digit",
+                            day: "2-digit",
+                          }
+                        )
+                      : "Select Delivery Date"
+                  }
+                  className="bg-white cursor-pointer w-full"
+                />
+                <CalendarIcon
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none"
+                  size={18}
+                />
+              </div>
+            </PopoverTrigger>
+            <PopoverContent className="p-0">
+              <Calendar
+                mode="single"
+                selected={data?.delivery_date}
+                onSelect={(date) => {
+                  onFieldChange("delivery_date", date);
+                  setCalendarOpen(false);
+                }}
+              />
+            </PopoverContent>
+          </Popover>
+          <Textarea
+            placeholder="What will this product be used for?"
+            className="col-span-1 lg:col-span-2 bg-white w-full"
+            onChange={(e) => onFieldChange("application", e.target.value)}
+            value={data?.application}
+          />
+
+          <Textarea
+            placeholder="Add additional information to the supplier"
+            className="col-span-1 lg:col-span-2 bg-white w-full"
+            rows={3}
+            onChange={(e) => onFieldChange("message", e.target.value)}
+            value={data?.message}
+          />
+        
           <DialogFooter className="mt-4 flex justify-between">
-            <Button
-              variant={"outline"}
-              className="border border-[var(--green-main)] text-[var(--green-main)] rounded-lg hover:bg-green-50 transition hover:text-[var(--green-main)]"
-            >
-              Cancel
-            </Button>
+            <DialogClose asChild>
+              <Button
+                variant={"outline"}
+                className="border border-[var(--green-main)] text-[var(--green-main)] rounded-lg hover:bg-green-50 transition hover:text-[var(--green-main)]"
+              >
+                Cancel
+              </Button>
+            </DialogClose>
             <Button
               type="submit"
               onClick={handleSubmit}

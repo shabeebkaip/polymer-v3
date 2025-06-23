@@ -22,6 +22,7 @@ import {
   DialogTitle,
   DialogFooter,
   DialogTrigger,
+  DialogClose,
 } from "@/components/ui/dialog";
 import {
   Select,
@@ -72,9 +73,9 @@ const SampleRequestModal = ({
     application: "",
     expected_annual_volume: "",
     orderDate: undefined as Date | undefined,
+    neededBy: undefined as Date | undefined,
     samplePrice: "",
     forFree: false,
-    neededBy: "",
     message: "",
     request_document: "",
   });
@@ -112,10 +113,7 @@ const SampleRequestModal = ({
     let validateInput = {};
     validateInput = {
       quantity: data?.quantity ? "Please enter the quantity" : "",
-      
-
-      
-    }
+    };
 
     // Collect all validation errors
     const errors: string[] = [];
@@ -329,13 +327,164 @@ const SampleRequestModal = ({
             />
           </div>
 
+          <Select
+            value={data.grade}
+            onValueChange={(value) => onFieldChange("grade", value)}
+          >
+            <SelectTrigger className="w-full bg-white">
+              <SelectValue placeholder="Select Grade" />
+            </SelectTrigger>
+            <SelectContent>
+              {grades.map((grade, index) => (
+                <SelectItem key={index} value={grade?._id}>
+                  {grade?.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <Input
+            placeholder="Expected Annual Quantity"
+            className="bg-white w-full"
+            type="number"
+            onChange={(e) =>
+              onFieldChange("expected_annual_volume", e.target.value)
+            }
+            value={data?.expected_annual_volume}
+          />
+
+          <Textarea
+            placeholder="What will this product be used for?"
+            className="col-span-1 lg:col-span-2 bg-white w-full"
+            onChange={(e) => onFieldChange("application", e.target.value)}
+            value={data?.application}
+          />
+          <div className="relative w-full">
+            <Input
+              readOnly
+              value={
+                data?.neededBy
+                  ? new Date(data?.neededBy).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "2-digit",
+                      day: "2-digit",
+                    })
+                  : ""
+              }
+              placeholder="Needed By"
+              className="bg-white cursor-pointer w-full pr-10"
+              onFocus={() => setCalendarOpen2(true)}
+            />
+            <CalendarIcon
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
+              size={18}
+            />
+            {calendarOpen2 && (
+              <div className="absolute z-10 bg-white shadow-lg rounded-lg p-4">
+                <Calendar
+                  mode="single"
+                  selected={
+                    data?.neededBy ? new Date(data.neededBy) : undefined
+                  }
+                  onSelect={(date) => {
+                    onFieldChange("neededBy", date);
+                    setCalendarOpen2(false);
+                  }}
+                />
+              </div>
+            )}
+            <div></div>
+          </div>
+          <div className="relative w-full">
+            <Input
+              readOnly
+              value={
+                data?.orderDate
+                  ? new Date(data?.orderDate).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "2-digit",
+                      day: "2-digit",
+                    })
+                  : "Expected Purchase Date"
+              }
+              className="bg-white cursor-pointer w-full pr-10" // add padding for icon space
+              onFocus={() => setCalendarOpen(true)}
+            />
+            <CalendarIcon
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none"
+              size={18}
+            />
+            {calendarOpen && (
+              <div className="absolute z-10 bg-white shadow-lg rounded-lg p-4">
+                <Calendar
+                  mode="single"
+                  selected={
+                    data?.orderDate ? new Date(data.orderDate) : undefined
+                  }
+                  onSelect={(date) => {
+                    onFieldChange("orderDate", date);
+                    setCalendarOpen(false);
+                  }}
+                />
+              </div>
+            )}
+          </div>
+          <Input
+            placeholder="Enter Street Name"
+            className="bg-white w-full"
+            type="text"
+            onChange={(e) => onFieldChange("streetName", e.target.value)}
+            value={data?.streetName}
+          />
+
+          <Input
+            placeholder="Enter City"
+            className="bg-white w-full"
+            type="text"
+            onChange={(e) => onFieldChange("city", e.target.value)}
+            value={data?.city}
+          />
+
+          <Input
+            placeholder="Enter Postal Code"
+            className="bg-white w-full"
+            type="text"
+            onChange={(e) => onFieldChange("postCode", e.target.value)}
+            value={data?.postCode}
+          />
+
+          <Input
+            placeholder="Enter Country"
+            className="bg-white w-full"
+            type="text"
+            onChange={(e) => onFieldChange("country", e.target.value)}
+            value={data?.country}
+          />
+
+          <Textarea
+            placeholder="Enter Address"
+            className="bg-white col-span-1 lg:col-span-2 w-full"
+            onChange={(e) => onFieldChange("address", e.target.value)}
+            value={data?.address}
+          />
+
+          <Textarea
+            placeholder="Add additional information to the supplier"
+            className="col-span-1 lg:col-span-2 bg-white w-full"
+            rows={3}
+            onChange={(e) => onFieldChange("message", e.target.value)}
+            value={data?.message}
+          />
+
           <DialogFooter className="mt-4 flex justify-between">
-            <Button
-              variant={"outline"}
-              className="border border-[var(--green-main)] text-[var(--green-main)] rounded-lg hover:bg-green-50 transition hover:text-[var(--green-main)]"
-            >
-              Cancel
-            </Button>
+            <DialogClose asChild>
+              <Button
+                variant={"outline"}
+                className="border border-[var(--green-main)] text-[var(--green-main)] rounded-lg hover:bg-green-50 transition hover:text-[var(--green-main)]"
+              >
+                Cancel
+              </Button>
+            </DialogClose>
             <Button
               type="submit"
               onClick={handleSubmit}

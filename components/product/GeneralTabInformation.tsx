@@ -1,5 +1,8 @@
 import React from "react";
 import LabelValue from "../shared/LabelValue";
+import Image from "next/image";
+import { FileImage, FileText } from "lucide-react";
+import FileViewer from "../shared/FileViewer";
 
 interface NamedItem {
   name: string;
@@ -47,6 +50,7 @@ const GeneralTabInformation: React.FC<GeneralTabInformationProps> = ({
       />
     ) : null;
 
+  console.log("Product Data:", product?.technical_data_sheet?.[0]?.fileUrl);
   return (
     <div className="grid grid-cols-1 text-gray-700 gap-2">
       {/* Basic Info */}
@@ -84,6 +88,35 @@ const GeneralTabInformation: React.FC<GeneralTabInformationProps> = ({
       {renderIfExists("Elongation at Break (%)", product.elongationAtBreak)}
       {renderIfExists("Shore Hardness", product.shoreHardness)}
       {renderIfExists("Water Absorption", product.waterAbsorption)}
+
+      {/* Divider */}
+      <hr className="my-6" />
+
+      {/* Additional Information */}
+      {
+        product?.technical_data_sheet &&
+        <div>
+          <h4 className="font-normal text-2xl text-[var(--dark-main)]">
+            Documents
+          </h4>
+          <div className="flex items-center mb-2 cursor-pointer mt-4">
+            <FileText
+              className="inline-block mr-2 text-gray-500"
+              size={24}
+            />
+            <FileViewer
+              previewFile={product?.technical_data_sheet?.[0]?.fileUrl}
+              triggerComp={
+                <span className="text-gray-700 hover:text-[var(--dark-main)]">
+                  Technical Data Sheet
+                </span>
+              }
+            />
+          </div>
+        </div>
+      }
+
+
     </div>
   );
 };
