@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useUserInfo } from "@/lib/useUserInfo";
 import { useSharedState } from "@/stores/sharedStore";
 import { Skeleton } from "../ui/skeleton";
+import ProductCardSkeleton from "../shared/ProductCardSkeleton";
 
 const ProductCard = dynamic(() => import("@/components/product/ProductCard"));
 
@@ -120,6 +121,10 @@ const ProductsByBrand: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full">
+          {sellersLoading &&
+            Array.from({ length: 4 }).map((_, index) => (
+              <ProductCardSkeleton key={index} />
+            ))}
           {products?.slice(0, 4).map((product) => (
             <ProductCard
               key={product._id}
