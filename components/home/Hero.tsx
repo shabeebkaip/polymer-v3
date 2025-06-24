@@ -59,22 +59,6 @@ const Hero: React.FC = () => {
           </p>
           <HeroSearch />
 
-          <div className="mt-10 grid grid-cols-2 lg:grid-cols-3 justify-center gap-10 md:gap-20 w-full">
-            {stats.map((stat, index) => (
-              <div
-                key={index}
-                className="flex flex-col items-center justify-center text-center"
-              >
-                <h1 className={`text-[40px] md:text-[80px] font-semibold `}>
-                  {stat.value}
-                </h1>
-
-                <p className="text-[var(--text-gray-secondary)] md:text-[20px] font-normal">
-                  {stat.label}
-                </p>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
     </section>
