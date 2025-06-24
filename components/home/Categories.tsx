@@ -27,11 +27,6 @@ interface ProductFamily {
   image: string;
 }
 
-interface CategoriesProps {
-  industries: IndustryItem[];
-  productFamiliesList: ProductFamily[];
-}
-
 const categoryData: CategoryData[] = [
   {
     id: "industries",
@@ -45,11 +40,9 @@ const categoryData: CategoryData[] = [
   },
 ];
 
-const Categories: React.FC<CategoriesProps> = ({
-  industries,
-  productFamiliesList,
-}) => {
-  const { industriesLoading, familiesLoading } = useSharedState();
+const Categories: React.FC = () => {
+  const { industriesLoading, familiesLoading, industries, productFamilies } =
+    useSharedState();
   const [selectedCategory, setSelectedCategory] =
     useState<string>("industries");
   const isMobile = useIsMobile();
@@ -57,16 +50,16 @@ const Categories: React.FC<CategoriesProps> = ({
 
   const displayedItems = useMemo(() => {
     const data =
-      selectedCategory === "industries" ? industries : productFamiliesList;
+      selectedCategory === "industries" ? industries : productFamilies;
 
     const sliced = data.length > 9 ? data.slice(0, 9) : data;
     return isMobile ? sliced.slice(0, 4) : sliced;
-  }, [selectedCategory, isMobile, industries, productFamiliesList]);
+  }, [selectedCategory, isMobile, industries, productFamilies]);
 
   const shouldShowViewAll =
     (selectedCategory === "industries"
       ? industries.length
-      : productFamiliesList.length) > 9 && !isMobile;
+      : productFamilies.length) > 9 && !isMobile;
   return (
     <section className="container mx-auto px-4 mt-20 mb-10">
       <div className="flex flex-col items-center gap-6 md:gap-14">
@@ -90,7 +83,10 @@ const Categories: React.FC<CategoriesProps> = ({
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-3 w-full">
           {(industriesLoading || familiesLoading) &&
             Array.from({ length: isMobile ? 4 : 10 }).map((_, index) => (
-              <Skeleton key={index} className="w-full h-[150px] md:h-[180px]  rounded-2xl" />
+              <Skeleton
+                key={index}
+                className="w-full h-[150px] md:h-[180px]  rounded-2xl"
+              />
             ))}
           {displayedItems.map((item, index) => (
             <CategoryCard

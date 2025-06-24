@@ -1,21 +1,9 @@
 import React from "react";
 import BenefitCard from "./BenefitCard";
+import { useCmsStore } from "@/stores/cms";
 
-type BenefitsContent = {
-  content?: {
-    description?: string[];
-  };
-};
-
-interface BenefitsProps {
-  buyersBenefits?: BenefitsContent;
-  suppliersBenefits?: BenefitsContent;
-}
-const Benefits: React.FC<BenefitsProps> = ({
-  buyersBenefits,
-  suppliersBenefits,
-}) => {
-  console.log("Buyers Benefits:", buyersBenefits);
+const Benefits: React.FC = () => {
+  const { buyersBenefits, suppliersBenefits } = useCmsStore();
   return (
     <section className="container mx-auto px-4 mt-20 mb-10">
       <div className="flex flex-col items-center gap-14">

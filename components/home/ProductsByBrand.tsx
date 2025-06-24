@@ -29,13 +29,10 @@ interface Seller {
   company_logo: string;
   products?: Product[];
 }
-interface ProductsByBrandProps {
-  sellers: Seller[];
-}
 
-const ProductsByBrand: React.FC<ProductsByBrandProps> = ({ sellers }) => {
+const ProductsByBrand: React.FC = () => {
   const { user } = useUserInfo();
-  const { sellersLoading } = useSharedState();
+  const { sellersLoading, sellers } = useSharedState();
   const router = useRouter();
   const [selectedTab, setSelectedTab] = useState<string>(
     sellers?.[0]?._id || ""
