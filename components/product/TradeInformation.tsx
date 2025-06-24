@@ -1,5 +1,7 @@
 import React from "react";
 import LabelValue from "../shared/LabelValue";
+import { FileText } from "lucide-react";
+import FileViewer from "../shared/FileViewer";
 
 interface NamedItem {
   name: string;
@@ -44,6 +46,7 @@ const TradeInformation: React.FC<GeneralTabInformationProps> = ({
       />
     ) : null;
 
+  console.log("product", product);
   // Available quantity logic with color
   const renderAvailableQuantity = () => {
     if (product?.stock && product.stock > 0) {
@@ -116,7 +119,78 @@ const TradeInformation: React.FC<GeneralTabInformationProps> = ({
         "Medical Grade Certified",
         product.medicalGrade ? "Yes" : "No"
       )}
+
+      <hr className="my-6" />
+
+      {/* Additional Information */}
+      <div>
+        {
+          product?.technical_data_sheet || product?.safety_data_sheet || product?.certificate_of_analysis ?
+
+            <h4 className="font-normal text-2xl text-[var(--dark-main)]">
+              Documents
+            </h4> : null
+        }
+        <div className="flex items-center gap-6 mt-4 ">
+          {
+            product?.technical_data_sheet &&
+            <div className="flex items-center mb-2 cursor-pointer ">
+              <FileText
+                className="inline-block mr-2 text-red-500"
+                size={24}
+              />
+              <FileViewer
+                previewFile={product?.technical_data_sheet}
+                triggerComp={
+                  <span className="text-gray-700 hover:text-[var(--dark-main)]">
+                    Technical Data Sheet
+                  </span>
+                }
+              />
+            </div>
+          }
+          {
+            product?.safety_data_sheet &&
+            <div className="flex items-center mb-2 cursor-pointer">
+              <FileText
+                className="inline-block mr-2 text-red-500"
+                size={24}
+              />
+              <FileViewer
+                previewFile={product?.safety_data_sheet}
+                triggerComp={
+                  <span className="text-gray-700 hover:text-[var(--dark-main)]">
+                    Safety Data Sheet
+                  </span>
+                }
+              />
+            </div>
+          }
+          {
+            product?.certificate_of_analysis &&
+            <div className="flex items-center mb-2 cursor-pointer">
+              <FileText
+                className="inline-block mr-2 text-red-500"
+                size={24}
+              />
+              <FileViewer
+                previewFile={product?.certificate_of_analysis}
+                triggerComp={
+                  <span className="text-gray-700 hover:text-[var(--dark-main)]">
+                    Certificate of Analysis
+                  </span>
+                }
+              />
+            </div>
+          }
+
+        </div>
+      </div>
+
+
     </div>
+
+
   );
 };
 
