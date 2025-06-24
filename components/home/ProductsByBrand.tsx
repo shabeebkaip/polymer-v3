@@ -33,7 +33,6 @@ interface ProductsByBrandProps {
 
 const ProductsByBrand: React.FC<ProductsByBrandProps> = ({ sellers }) => {
   const { user } = useUserInfo();
-  console.log("User Info:", user);
   const router = useRouter();
   const [selectedTab, setSelectedTab] = useState<string>(
     sellers?.[0]?._id || ""
@@ -44,12 +43,17 @@ const ProductsByBrand: React.FC<ProductsByBrandProps> = ({ sellers }) => {
 
   useEffect(() => {
     if (sellers && sellers.length > 0) {
-      const currentSeller = sellers.find(
-        (seller) => seller._id === selectedTab
-      );
-      setProducts(currentSeller?.products || []);
+      // If no seller is selected yet, default to first
+      if (!selectedTab) {
+        const first = sellers[0];
+        setSelectedTab(first._id);
+        setProducts(first.products || []);
+      } else {
+        const current = sellers.find((s) => s._id === selectedTab);
+        setProducts(current?.products || []);
+      }
     }
-  }, [selectedTab, sellers]);
+  }, [sellers, selectedTab]);
 
   const handleTabClick = (seller: Seller) => {
     setSelectedTab(seller._id);
@@ -68,10 +72,11 @@ const ProductsByBrand: React.FC<ProductsByBrandProps> = ({ sellers }) => {
               key={seller._id}
               type="button"
               onClick={() => handleTabClick(seller)}
-              className={`flex items-center gap-2 px-3 py-2 rounded-full transition focus:outline-none w-[48%] sm:w-auto md:min-w-48 md:min-h-16 ${selectedTab === seller._id
-                ? "bg-gradient-to-r from-[var(--green-gradient-from)] via-[var(--green-gradient-via)] to-[var(--green-gradient-to)] text-white"
-                : "border-2 border-[var(--green-main)] text-[var(--green-main)] hover:bg-green-50"
-                }`}
+              className={`flex items-center gap-2 px-3 py-2 rounded-full transition focus:outline-none w-[48%] sm:w-auto md:min-w-48 md:min-h-16 ${
+                selectedTab === seller._id
+                  ? "bg-gradient-to-r from-[var(--green-gradient-from)] via-[var(--green-gradient-via)] to-[var(--green-gradient-to)] text-white"
+                  : "border-2 border-[var(--green-main)] text-[var(--green-main)] hover:bg-green-50"
+              }`}
             >
               <div className="flex-shrink-0 w-8 h-8 md:w-12 md:h-12 rounded-full flex items-center justify-center overflow-hidden">
                 <Image

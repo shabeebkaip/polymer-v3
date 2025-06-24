@@ -5,8 +5,8 @@ import Tab from "./Tab";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import useIsMobile from "@/lib/useIsMobile";
-
-import { getIndustryList, getProductFamilies } from "@/apiServices/shared";
+import { Skeleton } from "../ui/skeleton";
+import { useSharedState } from "@/stores/sharedStore";
 
 interface CategoryData {
   id: string;
@@ -49,6 +49,7 @@ const Categories: React.FC<CategoriesProps> = ({
   industries,
   productFamiliesList,
 }) => {
+  const { industriesLoading, familiesLoading } = useSharedState();
   const [selectedCategory, setSelectedCategory] =
     useState<string>("industries");
   const isMobile = useIsMobile();
@@ -87,6 +88,13 @@ const Categories: React.FC<CategoriesProps> = ({
           ))}
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-3 w-full">
+          {(industriesLoading || familiesLoading) &&
+            Array.from({ length: isMobile ? 4 : 9 }).map((_, index) => (
+              <Skeleton
+                key={index}
+                className="w-full h-[150px] md:h-[250px] lg:h-[300px] rounded-2xl"
+              />
+            ))}
           {displayedItems.map((item, index) => (
             <CategoryCard
               key={item?._id || index}

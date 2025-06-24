@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState, ChangeEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -10,7 +9,6 @@ import { Eye, EyeOff } from "lucide-react";
 import Input from "@/components/shared/Input";
 import { login } from "@/apiServices/auth";
 import { useUserInfo } from "@/lib/useUserInfo";
-import { set } from "nprogress";
 
 const Login: React.FC = () => {
   const router = useRouter();

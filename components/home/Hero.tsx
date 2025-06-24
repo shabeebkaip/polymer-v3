@@ -1,9 +1,7 @@
 "use client";
 import Image from "next/image";
-import React, { useState } from "react";
-import { motion } from "framer-motion";
+import React from "react";
 import { cn } from "@/lib/utils";
-// import { Particles } from "@/components/magicui/particles";
 import { DotPattern } from "../magicui/dot-pattern";
 import HeroSearch from "./HeroSearch";
 
@@ -48,15 +46,10 @@ const Hero: React.FC = () => {
               height={100}
               className="absolute top-7 lg:top-0 right-0 w-[40px] md:w-[80px] lg:w-[100px] lg:h-[300px]"
             />
-            <motion.h1
-              initial={{ opacity: 0, filter: "blur(8px)", y: 10 }}
-              animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
-              transition={{ duration: 0.6, ease: "easeOut" }}
-              className="text-2xl md:text-4xl lg:text-[80px] uppercase font-semibold leading-tight"
-            >
+            <h1 className="text-2xl md:text-4xl lg:text-[80px] uppercase font-semibold leading-tight">
               Sustainable <span className={gradientTextClass}>POLYMERS</span>{" "}
               for <br /> a Better Tomorrow
-            </motion.h1>
+            </h1>
           </div>
 
           <p className="text-[var(--text-gray-secondary)] text-[16px] md:text-[20px] mt-10 lg:text-2xl max-w-4xl font-normal">

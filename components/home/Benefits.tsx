@@ -15,6 +15,7 @@ const Benefits: React.FC<BenefitsProps> = ({
   buyersBenefits,
   suppliersBenefits,
 }) => {
+  console.log("Buyers Benefits:", buyersBenefits);
   return (
     <section className="container mx-auto px-4 mt-20 mb-10">
       <div className="flex flex-col items-center gap-14">
