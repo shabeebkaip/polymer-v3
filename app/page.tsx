@@ -1,8 +1,7 @@
 // Revalidate the whole page every 60 seconds
-
+"use client";
 import dynamic from "next/dynamic";
 import Hero from "@/components/home/Hero";
-import { getBenefitsOfBuyers, getBenefitsOfSuppliers } from "@/apiServices/cms";
 
 // Dynamic imports with SSR enabled
 const BeneFits = dynamic(() => import("@/components/home/Benefits"));
@@ -23,7 +22,6 @@ export default function HomePage() {
       <CategoryWrapper />
       <ProductBySupplier />
       <BenefitsWrapper />
-      
     </div>
   );
 }

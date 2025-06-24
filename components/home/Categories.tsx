@@ -89,11 +89,8 @@ const Categories: React.FC<CategoriesProps> = ({
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-3 w-full">
           {(industriesLoading || familiesLoading) &&
-            Array.from({ length: isMobile ? 4 : 9 }).map((_, index) => (
-              <Skeleton
-                key={index}
-                className="w-full h-[150px] md:h-[250px] lg:h-[300px] rounded-2xl"
-              />
+            Array.from({ length: isMobile ? 4 : 10 }).map((_, index) => (
+              <Skeleton key={index} className="w-full h-[150px] md:h-[180px]  rounded-2xl" />
             ))}
           {displayedItems.map((item, index) => (
             <CategoryCard

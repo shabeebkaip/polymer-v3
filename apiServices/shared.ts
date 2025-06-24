@@ -1,5 +1,6 @@
 import axiosInstance from "@/lib/axiosInstance";
 
+
 export interface UploadedFile {
   id: string;
   fileUrl: string;

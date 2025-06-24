@@ -21,9 +21,9 @@ export const useSharedState = create<SharedState>((set, get) => ({
   industries: [],
   productFamilies: [],
   sellers: [],
-  industriesLoading: false,
-  familiesLoading: false,
-  sellersLoading: false,
+  industriesLoading: true,
+  familiesLoading: true,
+  sellersLoading: true,
 
   fetchIndustries: async () => {
     if (get().industries.length) return;
