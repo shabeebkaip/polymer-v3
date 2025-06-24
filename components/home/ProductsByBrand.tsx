@@ -4,6 +4,8 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useUserInfo } from "@/lib/useUserInfo";
+import { useSharedState } from "@/stores/sharedStore";
+import { Skeleton } from "../ui/skeleton";
 
 const ProductCard = dynamic(() => import("@/components/product/ProductCard"));
 
@@ -33,6 +35,7 @@ interface ProductsByBrandProps {
 
 const ProductsByBrand: React.FC<ProductsByBrandProps> = ({ sellers }) => {
   const { user } = useUserInfo();
+  const { sellersLoading } = useSharedState();
   const router = useRouter();
   const [selectedTab, setSelectedTab] = useState<string>(
     sellers?.[0]?._id || ""
@@ -67,6 +70,16 @@ const ProductsByBrand: React.FC<ProductsByBrandProps> = ({ sellers }) => {
           Find Product By Suppliers
         </h1>
         <div className="flex flex-wrap gap-3 justify-center">
+          {sellersLoading &&
+            Array.from({ length: 4 }).map((_, index) => (
+              <div
+                className="flex items-center gap-2 px-3 py-2 rounded-full w-[48%] sm:w-auto md:min-w-48 md:min-h-16 border-2 border-muted"
+                key={index}
+              >
+                <Skeleton className="w-8 h-8 md:w-12 md:h-12 rounded-full" />
+                <Skeleton className="h-4 w-24 md:w-32 rounded" />
+              </div>
+            ))}
           {sellers.map((seller) => (
             <button
               key={seller._id}

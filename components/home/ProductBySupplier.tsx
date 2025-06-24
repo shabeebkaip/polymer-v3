@@ -4,7 +4,7 @@ import React, { useEffect } from "react";
 import ProductsByBrand from "./ProductsByBrand";
 
 const ProductBySupplier = () => {
-  const { sellers, sellersLoading, fetchSellers } = useSharedState();
+  const { sellers,  fetchSellers } = useSharedState();
 
   useEffect(() => {
     fetchSellers();
