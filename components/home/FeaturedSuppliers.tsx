@@ -1,17 +1,10 @@
 import React from "react";
 import SellerLogoContainer from "./SellerLogoContainer";
+import { useSharedState } from "@/stores/sharedStore";
 
 const FeaturedSuppliers: React.FC = () => {
-  const sellers = [
-    "/assets/seller 1.svg",
-    "/assets/seller 2.svg",
-    "/assets/seller 3.svg",
-    "/assets/seller 1.svg",
-    "/assets/seller 2.svg",
-    "/assets/seller 3.svg",
-    "/assets/seller 1.svg",
-    "/assets/seller 2.svg",
-  ];
+  const { sellers } = useSharedState();
+  console.log("Featured Suppliers Sellers:", sellers);
   return (
     <section className="container mx-auto px-4 mt-20 mb-10">
       <div className="flex flex-col  items-center gap-14">
@@ -26,10 +19,10 @@ const FeaturedSuppliers: React.FC = () => {
           </p>
         </div>
 
-        <div className="w-full flex md:block justify-center ">
-          <div className="grid  grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 md:gap-4 lg:gap-2 gap-2 " >
+        <div className="w-full flex md:block justify-center  ">
+          <div className="grid  grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 md:gap-4 lg:gap-2 gap-2 items-center ">
             {sellers?.map((seller, index) => (
-              <SellerLogoContainer key={index} logoUrl={seller} />
+              <SellerLogoContainer key={index} logoUrl={seller?.company_logo}  />
             ))}
           </div>
         </div>

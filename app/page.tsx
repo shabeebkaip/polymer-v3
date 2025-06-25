@@ -6,6 +6,7 @@ import Categories from "@/components/home/Categories";
 import ProductsByBrand from "@/components/home/ProductsByBrand";
 import { useCmsStore } from "@/stores/cms";
 import Benefits from "@/components/home/Benefits";
+import FeaturedSuppliers from "@/components/home/FeaturedSuppliers";
 
 export default function HomePage() {
   const { fetchSellers, fetchIndustries, fetchProductFamilies } =
@@ -23,6 +24,8 @@ export default function HomePage() {
       <Hero />
       <Categories />
       <ProductsByBrand />
+      <FeaturedSuppliers />
+      
       <Benefits />
     </div>
   );
