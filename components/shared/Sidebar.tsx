@@ -134,15 +134,6 @@ const Sidebar = () => {
         ))}
       </div>
 
-      <div className="p-4 flex items-center justify-start gap-2 hidden lg:block">
-        <Button
-          variant={"outline"}
-          className="cursor-pointer"
-          onClick={handleLogout}
-        >
-          Logout
-        </Button>
-      </div>
     </div>
   );
 };

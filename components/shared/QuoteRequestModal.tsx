@@ -116,44 +116,34 @@ const QuoteRequestModal = ({
   };
 
   const handleSubmit = () => {
-    console.log("Form submitted with data:", data);
     const toastId = toast.loading("Creating Quote Request...");
-
-    // Collect all validation errors
     const errors: string[] = [];
-
     if (!data?.quantity) errors.push("Please enter the quantity");
     if (!data?.grade) errors.push("Please select the grade");
     if (!data?.incoterm) errors.push("Please select the incoterm");
     if (!data?.country) errors.push("Please enter the country");
-    if (!data?.city) errors.push("Please enter the city");
-    if (!data?.postCode) errors.push("Please enter the postal code");
     if (!data?.destination) errors.push("Please enter the destination");
     if (!data?.packaging_size) errors.push("Please enter the packaging size");
     if (!data?.delivery_date) errors.push("Please select the delivery date");
 
-    // If any validation errors exist, show all and exit
     if (errors.length > 0) {
-      toast.dismiss(toastId); // Close loading toast
-      errors.forEach((err) => toast.error(err)); // Show all error toasts
+      toast.dismiss(toastId);
+      errors.forEach((err) => toast.error(err));
       return;
     }
 
     try {
-      // Proceed with the request if no errors
-      console.log("All validations passed. Proceeding...");
       createQuoteRequest(data).then((response) => {
-        console.log("Quote request created successfully:", response);
         toast.dismiss(toastId);
         toast.success("Quote request created successfully.");
-        setOpen(false); // Close the modal
+        setOpen(false);
       });
-      // your submission logic goes here
     } catch (error) {
       toast.dismiss(toastId);
       toast.error("Something went wrong while creating the quote request.");
     }
   };
+
   return (
     <>
       <button className={className} onClick={handletrigger}>
@@ -168,6 +158,7 @@ const QuoteRequestModal = ({
             </DialogDescription>
           </DialogHeader>
 
+          {/* ONLY ONE GRID: No duplicate fields */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
             <div className="flex gap-2">
               <div className="relative w-full">
@@ -224,26 +215,11 @@ const QuoteRequestModal = ({
               value={data?.country}
             />
 
-            <Input
-              placeholder="Enter City"
-              className="bg-white w-full"
-              type="text"
-              onChange={(e) => onFieldChange("city", e.target.value)}
-              value={data?.city}
-            />
 
-            <Input
-              placeholder="Enter Postal Code"
-              className="bg-white w-full"
-              type="text"
-              onChange={(e) => onFieldChange("postCode", e.target.value)}
-              value={data?.postCode}
-            />
+            <Textarea
+              placeholder="Enter Full Address"
+              className="bg-white w-full col-span-2"
 
-            <Input
-              placeholder="Enter Destination"
-              className="bg-white w-full"
-              type="text"
               onChange={(e) => onFieldChange("destination", e.target.value)}
               value={data?.destination}
             />
@@ -284,51 +260,41 @@ const QuoteRequestModal = ({
               />
             </div>
 
-            <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
-              <PopoverTrigger asChild>
-                <div className="relative w-full">
-                  <Input
-                    readOnly
-                    value={
-                      data?.delivery_date
-                        ? new Date(data?.delivery_date).toLocaleDateString(
-                            "en-US",
-                            {
-                              year: "numeric",
-                              month: "2-digit",
-                              day: "2-digit",
-                            }
-                          )
-                        : "Select Delivery Date"
-                    }
-                    className="bg-white cursor-pointer w-full"
-                  />
-                  <CalendarIcon
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none"
-                    size={18}
-                  />
-                </div>
-              </PopoverTrigger>
-              <PopoverContent className="p-0">
-                <Calendar
-                  mode="single"
-                  selected={data?.delivery_date}
-                  onSelect={(date) => {
-                    onFieldChange("delivery_date", date);
-                    setCalendarOpen(false);
-                  }}
-                />
-              </PopoverContent>
-            </Popover>
+            {/* Calendar in grid */}
+            <div className="relative w-full">
+              <Input
+                readOnly
+                value={
+                  data?.delivery_date
+                    ? new Date(data?.delivery_date).toLocaleDateString(
+                      "en-US",
+                      {
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                      }
+                    )
+                    : "Select Delivery Date"
+                }
+                onFocus={() => setCalendarOpen(true)}
+                className="bg-white cursor-pointer w-full"
+              />
+              {
+                calendarOpen && (
+                  <div className="absolute z-10 bg-white shadow-lg rounded-lg p-4">
+                    <Calendar
+                      mode="single"
+                      selected={data?.delivery_date}
+                      onSelect={(date) => {
+                        onFieldChange("delivery_date", date);
+                        setCalendarOpen(false);
+                      }}
+                    />
+                  </div>
+                )
+              }
 
-            <Input
-              placeholder="Price"
-              className="bg-white w-full"
-              type="number"
-              onChange={(e) => onFieldChange("pricing", e.target.value)}
-              value={data?.pricing}
-            />
-
+            </div>
             <Textarea
               placeholder="What will this product be used for?"
               className="col-span-1 lg:col-span-2 bg-white w-full"
@@ -345,57 +311,8 @@ const QuoteRequestModal = ({
             />
           </div>
 
-          <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
-            <PopoverTrigger asChild>
-              <div className="relative w-full">
-                <Input
-                  readOnly
-                  value={
-                    data?.delivery_date
-                      ? new Date(data?.delivery_date).toLocaleDateString(
-                          "en-US",
-                          {
-                            year: "numeric",
-                            month: "2-digit",
-                            day: "2-digit",
-                          }
-                        )
-                      : "Select Delivery Date"
-                  }
-                  className="bg-white cursor-pointer w-full"
-                />
-                <CalendarIcon
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none"
-                  size={18}
-                />
-              </div>
-            </PopoverTrigger>
-            <PopoverContent className="p-0">
-              <Calendar
-                mode="single"
-                selected={data?.delivery_date}
-                onSelect={(date) => {
-                  onFieldChange("delivery_date", date);
-                  setCalendarOpen(false);
-                }}
-              />
-            </PopoverContent>
-          </Popover>
-          <Textarea
-            placeholder="What will this product be used for?"
-            className="col-span-1 lg:col-span-2 bg-white w-full"
-            onChange={(e) => onFieldChange("application", e.target.value)}
-            value={data?.application}
-          />
+          {/* DO NOT RENDER THE FIELDS BELOW AGAIN! */}
 
-          <Textarea
-            placeholder="Add additional information to the supplier"
-            className="col-span-1 lg:col-span-2 bg-white w-full"
-            rows={3}
-            onChange={(e) => onFieldChange("message", e.target.value)}
-            value={data?.message}
-          />
-        
           <DialogFooter className="mt-4 flex justify-between">
             <DialogClose asChild>
               <Button

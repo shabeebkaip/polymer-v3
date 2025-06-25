@@ -11,8 +11,8 @@ const LabelValueVertical: React.FC<LabelValueVerticalProps> = ({
 }) => {
   return (
     <div>
-      <h4>{label}</h4>
-      <p className="text-[var(--dark-main)] text-sm">{value || "N/A"}</p>
+      <h4 className="font-semibold">{label}</h4>
+      <p className="text-[var(--text-gray-primary)] text-sm">{value || "N/A"}</p>
     </div>
   );
 };

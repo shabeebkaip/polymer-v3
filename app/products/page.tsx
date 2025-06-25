@@ -1,7 +1,9 @@
 "use client";
-
+import dynamic from "next/dynamic";
 import React, { Suspense } from "react";
-import ProductsClient from "@/components/product/ProductsClient";
+
+const ProductsClient = dynamic(() => import("@/components/product/ProductsClient"))
+  
 
 // --- Component ---
 const ProductsPage: React.FC = () => {
