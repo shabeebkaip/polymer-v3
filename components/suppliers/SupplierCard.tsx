@@ -18,7 +18,7 @@ const SupplierCard: React.FC<SupplierCardProps> = ({
   supplierId,
 }) => {
   return (
-    <div className="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-4 flex items-center justify-center cursor-pointer">
+    <div className="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-4 flex items-center justify-center  hover:bg-green-50 hover:scale-105 duration-300 ease-in-out">
       <div className="rounded-xl p-4 w-full flex items-center border border-gray-200">
         <img
           src={logo}

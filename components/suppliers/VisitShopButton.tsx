@@ -13,7 +13,7 @@ const VisitShopButton: React.FC<VisitShopButtonProps> = ({ supplierId }) => {
 
   const handleClick = () => {
     if (supplierId) {
-      router.push(`/products?createdBy=${supplierId}`);
+      router.push(`/suppliers/${supplierId}`);
     }
   };
 

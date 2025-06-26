@@ -22,7 +22,7 @@ const FeaturedSuppliers: React.FC = () => {
         <div className="w-full flex md:block justify-center  ">
           <div className="grid  grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 md:gap-4 lg:gap-2 gap-2 items-center ">
             {sellers?.map((seller, index) => (
-              <SellerLogoContainer key={index} logoUrl={seller?.company_logo}  />
+              <SellerLogoContainer key={index} seller={seller} />
             ))}
           </div>
         </div>

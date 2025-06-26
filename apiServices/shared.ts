@@ -146,3 +146,13 @@ export const imageUpload = async (data: FormData): Promise<UploadedFile> => {
 
   return response.data;
 };
+
+export const getSellerDetail = async (sellerId: string) => {
+  try {
+    const response = await axiosInstance.get(`/user/seller/detail/${sellerId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching seller detail:", error);
+    throw error;
+  }
+};
