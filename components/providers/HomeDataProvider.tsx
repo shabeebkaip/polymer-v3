@@ -35,92 +35,50 @@ export default function HomeDataProvider({ children, initialData }: HomeDataProv
 
   // Track hydration status
   const [isHydrating, setIsHydrating] = useState(true);
-  const [hydrationSteps, setHydrationSteps] = useState({
-    industries: false,
-    productFamilies: false,
-    sellers: false,
-    buyersBenefits: false,
-    suppliersBenefits: false,
-  });
+  const [hasHydrated, setHasHydrated] = useState(false);
 
-  // Check if all data is hydrated
-  const isFullyHydrated = Object.values(hydrationSteps).every(Boolean);
-
+  // Hydrate stores with initial data once
   useEffect(() => {
-    let hydrationComplete = true;
-    const newSteps = { ...hydrationSteps };
-
-    // Check and hydrate industries
-    if (industries.length === 0 && initialData.industries.length > 0) {
-      setIndustries(initialData.industries);
-      hydrationComplete = false;
-    } else if (industries.length > 0 || initialData.industries.length === 0) {
-      newSteps.industries = true;
-    }
-    
-    // Check and hydrate product families
-    if (productFamilies.length === 0 && initialData.productFamilies.length > 0) {
-      setProductFamilies(initialData.productFamilies);
-      hydrationComplete = false;
-    } else if (productFamilies.length > 0 || initialData.productFamilies.length === 0) {
-      newSteps.productFamilies = true;
-    }
-    
-    // Check and hydrate sellers
-    if (sellers.length === 0 && initialData.sellers.length > 0) {
-      setSellers(initialData.sellers);
-      hydrationComplete = false;
-    } else if (sellers.length > 0 || initialData.sellers.length === 0) {
-      newSteps.sellers = true;
-    }
-    
-    // Check and hydrate buyers benefits
-    if (!buyersBenefits.content?.description && initialData.buyersBenefits.content?.description) {
-      setBuyersBenefits(initialData.buyersBenefits);
-      hydrationComplete = false;
-    } else if (buyersBenefits.content?.description || !initialData.buyersBenefits.content?.description) {
-      newSteps.buyersBenefits = true;
-    }
-    
-    // Check and hydrate suppliers benefits
-    if (!suppliersBenefits.content?.description && initialData.suppliersBenefits.content?.description) {
-      setSuppliersBenefits(initialData.suppliersBenefits);
-      hydrationComplete = false;
-    } else if (suppliersBenefits.content?.description || !initialData.suppliersBenefits.content?.description) {
-      newSteps.suppliersBenefits = true;
-    }
-
-    setHydrationSteps(newSteps);
-
-    // If all steps are complete, mark hydration as done
-    if (Object.values(newSteps).every(Boolean) && hydrationComplete) {
-      setIsHydrating(false);
+    if (!hasHydrated) {
+      // Hydrate all stores with initial data
+      if (initialData.industries.length > 0) {
+        setIndustries(initialData.industries);
+      }
+      if (initialData.productFamilies.length > 0) {
+        setProductFamilies(initialData.productFamilies);
+      }
+      if (initialData.sellers.length > 0) {
+        setSellers(initialData.sellers);
+      }
+      if (initialData.buyersBenefits.content?.description) {
+        setBuyersBenefits(initialData.buyersBenefits);
+      }
+      if (initialData.suppliersBenefits.content?.description) {
+        setSuppliersBenefits(initialData.suppliersBenefits);
+      }
+      
+      setHasHydrated(true);
     }
   }, [
-    initialData, 
-    industries.length, 
-    productFamilies.length, 
-    sellers.length,
-    buyersBenefits.content?.description,
-    suppliersBenefits.content?.description,
+    initialData,
+    hasHydrated,
     setIndustries,
     setProductFamilies,
     setSellers,
     setBuyersBenefits,
-    setSuppliersBenefits,
-    hydrationSteps
+    setSuppliersBenefits
   ]);
 
-  // Add a minimum loading time to prevent flashing
+  // Add a minimum loading time and wait for hydration
   useEffect(() => {
-    const timer = setTimeout(() => {
-      if (isFullyHydrated) {
+    if (hasHydrated) {
+      const timer = setTimeout(() => {
         setIsHydrating(false);
-      }
-    }, 1000); // Minimum 1 second loading time
+      }, 1000); // Minimum 1 second loading time
 
-    return () => clearTimeout(timer);
-  }, [isFullyHydrated]);
+      return () => clearTimeout(timer);
+    }
+  }, [hasHydrated]);
 
   return (
     <AnimatedPreloader isLoading={isHydrating}>

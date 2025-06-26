@@ -7,6 +7,7 @@ import { useUserInfo } from "@/lib/useUserInfo";
 import { useSharedState } from "@/stores/sharedStore";
 import { Skeleton } from "../ui/skeleton";
 import ProductCardSkeleton from "../shared/ProductCardSkeleton";
+import { ProductCardTypes } from "@/types/product";
 
 const ProductCard = dynamic(() => import("@/components/product/ProductCard"));
 
@@ -14,21 +15,11 @@ interface ProductImage {
   fileUrl: string;
 }
 
-interface Product {
-  _id: string;
-  productName: string;
-  tradeName: string;
-  description: string;
-  productImages: ProductImage[];
-  price: number;
-  uom: string;
-}
-
 interface Seller {
   _id: string;
   company: string;
   company_logo: string;
-  products?: Product[];
+  products?: ProductCardTypes[];
 }
 
 const ProductsByBrand: React.FC = () => {
@@ -38,7 +29,7 @@ const ProductsByBrand: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState<string>(
     sellers?.[0]?._id || ""
   );
-  const [products, setProducts] = useState<Product[]>(
+  const [products, setProducts] = useState<ProductCardTypes[]>(
     sellers?.[0]?.products || []
   );
 
