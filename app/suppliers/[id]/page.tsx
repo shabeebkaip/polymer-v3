@@ -1,7 +1,18 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { Globe, MapPin, Phone, Mail, Building2, Users, Calendar, Award, Truck, Shield } from "lucide-react";
+import {
+  Globe,
+  MapPin,
+  Phone,
+  Mail,
+  Building2,
+  Users,
+  Calendar,
+  Award,
+  Truck,
+  Shield,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import ProductCard from "@/components/product/ProductCard";
@@ -23,17 +34,9 @@ interface Supplier {
   yearsInBusiness?: number;
   certifications?: string[];
   services?: string[];
-  createdAt?: string;
-  [key: string]: any;
-}
+  products?: any[]; // Assuming products is an array of product objects
 
-interface Product {
-  _id: string;
-  productName: string;
-  chemicalName: string;
-  productImages: { fileUrl: string }[];
-  price: number;
-  uom: string;
+  createdAt?: string;
   [key: string]: any;
 }
 
@@ -81,7 +84,7 @@ const SupplierDetail = () => {
     return (
       <section className="container mt-10 mx-auto px-4">
         <div className="animate-pulse">
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8 mb-8">
+          <div className="bg-gradient-to-r from-green-50 to-green-100 rounded-2xl p-8 mb-8">
             <div className="flex flex-col md:flex-row gap-8 items-start">
               <Skeleton className="w-32 h-32 rounded-xl" />
               <div className="flex-1 space-y-4">
@@ -104,17 +107,21 @@ const SupplierDetail = () => {
     return (
       <section className="container mt-10 mx-auto px-4">
         <div className="text-center py-12">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Supplier Not Found</h1>
-          <p className="text-gray-600">The supplier you're looking for doesn't exist or has been removed.</p>
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">
+            Supplier Not Found
+          </h1>
+          <p className="text-gray-600">
+            The supplier you're looking for doesn't exist or has been removed.
+          </p>
         </div>
       </section>
     );
   }
-
+  console.log("supplier", supplier);
   return (
     <section className="container mt-10 mx-auto px-4 pb-12">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8 mb-8">
+      <div className="bg-gradient-to-r from-green-50 to-green-100 rounded-2xl p-8 mb-8">
         <div className="flex flex-col md:flex-row gap-8 items-start">
           <div className="flex-shrink-0">
             <img
@@ -124,62 +131,72 @@ const SupplierDetail = () => {
             />
           </div>
           <div className="flex-1">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">{supplier.company}</h1>
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              {supplier.company}
+            </h1>
             <div className="flex flex-wrap gap-4 mb-6 text-gray-600">
               <div className="flex items-center gap-2">
-                <MapPin className="w-5 h-5 text-blue-600" />
+                <MapPin className="w-5 h-5 text-green-600" />
                 <span>{supplier.location}</span>
               </div>
               {supplier.website && (
                 <div className="flex items-center gap-2">
-                  <Globe className="w-5 h-5 text-blue-600" />
+                  <Globe className="w-5 h-5 text-green-600" />
                   <a
                     href={supplier.website}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-blue-600 hover:text-blue-800 hover:underline"
+                    className="text-green-600 hover:text-green-800 hover:underline"
                   >
                     Visit Website
                   </a>
                 </div>
               )}
-              {supplier.email && (
+              {/* {supplier.email && (
                 <div className="flex items-center gap-2">
-                  <Mail className="w-5 h-5 text-blue-600" />
+                  <Mail className="w-5 h-5 text-green-600" />
                   <a
                     href={`mailto:${supplier.email}`}
-                    className="text-blue-600 hover:text-blue-800 hover:underline"
+                    className="text-green-600 hover:text-green-800 hover:underline"
                   >
                     {supplier.email}
                   </a>
                 </div>
-              )}
+              )} */}
             </div>
             <div className="flex flex-wrap gap-2 mb-6">
-              <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+              <Badge
+                variant="secondary"
+                className="bg-green-100 text-green-800"
+              >
                 <Building2 className="w-4 h-4 mr-1" />
                 Verified Supplier
               </Badge>
               {supplier.yearsInBusiness && (
-                <Badge variant="secondary" className="bg-green-100 text-green-800">
+                <Badge
+                  variant="secondary"
+                  className="bg-green-100 text-green-800"
+                >
                   <Calendar className="w-4 h-4 mr-1" />
                   {supplier.yearsInBusiness}+ Years
                 </Badge>
               )}
             </div>
             <div className="flex flex-wrap gap-3">
-              <Button 
-                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
-                onClick={() => window.open(`mailto:${supplier.email}`, '_blank')}
+              <Button
+                className="bg-gradient-to-r from-green-600 to-green-800 hover:from-green-700 hover:to-green-700"
+                onClick={() =>
+                  window.open(`mailto:${supplier.email}`, "_blank")
+                }
               >
                 <Mail className="w-4 h-4 mr-2" />
                 Contact Supplier
               </Button>
               {supplier.website && (
-                <Button 
-                  variant="outline" 
-                  className="border-blue-600 text-blue-600 hover:bg-blue-50"
-                  onClick={() => window.open(supplier.website, '_blank')}
+                <Button
+                  variant="outline"
+                  className="border-green-600 text-green-600 hover:bg-green-50"
+                  onClick={() => window.open(supplier.website, "_blank")}
                 >
                   <Globe className="w-4 h-4 mr-2" />
                   Visit Website
@@ -195,25 +212,30 @@ const SupplierDetail = () => {
         {/* About Section */}
         <div className="lg:col-span-2">
           <div className="bg-white rounded-xl shadow-sm border p-6 mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">About {supplier.company}</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              About {supplier.company}
+            </h2>
             <p className="text-gray-600 leading-relaxed mb-4">
-              {supplier.description || 
-                `${supplier.company} is a trusted supplier in the polymer and chemical industry, committed to providing high-quality products and exceptional service to customers worldwide. With years of experience in the market, we specialize in delivering innovative solutions that meet the evolving needs of our clients.`
-              }
+              {supplier.description ||
+                `${supplier.company} is a trusted supplier in the polymer and chemical industry, committed to providing high-quality products and exceptional service to customers worldwide. With years of experience in the market, we specialize in delivering innovative solutions that meet the evolving needs of our clients.`}
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
-                <Shield className="w-6 h-6 text-blue-600" />
+              <div className="flex items-center gap-3 p-3 bg-green-50 rounded-lg">
+                <Shield className="w-6 h-6 text-green-600" />
                 <div>
                   <p className="font-semibold text-gray-900">Quality Assured</p>
-                  <p className="text-sm text-gray-600">Certified products & processes</p>
+                  <p className="text-sm text-gray-600">
+                    Certified products & processes
+                  </p>
                 </div>
               </div>
               <div className="flex items-center gap-3 p-3 bg-green-50 rounded-lg">
                 <Truck className="w-6 h-6 text-green-600" />
                 <div>
                   <p className="font-semibold text-gray-900">Fast Delivery</p>
-                  <p className="text-sm text-gray-600">Reliable logistics network</p>
+                  <p className="text-sm text-gray-600">
+                    Reliable logistics network
+                  </p>
                 </div>
               </div>
             </div>
@@ -222,7 +244,9 @@ const SupplierDetail = () => {
           {/* Specialties */}
           {supplier.specialties && supplier.specialties.length > 0 && (
             <div className="bg-white rounded-xl shadow-sm border p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Specialties</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">
+                Specialties
+              </h3>
               <div className="flex flex-wrap gap-2">
                 {supplier.specialties.map((specialty, index) => (
                   <Badge key={index} variant="outline" className="text-sm">
@@ -242,15 +266,17 @@ const SupplierDetail = () => {
               <div className="flex items-center gap-3">
                 <Building2 className="w-5 h-5 text-gray-400" />
                 <div>
-                  <p className="font-medium text-gray-900">Company Type</p>
-                  <p className="text-sm text-gray-600">Manufacturer & Supplier</p>
+                  <p className="font-medium text-gray-900">Industry</p>
+                  <p className="text-sm text-gray-600">{supplier?.industry}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
                 <Users className="w-5 h-5 text-gray-400" />
                 <div>
                   <p className="font-medium text-gray-900">Products</p>
-                  <p className="text-sm text-gray-600">{products.length} Products Available</p>
+                  <p className="text-sm text-gray-600">
+                    {supplier?.products.length} Products Available
+                  </p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
@@ -286,9 +312,11 @@ const SupplierDetail = () => {
       {/* Products Section */}
       <div className="bg-white rounded-xl shadow-sm border p-6">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-gray-900">Products & Services</h2>
+          <h2 className="text-2xl font-bold text-gray-900">
+            Products & Services
+          </h2>
           <Badge variant="outline" className="text-sm">
-            {products.length} Products
+            {supplier?.products.length} Products
           </Badge>
         </div>
 
@@ -302,9 +330,9 @@ const SupplierDetail = () => {
               </div>
             ))}
           </div>
-        ) : products.length > 0 ? (
+        ) : supplier?.products.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {products.map((product) => (
+            {supplier?.products.map((product) => (
               <ProductCard
                 key={product._id}
                 product={product}
@@ -317,33 +345,38 @@ const SupplierDetail = () => {
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <Building2 className="w-8 h-8 text-gray-400" />
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No Products Available</h3>
-            <p className="text-gray-600">This supplier hasn't added any products yet.</p>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              No Products Available
+            </h3>
+            <p className="text-gray-600">
+              This supplier hasn't added any products yet.
+            </p>
           </div>
         )}
       </div>
 
       {/* Contact CTA */}
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-8 mt-8 text-center text-white">
+      <div className="bg-gradient-to-r from-green-400 to-green-600  via-green-600 rounded-2xl p-8 mt-8 text-center text-white">
         <h2 className="text-3xl font-bold mb-4">Ready to Connect?</h2>
-        <p className="text-blue-100 mb-6 max-w-2xl mx-auto">
-          Get in touch with {supplier.company} to discuss your requirements, request quotes, or learn more about their products and services.
+        <p className="text-green-100 mb-6 max-w-2xl mx-auto">
+          Get in touch with {supplier.company} to discuss your requirements,
+          request quotes, or learn more about their products and services.
         </p>
         <div className="flex flex-wrap justify-center gap-4">
-          <Button 
-            size="lg" 
-            className="bg-white text-blue-600 hover:bg-gray-100"
-            onClick={() => window.open(`mailto:${supplier.email}`, '_blank')}
+          <Button
+            size="lg"
+            className="bg-white text-green-600 hover:bg-gray-100 cursor-pointer"
+            onClick={() => window.open(`mailto:${supplier.email}`, "_blank")}
           >
             <Mail className="w-5 h-5 mr-2" />
             Send Message
           </Button>
           {supplier.website && (
-            <Button 
-              size="lg" 
-              variant="outline" 
-              className="border-white text-white hover:bg-white/10"
-              onClick={() => window.open(supplier.website, '_blank')}
+            <Button
+              size="lg"
+              variant="outline"
+              className="bg-white text-green-600 hover:bg-gray-100 cursor-pointer"
+              onClick={() => window.open(supplier.website, "_blank")}
             >
               <Globe className="w-5 h-5 mr-2" />
               Visit Website
