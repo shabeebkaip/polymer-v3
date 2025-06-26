@@ -63,3 +63,19 @@ export interface ProductFormData {
 
   [key: string]: any; // fallback for dynamic keys
 }
+
+export interface ProductCardTypes {
+  productImages: any[];
+  productName: string;
+  createdBy: {
+    company_logo: string;
+  };
+  countryOfOrigin: string;
+  chemicalName: string;
+  polymerType: {
+    name: string;
+  };
+  uom: string;
+  _id: string;
+  [key: string]: any; // fallback for dynamic keys
+}

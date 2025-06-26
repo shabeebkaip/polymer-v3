@@ -2,14 +2,12 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import QuoteRequestModal from "../shared/QuoteRequestModal";
 import SampleRequestModal from "../shared/SampleRequestModal";
+import { ProductCardTypes } from "@/types/product";
 
 // Define a proper type for product props
-interface Product {
-  [key: string]: any;
-}
 
 interface ProductCardProps {
-  product: Product;
+  product: ProductCardTypes;
   userType?: string; // Optional prop for user type
 }
 

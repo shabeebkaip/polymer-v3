@@ -4,7 +4,6 @@ import { useParams } from "next/navigation";
 import {
   Globe,
   MapPin,
-  Phone,
   Mail,
   Building2,
   Users,
@@ -17,41 +16,19 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import ProductCard from "@/components/product/ProductCard";
 import { getSellerDetail } from "@/apiServices/shared";
-import { getProductList } from "@/apiServices/products";
 import { useUserInfo } from "@/lib/useUserInfo";
 import { Skeleton } from "@/components/ui/skeleton";
-
-interface Supplier {
-  _id: string;
-  company: string;
-  company_logo: string;
-  location: string;
-  website: string;
-  email?: string;
-  phone?: string;
-  description?: string;
-  specialties?: string[];
-  yearsInBusiness?: number;
-  certifications?: string[];
-  services?: string[];
-  products?: any[]; // Assuming products is an array of product objects
-
-  createdAt?: string;
-  [key: string]: any;
-}
+import { Supplier } from "@/types/seller";
 
 const SupplierDetail = () => {
   const params = useParams();
   const { user } = useUserInfo();
   const [supplier, setSupplier] = useState<Supplier | null>(null);
-  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [productsLoading, setProductsLoading] = useState(true);
 
   useEffect(() => {
     if (params.id) {
       fetchSupplierDetails();
-      fetchSupplierProducts();
     }
   }, [params.id]);
 
@@ -63,20 +40,6 @@ const SupplierDetail = () => {
       console.error("Error fetching supplier details:", error);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const fetchSupplierProducts = async () => {
-    try {
-      const response = await getProductList({
-        createdBy: [params.id as string],
-        limit: 12,
-      });
-      setProducts(response.data);
-    } catch (error) {
-      console.error("Error fetching supplier products:", error);
-    } finally {
-      setProductsLoading(false);
     }
   };
 
@@ -242,7 +205,7 @@ const SupplierDetail = () => {
           </div>
 
           {/* Specialties */}
-          {supplier.specialties && supplier.specialties.length > 0 && (
+          {/* {supplier.specialties && supplier.specialties.length > 0 && (
             <div className="bg-white rounded-xl shadow-sm border p-6">
               <h3 className="text-xl font-bold text-gray-900 mb-4">
                 Specialties
@@ -255,7 +218,7 @@ const SupplierDetail = () => {
                 ))}
               </div>
             </div>
-          )}
+          )} */}
         </div>
 
         {/* Quick Info Sidebar */}
@@ -320,7 +283,7 @@ const SupplierDetail = () => {
           </Badge>
         </div>
 
-        {productsLoading ? (
+        {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {Array.from({ length: 8 }).map((_, index) => (
               <div key={index} className="animate-pulse">
