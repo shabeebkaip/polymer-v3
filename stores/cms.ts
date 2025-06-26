@@ -14,34 +14,41 @@ interface CmsState {
   getBenefitsOfBuyers: () => Promise<void>;
   getBenefitsOfSuppliers: () => Promise<void>;
   getSocialLinks: () => Promise<void>;
+  // Setter methods for SSR hydration
+  setBuyersBenefits: (benefits: BenefitsContent) => void;
+  setSuppliersBenefits: (benefits: BenefitsContent) => void;
 }
 
 export const useCmsStore = create<CmsState>((set, get) => ({
-  buyersBenefits: [],
-  suppliersBenefits: [],
+  buyersBenefits: {},
+  suppliersBenefits: {},
   socialLinks: [],
   loading: false,
 
   getBenefitsOfBuyers: async () => {
+    const state = get();
+    if (state.buyersBenefits.content?.description && state.buyersBenefits.content.description.length > 0) return; // Already fetched
+
     set({ loading: true });
     try {
       const res = await getBenefitsOfBuyers();
-      set({ buyersBenefits: res?.data || [] });
+      set({ buyersBenefits: res?.data || {}, loading: false });
     } catch (error) {
       console.error("Failed to fetch benefits of buyers:", error);
-    } finally {
       set({ loading: false });
     }
   },
 
   getBenefitsOfSuppliers: async () => {
+    const state = get();
+    if (state.suppliersBenefits.content?.description && state.suppliersBenefits.content.description.length > 0) return; // Already fetched
+
     set({ loading: true });
     try {
       const res = await getBenefitsOfSuppliers();
-      set({ suppliersBenefits: res?.data || [] });
+      set({ suppliersBenefits: res?.data || {}, loading: false });
     } catch (error) {
       console.error("Failed to fetch benefits of suppliers:", error);
-    } finally {
       set({ loading: false });
     }
   },
@@ -56,5 +63,14 @@ export const useCmsStore = create<CmsState>((set, get) => ({
     } finally {
       set({ loading: false });
     }
+  },
+
+  // Setter methods for SSR hydration
+  setBuyersBenefits: (buyersBenefits) => {
+    set({ buyersBenefits, loading: false });
+  },
+
+  setSuppliersBenefits: (suppliersBenefits) => {
+    set({ suppliersBenefits, loading: false });
   },
 }));

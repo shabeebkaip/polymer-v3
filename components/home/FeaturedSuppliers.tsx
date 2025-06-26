@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import SellerLogoContainer from "./SellerLogoContainer";
 import { useSharedState } from "@/stores/sharedStore";

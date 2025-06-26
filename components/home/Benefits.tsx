@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import BenefitCard from "./BenefitCard";
 import { useCmsStore } from "@/stores/cms";
