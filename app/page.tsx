@@ -11,6 +11,7 @@ import {
 import { getBenefitsOfBuyers, getBenefitsOfSuppliers } from "@/apiServices/cms";
 import { HomePageData } from "@/types/home";
 import HomeDataProvider from "@/components/providers/HomeDataProvider";
+import DealsAndRequests from "@/components/home/DealsAndRequests";
 
 // Enable static generation with revalidation for better performance
 export const revalidate = 300; // Revalidate every 5 minutes
@@ -60,6 +61,7 @@ export default async function HomePage() {
       <HomeDataProvider initialData={homeData}>
         <div>
           <Hero />
+          <DealsAndRequests />
           <Categories />
           <ProductsByBrand />
           <FeaturedSuppliers />
@@ -83,6 +85,7 @@ export default async function HomePage() {
       <HomeDataProvider initialData={emptyData}>
         <div>
           <Hero />
+          <DealsAndRequests />
           <Categories />
           <ProductsByBrand />
           <FeaturedSuppliers />
