@@ -1,7 +1,20 @@
 import React from "react";
 import LabelValue from "../shared/LabelValue";
-import { FileText } from "lucide-react";
+import { 
+  FileText, 
+  DollarSign, 
+  Package, 
+  Truck, 
+  Clock, 
+  Leaf, 
+  Shield, 
+  CheckCircle,
+  AlertCircle,
+  Download
+} from "lucide-react";
 import FileViewer from "../shared/FileViewer";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 interface NamedItem {
   name: string;
@@ -47,150 +60,223 @@ const TradeInformation: React.FC<GeneralTabInformationProps> = ({
     ) : null;
 
   console.log("product", product);
-  // Available quantity logic with color
+  // Available quantity logic with enhanced styling
   const renderAvailableQuantity = () => {
     if (product?.stock && product.stock > 0) {
       return (
-        <LabelValue
-          label="Available Quantity"
-          value={
-            <span className=" ">
-              {product.stock} {product.uom} <span className="text-green-600">(In Stock)</span>
-            </span>
-          }
-        />
+        <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg border border-green-200">
+          <div>
+            <p className="text-sm font-medium text-gray-700">Available Quantity</p>
+            <p className="text-lg font-bold text-gray-900">
+              {product.stock} {product.uom}
+            </p>
+          </div>
+          <Badge className="bg-green-100 text-green-800">
+            <CheckCircle className="w-4 h-4 mr-1" />
+            In Stock
+          </Badge>
+        </div>
       );
     }
     return (
-      <LabelValue
-        label="Available Quantity"
-        value={<span className="text-red-600 ">Out of Stock</span>}
-      />
+      <div className="flex items-center justify-between p-4 bg-red-50 rounded-lg border border-red-200">
+        <div>
+          <p className="text-sm font-medium text-gray-700">Available Quantity</p>
+          <p className="text-lg font-bold text-gray-900">0 {product.uom}</p>
+        </div>
+        <Badge variant="destructive">
+          <AlertCircle className="w-4 h-4 mr-1" />
+          Out of Stock
+        </Badge>
+      </div>
     );
   };
 
   return (
-    <div className="grid grid-cols-1 text-gray-700 gap-2">
-      {/* Basic Info */}
-      {renderIfExists(
-        "Minimum Order Quantity (MOQ)",
-        `${product.minimum_order_quantity} ${product.uom}`
-      )}
+    <div className="space-y-6">
+      {/* Order Information */}
+      <div className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg p-4 border-l-4 border-blue-500">
+        <div className="flex items-center gap-2 mb-3">
+          <DollarSign className="w-5 h-5 text-blue-600" />
+          <h3 className="text-lg font-bold text-gray-900">Order Information</h3>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          {product.minimum_order_quantity && (
+            <LabelValue 
+              label="Minimum Order Quantity" 
+              value={`${product.minimum_order_quantity} ${product.uom}`} 
+              compact 
+            />
+          )}
+          {product.uom && (
+            <LabelValue label="Unit of Sale" value={product.uom} compact />
+          )}
+          {product.price && (
+            <LabelValue label="Price per Unit" value={product.price} compact />
+          )}
+          {product.priceTerms && (
+            <LabelValue label="Price Terms" value={product.priceTerms} compact />
+          )}
+        </div>
+        
+        {/* Stock Status */}
+        <div className="mt-4">
+          {renderAvailableQuantity()}
+        </div>
 
-      {renderAvailableQuantity()}
-
-      {renderIfExists("Unit of Sale (KG, Ton, Bag, etc)", product.uom)}
-      {renderIfExists("Price per Unit", product.price)}
-      {renderIfExists("Price Terms", product.priceTerms)}
-      {renderArray("Incoterms", product.incoterms)}
-      {/* {renderIfExists("Lead Time", format(new Date(), "MMM dd, yyyy"))} */}
-
-      {/* Divider */}
-      <hr className="my-6" />
-
-      {/* Product Details */}
-      <h4 className="font-normal text-2xl text-[var(--dark-main)]">
-        Packaging Details
-      </h4>
-      {renderArray("Packaging Type", product.packagingType)}
-      {renderIfExists("Packaging Weight", product.packagingWeight)}
-      {renderIfExists("Storage Conditions", product.storageConditions)}
-      {renderIfExists("Shelf Life", product.shelfLife)}
-
-      {/* Divider */}
-      <hr className="my-6" />
-
-      {/* Environmental Details */}
-      <h4 className="font-normal text-2xl text-[var(--dark-main)]">
-        Environmental Details
-      </h4>
-      {renderIfExists("Recyclable", product.recyclable ? "Yes" : "No")}
-      {renderIfExists("Biodegradable", product.bioDegradable ? "Yes" : "No")}
-
-      {/* Divider */}
-      <hr className="my-6" />
-
-      {/* Certification Details */}
-      <h4 className="font-normal text-2xl text-[var(--dark-main)]">
-        Certification Details
-      </h4>
-      {renderIfExists("FDA Approved", product.fdaApproved ? "Yes" : "No")}
-      {renderIfExists(
-        "Medical Grade Certified",
-        product.medicalGrade ? "Yes" : "No"
-      )}
-
-      <hr className="my-6" />
-
-      {/* Additional Information */}
-      <div>
-        {
-          product?.technical_data_sheet || product?.safety_data_sheet || product?.certificate_of_analysis ?
-
-            <h4 className="font-normal text-2xl text-[var(--dark-main)]">
-              Documents
-            </h4> : null
-        }
-        <div className="flex items-center gap-6 mt-4 ">
-          {
-            product?.technical_data_sheet &&
-            <div className="flex items-center mb-2 cursor-pointer ">
-              <FileText
-                className="inline-block mr-2 text-red-500"
-                size={24}
-              />
-              <FileViewer
-                previewFile={product?.technical_data_sheet}
-                triggerComp={
-                  <span className="text-gray-700 hover:text-[var(--dark-main)]">
-                    Technical Data Sheet
-                  </span>
-                }
-              />
+        {/* Incoterms */}
+        {product.incoterms && product.incoterms.length > 0 && (
+          <div className="mt-4">
+            <label className="text-sm font-medium text-gray-700 mb-2 block">Incoterms</label>
+            <div className="flex flex-wrap gap-1">
+              {product.incoterms.map((item, index) => (
+                <Badge key={index} variant="secondary" className="bg-blue-100 text-blue-800 text-xs">
+                  {item.name}
+                </Badge>
+              ))}
             </div>
-          }
-          {
-            product?.safety_data_sheet &&
-            <div className="flex items-center mb-2 cursor-pointer">
-              <FileText
-                className="inline-block mr-2 text-red-500"
-                size={24}
-              />
-              <FileViewer
-                previewFile={product?.safety_data_sheet}
-                triggerComp={
-                  <span className="text-gray-700 hover:text-[var(--dark-main)]">
-                    Safety Data Sheet
-                  </span>
-                }
-              />
-            </div>
-          }
-          {
-            product?.certificate_of_analysis &&
-            <div className="flex items-center mb-2 cursor-pointer">
-              <FileText
-                className="inline-block mr-2 text-red-500"
-                size={24}
-              />
-              <FileViewer
-                previewFile={product?.certificate_of_analysis}
-                triggerComp={
-                  <span className="text-gray-700 hover:text-[var(--dark-main)]">
-                    Certificate of Analysis
-                  </span>
-                }
-              />
-            </div>
-          }
+          </div>
+        )}
+      </div>
 
+      {/* Packaging & Logistics */}
+      <div className="bg-white rounded-lg p-4 border shadow-sm">
+        <div className="flex items-center gap-2 mb-3">
+          <Package className="w-5 h-5 text-green-600" />
+          <h3 className="text-lg font-bold text-gray-900">Packaging & Logistics</h3>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          {product.packagingWeight && (
+            <LabelValue label="Packaging Weight" value={product.packagingWeight} compact />
+          )}
+          {product.storageConditions && (
+            <LabelValue label="Storage Conditions" value={product.storageConditions} compact />
+          )}
+          {product.shelfLife && (
+            <LabelValue label="Shelf Life" value={product.shelfLife} compact />
+          )}
+        </div>
+
+        {/* Packaging Types */}
+        {product.packagingType && product.packagingType.length > 0 && (
+          <div className="mt-4">
+            <label className="text-sm font-medium text-gray-700 mb-2 block">Packaging Types</label>
+            <div className="flex flex-wrap gap-1">
+              {product.packagingType.map((item, index) => (
+                <Badge key={index} variant="secondary" className="bg-green-100 text-green-800 text-xs">
+                  {item.name}
+                </Badge>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Environmental & Certifications */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Environmental */}
+        <div className="bg-gradient-to-r from-green-50 to-green-100 rounded-lg p-4 border-l-4 border-green-500">
+          <div className="flex items-center gap-2 mb-3">
+            <Leaf className="w-5 h-5 text-green-600" />
+            <h3 className="text-lg font-bold text-gray-900">Environmental</h3>
+          </div>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-700">Recyclable</span>
+              <Badge variant={product.recyclable ? "default" : "secondary"} className="text-xs">
+                {product.recyclable ? <CheckCircle className="w-3 h-3 mr-1" /> : <AlertCircle className="w-3 h-3 mr-1" />}
+                {product.recyclable ? "Yes" : "No"}
+              </Badge>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-700">Biodegradable</span>
+              <Badge variant={product.bioDegradable ? "default" : "secondary"} className="text-xs">
+                {product.bioDegradable ? <CheckCircle className="w-3 h-3 mr-1" /> : <AlertCircle className="w-3 h-3 mr-1" />}
+                {product.bioDegradable ? "Yes" : "No"}
+              </Badge>
+            </div>
+          </div>
+        </div>
+
+        {/* Certifications */}
+        <div className="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-lg p-4 border-l-4 border-yellow-500">
+          <div className="flex items-center gap-2 mb-3">
+            <Shield className="w-5 h-5 text-yellow-600" />
+            <h3 className="text-lg font-bold text-gray-900">Certifications</h3>
+          </div>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-700">FDA Approved</span>
+              <Badge variant={product.fdaApproved ? "default" : "secondary"} className="text-xs">
+                {product.fdaApproved ? <CheckCircle className="w-3 h-3 mr-1" /> : <AlertCircle className="w-3 h-3 mr-1" />}
+                {product.fdaApproved ? "Yes" : "No"}
+              </Badge>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-700">Medical Grade</span>
+              <Badge variant={product.medicalGrade ? "default" : "secondary"} className="text-xs">
+                {product.medicalGrade ? <CheckCircle className="w-3 h-3 mr-1" /> : <AlertCircle className="w-3 h-3 mr-1" />}
+                {product.medicalGrade ? "Yes" : "No"}
+              </Badge>
+            </div>
+          </div>
         </div>
       </div>
 
-
+      {/* Documents */}
+      {(product?.technical_data_sheet || product?.safety_data_sheet || product?.certificate_of_analysis) && (
+        <div className="bg-white rounded-lg p-4 border shadow-sm">
+          <div className="flex items-center gap-2 mb-3">
+            <FileText className="w-5 h-5 text-purple-600" />
+            <h3 className="text-lg font-bold text-gray-900">Documents</h3>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            {product?.technical_data_sheet && (
+              <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg border">
+                <FileText className="w-4 h-4 text-red-500" />
+                <FileViewer
+                  previewFile={product.technical_data_sheet}
+                  triggerComp={
+                    <span className="text-sm text-gray-700 hover:text-gray-900 cursor-pointer">
+                      Technical Data Sheet
+                    </span>
+                  }
+                />
+                <Download className="w-4 h-4 text-gray-400 ml-auto" />
+              </div>
+            )}
+            {product?.safety_data_sheet && (
+              <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg border">
+                <FileText className="w-4 h-4 text-red-500" />
+                <FileViewer
+                  previewFile={product.safety_data_sheet}
+                  triggerComp={
+                    <span className="text-sm text-gray-700 hover:text-gray-900 cursor-pointer">
+                      Safety Data Sheet
+                    </span>
+                  }
+                />
+                <Download className="w-4 h-4 text-gray-400 ml-auto" />
+              </div>
+            )}
+            {product?.certificate_of_analysis && (
+              <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg border">
+                <FileText className="w-4 h-4 text-red-500" />
+                <FileViewer
+                  previewFile={product.certificate_of_analysis}
+                  triggerComp={
+                    <span className="text-sm text-gray-700 hover:text-gray-900 cursor-pointer">
+                      Certificate of Analysis
+                    </span>
+                  }
+                />
+                <Download className="w-4 h-4 text-gray-400 ml-auto" />
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
-
-
   );
 };
 

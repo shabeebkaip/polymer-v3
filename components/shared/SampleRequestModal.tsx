@@ -40,12 +40,16 @@ interface SampleRequestModalProps {
   className?: string;
   productId: string;
   uom: string;
+  buttonText?: string;
+  children?: React.ReactNode;
 }
 
 const SampleRequestModal = ({
   className,
   productId,
   uom,
+  buttonText = "Request for Sample",
+  children,
 }: SampleRequestModalProps) => {
   const token = Cookies.get("token");
   const router = useRouter();
@@ -128,7 +132,7 @@ const SampleRequestModal = ({
   return (
     <>
       <button className={className} onClick={handletrigger}>
-        Request for Sample
+        {children || buttonText}
       </button>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto bg-[#f5f5f5] md:max-h-none md:overflow-visible ">

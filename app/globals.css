@@ -203,3 +203,26 @@ input:-webkit-autofill:active {
     @apply bg-background text-foreground;
   }
 }
+
+/* Custom Keen Slider fixes */
+.keen-slider {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.keen-slider__slide {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Specifically target thumbnail sliders to remove unwanted space */
+.keen-slider-thumbnails {
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+  height: auto !important;
+}
+
+.keen-slider-thumbnails .keen-slider__slide {
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
