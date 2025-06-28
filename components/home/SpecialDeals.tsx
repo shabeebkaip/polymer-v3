@@ -183,10 +183,10 @@ const SpecialDeals: React.FC = () => {
       </div>
 
       <div className="relative">
-        {/* Navigation Buttons */}
+        {/* Navigation Buttons - Desktop Only */}
         <button
           onClick={prevSlide}
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded p-2 shadow border hover:bg-gray-100 transition-all duration-200"
+          className="hidden md:block absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded p-2 shadow border hover:bg-gray-100 transition-all duration-200"
           disabled={slides <= 1}
         >
           <ChevronLeft className="w-5 h-5 text-gray-700" />
@@ -194,37 +194,70 @@ const SpecialDeals: React.FC = () => {
 
         <button
           onClick={nextSlide}
-          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded p-2 shadow border hover:bg-gray-100 transition-all duration-200"
+          className="hidden md:block absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded p-2 shadow border hover:bg-gray-100 transition-all duration-200"
           disabled={slides <= 1}
         >
           <ChevronRight className="w-5 h-5 text-gray-700" />
         </button>
 
         {/* Cards Container */}
-        <div className="mx-12">
+        <div className="mx-0 md:mx-12">
           {showLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="bg-white rounded-xl shadow border p-5 animate-pulse">
-                  <div className="bg-green-200 h-8 rounded mb-3"></div>
-                  <div className="bg-gray-100 h-4 rounded mb-2"></div>
-                  <div className="bg-gray-100 h-4 rounded w-3/4 mb-4"></div>
-                  <div className="flex gap-2 mb-3">
-                    <div className="bg-gray-200 h-6 rounded flex-1"></div>
-                    <div className="bg-gray-100 h-6 rounded w-16"></div>
+            <>
+              {/* Mobile Loading - Horizontal Scroll */}
+              <div className="md:hidden">
+                <div className="flex gap-4 px-4 overflow-x-auto scrollbar-hide">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="bg-white rounded-xl shadow border p-5 animate-pulse flex-shrink-0 w-[calc(90.91%-0.5rem)]">
+                      <div className="bg-green-200 h-8 rounded mb-3"></div>
+                      <div className="bg-gray-100 h-4 rounded mb-2"></div>
+                      <div className="bg-gray-100 h-4 rounded w-3/4 mb-4"></div>
+                      <div className="flex gap-2 mb-3">
+                        <div className="bg-gray-200 h-6 rounded flex-1"></div>
+                        <div className="bg-gray-100 h-6 rounded w-16"></div>
+                      </div>
+                      <div className="bg-gray-200 h-8 rounded"></div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              {/* Desktop Loading - Grid */}
+              <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="bg-white rounded-xl shadow border p-5 animate-pulse">
+                    <div className="bg-green-200 h-8 rounded mb-3"></div>
+                    <div className="bg-gray-100 h-4 rounded mb-2"></div>
+                    <div className="bg-gray-100 h-4 rounded w-3/4 mb-4"></div>
+                    <div className="flex gap-2 mb-3">
+                      <div className="bg-gray-200 h-6 rounded flex-1"></div>
+                      <div className="bg-gray-100 h-6 rounded w-16"></div>
+                    </div>
+                    <div className="bg-gray-200 h-8 rounded"></div>
                   </div>
-                  <div className="bg-gray-200 h-8 rounded"></div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            </>
           ) : displayDeals.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {getCurrentDeals().map((deal) => (
-                <div key={deal.id} className="group">
-                  <DealCard deal={deal} formatPrice={formatPrice} />
+            <>
+              {/* Mobile Layout - Horizontal Scroll with 1.1 cards visible */}
+              <div className="md:hidden">
+                <div className="flex gap-4 px-4 overflow-x-auto scrollbar-hide pb-2">
+                  {displayDeals.map((deal) => (
+                    <div key={deal.id} className="flex-shrink-0 w-[calc(90.91%-0.5rem)]">
+                      <DealCard deal={deal} formatPrice={formatPrice} />
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </div>
+              {/* Desktop Layout - Grid with Pagination */}
+              <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {getCurrentDeals().map((deal) => (
+                  <div key={deal.id} className="group">
+                    <DealCard deal={deal} formatPrice={formatPrice} />
+                  </div>
+                ))}
+              </div>
+            </>
           ) : (
             <div className="text-center py-12">
               <div className="bg-gray-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
@@ -236,9 +269,9 @@ const SpecialDeals: React.FC = () => {
           )}
         </div>
 
-        {/* Slide Indicators */}
+        {/* Slide Indicators - Desktop Only */}
         {slides > 1 && (
-          <div className="flex justify-center mt-6 gap-2">
+          <div className="hidden md:flex justify-center mt-6 gap-2">
             {Array.from({ length: slides }).map((_, index) => (
               <button
                 key={index}

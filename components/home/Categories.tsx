@@ -61,20 +61,20 @@ const Categories: React.FC = () => {
       ? industries.length
       : productFamilies.length) > 9 && !isMobile;
   return (
-    <section className="container mx-auto px-4 py-16">
-      <div className="flex flex-col items-center gap-8 md:gap-12">
+    <section className="container mx-auto px-4 sm:px-6 py-8 sm:py-12 lg:py-16">
+      <div className="flex flex-col items-center gap-6 sm:gap-8 lg:gap-12">
         {/* Enhanced Header */}
-        <div className="text-center space-y-4">
-          <h1 className="text-[var(--dark-main)] text-3xl md:text-5xl lg:text-6xl font-bold text-center bg-gradient-to-r from-gray-900 via-green-800 to-gray-900 bg-clip-text text-transparent">
+        <div className="text-center space-y-3 sm:space-y-4">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-center bg-gradient-to-r from-gray-900 via-green-800 to-gray-900 bg-clip-text text-transparent leading-tight">
             Discover Our Products
           </h1>
-          <p className="text-gray-600 text-base md:text-lg max-w-2xl mx-auto">
+          <p className="text-gray-600 text-sm sm:text-base lg:text-lg max-w-xs sm:max-w-md md:max-w-2xl mx-auto leading-relaxed">
             Explore our comprehensive range of polymer products across various industries and product families
           </p>
         </div>
 
         {/* Enhanced Tab Design */}
-        <div className="flex justify-center gap-3 p-2 bg-gray-50 rounded-2xl border border-gray-200 shadow-sm">
+        <div className="flex justify-center gap-2 sm:gap-3 p-1.5 sm:p-2 bg-gray-50 rounded-xl sm:rounded-2xl border border-gray-200 shadow-sm overflow-x-auto w-full max-w-md sm:max-w-lg">
           {categoryData.map(({ id, name, icon }) => (
             <Tab
               key={id}
@@ -90,11 +90,11 @@ const Categories: React.FC = () => {
 
         {/* Enhanced Grid Layout */}
         <div className="w-full">
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 lg:gap-6">
             {(industriesLoading || familiesLoading) &&
               Array.from({ length: isMobile ? 4 : 10 }).map((_, index) => (
                 <div key={index} className="group">
-                  <Skeleton className="w-full h-[160px] md:h-[200px] rounded-2xl shadow-sm" />
+                  <Skeleton className="w-full h-[120px] sm:h-[140px] md:h-[160px] lg:h-[180px] xl:h-[200px] rounded-xl sm:rounded-2xl shadow-sm" />
                 </div>
               ))}
             
@@ -114,9 +114,9 @@ const Categories: React.FC = () => {
             ))}
 
             {shouldShowViewAll && (
-              <div className="hidden md:flex group">
+              <div className="hidden lg:flex group">
                 <div
-                  className="w-full border-2 border-dashed border-green-400 bg-gradient-to-br from-green-50 to-emerald-50 flex items-center justify-center gap-2 rounded-2xl cursor-pointer hover:border-green-500 hover:bg-gradient-to-br hover:from-green-100 hover:to-emerald-100 transition-all duration-300 group-hover:scale-105 min-h-[160px] md:min-h-[200px]"
+                  className="w-full border-2 border-dashed border-green-400 bg-gradient-to-br from-green-50 to-emerald-50 flex items-center justify-center gap-2 rounded-xl sm:rounded-2xl cursor-pointer hover:border-green-500 hover:bg-gradient-to-br hover:from-green-100 hover:to-emerald-100 transition-all duration-300 group-hover:scale-105 min-h-[120px] sm:min-h-[140px] md:min-h-[160px] lg:min-h-[180px] xl:min-h-[200px]"
                   onClick={() =>
                     router.push(
                       selectedCategory === "industries"
@@ -126,10 +126,10 @@ const Categories: React.FC = () => {
                   }
                 >
                   <div className="text-center space-y-2">
-                    <div className="w-12 h-12 mx-auto bg-green-500 rounded-full flex items-center justify-center text-white text-xl font-bold group-hover:bg-green-600 transition-colors">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 mx-auto bg-green-500 rounded-full flex items-center justify-center text-white text-lg sm:text-xl font-bold group-hover:bg-green-600 transition-colors">
                       +
                     </div>
-                    <button className="text-green-700 text-sm md:text-base font-semibold">
+                    <button className="text-green-700 text-sm lg:text-base font-semibold">
                       View All
                     </button>
                   </div>
@@ -138,6 +138,27 @@ const Categories: React.FC = () => {
             )}
           </div>
         </div>
+
+        {/* Mobile View All Button */}
+        {isMobile && (
+          <div className="w-full flex justify-center">
+            <button
+              onClick={() =>
+                router.push(
+                  selectedCategory === "industries"
+                    ? "/industries"
+                    : "/product-families"
+                )
+              }
+              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-full hover:from-green-600 hover:to-emerald-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 font-medium"
+            >
+              <span>View All {selectedCategory === "industries" ? "Industries" : "Product Families"}</span>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </button>
+          </div>
+        )}
 
         {/* Enhanced Mobile Button */}
         <button

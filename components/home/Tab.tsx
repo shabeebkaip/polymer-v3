@@ -22,7 +22,7 @@ const Tab: React.FC<TabProps> = ({
     <button
       type="button"
       onClick={onClick}
-      className={`flex items-center gap-3 px-4 py-2 rounded-full transition focus:outline-none focus:ring-2 focus:ring-green-300 duration-200 group shadow-sm hover:shadow-md ${
+      className={`flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl transition focus:outline-none focus:ring-2 focus:ring-green-300 duration-200 group shadow-sm hover:shadow-md min-w-0 flex-1 sm:flex-initial ${
         isSelected
           ? "bg-gradient-to-r from-[var(--green-gradient-from)] via-[var(--green-gradient-via)] to-[var(--green-gradient-to)] text-white"
           : "border-2 border-[var(--green-main)] text-[var(--green-main)] hover:bg-green-50"
@@ -34,12 +34,12 @@ const Tab: React.FC<TabProps> = ({
         <Image
           src={icon}
           alt="Icon"
-          width={64}
-          height={64}
-          className={`rounded-full object-cover ${iconWidth}`}
+          width={32}
+          height={32}
+          className="rounded-full object-cover w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10"
         />
       </div>
-      <span className={`${fontSize}`}>{name}</span>
+      <span className="text-xs sm:text-sm md:text-base font-medium truncate">{name}</span>
     </button>
   );
 };

@@ -311,3 +311,18 @@ input:-webkit-autofill:active {
     transform: scale(0.95);
   }
 }
+
+/* Hide scrollbar for horizontal scroll sections */
+@layer utilities {
+  .scrollbar-hide {
+    /* IE and Edge */
+    -ms-overflow-style: none;
+    /* Firefox */
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    /* WebKit browsers */
+    display: none;
+  }
+}

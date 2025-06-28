@@ -16,7 +16,7 @@ const FeaturedSuppliers: React.FC = () => {
               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
               Trusted Partners
             </div>
-            <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold text-[var(--dark-main)] bg-gradient-to-r from-gray-900 via-green-800 to-gray-900 bg-clip-text text-transparent">
+            <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-gray-900 via-green-800 to-gray-900 bg-clip-text text-transparent">
               Featured Suppliers
             </h2>
             <p className="text-[var(--text-gray-tertiary)] font-normal text-base md:text-lg lg:text-xl leading-relaxed max-w-3xl mx-auto">
@@ -28,7 +28,25 @@ const FeaturedSuppliers: React.FC = () => {
           {/* Enhanced Suppliers Grid */}
           <div className="w-full">
             <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-8 md:p-12">
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 md:gap-8 items-center justify-items-center">
+              {/* Mobile Layout - Horizontal Scroll with 1.1 cards visible */}
+              <div className="md:hidden">
+                <div className="flex gap-4 px-4 overflow-x-auto scrollbar-hide pb-2">
+                  {sellers?.map((seller, index) => (
+                    <div 
+                      key={index} 
+                      className="flex-shrink-0 w-[calc(90.91%-0.5rem)] group hover:scale-105 transition-all duration-300"
+                      style={{ animationDelay: `${index * 0.1}s` }}
+                    >
+                      <div className="bg-gray-50 rounded-xl p-6 h-full flex items-center justify-center">
+                        <SellerLogoContainer seller={seller} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Desktop Layout - Grid */}
+              <div className="hidden md:grid md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6 md:gap-8 items-center justify-items-center">
                 {sellers?.map((seller, index) => (
                   <div 
                     key={index} 

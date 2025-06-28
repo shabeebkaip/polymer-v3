@@ -134,13 +134,13 @@ const HeroSearch = () => {
     }, []);
 
     return (
-        <div className="mt-10 w-full relative mx-auto">
-            <div className="relative drop-shadow-lg w-full max-w-4xl mx-auto px-8">
+        <div className="mt-6 sm:mt-8 lg:mt-10 w-full relative mx-auto">
+            <div className="relative drop-shadow-lg w-full max-w-xs sm:max-w-md md:max-w-2xl lg:max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 <input
                     ref={inputRef}
                     type="text"
                     placeholder="Search polymers, compounds, resins..."
-                    className="w-full px-8 py-6 rounded-full border-2 border-[var(--green-light)] focus:ring-4 focus:ring-green-200 focus:border-green-500 shadow-xl transition-all duration-300 pr-16 text-lg font-medium placeholder:text-gray-400 bg-white/95 backdrop-blur-sm hover:shadow-2xl"
+                    className="w-full px-4 sm:px-6 lg:px-8 py-3 sm:py-4 lg:py-6 rounded-full border-2 border-[var(--green-light)] focus:ring-4 focus:ring-green-200 focus:border-green-500 shadow-xl transition-all duration-300 pr-12 sm:pr-14 lg:pr-16 text-sm sm:text-base lg:text-lg font-medium placeholder:text-gray-400 bg-white/95 backdrop-blur-sm hover:shadow-2xl"
                     value={searchQuery}
                     onChange={(e) => {
                         setSearchQuery(e.target.value);
@@ -152,17 +152,17 @@ const HeroSearch = () => {
                     autoComplete="off"
                 />
                 <div
-                    className="absolute right-12 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 bg-green-500 rounded-full shadow-md hover:bg-green-600 transition-colors duration-200"
+                    className="absolute right-6 sm:right-8 lg:right-12 top-1/2 -translate-y-1/2 flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 bg-green-500 rounded-full shadow-md hover:bg-green-600 transition-colors duration-200"
                 >
                     {loading ? (
-                        <span className="animate-spin w-6 h-6 border-2 border-white border-t-transparent rounded-full"></span>
+                        <span className="animate-spin w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 border-2 border-white border-t-transparent rounded-full"></span>
                     ) : (
                         <Image
                             src="/icons/search.svg"
                             alt="Search Icon"
-                            width={24}
-                            height={24}
-                            className="filter brightness-0 invert"
+                            width={20}
+                            height={20}
+                            className="filter brightness-0 invert w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6"
                         />
                     )}
                 </div>
@@ -170,7 +170,7 @@ const HeroSearch = () => {
             {searchQuery.trim() && typeof window !== 'undefined' && dropdownPosition.width > 0 && createPortal(
                 <div
                     ref={resultsRef}
-                    className="bg-white shadow-2xl rounded-xl border border-gray-200 max-h-80 overflow-auto"
+                    className="bg-white shadow-2xl rounded-xl border border-gray-200 max-h-60 sm:max-h-80 overflow-auto"
                     style={{ 
                         position: 'fixed',
                         top: dropdownPosition.top,
@@ -181,13 +181,13 @@ const HeroSearch = () => {
                     }}
                 >
                     {loading ? (
-                        <div className="p-4 text-center text-gray-500">Loading...</div>
+                        <div className="p-3 sm:p-4 text-center text-gray-500 text-sm sm:text-base">Loading...</div>
                     ) : products?.length > 0 ? (
                         <div>
                             {products.map((product, index) => (
                                 <div
                                     key={product._id}
-                                    className={`p-4 border-b border-gray-100 flex items-center gap-4 cursor-pointer transition-colors duration-150 hover:bg-green-50 ${highlighted === index ? 'bg-green-100' : ''}`}
+                                    className={`p-3 sm:p-4 border-b border-gray-100 flex items-center gap-3 sm:gap-4 cursor-pointer transition-colors duration-150 hover:bg-green-50 ${highlighted === index ? 'bg-green-100' : ''}`}
                                     onClick={() => {
                                         router.push(`/products/${product._id}`);
                                         setSearchQuery('');
@@ -198,19 +198,19 @@ const HeroSearch = () => {
                                     <Image
                                         src={product.createdBy?.company_logo || "/assets/default-product.png"}
                                         alt={product.productName}
-                                        width={44}
-                                        height={44}
-                                        className="rounded-full object-cover"
+                                        width={36}
+                                        height={36}
+                                        className="rounded-full object-cover w-8 h-8 sm:w-10 sm:h-10 lg:w-11 lg:h-11"
                                     />
-                                    <div className='flex flex-col items-start'>
-                                        <h3 className="text-base font-semibold text-gray-900">{product.productName}</h3>
-                                        <p className="text-xs text-gray-500">{product.createdBy?.company}</p>
+                                    <div className='flex flex-col items-start flex-1 min-w-0'>
+                                        <h3 className="text-sm sm:text-base font-semibold text-gray-900 truncate w-full">{product.productName}</h3>
+                                        <p className="text-xs sm:text-sm text-gray-500 truncate w-full">{product.createdBy?.company}</p>
                                     </div>
                                 </div>
                             ))}
                         </div>
                     ) : (
-                        <div className="p-4 text-center text-gray-500">
+                        <div className="p-3 sm:p-4 text-center text-gray-500 text-sm sm:text-base">
                             No products found for "{searchQuery}"
                         </div>
                     )}
