@@ -15,60 +15,81 @@ interface UserProductCardProps {
 const UserProductCard: React.FC<UserProductCardProps> = ({ product }) => {
   const router = useRouter();
   return (
-    <div className="rounded-xl p-2 shadow-lg hover:shadow-xl transition-shadow duration-300 h-full flex flex-col justify-between">
-      <div className="flex flex-col gap-4">
-        <img
-          src={product?.productImages?.[0]?.fileUrl || FALLBACK_PRODUCT_IMAGE}
-          alt="Product"
-          className="w-full h-32 object-cover rounded-md"
-          onError={(e) => {
-            (e.target as HTMLImageElement).src = FALLBACK_PRODUCT_IMAGE;
-          }}
-        />
-        <div className="flex items-center gap-4">
+    <div className="group bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-emerald-200 h-full flex flex-col">
+      <div className="p-4 flex flex-col gap-3 flex-1">
+        <div className="relative overflow-hidden rounded-xl">
           <img
-            src={product?.createdBy?.company_logo || FALLBACK_COMPANY_IMAGE}
-            className="w-20 h-20 object-contain"
+            src={product?.productImages?.[0]?.fileUrl || FALLBACK_PRODUCT_IMAGE}
+            alt="Product"
+            className="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-300"
             onError={(e) => {
-              (e.target as HTMLImageElement).src = FALLBACK_COMPANY_IMAGE;
+              (e.target as HTMLImageElement).src = FALLBACK_PRODUCT_IMAGE;
             }}
           />
-          <div className="flex flex-col justify-center">
-            <h4 className="font-normal text-lg">{product?.productName}</h4>
-            <p className="text-sm text-gray-600">{product?.countryOfOrigin}</p>
+          <div className="absolute inset-0 bg-black/5 group-hover:bg-black/0 transition-colors duration-300"></div>
+        </div>
+        
+        <div className="flex items-center gap-2">
+          <div className="flex-shrink-0">
+            <img
+              src={product?.createdBy?.company_logo || FALLBACK_COMPANY_IMAGE}
+              className="w-10 h-10 object-contain rounded-lg bg-gray-50 p-1"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = FALLBACK_COMPANY_IMAGE;
+              }}
+            />
+          </div>
+          <div className="flex-1 min-w-0">
+            <h4 className="font-semibold text-base text-gray-900 truncate group-hover:text-emerald-700 transition-colors duration-200">
+              {product?.productName || 'Untitled Product'}
+            </h4>
+            <p className="text-xs text-gray-500 flex items-center gap-1">
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              {product?.countryOfOrigin || 'Unknown'}
+            </p>
           </div>
         </div>
 
-        <hr className="h-px bg-gray-200 border-0" />
-
-        <div className="flex flex-col gap-2 text-sm">
-          <p className="text-[var(--text-gray-tertiary)]">
-            <span className="text-[var(--dark-main)]">Chemical Name:</span>{" "}
-            {product.chemicalName}
-          </p>
-          <p className="text-[var(--text-gray-tertiary)]">
-            <span className="text-[var(--dark-main)]">Polymer Type:</span>{" "}
-            {product.polymerType?.name}
-          </p>
+        <div className="bg-gradient-to-br from-gray-50 to-gray-100/50 rounded-lg p-3 border border-gray-200/50">
+          <div className="space-y-2">
+            <div>
+              <span className="text-gray-600 font-medium text-xs uppercase tracking-wide">Chemical Name</span>
+              <div className="text-gray-900 text-sm font-medium leading-snug break-words mt-1">
+                {product.chemicalName || 'Not specified'}
+              </div>
+            </div>
+            <div className="border-t border-gray-200/60 pt-2">
+              <span className="text-gray-600 font-medium text-xs uppercase tracking-wide">Polymer Type</span>
+              <div className="text-gray-900 text-sm font-medium leading-snug break-words mt-1">
+                {product.polymerType?.name || 'Not specified'}
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
 
-      {/* CTA Buttons */}
-      <div className="grid grid-cols-2 gap-2 mt-4">
-        <Button
-          variant={"secondary"}
-          color="green"
-          className="cursor-pointer"
-          onClick={() => {
-            router.push(`/user/products/${product._id}`);
-          }}
-        >
-          <Pencil /> Edit
-        </Button>
+        {/* CTA Buttons */}
+        <div className="grid grid-cols-2 gap-2 mt-auto">
+          <Button
+            variant={"secondary"}
+            color="green"
+            className="cursor-pointer px-2 py-1.5 bg-gradient-to-r from-emerald-500 to-green-600 text-white rounded-md hover:from-emerald-600 hover:to-green-700 transition-all duration-300 text-xs font-medium"
+            onClick={() => {
+              router.push(`/user/products/${product._id}`);
+            }}
+          >
+            <Pencil className="w-3 h-3 mr-1" /> Edit
+          </Button>
 
-        <Button variant={"destructive"} className="cursor-pointer">
-          <Delete /> Delete
-        </Button>
+          <Button 
+            variant={"destructive"} 
+            className="cursor-pointer px-2 py-1.5 border border-red-500 text-red-600 rounded-md hover:bg-red-50 transition-all duration-300 hover:border-red-600 text-xs font-medium"
+          >
+            <Delete className="w-3 h-3 mr-1" /> Delete
+          </Button>
+        </div>
       </div>
     </div>
   );

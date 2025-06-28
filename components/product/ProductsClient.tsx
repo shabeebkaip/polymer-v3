@@ -314,8 +314,8 @@ const ProductsClient: React.FC = () => {
               
               <div className="p-6">
                 <Suspense fallback={
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
-                    {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {[1, 2, 3, 4, 5, 6].map(i => (
                       <div key={i} className="animate-pulse">
                         <div className="bg-gradient-to-br from-gray-100 to-gray-200 h-56 rounded-xl mb-4"></div>
                         <div className="space-y-3">
@@ -371,8 +371,8 @@ const ProductsClient: React.FC = () => {
                         <span className="font-medium">Loading more products...</span>
                       </div>
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
-                      {[1, 2, 3, 4].map(i => (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {[1, 2, 3].map(i => (
                         <div key={i} className="animate-pulse">
                           <div className="bg-gradient-to-br from-gray-100 to-gray-200 h-56 rounded-xl mb-4"></div>
                           <div className="space-y-3">
