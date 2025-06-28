@@ -59,7 +59,7 @@ export default async function HomePage() {
 
     return (
       <HomeDataProvider initialData={homeData}>
-        <div>
+        <div className="space-y-16 md:space-y-24 bg-gradient-to-b from-white via-gray-50 to-white">
           <Hero />
           <DealsAndRequests />
           <Categories />
@@ -83,7 +83,7 @@ export default async function HomePage() {
 
     return (
       <HomeDataProvider initialData={emptyData}>
-        <div>
+        <div className="space-y-16 md:space-y-24 bg-gradient-to-b from-white via-gray-50 to-white">
           <Hero />
           <DealsAndRequests />
           <Categories />

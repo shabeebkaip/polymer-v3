@@ -223,13 +223,13 @@ const DealsAndRequests: React.FC = () => {
   return (
     <section className="container mx-auto px-4 py-16 ">
       <div className="text-center mb-12">
-        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+        <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4 tracking-tight">
           Driving Business Excellence Through Supply
           <br />
-          <span className="text-green-600">and Demand Synergy</span>
+          <span className="text-green-700">and Demand Synergy</span>
         </h2>
-        <p className="text-gray-600 text-lg max-w-3xl mx-auto">
-          Discover exclusive deals from trusted suppliers and connect with buyers looking for your products
+        <p className="text-gray-700 text-lg max-w-2xl mx-auto font-medium">
+          Discover exclusive deals from trusted suppliers and connect with buyers seeking quality products
         </p>
       </div>
 
@@ -237,15 +237,15 @@ const DealsAndRequests: React.FC = () => {
       <div className="mb-16">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
-            <div className="bg-gradient-to-r from-green-500 to-green-600 p-3 rounded-full">
-              <Gift className="w-6 h-6 text-white" />
+            <div className="bg-green-700 p-2 rounded-lg">
+              <Gift className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h3 className="text-2xl font-bold text-gray-900">Special Deals by Suppliers</h3>
-              <p className="text-gray-600">Exclusive offers and competitive prices from trusted suppliers</p>
+              <h3 className="text-xl font-semibold text-gray-900">Special Deals by Suppliers</h3>
+              <p className="text-gray-700 text-sm">Exclusive offers and competitive prices from trusted suppliers</p>
             </div>
           </div>
-          <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-bold">
+          <span className="bg-gray-100 text-green-700 px-3 py-1 rounded text-xs font-semibold border border-green-200">
             {dummyDeals.length} Available
           </span>
         </div>
@@ -254,18 +254,18 @@ const DealsAndRequests: React.FC = () => {
           {/* Navigation Buttons for Deals */}
           <button
             onClick={prevDealsSlide}
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-3 shadow-lg border hover:shadow-xl transition-all duration-300 hover:scale-105"
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded p-2 shadow border hover:bg-gray-100 transition-all duration-200"
             disabled={dealsSlides <= 1}
           >
-            <ChevronLeft className="w-6 h-6 text-gray-600" />
+            <ChevronLeft className="w-5 h-5 text-gray-700" />
           </button>
           
           <button
             onClick={nextDealsSlide}
-            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-3 shadow-lg border hover:shadow-xl transition-all duration-300 hover:scale-105"
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded p-2 shadow border hover:bg-gray-100 transition-all duration-200"
             disabled={dealsSlides <= 1}
           >
-            <ChevronRight className="w-6 h-6 text-gray-600" />
+            <ChevronRight className="w-5 h-5 text-gray-700" />
           </button>
 
           {/* Deals Cards Container */}
@@ -286,10 +286,10 @@ const DealsAndRequests: React.FC = () => {
                 <button
                   key={index}
                   onClick={() => setCurrentDealsSlide(index)}
-                  className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                  className={`w-3 h-3 rounded-full border border-green-300 transition-all duration-200 ${
                     currentDealsSlide === index
-                      ? "bg-green-500 w-8" 
-                      : "bg-gray-300 hover:bg-gray-400"
+                      ? "bg-green-700 w-6" 
+                      : "bg-gray-200 hover:bg-gray-300"
                   }`}
                 />
               ))}
@@ -302,15 +302,15 @@ const DealsAndRequests: React.FC = () => {
       <div className="mb-12">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
-            <div className="bg-gradient-to-r from-purple-500 to-purple-600 p-3 rounded-full">
-              <Users className="w-6 h-6 text-white" />
+            <div className="bg-purple-700 p-2 rounded-lg">
+              <Users className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h3 className="text-2xl font-bold text-gray-900">Opportunities by Buyers</h3>
-              <p className="text-gray-600">Active buyers looking for your products and services</p>
+              <h3 className="text-xl font-semibold text-gray-900">Opportunities by Buyers</h3>
+              <p className="text-gray-700 text-sm">Active buyers looking for your products and services</p>
             </div>
           </div>
-          <span className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-bold">
+          <span className="bg-gray-100 text-purple-700 px-3 py-1 rounded text-xs font-semibold border border-purple-200">
             {dummyRequests.length} Active
           </span>
         </div>
@@ -319,18 +319,18 @@ const DealsAndRequests: React.FC = () => {
           {/* Navigation Buttons for Requests */}
           <button
             onClick={prevRequestsSlide}
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-3 shadow-lg border hover:shadow-xl transition-all duration-300 hover:scale-105"
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded p-2 shadow border hover:bg-gray-100 transition-all duration-200"
             disabled={requestsSlides <= 1}
           >
-            <ChevronLeft className="w-6 h-6 text-gray-600" />
+            <ChevronLeft className="w-5 h-5 text-gray-700" />
           </button>
           
           <button
             onClick={nextRequestsSlide}
-            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-3 shadow-lg border hover:shadow-xl transition-all duration-300 hover:scale-105"
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded p-2 shadow border hover:bg-gray-100 transition-all duration-200"
             disabled={requestsSlides <= 1}
           >
-            <ChevronRight className="w-6 h-6 text-gray-600" />
+            <ChevronRight className="w-5 h-5 text-gray-700" />
           </button>
 
           {/* Requests Cards Container */}
@@ -351,10 +351,10 @@ const DealsAndRequests: React.FC = () => {
                 <button
                   key={index}
                   onClick={() => setCurrentRequestsSlide(index)}
-                  className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                  className={`w-3 h-3 rounded-full border border-purple-300 transition-all duration-200 ${
                     currentRequestsSlide === index
-                      ? "bg-purple-500 w-8" 
-                      : "bg-gray-300 hover:bg-gray-400"
+                      ? "bg-purple-700 w-6" 
+                      : "bg-gray-200 hover:bg-gray-300"
                   }`}
                 />
               ))}
@@ -366,15 +366,15 @@ const DealsAndRequests: React.FC = () => {
       {/* Call to Action */}
       <div className="text-center mt-12">
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <button className="bg-gradient-to-r from-green-500 to-green-600 text-white px-8 py-4 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2 hover:scale-105">
-            <Zap className="w-5 h-5" />
-            View All Special Deals
-            <ArrowRight className="w-5 h-5" />
+          <button className="bg-green-700 text-white px-8 py-3 rounded font-medium border border-green-800 hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-400 transition-all duration-200 flex items-center justify-center gap-2 shadow-sm focus:ring-offset-2">
+            <Zap className="w-5 h-5 transition-transform duration-200 group-hover:scale-110" />
+            <span className="tracking-tight">View All Special Deals</span>
+            <ArrowRight className="w-5 h-5 transition-transform duration-200 group-hover:translate-x-1" />
           </button>
-          <button className="bg-gradient-to-r from-purple-500 to-purple-600 text-white px-8 py-4 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2 hover:scale-105">
-            <TrendingUp className="w-5 h-5" />
-            Browse All Opportunities
-            <ArrowRight className="w-5 h-5" />
+          <button className="bg-purple-700 text-white px-8 py-3 rounded font-medium border border-purple-800 hover:bg-purple-800 focus:outline-none focus:ring-2 focus:ring-purple-400 transition-all duration-200 flex items-center justify-center gap-2 shadow-sm focus:ring-offset-2">
+            <TrendingUp className="w-5 h-5 transition-transform duration-200 group-hover:scale-110" />
+            <span className="tracking-tight">Browse All Opportunities</span>
+            <ArrowRight className="w-5 h-5 transition-transform duration-200 group-hover:translate-x-1" />
           </button>
         </div>
       </div>
@@ -384,27 +384,27 @@ const DealsAndRequests: React.FC = () => {
 
 // Deal Card Component
 const DealCard: React.FC<{ deal: Deal; formatPrice: (price: number) => string }> = ({ deal, formatPrice }) => (
-  <div className="bg-white rounded-2xl shadow-lg border hover:shadow-xl transition-all duration-300 overflow-hidden group-hover:scale-[1.02]">
+  <div className="bg-white rounded-xl shadow border hover:shadow-xl transition-all duration-200 overflow-hidden group">
     {/* Badge */}
-    <div className="bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-2 text-sm font-bold flex items-center justify-between">
+    <div className="bg-green-700 text-white px-4 py-2 text-xs font-semibold flex items-center justify-between">
       <span className="flex items-center gap-2">
         <Gift className="w-4 h-4" />
         {deal.badge}
       </span>
-      <span className="bg-white text-green-600 px-3 py-1 rounded-full text-xs font-bold">
+      <span className="bg-white text-green-700 px-2 py-1 rounded text-xs font-bold border border-green-200">
         -{deal.discount}% OFF
       </span>
     </div>
 
-    <div className="p-6">
+    <div className="p-5">
       {/* Supplier Info */}
-      <div className="flex items-center gap-3 mb-4">
-        <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden">
-          <Package className="w-6 h-6 text-gray-400" />
+      <div className="flex items-center gap-3 mb-3">
+        <div className="w-10 h-10 bg-gray-100 rounded flex items-center justify-center overflow-hidden">
+          <Package className="w-5 h-5 text-gray-400" />
         </div>
         <div className="flex-1">
-          <h3 className="font-semibold text-gray-900">{deal.supplier.name}</h3>
-          <div className="flex items-center gap-2 text-sm text-gray-600">
+          <h3 className="font-semibold text-gray-900 text-base">{deal.supplier.name}</h3>
+          <div className="flex items-center gap-2 text-xs text-gray-600">
             <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
             <span>{deal.supplier.rating}</span>
             <span>•</span>
@@ -415,17 +415,17 @@ const DealCard: React.FC<{ deal: Deal; formatPrice: (price: number) => string }>
       </div>
 
       {/* Product Info */}
-      <h4 className="font-bold text-lg text-gray-900 mb-2">{deal.title}</h4>
-      <p className="text-gray-600 text-sm mb-4">{deal.description}</p>
+      <h4 className="font-bold text-base text-gray-900 mb-1">{deal.title}</h4>
+      <p className="text-gray-700 text-xs mb-3">{deal.description}</p>
 
       {/* Pricing */}
-      <div className="flex items-center gap-3 mb-4">
-        <span className="text-2xl font-bold text-green-600">{formatPrice(deal.discountedPrice)}</span>
-        <span className="text-lg text-gray-400 line-through">{formatPrice(deal.originalPrice)}</span>
+      <div className="flex items-center gap-2 mb-3">
+        <span className="text-xl font-bold text-green-700">{formatPrice(deal.discountedPrice)}</span>
+        <span className="text-base text-gray-400 line-through">{formatPrice(deal.originalPrice)}</span>
       </div>
 
       {/* Details */}
-      <div className="flex flex-wrap gap-4 text-sm text-gray-600 mb-4">
+      <div className="flex flex-wrap gap-3 text-xs text-gray-600 mb-3">
         <div className="flex items-center gap-1">
           <Package className="w-4 h-4" />
           <span>Min: {deal.minQuantity}</span>
@@ -437,9 +437,9 @@ const DealCard: React.FC<{ deal: Deal; formatPrice: (price: number) => string }>
       </div>
 
       {/* Action Button */}
-      <button className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2">
-        <Zap className="w-5 h-5" />
-        Grab This Deal
+      <button className="w-full bg-green-700 text-white py-2 rounded font-medium border border-green-800 hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-400 transition-all duration-200 flex items-center justify-center gap-2 shadow-sm focus:ring-offset-2 group">
+        <Zap className="w-5 h-5 transition-transform duration-200 group-hover:scale-110" />
+        <span className="tracking-tight">Grab This Deal</span>
       </button>
     </div>
   </div>
@@ -447,34 +447,34 @@ const DealCard: React.FC<{ deal: Deal; formatPrice: (price: number) => string }>
 
 // Request Card Component
 const RequestCard: React.FC<{ request: Request; getUrgencyColor: (urgency: "low" | "medium" | "high") => string }> = ({ request, getUrgencyColor }) => (
-  <div className="bg-white rounded-2xl shadow-lg border hover:shadow-xl transition-all duration-300 overflow-hidden group-hover:scale-[1.02]">
+  <div className="bg-white rounded-xl shadow border hover:shadow-xl transition-all duration-200 overflow-hidden group">
     {/* Header */}
-    <div className="bg-gradient-to-r from-purple-500 to-purple-600 text-white px-4 py-2 text-sm font-bold flex items-center justify-between">
+    <div className="bg-purple-700 text-white px-4 py-2 text-xs font-semibold flex items-center justify-between">
       <span className="flex items-center gap-2">
         <Users className="w-4 h-4" />
         BUYER REQUEST
       </span>
-      <span className={`px-3 py-1 rounded-full text-xs font-bold border ${getUrgencyColor(request.urgency)}`}>
+      <span className={`px-2 py-1 rounded text-xs font-bold border ${getUrgencyColor(request.urgency)}`}>
         {request.urgency.toUpperCase()} PRIORITY
       </span>
     </div>
 
-    <div className="p-6">
+    <div className="p-5">
       {/* Buyer Info */}
-      <div className="flex items-center gap-3 mb-4">
-        <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
-          <Users className="w-6 h-6 text-gray-400" />
+      <div className="flex items-center gap-3 mb-3">
+        <div className="w-10 h-10 bg-gray-100 rounded flex items-center justify-center">
+          <Users className="w-5 h-5 text-gray-400" />
         </div>
         <div className="flex-1">
           <div className="flex items-center gap-2">
-            <h3 className="font-semibold text-gray-900">{request.buyer.company}</h3>
+            <h3 className="font-semibold text-gray-900 text-base">{request.buyer.company}</h3>
             {request.buyer.verified && (
-              <div className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-bold">
+              <div className="bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-bold border border-green-200">
                 VERIFIED
               </div>
             )}
           </div>
-          <div className="flex items-center gap-2 text-sm text-gray-600">
+          <div className="flex items-center gap-2 text-xs text-gray-600">
             <MapPin className="w-4 h-4" />
             <span>{request.buyer.location}</span>
           </div>
@@ -482,23 +482,23 @@ const RequestCard: React.FC<{ request: Request; getUrgencyColor: (urgency: "low"
       </div>
 
       {/* Request Info */}
-      <h4 className="font-bold text-lg text-gray-900 mb-2">{request.title}</h4>
-      <p className="text-gray-600 text-sm mb-4">{request.description}</p>
+      <h4 className="font-bold text-base text-gray-900 mb-1">{request.title}</h4>
+      <p className="text-gray-700 text-xs mb-3">{request.description}</p>
 
       {/* Request Details */}
-      <div className="grid grid-cols-2 gap-4 mb-4">
+      <div className="grid grid-cols-2 gap-3 mb-3">
         <div>
           <span className="text-xs text-gray-500 uppercase font-semibold">Quantity</span>
-          <p className="font-bold text-purple-600">{request.quantity}</p>
+          <p className="font-bold text-purple-700">{request.quantity}</p>
         </div>
         <div>
           <span className="text-xs text-gray-500 uppercase font-semibold">Budget</span>
-          <p className="font-bold text-green-600">{request.budget}</p>
+          <p className="font-bold text-green-700">{request.budget}</p>
         </div>
       </div>
 
       {/* Timeline & Responses */}
-      <div className="flex items-center justify-between text-sm text-gray-600 mb-4">
+      <div className="flex items-center justify-between text-xs text-gray-600 mb-3">
         <div className="flex items-center gap-1">
           <Clock className="w-4 h-4" />
           <span>Deadline: {new Date(request.deadline).toLocaleDateString()}</span>
@@ -510,9 +510,9 @@ const RequestCard: React.FC<{ request: Request; getUrgencyColor: (urgency: "low"
       </div>
 
       {/* Action Button */}
-      <button className="w-full bg-gradient-to-r from-purple-500 to-purple-600 text-white py-3 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2">
-        <ArrowRight className="w-5 h-5" />
-        Submit Proposal
+      <button className="w-full bg-purple-700 text-white py-2 rounded font-medium border border-purple-800 hover:bg-purple-800 focus:outline-none focus:ring-2 focus:ring-purple-400 transition-all duration-200 flex items-center justify-center gap-2 shadow-sm focus:ring-offset-2 group">
+        <ArrowRight className="w-5 h-5 transition-transform duration-200 group-hover:translate-x-1" />
+        <span className="tracking-tight">Submit Proposal</span>
       </button>
     </div>
   </div>
