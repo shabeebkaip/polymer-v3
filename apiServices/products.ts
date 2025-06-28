@@ -36,7 +36,7 @@ export const getProductList = async (query: ProductQuery) => {
 
 export const getProductFilters = async () => {
   try {
-    const response = await axiosInstance.get("/product/filter");
+    const response = await axiosInstance.post("/product/filter", {});
     return response.data;
   } catch (error) {
     console.error("Error fetching product filters:", error);

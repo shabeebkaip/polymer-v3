@@ -3,6 +3,7 @@ import Image from 'next/image';
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { createPortal } from 'react-dom';
+import { FALLBACK_COMPANY_IMAGE } from '@/lib/fallbackImages';
 
 // Custom debounce hook
 function useDebounce(callback: (...args: any[]) => void, delay: number) {
@@ -196,7 +197,7 @@ const HeroSearch = () => {
                                     onMouseEnter={() => setHighlighted(index)}
                                 >
                                     <Image
-                                        src={product.createdBy?.company_logo || "/assets/default-product.png"}
+                                        src={product.createdBy?.company_logo || FALLBACK_COMPANY_IMAGE}
                                         alt={product.productName}
                                         width={36}
                                         height={36}

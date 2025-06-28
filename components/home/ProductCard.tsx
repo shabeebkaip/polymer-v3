@@ -20,7 +20,7 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
     <div className="bg-white rounded-xl shadow-md p-4 flex flex-col justify-between w-full min-h-[400px] max-w-full">
       <div className="w-full h-[200px] flex justify-center items-center mb-4">
         <Image
-          src={product.productImages?.[0]?.fileUrl || "/placeholder.png"}
+          src={product.productImages?.[0]?.fileUrl }
           alt={product.productName}
           width={180}
           height={180}

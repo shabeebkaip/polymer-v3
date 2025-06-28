@@ -8,6 +8,7 @@ import { Button } from "../ui/button";
 import { useUserInfo } from "@/lib/useUserInfo";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { FALLBACK_USER_AVATAR } from "@/lib/fallbackImages";
 
 // --- TypeScript Types ---
 type NavbarLinkProps = {
@@ -188,7 +189,7 @@ const Header: React.FC = () => {
                   <div className="flex items-center gap-3">
                     <Avatar className="w-12 h-12 border-2 border-white/20">
                       <AvatarImage
-                        src={user?.company_logo || "/default-avatar.png"}
+                        src={user?.company_logo || FALLBACK_USER_AVATAR}
                         alt="User Avatar"
                       />
                       <AvatarFallback className="bg-white/20 text-white font-semibold">

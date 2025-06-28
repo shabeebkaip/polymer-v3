@@ -73,13 +73,9 @@ export default async function HomePage() {
           : [],
     };
     
-    console.log("homeData counts:");
-    console.log("- buyerOpportunities:", homeData.buyerOpportunities?.length || 0);
-    console.log("- suppliersSpecialDeals:", homeData.suppliersSpecialDeals?.length || 0);
-    
     return (
       <HomeDataProvider initialData={homeData}>
-        <div className="space-y-8 md:space-y-16 lg:space-y-20 bg-gradient-to-b from-white via-gray-50 to-white">
+        <div className="space-y-8  bg-gradient-to-b from-white via-gray-50 to-white">
           <Hero />
           <DealsAndRequests />
           <Categories />

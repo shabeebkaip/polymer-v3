@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { ChevronLeft, ChevronRight, Star, Calendar, MapPin, Package, Zap, Gift } from "lucide-react";
 import { useSharedState } from "@/stores/sharedStore";
+import { FALLBACK_COMPANY_IMAGE } from "@/lib/fallbackImages";
 
 interface Deal {
   id: string;
@@ -61,7 +62,7 @@ const SpecialDeals: React.FC = () => {
             title: `${item.productId?.productName || 'Special Product'} - Limited Offer`,
             supplier: {
               name: sellerName,
-              logo: item.sellerId?.company_logo || "/assets/company-logos/default.jpg",
+              logo: item.sellerId?.company_logo || FALLBACK_COMPANY_IMAGE,
               rating: 4.5, // Default rating since not in API
               location: item.sellerId?.location || item.sellerId?.address || "Location not specified"
             },

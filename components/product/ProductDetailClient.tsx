@@ -8,6 +8,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import SampleRequestModal from "@/components/shared/SampleRequestModal";
+import { FALLBACK_COMPANY_IMAGE } from "@/lib/fallbackImages";
 import {
   Star,
   Share2,
@@ -465,9 +466,16 @@ const ProductDetailClient: React.FC<ProductDetailClientProps> = ({
                             src={product.createdBy.company_logo}
                             alt={product.createdBy.company}
                             className="w-full h-full object-cover"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = FALLBACK_COMPANY_IMAGE;
+                            }}
                           />
                         ) : (
-                          <Factory className="w-6 h-6 text-gray-400" />
+                          <img
+                            src={FALLBACK_COMPANY_IMAGE}
+                            alt={product.createdBy.company}
+                            className="w-full h-full object-cover"
+                          />
                         )}
                       </div>
                       <div className="flex-1">

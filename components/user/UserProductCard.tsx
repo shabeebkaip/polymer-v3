@@ -2,6 +2,7 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
 import { Delete, Pencil } from "lucide-react";
+import { FALLBACK_PRODUCT_IMAGE, FALLBACK_COMPANY_IMAGE } from "@/lib/fallbackImages";
 
 interface Product {
   [key: string]: any;
@@ -17,14 +18,20 @@ const UserProductCard: React.FC<UserProductCardProps> = ({ product }) => {
     <div className="rounded-xl p-2 shadow-lg hover:shadow-xl transition-shadow duration-300 h-full flex flex-col justify-between">
       <div className="flex flex-col gap-4">
         <img
-          src={product?.productImages?.[0]?.fileUrl}
+          src={product?.productImages?.[0]?.fileUrl || FALLBACK_PRODUCT_IMAGE}
           alt="Product"
           className="w-full h-32 object-cover rounded-md"
+          onError={(e) => {
+            (e.target as HTMLImageElement).src = FALLBACK_PRODUCT_IMAGE;
+          }}
         />
         <div className="flex items-center gap-4">
           <img
-            src={product?.createdBy?.company_logo}
+            src={product?.createdBy?.company_logo || FALLBACK_COMPANY_IMAGE}
             className="w-20 h-20 object-contain"
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = FALLBACK_COMPANY_IMAGE;
+            }}
           />
           <div className="flex flex-col justify-center">
             <h4 className="font-normal text-lg">{product?.productName}</h4>

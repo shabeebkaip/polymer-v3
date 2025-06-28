@@ -8,6 +8,7 @@ import { useSharedState } from "@/stores/sharedStore";
 import { Skeleton } from "../ui/skeleton";
 import ProductCardSkeleton from "../shared/ProductCardSkeleton";
 import { ProductCardTypes } from "@/types/product";
+import { FALLBACK_COMPANY_IMAGE } from "@/lib/fallbackImages";
 
 const ProductCard = dynamic(() => import("@/components/product/ProductCard"));
 
@@ -119,11 +120,14 @@ const ProductsByBrand: React.FC = () => {
                   >
                     <div className="flex-shrink-0 w-10 h-10 rounded-lg overflow-hidden ring-1 ring-white/30">
                       <Image
-                        src={seller.company_logo}
+                        src={seller.company_logo || FALLBACK_COMPANY_IMAGE}
                         alt="Supplier Logo"
                         width={40}
                         height={40}
                         className="rounded-lg object-cover w-full h-full"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = FALLBACK_COMPANY_IMAGE;
+                        }}
                       />
                     </div>
                     
@@ -194,11 +198,14 @@ const ProductsByBrand: React.FC = () => {
                   
                   <div className="relative flex-shrink-0 w-16 h-16 rounded-2xl overflow-hidden ring-2 ring-white/30 shadow-lg">
                     <Image
-                      src={seller.company_logo}
+                      src={seller.company_logo || FALLBACK_COMPANY_IMAGE}
                       alt="Supplier Logo"
                       width={64}
                       height={64}
                       className="rounded-2xl object-cover w-full h-full"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = FALLBACK_COMPANY_IMAGE;
+                      }}
                     />
                   </div>
                   

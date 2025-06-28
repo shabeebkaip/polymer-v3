@@ -18,13 +18,13 @@ const ProductsList: React.FC<ProductsListProps> = ({
   userType,
 }) => {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
       {loader
-        ? Array.from({ length: 9 }).map((_, index) => (
+        ? Array.from({ length: 8 }).map((_, index) => (
           <ProductCardSkeleton key={index} />
         ))
         : products.map((product, index) => (
-          <ProductCard key={index} product={product} userType={userType} />
+          <ProductCard key={product._id || index} product={product} userType={userType} />
         ))}
     </div>
   );

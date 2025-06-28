@@ -15,6 +15,7 @@ import QuoteRequestModal from "../shared/QuoteRequestModal";
 import SampleRequestModal from "../shared/SampleRequestModal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { FALLBACK_COMPANY_IMAGE } from "@/lib/fallbackImages";
 
 interface CompanyDetailsProps {
   companyDetails: {
@@ -54,9 +55,16 @@ const CompanyDetails: React.FC<CompanyDetailsProps> = ({
                   src={companyDetails.company_logo}
                   alt={companyDetails.company}
                   className="w-full h-full object-contain"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = FALLBACK_COMPANY_IMAGE;
+                  }}
                 />
               ) : (
-                <Building2 className="w-full h-full text-gray-400" />
+                <img
+                  src={FALLBACK_COMPANY_IMAGE}
+                  alt={companyDetails.company}
+                  className="w-full h-full object-contain"
+                />
               )}
             </div>
           </div>

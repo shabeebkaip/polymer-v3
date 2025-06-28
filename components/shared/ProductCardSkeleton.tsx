@@ -3,30 +3,43 @@ import { Skeleton } from "../ui/skeleton";
 
 const ProductCardSkeleton = () => {
   return (
-    <div className="rounded-xl p-2 shadow-lg  transition-shadow duration-300 h-full flex flex-col justify-between">
-      <div className="flex flex-col gap-4">
-        {/* Product image skeleton */}
-        <Skeleton className="w-full h-32  rounded-md mb-4" />
+    <div className="bg-white rounded-2xl shadow-md overflow-hidden border border-gray-100 h-full flex flex-col">
+      {/* Product image skeleton */}
+      <div className="relative">
+        <Skeleton className="w-full h-48 rounded-none" />
+      </div>
 
-        {/* Seller Info skeleton */}
-        <div className="flex items-center gap-4">
-          <Skeleton className="w-20 h-20 rounded-md" />
-          <div className="flex flex-col justify-center">
-            <Skeleton className="w-32 h-6 mb-2" />
-            <Skeleton className="w-24 h-4" />
+      <div className="p-5 flex flex-col flex-1">
+        {/* Company Info Header skeleton */}
+        <div className="flex items-center gap-3 mb-4">
+          <Skeleton className="w-12 h-12 rounded-lg flex-shrink-0" />
+          <div className="flex-1 min-w-0">
+            <Skeleton className="w-3/4 h-5 mb-2" />
+            <Skeleton className="w-1/2 h-4" />
           </div>
         </div>
-        <hr className="h-px bg-gray-200 border-0" />
 
-        {/* Product Info skeleton */}
-        <div className="flex flex-col gap-2 text-sm ">
-          <Skeleton className="w-full h-4 mb-2" />
-          <Skeleton className="w-full h-4" />
+        {/* Product Details skeleton */}
+        <div className="bg-gray-50 rounded-lg p-3 mb-6 flex-1">
+          <div className="space-y-3">
+            <div className="flex justify-between items-center">
+              <Skeleton className="w-24 h-4" />
+              <Skeleton className="w-20 h-4" />
+            </div>
+            <div className="flex justify-between items-center">
+              <Skeleton className="w-28 h-4" />
+              <Skeleton className="w-16 h-4" />
+            </div>
+          </div>
         </div>
-        {/* CTA Buttons skeleton */}
-        <div className="grid grid-cols-2 gap-2 mt-4">
-          <Skeleton className="w-full h-10 rounded-lg" />
-          <Skeleton className="w-full h-10 rounded-lg" />
+
+        {/* Action Buttons skeleton */}
+        <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-2">
+            <Skeleton className="w-full h-10 rounded-lg" />
+            <Skeleton className="w-full h-10 rounded-lg" />
+          </div>
+          <Skeleton className="w-full h-12 rounded-lg" />
         </div>
       </div>
     </div>
