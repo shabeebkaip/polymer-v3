@@ -9,13 +9,14 @@ import {
   getSellers,
 } from "@/apiServices/shared";
 import { getBenefitsOfBuyers, getBenefitsOfSuppliers } from "@/apiServices/cms";
+import { getBuyerOpportunities, getSuppliersSpecialDeals } from "@/apiServices/dealsAndRequests";
 import { HomePageData } from "@/types/home";
 import HomeDataProvider from "@/components/providers/HomeDataProvider";
 import DealsAndRequests from "@/components/home/DealsAndRequests";
 
 // Enable static generation with revalidation for better performance
-export const revalidate = 300; // Revalidate every 5 minutes
-export const dynamic = "force-static"; // Force static generation
+// export const revalidate = 300; // Revalidate every 5 minutes
+export const dynamic = "force-dynamic"; // Enable for debugging API calls
 
 // Server Component - Data fetched on server with caching
 export default async function HomePage() {
@@ -27,13 +28,20 @@ export default async function HomePage() {
       sellersRes,
       buyersBenefitsRes,
       suppliersBenefitsRes,
+      buyerOpportunitiesRes,
+      suppliersSpecialDealsRes,
     ] = await Promise.allSettled([
       getIndustryList(),
       getProductFamilies(),
       getSellers(),
       getBenefitsOfBuyers(),
       getBenefitsOfSuppliers(),
+      getBuyerOpportunities(),
+      getSuppliersSpecialDeals(),
     ]);
+
+    console.log("API Results - buyerOpportunities:", buyerOpportunitiesRes.status);
+    console.log("API Results - suppliersSpecialDeals:", suppliersSpecialDealsRes.status);
 
     // Extract data with error handling
     const homeData: HomePageData = {
@@ -55,8 +63,20 @@ export default async function HomePage() {
         suppliersBenefitsRes.status === "fulfilled"
           ? suppliersBenefitsRes.value?.data || {}
           : {},
+      buyerOpportunities:
+        buyerOpportunitiesRes.status === "fulfilled"
+          ? buyerOpportunitiesRes.value?.data || []
+          : [],
+      suppliersSpecialDeals:
+        suppliersSpecialDealsRes.status === "fulfilled"
+          ? suppliersSpecialDealsRes.value?.data || []
+          : [],
     };
-
+    
+    console.log("homeData counts:");
+    console.log("- buyerOpportunities:", homeData.buyerOpportunities?.length || 0);
+    console.log("- suppliersSpecialDeals:", homeData.suppliersSpecialDeals?.length || 0);
+    
     return (
       <HomeDataProvider initialData={homeData}>
         <div className="space-y-16 md:space-y-24 bg-gradient-to-b from-white via-gray-50 to-white">
@@ -79,6 +99,8 @@ export default async function HomePage() {
       sellers: [],
       buyersBenefits: {},
       suppliersBenefits: {},
+      buyerOpportunities: [],
+      suppliersSpecialDeals: [],
     };
 
     return (

@@ -3,7 +3,7 @@
 import { HomePageData } from "@/types/home";
 import { useSharedState } from "@/stores/sharedStore";
 import { useCmsStore } from "@/stores/cms";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import AnimatedPreloader from "@/components/shared/AnimatedPreloader";
 
 interface HomeDataProviderProps {
@@ -17,13 +17,27 @@ interface HomeDataProviderProps {
  * Also manages preloader state during hydration
  */
 export default function HomeDataProvider({ children, initialData }: HomeDataProviderProps) {
+  // Track hydration status
+  const [isClient, setIsClient] = useState(false);
+  const [isHydrated, setIsHydrated] = useState(false);
+  const hasInitialized = useRef(false);
+
+  // Ensure we're on the client side
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   const { 
     industries, 
     productFamilies, 
     sellers,
+    buyerOpportunities,
+    suppliersSpecialDeals,
     setIndustries,
     setProductFamilies, 
-    setSellers 
+    setSellers,
+    setBuyerOpportunities,
+    setSuppliersSpecialDeals
   } = useSharedState();
   
   const { 
@@ -33,55 +47,77 @@ export default function HomeDataProvider({ children, initialData }: HomeDataProv
     setSuppliersBenefits 
   } = useCmsStore();
 
-  // Track hydration status
-  const [isHydrating, setIsHydrating] = useState(true);
-  const [hasHydrated, setHasHydrated] = useState(false);
-
-  // Hydrate stores with initial data once
+  // Add debugging for the store state
   useEffect(() => {
-    if (!hasHydrated) {
-      // Hydrate all stores with initial data
-      if (initialData.industries.length > 0) {
-        setIndustries(initialData.industries);
-      }
-      if (initialData.productFamilies.length > 0) {
-        setProductFamilies(initialData.productFamilies);
-      }
-      if (initialData.sellers.length > 0) {
-        setSellers(initialData.sellers);
-      }
-      if (initialData.buyersBenefits.content?.description) {
-        setBuyersBenefits(initialData.buyersBenefits);
-      }
-      if (initialData.suppliersBenefits.content?.description) {
-        setSuppliersBenefits(initialData.suppliersBenefits);
-      }
-      
-      setHasHydrated(true);
-    }
-  }, [
-    initialData,
-    hasHydrated,
-    setIndustries,
-    setProductFamilies,
-    setSellers,
-    setBuyersBenefits,
-    setSuppliersBenefits
-  ]);
+    console.log("Current store state:", {
+      buyerOpportunities: buyerOpportunities?.length || 0,
+      suppliersSpecialDeals: suppliersSpecialDeals?.length || 0,
+      isHydrated,
+      isClient
+    });
+  }, [buyerOpportunities, suppliersSpecialDeals, isHydrated, isClient]);
 
-  // Add a minimum loading time and wait for hydration
+  // Hydrate stores only when we're on the client side and haven't initialized yet
   useEffect(() => {
-    if (hasHydrated) {
-      const timer = setTimeout(() => {
-        setIsHydrating(false);
-      }, 1000); // Minimum 1 second loading time
-
-      return () => clearTimeout(timer);
+    if (!isClient || hasInitialized.current) {
+      return;
     }
-  }, [hasHydrated]);
+
+    console.log("HomeDataProvider Effect - Running client-side hydration");
+    console.log("HomeDataProvider Effect - initialData:", {
+      buyerOpportunities: initialData.buyerOpportunities?.length || 0,
+      suppliersSpecialDeals: initialData.suppliersSpecialDeals?.length || 0,
+      industries: initialData.industries?.length || 0,
+      productFamilies: initialData.productFamilies?.length || 0,
+      sellers: initialData.sellers?.length || 0
+    });
+    
+    hasInitialized.current = true;
+    
+    // Force hydration of all data
+    console.log("Setting industries:", initialData.industries?.length || 0);
+    setIndustries(initialData.industries || []);
+    
+    console.log("Setting productFamilies:", initialData.productFamilies?.length || 0);
+    setProductFamilies(initialData.productFamilies || []);
+    
+    console.log("Setting sellers:", initialData.sellers?.length || 0);
+    setSellers(initialData.sellers || []);
+    
+    console.log("Setting CMS benefits");
+    setBuyersBenefits(initialData.buyersBenefits || {});
+    setSuppliersBenefits(initialData.suppliersBenefits || {});
+    
+    // Force set the deals data with detailed logging
+    console.log("Setting buyerOpportunities:", initialData.buyerOpportunities?.length || 0, "items");
+    console.log("BuyerOpportunities data preview:", initialData.buyerOpportunities?.slice(0, 1));
+    setBuyerOpportunities(initialData.buyerOpportunities || []);
+    
+    console.log("Setting suppliersSpecialDeals:", initialData.suppliersSpecialDeals?.length || 0, "items");
+    console.log("SuppliersSpecialDeals data preview:", initialData.suppliersSpecialDeals?.slice(0, 1));
+    setSuppliersSpecialDeals(initialData.suppliersSpecialDeals || []);
+    
+    console.log("All data has been set, marking as hydrated");
+    setIsHydrated(true);
+  }, [isClient, initialData, setIndustries, setProductFamilies, setSellers, setBuyersBenefits, setSuppliersBenefits, setBuyerOpportunities, setSuppliersSpecialDeals]);
+  
+  // Second effect to check if hydration worked
+  useEffect(() => {
+    if (isHydrated) {
+      console.log("Hydration check - Store state after hydration:");
+      console.log("- industries:", industries?.length);
+      console.log("- productFamilies:", productFamilies?.length);
+      console.log("- sellers:", sellers?.length);
+      console.log("- buyerOpportunities:", buyerOpportunities?.length);
+      console.log("- suppliersSpecialDeals:", suppliersSpecialDeals?.length);
+    }
+  }, [isHydrated, industries, productFamilies, sellers, buyerOpportunities, suppliersSpecialDeals]);
+
+  // Show preloader until hydration is complete
+  const isLoading = !isClient || !isHydrated;
 
   return (
-    <AnimatedPreloader isLoading={isHydrating}>
+    <AnimatedPreloader isLoading={isLoading}>
       {children}
     </AnimatedPreloader>
   );
