@@ -134,13 +134,13 @@ const HeroSearch = () => {
     }, []);
 
     return (
-        <div className="mt-10 w-full relative max-w-2xl mx-auto">
-            <div className="relative">
+        <div className="mt-10 w-full relative mx-auto">
+            <div className="relative drop-shadow-lg w-full max-w-4xl mx-auto px-8">
                 <input
                     ref={inputRef}
                     type="text"
-                    placeholder="Search Polymers"
-                    className="w-full px-5 py-4 rounded-full border-2 border-[var(--green-light)] focus:ring-2 focus:ring-green-300 focus:border-green-500 shadow-sm transition-all duration-200 pr-12 text-base"
+                    placeholder="Search polymers, compounds, resins..."
+                    className="w-full px-8 py-6 rounded-full border-2 border-[var(--green-light)] focus:ring-4 focus:ring-green-200 focus:border-green-500 shadow-xl transition-all duration-300 pr-16 text-lg font-medium placeholder:text-gray-400 bg-white/95 backdrop-blur-sm hover:shadow-2xl"
                     value={searchQuery}
                     onChange={(e) => {
                         setSearchQuery(e.target.value);
@@ -152,16 +152,17 @@ const HeroSearch = () => {
                     autoComplete="off"
                 />
                 <div
-                    className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center justify-center"
+                    className="absolute right-12 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 bg-green-500 rounded-full shadow-md hover:bg-green-600 transition-colors duration-200"
                 >
                     {loading ? (
-                        <span className="animate-spin w-6 h-6 border-2 border-green-400 border-t-transparent rounded-full"></span>
+                        <span className="animate-spin w-6 h-6 border-2 border-white border-t-transparent rounded-full"></span>
                     ) : (
                         <Image
                             src="/icons/search.svg"
                             alt="Search Icon"
-                            width={22}
-                            height={22}
+                            width={24}
+                            height={24}
+                            className="filter brightness-0 invert"
                         />
                     )}
                 </div>

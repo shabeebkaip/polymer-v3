@@ -166,7 +166,7 @@ const SpecialDeals: React.FC = () => {
   };
 
   return (
-    <div className="mb-16">
+    <div className="mb-16 container mx-auto px-4">
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-3">
           <div className="bg-green-700 p-2 rounded-lg">

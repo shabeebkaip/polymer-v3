@@ -53,84 +53,116 @@ const ProductsByBrand: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 mt-16">
-      <div className="flex flex-col items-center gap-6 md:gap-14">
-        <h1 className="text-[var(--dark-main)] text-3xl md:text-5xl font-normal text-center">
-          Find Product By Suppliers
-        </h1>
-        <div className="flex flex-wrap gap-3 justify-center">
-          {sellersLoading &&
-            Array.from({ length: 4 }).map((_, index) => (
-              <div
-                className="flex items-center gap-2 px-3 py-2 rounded-full w-[48%] sm:w-auto md:min-w-48 md:min-h-16 border-2 border-muted"
-                key={index}
+    <div className="container mx-auto px-4 py-16">
+      <div className="flex flex-col items-center gap-8 md:gap-12">
+        {/* Enhanced Header */}
+        <div className="text-center space-y-4">
+          <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-gray-900 via-green-800 to-gray-900 bg-clip-text text-transparent">
+            Find Products By Suppliers
+          </h1>
+          <p className="text-gray-600 text-base md:text-lg max-w-2xl mx-auto">
+            Browse products from our verified suppliers and discover quality materials from trusted manufacturers
+          </p>
+        </div>
+
+        {/* Enhanced Supplier Tabs */}
+        <div className="w-full">
+          <div className="flex flex-wrap gap-3 justify-center max-w-6xl mx-auto">
+            {sellersLoading &&
+              Array.from({ length: 4 }).map((_, index) => (
+                <div
+                  className="flex items-center gap-3 px-4 py-3 rounded-2xl w-[48%] sm:w-auto md:min-w-52 md:min-h-20 border-2 border-gray-200 bg-gray-50"
+                  key={index}
+                >
+                  <Skeleton className="w-10 h-10 md:w-14 md:h-14 rounded-full" />
+                  <div className="flex-1 space-y-2">
+                    <Skeleton className="h-4 w-24 md:w-32 rounded" />
+                    <Skeleton className="h-3 w-16 md:w-20 rounded" />
+                  </div>
+                </div>
+              ))}
+            
+            {sellers.map((seller) => (
+              <button
+                key={seller._id}
+                type="button"
+                onClick={() => handleTabClick(seller)}
+                className={`group flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-300 transform hover:scale-105 w-[48%] sm:w-auto md:min-w-52 md:min-h-20 shadow-md hover:shadow-lg ${
+                  selectedTab === seller._id
+                    ? "bg-gradient-to-r from-green-500 via-green-600 to-emerald-600 text-white shadow-green-200"
+                    : "border-2 border-green-200 text-gray-700 hover:border-green-400 hover:bg-green-50 bg-white"
+                }`}
               >
-                <Skeleton className="w-8 h-8 md:w-12 md:h-12 rounded-full" />
-                <Skeleton className="h-4 w-24 md:w-32 rounded" />
-              </div>
+                <div className="flex-shrink-0 w-10 h-10 md:w-14 md:h-14 rounded-full overflow-hidden ring-2 ring-white/20">
+                  <Image
+                    src={seller.company_logo}
+                    alt="Supplier Logo"
+                    width={56}
+                    height={56}
+                    className="rounded-full object-cover w-full h-full"
+                  />
+                </div>
+                <div className="flex-1 text-left">
+                  <span className="text-sm md:text-base font-semibold truncate block">
+                    {seller.company}
+                  </span>
+                  <span className="text-xs opacity-80 block">
+                    {seller.products?.length || 0} products
+                  </span>
+                </div>
+                <div className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                  selectedTab === seller._id ? "bg-white" : "bg-green-500"
+                }`} />
+              </button>
             ))}
-          {sellers.map((seller) => (
+
             <button
-              key={seller._id}
               type="button"
-              onClick={() => handleTabClick(seller)}
-              className={`flex cursor-pointer duration-300  items-center gap-2 px-3 py-2 rounded-full transition focus:outline-none w-[48%] sm:w-auto md:min-w-48 md:min-h-16 ${
-                selectedTab === seller._id
-                  ? "bg-gradient-to-r from-[var(--green-gradient-from)] via-[var(--green-gradient-via)] to-[var(--green-gradient-to)] text-white"
-                  : "border-2 border-[var(--green-main)] text-[var(--green-main)] hover:bg-green-50"
-              }`}
+              onClick={() => router.push("/suppliers")}
+              className="group flex items-center justify-center gap-3 px-4 py-3 rounded-2xl border-2 border-dashed border-green-400 text-green-600 hover:border-green-500 hover:bg-green-50 transition-all duration-300 transform hover:scale-105 w-[48%] sm:w-auto md:min-w-40 md:min-h-20 bg-gradient-to-br from-green-50 to-emerald-50"
             >
-              <div className="flex-shrink-0 w-8 h-8 md:w-12 md:h-12 rounded-full flex items-center justify-center overflow-hidden ">
-                <Image
-                  src={seller.company_logo}
-                  alt="Supplier Logo"
-                  width={48}
-                  height={48}
-                  className="rounded-full object-cover w-full h-full"
+              <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white font-bold group-hover:bg-green-600 transition-colors">
+                +
+              </div>
+              <div className="text-center">
+                <span className="font-semibold text-sm block">See More</span>
+                <span className="text-xs opacity-75">Suppliers</span>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        {/* Enhanced Product Grid */}
+        <div className="w-full">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+            {sellersLoading &&
+              Array.from({ length: 4 }).map((_, index) => (
+                <div key={index} className="transform transition-all duration-300 hover:scale-105">
+                  <ProductCardSkeleton />
+                </div>
+              ))}
+            {products?.slice(0, 4).map((product) => (
+              <div key={product._id} className="transform transition-all duration-300 hover:scale-105">
+                <ProductCard
+                  product={product}
+                  userType={user?.user_type}
                 />
               </div>
-              <span className="text-xs md:text-sm font-medium truncate flex-1 text-center">
-                {seller.company}
-              </span>
-            </button>
-          ))}
-
-          <button
-            type="button"
-            onClick={() => router.push("/suppliers")}
-            className="flex items-center justify-center gap-2 px-3 py-2 rounded-full border-2 border-[var(--green-main)] text-xs md:text-sm text-[var(--green-main)] hover:bg-green-50 transition focus:outline-none w-[48%] sm:w-auto md:min-w-36 md:min-h-16"
-          >
-            <span className="font-medium">See More</span>
-            <Image
-              src="/icons/lucide_arrow-up.svg"
-              alt="Arrow Icon"
-              width={16}
-              height={16}
-              className="flex-shrink-0"
-            />
-          </button>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full">
-          {sellersLoading &&
-            Array.from({ length: 4 }).map((_, index) => (
-              <ProductCardSkeleton key={index} />
             ))}
-          {products?.slice(0, 4).map((product) => (
-            <ProductCard
-              key={product._id}
-              product={product}
-              userType={user?.user_type}
-            />
-          ))}
+          </div>
         </div>
 
+        {/* Enhanced CTA Button */}
         <div className="flex items-center justify-center">
           <button
-            className="border border-[var(--green-light)] px-10 md:px-20 py-4 rounded-full text-[var(--green-light)] text-sm md:text-lg hover:bg-green-50 transition focus:outline-none flex items-center gap-2 hover:scale-105 duration-300 "
+            className="group relative overflow-hidden bg-gradient-to-r from-green-500 to-emerald-600 text-white px-8 md:px-12 py-4 rounded-2xl text-sm md:text-lg font-semibold hover:from-green-600 hover:to-emerald-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center gap-3"
             onClick={() => router.push("/products")}
           >
-            Explore All Products
+            <span className="relative z-10">Explore All Products</span>
+            <div className="relative z-10 w-5 h-5 bg-white/20 rounded-full flex items-center justify-center group-hover:rotate-45 transition-transform duration-300">
+              <span className="text-sm">→</span>
+            </div>
+            <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-green-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           </button>
         </div>
       </div>

@@ -7,24 +7,82 @@ const FeaturedSuppliers: React.FC = () => {
   const { sellers } = useSharedState();
   console.log("Featured Suppliers Sellers:", sellers);
   return (
-    <section className="container mx-auto px-4 mt-20 mb-10">
-      <div className="flex flex-col  items-center gap-14">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-0 items-center text-center md:text-left">
-          <h2 className="text-2xl md:text-5xl text-[var(--dark-main)]">
-            Featured Suppliers
-          </h2>
-          <p className="text-[var(--text-gray-tertiary)] font-normal   md:text-lg">
-            As new technologies like cryptocurrency develop, the real estate
-            sector is changing drastically. It is important to understand both
-            how these technologies and the traditional real estate market work.
-          </p>
-        </div>
+    <section className="bg-gradient-to-br from-gray-50 to-green-50/30 py-16 ">
+      <div className="container mx-auto px-4">
+        <div className="flex flex-col items-center gap-12">
+          {/* Enhanced Header Section */}
+          <div className="text-center max-w-4xl mx-auto space-y-6">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-medium mb-4">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              Trusted Partners
+            </div>
+            <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold text-[var(--dark-main)] bg-gradient-to-r from-gray-900 via-green-800 to-gray-900 bg-clip-text text-transparent">
+              Featured Suppliers
+            </h2>
+            <p className="text-[var(--text-gray-tertiary)] font-normal text-base md:text-lg lg:text-xl leading-relaxed max-w-3xl mx-auto">
+              Partner with industry-leading polymer suppliers from around the globe. Our verified network ensures 
+              quality materials, reliable delivery, and competitive pricing for your manufacturing needs.
+            </p>
+          </div>
 
-        <div className="w-full flex md:block justify-center  ">
-          <div className="grid  grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 md:gap-4 lg:gap-2 gap-2 items-center ">
-            {sellers?.map((seller, index) => (
-              <SellerLogoContainer key={index} seller={seller} />
-            ))}
+          {/* Enhanced Suppliers Grid */}
+          <div className="w-full">
+            <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-8 md:p-12">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 md:gap-8 items-center justify-items-center">
+                {sellers?.map((seller, index) => (
+                  <div 
+                    key={index} 
+                    className="group hover:scale-110 transition-all duration-300 hover:z-10 relative"
+                    style={{ animationDelay: `${index * 0.1}s` }}
+                  >
+                    <SellerLogoContainer seller={seller} />
+                  </div>
+                ))}
+              </div>
+              
+              {/* Call to Action */}
+              <div className="mt-12 text-center">
+                <div className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-full hover:from-green-600 hover:to-emerald-600 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 cursor-pointer">
+                  <span className="font-medium">View All Suppliers</span>
+                  <div className="w-5 h-5 bg-white/20 rounded-full flex items-center justify-center">
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Additional Trust Indicators */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl">
+            <div className="text-center space-y-2">
+              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h3 className="font-semibold text-gray-900">Verified Quality</h3>
+              <p className="text-sm text-gray-600">All suppliers undergo rigorous quality verification</p>
+            </div>
+            <div className="text-center space-y-2">
+              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h3 className="font-semibold text-gray-900">Fast Delivery</h3>
+              <p className="text-sm text-gray-600">Quick turnaround times for urgent requirements</p>
+            </div>
+            <div className="text-center space-y-2">
+              <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
+              <h3 className="font-semibold text-gray-900">Global Reach</h3>
+              <p className="text-sm text-gray-600">Worldwide shipping and local support</p>
+            </div>
           </div>
         </div>
       </div>
