@@ -25,11 +25,20 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
   };
   return (
     <div
-      className="relative w-full aspect-[4/3] rounded-t-2xl rounded-b-xl md:rounded-t-4xl md:rounded-b-3xl overflow-hidden shadow-lg cursor-pointer hover:scale-105 duration-300 transition" 
+      className="relative w-full aspect-[4/3] rounded-t-2xl rounded-b-xl md:rounded-t-4xl md:rounded-b-3xl overflow-hidden shadow-lg cursor-pointer hover:scale-105 hover:shadow-2xl focus:scale-105 focus:shadow-2xl focus:ring-2 focus:ring-green-300 duration-300 transition group"
+      tabIndex={0}
       onClick={handleClick}
+      onKeyPress={(e) => {
+        if (e.key === "Enter") handleClick();
+      }}
+      aria-label={name}
     >
-      <Image src={image} alt={"category"} fill className="object-cover" />
-
+      <Image
+        src={image}
+        alt={"category"}
+        fill
+        className="object-cover transition-transform duration-300 group-hover:scale-105"
+      />
       <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/20 via-black/60 to-transparent p-4">
         <h3 className="text-white text-sm md:text-2xl md:font-semibold whitespace-nowrap overflow-hidden text-ellipsis">
           {name}

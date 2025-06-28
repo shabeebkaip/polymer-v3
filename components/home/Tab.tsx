@@ -22,13 +22,15 @@ const Tab: React.FC<TabProps> = ({
     <button
       type="button"
       onClick={onClick}
-      className={`flex items-center gap-3 px-4 py-2 rounded-full transition focus:outline-none ${
+      className={`flex items-center gap-3 px-4 py-2 rounded-full transition focus:outline-none focus:ring-2 focus:ring-green-300 duration-200 group shadow-sm hover:shadow-md ${
         isSelected
           ? "bg-gradient-to-r from-[var(--green-gradient-from)] via-[var(--green-gradient-via)] to-[var(--green-gradient-to)] text-white"
           : "border-2 border-[var(--green-main)] text-[var(--green-main)] hover:bg-green-50"
       }`}
+      tabIndex={0}
+      aria-pressed={isSelected}
     >
-      <div className="flex-shrink-0 rounded-full flex items-center justify-center">
+      <div className="flex-shrink-0 rounded-full flex items-center justify-center transition-transform duration-200 group-hover:scale-105">
         <Image
           src={icon}
           alt="Icon"
