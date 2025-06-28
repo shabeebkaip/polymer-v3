@@ -7,6 +7,7 @@ import SupplierBasic from "@/components/suppliers/SupplierBasic";
 import { getProductFilters, getProductList } from "@/apiServices/products";
 import FilterModal from "./FilterModal";
 import { useUserInfo } from "@/lib/useUserInfo";
+import { ProductCardTypes } from "@/types/product";
 
 // --- Types ---
 interface ProductFilter {
@@ -16,11 +17,7 @@ interface ProductFilter {
   data: Array<any>;
 }
 
-interface Product {
-  _id: string;
-  name: string;
-  [key: string]: any;
-}
+
 
 interface Pagination {
   page: number;
@@ -51,7 +48,7 @@ const ProductsClient: React.FC = () => {
   if (initialProductFamily) initialQuery.productFamily = [initialProductFamily];
 
   const [query, setQuery] = useState<Record<string, any>>(initialQuery);
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<ProductCardTypes[]>([]);
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
   const [pagination, setPagination] = useState<Pagination | null>(null);
   const [filters, setFilters] = useState<ProductFilter[]>([]);
