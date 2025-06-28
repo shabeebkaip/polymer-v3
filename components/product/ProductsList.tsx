@@ -2,16 +2,11 @@
 import React from "react";
 import ProductCard from "@/components/product/ProductCard";
 import ProductCardSkeleton from "../shared/ProductCardSkeleton";
+import { ProductCardTypes } from "@/types/product";
 
-// --- Types ---
-interface Product {
-  _id: string;
-  name: string;
-  [key: string]: any;
-}
 
 interface ProductsListProps {
-  products: Product[];
+  products: ProductCardTypes[];
   loader?: boolean;
   userType?: string;
 }
@@ -26,11 +21,11 @@ const ProductsList: React.FC<ProductsListProps> = ({
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
       {loader
         ? Array.from({ length: 9 }).map((_, index) => (
-            <ProductCardSkeleton key={index} />
-          ))
+          <ProductCardSkeleton key={index} />
+        ))
         : products.map((product, index) => (
-            <ProductCard key={index} product={product} userType={userType} />
-          ))}
+          <ProductCard key={index} product={product} userType={userType} />
+        ))}
     </div>
   );
 };
