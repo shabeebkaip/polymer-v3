@@ -54,12 +54,16 @@ interface QuoteRequestModalProps {
   className?: string;
   productId: string;
   uom: string;
+  buttonText?: string;
+  children?: React.ReactNode;
 }
 
 const QuoteRequestModal = ({
   className,
   productId,
   uom,
+  buttonText = "Request Quote",
+  children,
 }: QuoteRequestModalProps) => {
   const token = Cookies.get("token");
   const router = useRouter();
@@ -147,7 +151,7 @@ const QuoteRequestModal = ({
   return (
     <>
       <button className={className} onClick={handletrigger}>
-        Request Quote
+        {children || buttonText}
       </button>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto bg-[#f5f5f5] md:max-h-none md:overflow-visible ">
