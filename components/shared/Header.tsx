@@ -143,7 +143,7 @@ const Header: React.FC = () => {
             ))}
 
             {/* Enhanced Language Selector */}
-            <div className="relative" ref={languagePopupRef}>
+            {/* <div className="relative" ref={languagePopupRef}>
               <div
                 className="flex items-center gap-2 cursor-pointer px-3 py-2 rounded-lg hover:bg-gray-50 transition-all duration-200 border border-gray-200 hover:border-green-300"
                 onClick={toggleLanguagePopup}
@@ -184,8 +184,7 @@ const Header: React.FC = () => {
                   />
                 </svg>
               </div>
-              {/* TODO will do later */}
-              {/* {isLanguagePopupOpen && (
+              {isLanguagePopupOpen && (
                 <div className="absolute right-0 mt-2 w-40 bg-white shadow-xl rounded-xl border border-gray-200 z-10 overflow-hidden">
                   <div className="py-2">
                     {[
@@ -209,8 +208,8 @@ const Header: React.FC = () => {
                     ))}
                   </div>
                 </div>
-              )} */}
-            </div>
+              )}
+            </div> */}
           </nav>
 
           {/* Enhanced User Menu */}
