@@ -9,17 +9,28 @@ interface UserLayoutProps {
 const UserLayout: React.FC<UserLayoutProps> = ({ children }) => {
   return (
     <>
-      <div className="container mx-auto px-4 min-h-screen md:block hidden">
-        <div className="grid grid-cols-12 gap-4 mt-10">
-          <div className="col-span-12 lg:col-span-3">
+      <div className="min-h-screen bg-gray-50 md:block hidden">
+        <div className="flex">
+          {/* Sidebar */}
+          <div className="w-72 min-h-screen bg-white shadow-sm">
             <Sidebar />
           </div>
-          <main className="col-span-12 lg:col-span-9">{children}</main>
+          
+          {/* Main Content */}
+          <main className="flex-1 p-8">
+            <div className="max-w-7xl mx-auto">
+              {children}
+            </div>
+          </main>
         </div>
       </div>
-      <div className=" mt-10 md:hidden">
+      
+      {/* Mobile Layout */}
+      <div className="mt-10 md:hidden">
         <MobileSettingsMenu />
-        <main className="col-span-12">{children}</main>
+        <main className="px-4">
+          {children}
+        </main>
       </div>
     </>
   );

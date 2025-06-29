@@ -79,3 +79,13 @@ export const getUserQuoteEnquiries = async () => {
     throw error;
   }
 };
+
+export const getSidebarList = async () => {
+  try {
+    const response = await axiosInstance.get("/auth/side-bar");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching sidebar list:", error);
+    throw error;
+  }
+}  

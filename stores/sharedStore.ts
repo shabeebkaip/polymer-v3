@@ -5,6 +5,21 @@ import {
   getSellers,
 } from "@/apiServices/shared";
 import { getBuyerOpportunities, getSuppliersSpecialDeals } from "@/apiServices/dealsAndRequests";
+import { getSidebarList } from "@/apiServices/user";
+
+interface SidebarSubItem {
+  displayName: string;
+  route: string;
+  icon?: string;
+}
+
+interface SidebarItem {
+  displayName: string;
+  route: string;
+  user: string;
+  icon?: string;
+  subItems?: SidebarSubItem[];
+}
 
 interface SharedState {
   industries: any[];
@@ -12,22 +27,26 @@ interface SharedState {
   sellers: any[];
   buyerOpportunities: any[];
   suppliersSpecialDeals: any[];
+  sidebarItems: SidebarItem[];
   industriesLoading: boolean;
   familiesLoading: boolean;
   sellersLoading: boolean;
   buyerOpportunitiesLoading: boolean;
   suppliersSpecialDealsLoading: boolean;
+  sidebarLoading: boolean;
   fetchIndustries: () => Promise<void>;
   fetchProductFamilies: () => Promise<void>;
   fetchSellers: () => Promise<void>;
   fetchBuyerOpportunities: () => Promise<void>;
   fetchSuppliersSpecialDeals: () => Promise<void>;
+  fetchSidebarItems: () => Promise<void>;
   // Setter methods for SSR hydration
   setIndustries: (industries: any[]) => void;
   setProductFamilies: (families: any[]) => void;
   setSellers: (sellers: any[]) => void;
   setBuyerOpportunities: (opportunities: any[]) => void;
   setSuppliersSpecialDeals: (deals: any[]) => void;
+  setSidebarItems: (items: SidebarItem[]) => void;
 }
 
 export const useSharedState = create<SharedState>((set, get) => ({
@@ -36,11 +55,13 @@ export const useSharedState = create<SharedState>((set, get) => ({
   sellers: [],
   buyerOpportunities: [],
   suppliersSpecialDeals: [],
+  sidebarItems: [],
   industriesLoading: true,
   familiesLoading: true,
   sellersLoading: true,
   buyerOpportunitiesLoading: true,
   suppliersSpecialDealsLoading: true,
+  sidebarLoading: true,
 
   fetchIndustries: async () => {
     const state = get();
@@ -117,6 +138,29 @@ export const useSharedState = create<SharedState>((set, get) => ({
     }
   },
 
+  fetchSidebarItems: async () => {
+    set({ sidebarLoading: true });
+
+    try {
+      const res = await getSidebarList();
+      
+      // Handle different response structures
+      let sidebarData = [];
+      if (res?.data && Array.isArray(res.data)) {
+        sidebarData = res.data;
+      } else if (Array.isArray(res)) {
+        sidebarData = res;
+      } else if (res?.data?.data && Array.isArray(res.data.data)) {
+        sidebarData = res.data.data;
+      }
+      
+      set({ sidebarItems: sidebarData, sidebarLoading: false });
+    } catch (err) {
+      console.error("Failed to fetch sidebar items", err);
+      set({ sidebarLoading: false });
+    }
+  },
+
   // Setter methods for SSR hydration
   setIndustries: (industries) => {
     console.log("setIndustries called with:", industries?.length);
@@ -141,5 +185,10 @@ export const useSharedState = create<SharedState>((set, get) => ({
   setSuppliersSpecialDeals: (suppliersSpecialDeals) => {
     console.log("setSuppliersSpecialDeals called with:", suppliersSpecialDeals?.length);
     set({ suppliersSpecialDeals, suppliersSpecialDealsLoading: false });
+  },
+
+  setSidebarItems: (sidebarItems) => {
+    console.log("setSidebarItems called with:", sidebarItems?.length);
+    set({ sidebarItems, sidebarLoading: false });
   },
 }));

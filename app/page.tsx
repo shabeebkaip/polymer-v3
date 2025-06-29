@@ -1,8 +1,3 @@
-import Hero from "@/components/home/Hero";
-import Categories from "@/components/home/Categories";
-import ProductsByBrand from "@/components/home/ProductsByBrand";
-import Benefits from "@/components/home/Benefits";
-import FeaturedSuppliers from "@/components/home/FeaturedSuppliers";
 import {
   getIndustryList,
   getProductFamilies,
@@ -11,8 +6,7 @@ import {
 import { getBenefitsOfBuyers, getBenefitsOfSuppliers } from "@/apiServices/cms";
 import { getBuyerOpportunities, getSuppliersSpecialDeals } from "@/apiServices/dealsAndRequests";
 import { HomePageData } from "@/types/home";
-import HomeDataProvider from "@/components/providers/HomeDataProvider";
-import DealsAndRequests from "@/components/home/DealsAndRequests";
+import HomePageClient from "@/components/pages/HomePageClient";
 
 // Enable static generation with revalidation for better performance
 // export const revalidate = 300; // Revalidate every 5 minutes
@@ -73,18 +67,7 @@ export default async function HomePage() {
           : [],
     };
     
-    return (
-      <HomeDataProvider initialData={homeData}>
-        <div className="space-y-4 md:space-y-6 lg:space-y-8 bg-gradient-to-b from-white via-gray-50 to-white">
-          <Hero />
-          <DealsAndRequests />
-          <Categories />
-          <ProductsByBrand />
-          <FeaturedSuppliers />
-          <Benefits />
-        </div>
-      </HomeDataProvider>
-    );
+    return <HomePageClient initialData={homeData} />;
   } catch (error) {
     console.error("Failed to fetch home page data:", error);
 
@@ -99,17 +82,6 @@ export default async function HomePage() {
       suppliersSpecialDeals: [],
     };
 
-    return (
-      <HomeDataProvider initialData={emptyData}>
-        <div className="space-y-4 md:space-y-6 lg:space-y-8 bg-gradient-to-b from-white via-gray-50 to-white">
-          <Hero />
-          <DealsAndRequests />
-          <Categories />
-          <ProductsByBrand />
-          <FeaturedSuppliers />
-          <Benefits />
-        </div>
-      </HomeDataProvider>
-    );
+    return <HomePageClient initialData={emptyData} />;
   }
 }
