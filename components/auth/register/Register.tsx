@@ -12,14 +12,13 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Cookies from "js-cookie";
 import { toast } from "sonner";
 import { Eye, EyeOff } from "lucide-react";
-import countryCodesList from "country-codes-list";
 
 import Input from "@/components/shared/Input";
 import { getIndustryList, imageUpload } from "@/apiServices/shared";
 import { register } from "@/apiServices/auth";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getCountryList } from "@/lib/useCountries";
 import { useUserInfo } from "@/lib/useUserInfo";
+import { set } from "nprogress";
 
 interface Industry {
   _id: string;
@@ -62,6 +61,7 @@ const Register: React.FC = () => {
   const [industryList, setIndustryList] = useState<Industry[]>([]);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<RegisterData>({
     firstName: "",
     lastName: "",
@@ -83,6 +83,7 @@ const Register: React.FC = () => {
   const countries = useMemo<Country[]>(() => {
     return getCountryList().filter((c): c is Country => c !== null);
   }, []);
+
   useEffect(() => {
     getIndustryList().then((response) => {
       const industries = response?.data?.map((item: any) => ({
@@ -115,15 +116,44 @@ const Register: React.FC = () => {
 
     try {
       const { fileUrl } = await imageUpload(formData);
-      // ✅ Update state with uploaded URL
       setData((prev) => ({ ...prev, company_logo: fileUrl }));
     } catch (error) {
       console.error("File upload failed", error);
-      // optionally show toast or error message
     }
   };
 
+  const validateForm = () => {
+    // Basic validation
+    if (!data.firstName || !data.lastName || !data.email || !data.password || !data.confirmPassword) {
+      return "Please fill in all required fields.";
+    }
+
+    // Password confirmation
+    if (data.password !== data.confirmPassword) {
+      return "Passwords do not match.";
+    }
+
+    // Seller-specific validation
+    if (data.user_type === "seller") {
+      if (!data.vat_number || data.vat_number.trim() === "") {
+        return "VAT number is required for sellers.";
+      }
+      if (!data.company_logo || data.company_logo.trim() === "") {
+        return "Company logo is required for sellers.";
+      }
+    }
+
+    return null;
+  };
+
   const handleSubmit = async () => {
+    const validationError = validateForm();
+    if (validationError) {
+      toast.error(validationError);
+      return;
+    }
+
+    setIsLoading(true);
     const toastId = toast.loading("Registering user...");
 
     try {
@@ -136,45 +166,84 @@ const Register: React.FC = () => {
         Cookies.set("token", response.token);
         Cookies.set("userInfo", JSON.stringify(response.userInfo));
         setUser(response.userInfo);
+        router.push("/");
         setTimeout(() => router.push("/"), 1000);
       } else {
         toast.error(response?.message || "Registration failed.");
+        setIsLoading(false);
       }
     } catch (error) {
       toast.dismiss(toastId);
       console.error("Register error:", error);
       toast.error("An unexpected error occurred during registration.");
+      setIsLoading(false);
     }
   };
-  console.log("data", data);
+
+  const isFormValid = () => {
+    // Basic validation
+    if (!data.firstName || !data.lastName || !data.email || !data.password || !data.confirmPassword) {
+      return false;
+    }
+
+    // Seller-specific validation
+    if (data.user_type === "seller") {
+      if (!data.vat_number || data.vat_number.trim() === "" || !data.company_logo || data.company_logo.trim() === "") {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
   return (
-    <div className="flex flex-col items-start justify-center gap-6">
-      <Image
-        src="/typography.svg"
-        alt="Logo"
-        width={100}
-        height={50}
-        className="h-16 w-auto cursor-pointer"
-        onClick={() => router.push("/")}
-      />
+    <div className="flex flex-col items-center justify-center gap-2 w-full">
+      {/* Logo Section */}
+      <div className="text-center">
+        <Image
+          src="/typography.svg"
+          alt="Logo"
+          width={70}
+          height={35}
+          className="h-7 w-auto cursor-pointer hover:opacity-80 transition-opacity mx-auto"
+          onClick={() => router.push("/")}
+        />
+      </div>
 
-      <h4 className="text-4xl text-[var(--dark-main)]">Signup</h4>
+      {/* Header Section */}
+      <div className="text-center space-y-0 max-w-2xl">
+        <h1 className="text-lg font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+          Create Your Account
+        </h1>
+        <p className="text-gray-600 text-xs">Join the Polymer Marketplace</p>
+      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
-        <div className="col-span-3">
+      {/* Registration Form */}
+      <div className="w-full max-w-5xl">
+        {/* Company Logo Upload Section */}
+        <div className="mb-2 text-center">
+          <p className="text-xs font-medium text-gray-700 mb-1">
+            Logo {data.user_type === "seller" ? "(Required)" : "(Optional)"}
+          </p>
           {data?.company_logo ? (
-            <>
-              <Avatar
-                className="w-16 h-16"
+            <div className="flex flex-col items-center gap-0">
+              <div
+                className="w-10 h-10 border border-green-100 shadow cursor-pointer hover:scale-105 transition-transform rounded-full bg-gradient-to-br from-green-100 to-emerald-100 flex items-center justify-center"
                 onClick={handleAvatarClick}
-                style={{ cursor: "pointer" }}
               >
-                <AvatarImage src={data?.company_logo} alt="Company Logo" />
-                <AvatarFallback>
-                  {data?.company?.charAt(0) || "C"}
-                </AvatarFallback>
-              </Avatar>
-
+                <img
+                  src={data.company_logo}
+                  alt="Company Logo"
+                  className="w-full h-full object-cover rounded-full"
+                />
+              </div>
+              <button
+                type="button"
+                onClick={handleAvatarClick}
+                className="text-xs text-green-600 hover:text-green-700 font-medium mt-1"
+              >
+                Change
+              </button>
               <input
                 type="file"
                 accept="image/*"
@@ -182,19 +251,30 @@ const Register: React.FC = () => {
                 onChange={onFileChange}
                 className="hidden"
               />
-            </>
+            </div>
           ) : (
             <div
-              className="relative w-fit cursor-pointer"
+              className="inline-flex items-center gap-2 px-3 py-1 border border-dashed border-green-300 rounded-lg hover:border-green-400 cursor-pointer transition-colors bg-green-50/50 hover:bg-green-50"
               onClick={() => fileInputRef.current?.click()}
             >
-              <Image
-                src="/assets/Upload Photo.png"
-                alt="Upload"
-                width={100}
-                height={50}
-                className="rounded-md object-contain"
-              />
+              <div className="w-5 h-5 bg-gradient-to-br from-green-100 to-emerald-100 rounded-full flex items-center justify-center">
+                <svg
+                  className="w-3 h-3 text-green-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                  />
+                </svg>
+              </div>
+              <span className="text-xs text-green-700 font-medium">
+                Upload Logo
+              </span>
               <input
                 type="file"
                 accept="image/*"
@@ -206,145 +286,235 @@ const Register: React.FC = () => {
           )}
         </div>
 
-        <Input
-          id="firstName"
-          placeholder="First Name"
-          value={data.firstName}
-          onChange={onFieldChange}
-        />
-        <Input
-          id="lastName"
-          placeholder="Last Name"
-          value={data.lastName}
-          onChange={onFieldChange}
-        />
-        <Input
-          id="email"
-          type="email"
-          placeholder="Email"
-          value={data.email}
-          onChange={onFieldChange}
-        />
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+          {/* Personal Information */}
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-gray-700">
+              First Name
+            </label>
+            <Input
+              id="firstName"
+              placeholder="Enter first name"
+              value={data.firstName}
+              onChange={onFieldChange}
+              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+            />
+          </div>
 
-        <div className="w-full flex">
-          <select
-            id="country_code"
-            value={data.country_code}
-            onChange={onFieldChange}
-            className="rounded-l-lg border border-gray-300 px-3 py-2 bg-white text-sm"
-          >
-            {countries?.map((c, idx) => (
-              <option key={idx} value={c.dialCode}>
-                {c.code} {c.dialCode}
-              </option>
-            ))}
-          </select>
-          <input
-            type="text"
-            id="phone"
-            placeholder="Phone"
-            value={data.phone}
-            onChange={onFieldChange}
-            className="w-full rounded-r-lg border border-l-0 border-gray-300 px-4 py-2 text-sm"
-          />
-        </div>
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-gray-700">
+              Last Name
+            </label>
+            <Input
+              id="lastName"
+              placeholder="Enter last name"
+              value={data.lastName}
+              onChange={onFieldChange}
+              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+            />
+          </div>
 
-        <Input
-          id="company"
-          placeholder="Company"
-          value={data.company}
-          onChange={onFieldChange}
-        />
-        <Input
-          id="website"
-          placeholder="Website"
-          value={data.website}
-          onChange={onFieldChange}
-        />
-        <Input
-          id="vat_number"
-          placeholder="VAT Number"
-          value={data.vat_number || ""}
-          onChange={onFieldChange}
-        />
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-gray-700">
+              Email Address
+            </label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="Enter email address"
+              value={data.email}
+              onChange={onFieldChange}
+              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+            />
+          </div>
 
-        <select
-          id="industry"
-          value={data.industry}
-          onChange={onFieldChange}
-          className="w-full border border-gray-300 rounded-md px-4 py-2"
-        >
-          <option value="">Select Industry</option>
-          {industryList.map((item) => (
-            <option key={item._id} value={item._id}>
-              {item.name}
-            </option>
-          ))}
-        </select>
+          {/* Phone Number with Country Code */}
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-gray-700">
+              Phone Number
+            </label>
+            <div className="flex rounded-lg border border-gray-300 focus-within:ring-2 focus-within:ring-green-500 focus-within:border-transparent transition-all duration-200">
+              <select
+                id="country_code"
+                value={data.country_code}
+                onChange={onFieldChange}
+                className="px-2 py-2 bg-gray-50 text-xs border-r border-gray-300 rounded-l-lg focus:outline-none focus:bg-white"
+              >
+                {countries?.map((c, idx) => (
+                  <option key={idx} value={c.dialCode}>
+                    {c.code} {c.dialCode}
+                  </option>
+                ))}
+              </select>
+              <input
+                type="text"
+                id="phone"
+                placeholder="Phone number"
+                value={data.phone}
+                onChange={onFieldChange}
+                className="flex-1 px-3 py-2 text-sm rounded-r-lg border-0 focus:outline-none"
+              />
+            </div>
+          </div>
 
-        <select
-          id="location"
-          value={data.location}
-          onChange={onFieldChange}
-          className="w-full border border-gray-300 rounded-md px-4 py-2"
-        >
-          <option value="">Select Location</option>
-          {countries.map((c, idx) => (
-            <option key={idx} value={c.name}>
-              {c.name}
-            </option>
-          ))}
-        </select>
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-gray-700">
+              Company Name
+            </label>
+            <Input
+              id="company"
+              placeholder="Enter company name"
+              value={data.company}
+              onChange={onFieldChange}
+              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+            />
+          </div>
 
-        <Input
-          id="address"
-          placeholder="Address"
-          value={data.address}
-          onChange={onFieldChange}
-          className="col-span-2"
-        />
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-gray-700">Website</label>
+            <Input
+              id="website"
+              placeholder="https://company.com"
+              value={data.website}
+              onChange={onFieldChange}
+              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+            />
+          </div>
 
-        <div className="relative w-full">
-          <Input
-            id="password"
-            type={showPassword ? "text" : "password"}
-            value={data.password}
-            onChange={onFieldChange}
-            placeholder="Password"
-            className="w-full pr-10"
-          />
-          <div
-            className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
-            onClick={() => setShowPassword(!showPassword)}
-          >
-            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-gray-700">
+              VAT Number {data.user_type === "seller" ? "(Required)" : ""}
+            </label>
+            <Input
+              id="vat_number"
+              placeholder="Enter VAT number"
+              value={data.vat_number || ""}
+              onChange={onFieldChange}
+              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+            />
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-gray-700">
+              Industry
+            </label>
+            <select
+              id="industry"
+              value={data.industry}
+              onChange={onFieldChange}
+              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 bg-white"
+            >
+              <option value="">Select Industry</option>
+              {industryList.map((item) => (
+                <option key={item._id} value={item._id}>
+                  {item.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-gray-700">
+              Location
+            </label>
+            <select
+              id="location"
+              value={data.location}
+              onChange={onFieldChange}
+              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 bg-white"
+            >
+              <option value="">Select Location</option>
+              {countries.map((c, idx) => (
+                <option key={idx} value={c.name}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="space-y-1 lg:col-span-2">
+            <label className="text-xs font-medium text-gray-700">Address</label>
+            <Input
+              id="address"
+              placeholder="Enter full address"
+              value={data.address}
+              onChange={onFieldChange}
+              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+            />
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-gray-700">
+              Password
+            </label>
+            <div className="relative">
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                value={data.password}
+                onChange={onFieldChange}
+                placeholder="Create password"
+                className="w-full px-3 py-2 pr-10 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+              />
+              <button
+                type="button"
+                className="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            </div>
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-gray-700">
+              Confirm Password
+            </label>
+            <div className="relative">
+              <Input
+                id="confirmPassword"
+                type={showConfirmPassword ? "text" : "password"}
+                value={data.confirmPassword}
+                onChange={onFieldChange}
+                placeholder="Confirm password"
+                className="w-full px-3 py-2 pr-10 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+              />
+              <button
+                type="button"
+                className="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              >
+                {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            </div>
+          </div>
+
+          {/* Register Button */}
+          <div className="lg:col-span-4 pt-2">
+            <button
+              onClick={handleSubmit}
+              disabled={!isFormValid()}
+              className="w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-medium rounded-lg 
+                       hover:from-green-700 hover:to-emerald-700 focus:outline-none focus:ring-4 focus:ring-green-300 
+                       disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02] 
+                       transition-all duration-200 shadow-lg hover:shadow-xl"
+            >
+              {isLoading ? "Creating Account..." : "Create Account"}
+            </button>
           </div>
         </div>
 
-        <div className="relative w-full">
-          <Input
-            id="confirmPassword"
-            type={showConfirmPassword ? "text" : "password"}
-            value={data.confirmPassword}
-            onChange={onFieldChange}
-            placeholder="Confirm Password"
-            className="w-full pr-10"
-          />
-          <div
-            className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
-            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-          >
-            {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-          </div>
-        </div>
-
-        <div className="col-span-2">
-          <button
-            onClick={handleSubmit}
-            className="w-full px-4 py-3 bg-gradient-to-r from-[var(--green-gradient-from)] via-[var(--green-gradient-via)] to-[var(--green-gradient-to)] text-white rounded-lg hover:opacity-90 transition"
-          >
-            Register
-          </button>
+        {/* Sign In Link */}
+        <div className="text-center pt-1">
+          <p className="text-gray-600 text-xs">
+            Already have an account?{" "}
+            <button
+              onClick={() => router.push("/auth/login")}
+              className="font-medium text-green-600 hover:text-green-700 transition-colors hover:underline"
+            >
+              Sign in here
+            </button>
+          </p>
         </div>
       </div>
     </div>
