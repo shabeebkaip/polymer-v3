@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { ChevronDown } from "lucide-react";
+import { createPortal } from "react-dom";
 
 // Updated interface to match the API response structure
 interface FilterDataItem {
@@ -29,9 +30,29 @@ interface FilterTopProps {
 const FilterTop: React.FC<FilterTopProps> = ({ filters, onFilterChange, query }) => {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [searchTerms, setSearchTerms] = useState<Record<string, string>>({});
+  const [dropdownPosition, setDropdownPosition] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
+  const buttonRefs = useRef<{ [key: string]: HTMLButtonElement | null }>({});
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const toggleDropdown = (filterName: string) => {
-    setOpenDropdown(openDropdown === filterName ? null : filterName);
+    if (openDropdown === filterName) {
+      setOpenDropdown(null);
+    } else {
+      // Calculate position for the dropdown
+      const button = buttonRefs.current[filterName];
+      if (button) {
+        const rect = button.getBoundingClientRect();
+        setDropdownPosition({
+          top: rect.bottom + window.scrollY + 8,
+          left: rect.left + window.scrollX
+        });
+      }
+      setOpenDropdown(filterName);
+    }
   };
 
   const getSelectedCount = (filter: FilterSection) => {
@@ -41,6 +62,8 @@ const FilterTop: React.FC<FilterTopProps> = ({ filters, onFilterChange, query })
 
   const handleOptionChange = (filterName: string, optionId: string | boolean, isChecked: boolean) => {
     onFilterChange(filterName, String(optionId), isChecked);
+    // Close dropdown after selection for better UX
+    setOpenDropdown(null);
   };
 
   const isOptionSelected = (filter: FilterSection, optionId: string | boolean) => {
@@ -64,12 +87,29 @@ const FilterTop: React.FC<FilterTopProps> = ({ filters, onFilterChange, query })
     }));
   };
 
+  // Handle escape key to close dropdown
+  React.useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setOpenDropdown(null);
+      }
+    };
+
+    if (openDropdown) {
+      document.addEventListener('keydown', handleEscape);
+      return () => document.removeEventListener('keydown', handleEscape);
+    }
+  }, [openDropdown]);
+
   return (
-    <div className="flex flex-wrap gap-3 mb-2">
+    <div className="flex flex-wrap gap-3 mb-2 relative">
       {filters?.map((filter) => (
         <div key={filter.name} className="relative">
           {/* Dropdown Button */}
           <button
+            ref={(el) => {
+              buttonRefs.current[filter.name] = el;
+            }}
             type="button"
             onClick={() => toggleDropdown(filter.name)}
             className={`group flex items-center gap-2 px-4 py-3 border rounded-xl bg-white hover:bg-gray-50 transition-all duration-200 text-sm min-w-[140px] shadow-sm hover:shadow-md transform hover:scale-[1.02] ${
@@ -94,118 +134,126 @@ const FilterTop: React.FC<FilterTopProps> = ({ filters, onFilterChange, query })
           </button>
 
           {/* Dropdown Content */}
-          {openDropdown === filter.name && (
+          {openDropdown === filter.name && mounted && createPortal(
             <>
               {/* Backdrop */}
               <div 
-                className="fixed inset-0 z-10" 
+                className="fixed inset-0 z-[999999]" 
                 onClick={() => setOpenDropdown(null)}
               />
               
               {/* Dropdown Menu */}
-              <div className="absolute top-full left-0 mt-2 w-80 bg-white border border-gray-200 rounded-xl shadow-xl z-20 max-h-80 overflow-hidden backdrop-blur-sm">
-                {/* Header */}
-                <div className="px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-emerald-50/30">
-                  <div className="flex items-center justify-between">
-                    <span className="font-semibold text-gray-900 flex items-center gap-2">
-                      <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
-                      {filter.displayName}
-                    </span>
-                    {getSelectedCount(filter) > 0 && (
-                      <button
-                        onClick={() => {
-                          const selectedValues = query[filter.name] || [];
-                          selectedValues.forEach((value: string) => {
-                            onFilterChange(filter.name, value, false);
-                          });
-                        }}
-                        className="text-xs text-red-600 hover:text-red-800 px-3 py-1.5 rounded-full hover:bg-red-50 transition-colors duration-200 font-medium border border-red-200 hover:border-red-300"
-                      >
-                        Clear All
-                      </button>
-                    )}
-                  </div>
-                </div>
-                
-                <div className="p-2">
-                  {/* Search Box for searchable filters */}
-                  {filter.searchable && (
-                    <div className="mb-3 p-2">
-                      <div className="relative">
-                        <svg className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                        <input
-                          type="text"
-                          placeholder={`Search ${filter.displayName.toLowerCase()}...`}
-                          value={searchTerms[filter.name] || ''}
-                          className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-gray-50 focus:bg-white transition-all duration-200"
-                          onChange={(e) => handleSearchChange(filter.name, e.target.value)}
-                        />
-                      </div>
-                    </div>
-                  )}
-                  
-                  <div className="space-y-1 max-h-60 overflow-y-auto">
-                    {getFilteredData(filter)?.map((option, index) => {
-                      const optionId = option._id;
-                      const isSelected = isOptionSelected(filter, optionId);
-                      
-                      return (
-                        <label
-                          key={index}
-                          className={`flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg cursor-pointer transition-all duration-150 group ${
-                            isSelected ? 'bg-emerald-50 border border-emerald-200' : 'hover:border hover:border-gray-200'
-                          }`}
-                        >
-                          <input
-                            type="checkbox"
-                            checked={isSelected}
-                            onChange={(e) => handleOptionChange(filter.name, optionId, e.target.checked)}
-                            className="w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500 focus:ring-2 transition-colors duration-200"
-                          />
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center justify-between">
-                              <span className={`text-sm truncate transition-colors duration-150 ${
-                                isSelected ? 'text-emerald-700 font-medium' : 'text-gray-900 group-hover:text-gray-700'
-                              }`}>
-                                {option.name}
-                              </span>
-                              <span className={`text-xs ml-3 flex-shrink-0 px-2 py-1 rounded-full font-medium ${
-                                isSelected ? 'bg-emerald-200 text-emerald-800' : 'bg-gray-100 text-gray-600'
-                              }`}>
-                                {option.count}
-                              </span>
-                            </div>
-                          </div>
-                        </label>
-                      );
-                    })}
-                  </div>
-                  
-                  {getFilteredData(filter)?.length === 0 && (
-                    <div className="p-6 text-center">
-                      <div className="inline-flex items-center justify-center w-12 h-12 bg-gray-100 rounded-full mb-3">
-                        <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                      </div>
-                      <p className="text-gray-500 text-sm font-medium">
-                        {searchTerms[filter.name] ? 'No matching options found' : 'No options available'}
-                      </p>
-                      {searchTerms[filter.name] && (
-                        <button
-                          onClick={() => handleSearchChange(filter.name, '')}
-                          className="text-xs text-emerald-600 hover:text-emerald-800 mt-2 font-medium"
-                        >
-                          Clear search
-                        </button>
-                      )}
-                    </div>
+              <div 
+                className="fixed w-80 bg-white border border-gray-200 rounded-xl shadow-2xl z-[9999999] max-h-80 overflow-hidden"
+                style={{
+                  top: dropdownPosition.top,
+                  left: dropdownPosition.left
+                }}>
+              {/* Header */}
+              <div className="px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-emerald-50/30">
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold text-gray-900 flex items-center gap-2">
+                    <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
+                    {filter.displayName}
+                  </span>
+                  {getSelectedCount(filter) > 0 && (
+                    <button
+                      onClick={() => {
+                        const selectedValues = query[filter.name] || [];
+                        selectedValues.forEach((value: string) => {
+                          onFilterChange(filter.name, value, false);
+                        });
+                        // Close dropdown after clearing all for better UX
+                        setOpenDropdown(null);
+                      }}
+                      className="text-xs text-red-600 hover:text-red-800 px-3 py-1.5 rounded-full hover:bg-red-50 transition-colors duration-200 font-medium border border-red-200 hover:border-red-300"
+                    >
+                      Clear All
+                    </button>
                   )}
                 </div>
               </div>
-            </>
+              
+              <div className="p-2">
+                {/* Search Box for searchable filters */}
+                {filter.searchable && (
+                  <div className="mb-3 p-2">
+                    <div className="relative">
+                      <svg className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
+                      <input
+                        type="text"
+                        placeholder={`Search ${filter.displayName.toLowerCase()}...`}
+                        value={searchTerms[filter.name] || ''}
+                        className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-gray-50 focus:bg-white transition-all duration-200"
+                        onChange={(e) => handleSearchChange(filter.name, e.target.value)}
+                      />
+                    </div>
+                  </div>
+                )}
+                
+                <div className="space-y-1 max-h-60 overflow-y-auto">
+                  {getFilteredData(filter)?.map((option, index) => {
+                    const optionId = option._id;
+                    const isSelected = isOptionSelected(filter, optionId);
+                    
+                    return (
+                      <label
+                        key={index}
+                        className={`flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg cursor-pointer transition-all duration-150 group ${
+                          isSelected ? 'bg-emerald-50 border border-emerald-200' : 'hover:border hover:border-gray-200'
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={(e) => handleOptionChange(filter.name, optionId, e.target.checked)}
+                          className="w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500 focus:ring-2 transition-colors duration-200"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between">
+                            <span className={`text-sm truncate transition-colors duration-150 ${
+                              isSelected ? 'text-emerald-700 font-medium' : 'text-gray-900 group-hover:text-gray-700'
+                            }`}>
+                              {option.name}
+                            </span>
+                            <span className={`text-xs ml-3 flex-shrink-0 px-2 py-1 rounded-full font-medium ${
+                              isSelected ? 'bg-emerald-200 text-emerald-800' : 'bg-gray-100 text-gray-600'
+                            }`}>
+                              {option.count}
+                            </span>
+                          </div>
+                        </div>
+                      </label>
+                    );
+                  })}
+                </div>
+                
+                {getFilteredData(filter)?.length === 0 && (
+                  <div className="p-6 text-center">
+                    <div className="inline-flex items-center justify-center w-12 h-12 bg-gray-100 rounded-full mb-3">
+                      <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
+                    </div>
+                    <p className="text-gray-500 text-sm font-medium">
+                      {searchTerms[filter.name] ? 'No matching options found' : 'No options available'}
+                    </p>
+                    {searchTerms[filter.name] && (
+                      <button
+                        onClick={() => handleSearchChange(filter.name, '')}
+                        className="text-xs text-emerald-600 hover:text-emerald-800 mt-2 font-medium"
+                      >
+                        Clear search
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+            </>,
+            document.body
           )}
         </div>
       ))}
