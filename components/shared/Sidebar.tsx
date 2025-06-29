@@ -1,38 +1,57 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { 
-  UserRound, 
-  ClipboardList, 
-  BookCopy, 
-  Package, 
-  FileText, 
-  DollarSign, 
-  ShoppingCart, 
-  Mail,
+
+import {
+  User,
+  Settings,
+  ShieldCheck,
+  FileText,
+  LayoutDashboard,
+  Bell,
+  HelpCircle,
+  MessageCircle,
+  Package,
+  ClipboardList,
+  DollarSign,
+  Users,
+  TrendingUp,
+  ShoppingBag,
+  CreditCard,
+  Truck,
+  ShoppingCart,
+  Heart,
+  FlaskConical,
+  LogOut,
   ChevronDown,
   ChevronRight,
-  LogOut,
-  User,
-  Settings
 } from "lucide-react";
 import { Button } from "../ui/button";
 import Cookies from "js-cookie";
 import { useUserInfo } from "@/lib/useUserInfo";
 import { useSharedState } from "@/stores/sharedStore";
 
-// Icon mapping for dynamic icons
+// Icon mapping for dynamic icons - using exact Lucide icon names
 const iconMap: Record<string, React.ComponentType<any>> = {
-  UserRound,
-  ClipboardList,
-  BookCopy,
-  Package,
-  FileText,
-  DollarSign,
-  ShoppingCart,
-  Mail,
-  User,
-  Settings,
+  User: User,
+  Settings: Settings,
+  ShieldCheck: ShieldCheck,
+  FileText: FileText,
+  LayoutDashboard: LayoutDashboard,
+  Bell: Bell,
+  HelpCircle: HelpCircle,
+  MessageCircle: MessageCircle,
+  Package: Package,
+  ClipboardList: ClipboardList,
+  Flask: FlaskConical, // Map Flask to FlaskConical from Lucide
+  DollarSign: DollarSign,
+  Users: Users,
+  TrendingUp: TrendingUp,
+  ShoppingBag: ShoppingBag,
+  CreditCard: CreditCard,
+  Truck: Truck,
+  ShoppingCart: ShoppingCart,
+  Heart: Heart,
 };
 
 const Sidebar = () => {
@@ -56,7 +75,7 @@ const Sidebar = () => {
   };
 
   const toggleExpanded = (itemDisplayName: string) => {
-    setExpandedItems(prev => {
+    setExpandedItems((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(itemDisplayName)) {
         newSet.delete(itemDisplayName);
@@ -71,81 +90,49 @@ const Sidebar = () => {
   const fallbackSidebarList = [
     {
       displayName: "Profile",
-      user: "all",
-      icon: "UserRound",
       route: "/user/profile",
+      name: "profile",
+      icon: "User",
       subItems: [],
     },
     {
-      displayName: "Sample Requests",
-      route: "/user/sample-requests",
-      user: "buyer",
-      icon: "ClipboardList",
+      displayName: "Settings",
+      route: "/user/settings",
+      name: "settings",
+      icon: "Settings",
       subItems: [],
     },
     {
-      displayName: "Quote Requests",
-      route: "/user/quote-requests", 
-      user: "buyer",
-      icon: "BookCopy",
-      subItems: [],
-    },
-    {
-      displayName: "Products",
-      route: "/user/products",
-      user: "seller",
-      icon: "Package",
-      subItems: [],
-    },
-    {
-      displayName: "Sample Enquiries",
-      route: "/user/sample-enquiries",
-      user: "seller", 
-      icon: "ClipboardList",
-      subItems: [],
-    },
-    {
-      displayName: "Quote Enquiries",
-      route: "/user/quote-enquiries",
-      user: "seller",
-      icon: "ClipboardList",
+      displayName: "Dashboard",
+      route: "/user/dashboard",
+      name: "dashboard",
+      icon: "LayoutDashboard",
       subItems: [],
     },
   ];
 
   // Process and use API data when available
   let displaySidebarList: any[] = [];
-  
+
   if (sidebarLoading) {
     // Show loading skeleton
     displaySidebarList = [];
   } else if (sidebarItems && sidebarItems.length > 0) {
-    // Use API data - handle different possible API response structures
+    // Use API data directly since it matches the expected structure
     displaySidebarList = sidebarItems.map((item: any) => ({
-      ...item,
-      // Ensure all required properties exist and handle different API structures
-      displayName: item.displayName || item.name || "Unknown",
-      route: item.route || item.path || "#",
-      icon: item.icon || "UserRound",
-      subItems: item.subItems || item.items || [],
-      user: item.user || "all" // Default to show for all users if not specified
+      displayName: item.displayName,
+      route: item.route,
+      name: item.name,
+      icon: item.icon,
+      subItems: item.subItems || [],
     }));
-    
-    // Filter by user type if needed (though API should handle this)
-    if (user?.user_type) {
-      displaySidebarList = displaySidebarList.filter(
-        (item: any) => item.user === user.user_type || item.user === "all"
-      );
-    }
   } else {
-    // Use fallback data filtered by user type
-    displaySidebarList = fallbackSidebarList.filter(
-      (item) => item?.user === user?.user_type || item?.user === "all"
-    );
+    // Use minimal fallback data if API is not available
+    displaySidebarList = fallbackSidebarList;
   }
 
   const renderIcon = (iconName: string, className: string = "") => {
-    const IconComponent = iconMap[iconName] || UserRound;
+    const IconComponent = iconMap[iconName] || User; // Default to User icon if not found
     return <IconComponent className={`w-5 h-5 ${className}`} />;
   };
 
@@ -154,9 +141,9 @@ const Sidebar = () => {
   };
 
   const hasActiveSubItem = (subItems: any[] = []) => {
-    return subItems.some(subItem => isActiveRoute(subItem.route));
+    return subItems.some((subItem) => isActiveRoute(subItem.route));
   };
-  
+
   return (
     <div className="h-full bg-white border-r border-gray-200">
       {/* Header */}
@@ -169,7 +156,9 @@ const Sidebar = () => {
             <h3 className="font-semibold text-gray-900 text-sm">
               {user?.first_name} {user?.last_name}
             </h3>
-            <p className="text-xs text-gray-500 capitalize">{user?.user_type}</p>
+            <p className="text-xs text-gray-500 capitalize">
+              {user?.user_type}
+            </p>
           </div>
         </div>
       </div>
@@ -180,9 +169,12 @@ const Sidebar = () => {
           {sidebarLoading ? (
             // Loading skeleton
             <div className="space-y-2">
-              {Array.from({ length: 4 }).map((_, index) => (
-                <div key={index} className="flex items-center gap-3 p-3 animate-pulse">
-                  <div className="w-5 h-5 bg-gray-200 rounded"></div>
+              {Array.from({ length: 6 }).map((_, index) => (
+                <div
+                  key={index}
+                  className="flex items-center gap-3 p-3 animate-pulse"
+                >
+                  <div className="w-8 h-8 bg-gray-200 rounded-md"></div>
                   <div className="h-4 bg-gray-200 rounded flex-1"></div>
                 </div>
               ))}
@@ -196,14 +188,15 @@ const Sidebar = () => {
               const showAsActive = isActive || hasActiveChild;
 
               return (
-                <div key={item.displayName} className="space-y-1">
+                <div key={item.name || item.displayName} className="space-y-1">
                   {/* Main item */}
                   <div
                     className={`
                       flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all duration-200 group
-                      ${showAsActive 
-                        ? 'bg-blue-50 text-blue-700 border border-blue-200' 
-                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                      ${
+                        showAsActive
+                          ? "bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-sm"
+                          : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                       }
                     `}
                     onClick={() => {
@@ -215,15 +208,21 @@ const Sidebar = () => {
                     }}
                   >
                     {/* Icon */}
-                    <div className={`
+                    <div
+                      className={`
                       w-8 h-8 rounded-md flex items-center justify-center transition-colors
-                      ${showAsActive 
-                        ? 'bg-blue-100' 
-                        : 'bg-gray-100 group-hover:bg-gray-200'
+                      ${
+                        showAsActive
+                          ? "bg-emerald-100"
+                          : "bg-gray-100 group-hover:bg-gray-200"
                       }
-                    `}>
-                      {renderIcon(item.icon || "UserRound", 
-                        showAsActive ? "text-blue-600" : "text-gray-500 group-hover:text-gray-700"
+                    `}
+                    >
+                      {renderIcon(
+                        item.icon,
+                        showAsActive
+                          ? "text-emerald-600"
+                          : "text-gray-500 group-hover:text-gray-700"
                       )}
                     </div>
 
@@ -236,9 +235,9 @@ const Sidebar = () => {
                     {hasSubItems && (
                       <div className="w-5 h-5 flex items-center justify-center">
                         {isExpanded ? (
-                          <ChevronDown className="w-4 h-4" />
+                          <ChevronDown className="w-4 h-4 transition-transform duration-200" />
                         ) : (
-                          <ChevronRight className="w-4 h-4" />
+                          <ChevronRight className="w-4 h-4 transition-transform duration-200" />
                         )}
                       </div>
                     )}
@@ -246,32 +245,40 @@ const Sidebar = () => {
 
                   {/* Sub items */}
                   {hasSubItems && isExpanded && (
-                    <div className="ml-8 space-y-1 border-l-2 border-gray-100 pl-4">
+                    <div className="ml-8 space-y-1 border-l-2 border-emerald-100 pl-4">
                       {item.subItems?.map((subItem: any) => {
                         const isSubActive = isActiveRoute(subItem.route);
-                        
+
                         return (
                           <div
-                            key={subItem.displayName}
+                            key={subItem.name || subItem.displayName}
                             className={`
-                              flex items-center gap-3 p-2 rounded-md cursor-pointer transition-all duration-200
-                              ${isSubActive
-                                ? 'bg-blue-50 text-blue-700'
-                                : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700'
+                              flex items-center gap-3 p-2.5 rounded-md cursor-pointer transition-all duration-200
+                              ${
+                                isSubActive
+                                  ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                                  : "text-gray-500 hover:bg-gray-50 hover:text-gray-700"
                               }
                             `}
                             onClick={() => router.push(subItem.route)}
                           >
                             {/* Sub item icon */}
-                            <div className={`
+                            <div
+                              className={`
                               w-6 h-6 rounded flex items-center justify-center
-                              ${isSubActive ? 'bg-blue-100' : 'bg-gray-100'}
-                            `}>
-                              {renderIcon(subItem.icon || "FileText", 
-                                `w-3 h-3 ${isSubActive ? 'text-blue-600' : 'text-gray-400'}`
+                              ${isSubActive ? "bg-emerald-100" : "bg-gray-100"}
+                            `}
+                            >
+                              {renderIcon(
+                                subItem.icon,
+                                `w-3 h-3 ${
+                                  isSubActive
+                                    ? "text-emerald-600"
+                                    : "text-gray-400"
+                                }`
                               )}
                             </div>
-                            
+
                             {/* Sub item label */}
                             <span className="text-sm font-medium">
                               {subItem.displayName}
