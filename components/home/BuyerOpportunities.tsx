@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { ChevronLeft, ChevronRight, MapPin, Package, TrendingUp, Users, Clock, ArrowRight } from "lucide-react";
 import { useSharedState } from "@/stores/sharedStore";
+import { useUserInfo } from "@/lib/useUserInfo";
 
 interface Request {
   id: string;
@@ -31,6 +32,11 @@ interface Request {
 const BuyerOpportunities: React.FC = () => {
   const { buyerOpportunities, buyerOpportunitiesLoading } = useSharedState();
   const [currentSlide, setCurrentSlide] = useState(0);
+  const { user } = useUserInfo();
+  const userType = user?.user_type;
+  const isGuest = !user; // User is not logged in
+  const isBuyer = Boolean(user && userType === "buyer");
+  const isSeller = Boolean(user && userType === "seller");
 
   // Check if we have real data
   const hasRealData = Array.isArray(buyerOpportunities) && buyerOpportunities.length > 0;
@@ -114,6 +120,11 @@ const BuyerOpportunities: React.FC = () => {
       case "low": return "bg-green-100 text-green-800 border-green-200";
     }
   };
+
+  // Only show opportunities to sellers and guests, hide from buyers
+  if (isBuyer) {
+    return null;
+  }
 
   return (
     <div className="mb-12">
