@@ -31,7 +31,7 @@ const Hero: React.FC = () => {
       />
 
       <div className="relative z-10 container mx-auto px-4 sm:px-6">
-        <div className="flex flex-col items-center justify-center text-center mt-8 md:mt-16">
+        <div className="flex flex-col items-center justify-center text-center mt-6 md:mt-12">
           <div className="relative">
             <Image
               src="/assets/hero_element_1.svg"
@@ -56,7 +56,7 @@ const Hero: React.FC = () => {
             </h1>
           </div>
 
-          <p className="text-[var(--text-gray-secondary)] text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl mt-6 sm:mt-8 lg:mt-10 max-w-xs sm:max-w-md md:max-w-2xl lg:max-w-4xl font-normal animate-fade-in-up-delayed-2 px-4 leading-relaxed">
+          <p className="text-[var(--text-gray-secondary)] text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl mt-4 sm:mt-6 lg:mt-8 max-w-xs sm:max-w-md md:max-w-2xl lg:max-w-4xl font-normal animate-fade-in-up-delayed-2 px-4 leading-relaxed">
             Your gateway to premium polymers in the Middle East and beyond. Connect with verified suppliers, 
             access quality materials, and accelerate your manufacturing projects with confidence.
           </p>
@@ -68,14 +68,14 @@ const Hero: React.FC = () => {
         <HeroSearch />
       </div>
 
-      <div className="relative z-10 container mx-auto px-4 sm:px-6 mt-6 sm:mt-8 lg:mt-10">
+      <div className="relative z-10 container mx-auto px-4 sm:px-6 mt-4 sm:mt-6 lg:mt-8">
         <div className="flex flex-col items-center justify-center text-center">
           {/* Stats Section */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 w-full max-w-xs sm:max-w-md md:max-w-2xl lg:max-w-4xl animate-fade-in-up-delayed-4">
             {stats.map((stat, index) => (
               <div 
                 key={index} 
-                className="text-center group hover:scale-105 transition-transform duration-300 p-3 sm:p-4"
+                className="text-center group hover:scale-105 transition-transform duration-300 p-2 sm:p-3"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
                 <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-bold text-green-700 mb-1 sm:mb-2 animate-count-up">
@@ -89,7 +89,7 @@ const Hero: React.FC = () => {
           </div>
 
           {/* Trust Indicators */}
-          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 md:gap-4 lg:gap-6 mt-8 sm:mt-10 lg:mt-12 animate-fade-in-up-delayed-5 px-4">
+          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 md:gap-4 lg:gap-6 mt-6 sm:mt-8 lg:mt-10 animate-fade-in-up-delayed-5 px-4">
             <div className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 bg-green-50 rounded-full border border-green-200">
               <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-500 rounded-full animate-pulse"></div>
               <span className="text-xs sm:text-sm font-medium text-green-700 whitespace-nowrap">SASO Compliant</span>

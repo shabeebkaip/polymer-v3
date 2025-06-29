@@ -54,7 +54,7 @@ const ProductsByBrand: React.FC = () => {
   };
 
   return (
-    <div className="relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-green-50/30 py-16 lg:py-24">
+    <div className="relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-green-50/30 py-8 md:py-12 lg:py-16">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-30">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_25%,_rgba(34,197,94,0.1)_0%,_transparent_50%)]"></div>
@@ -62,9 +62,9 @@ const ProductsByBrand: React.FC = () => {
       </div>
       
       <div className="container mx-auto px-4 relative">
-        <div className="flex flex-col items-center gap-8 md:gap-12">
+        <div className="flex flex-col items-center gap-6 md:gap-8 lg:gap-10">
           {/* Enhanced Header with Trust Badge */}
-          <div className="text-center space-y-6">
+          <div className="text-center space-y-4 md:space-y-6">
             {/* Trust Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-medium">
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -73,7 +73,7 @@ const ProductsByBrand: React.FC = () => {
               Verified Suppliers
             </div>
             
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
+            <h1 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-gray-900 leading-tight">
               Browse Products by{" "}
               <span className="relative">
                 <span className="bg-gradient-to-r from-green-600 via-emerald-600 to-green-700 bg-clip-text text-transparent">
@@ -83,7 +83,7 @@ const ProductsByBrand: React.FC = () => {
               </span>
             </h1>
             
-            <p className="text-gray-600 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
+            <p className="text-gray-600 text-base md:text-lg lg:text-xl max-w-3xl mx-auto leading-relaxed">
               Discover premium polymer products from our network of trusted manufacturers and suppliers across Saudi Arabia and the GCC region
             </p>
           </div>

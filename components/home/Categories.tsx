@@ -61,11 +61,11 @@ const Categories: React.FC = () => {
       ? industries.length
       : productFamilies.length) > 9 && !isMobile;
   return (
-    <section className="container mx-auto px-4 sm:px-6 py-8 sm:py-12 lg:py-16">
-      <div className="flex flex-col items-center gap-6 sm:gap-8 lg:gap-12">
+    <section className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 lg:py-12">
+      <div className="flex flex-col items-center gap-4 sm:gap-6 lg:gap-8">
         {/* Enhanced Header */}
-        <div className="text-center space-y-3 sm:space-y-4">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-center bg-gradient-to-r from-gray-900 via-green-800 to-gray-900 bg-clip-text text-transparent leading-tight">
+        <div className="text-center space-y-2 sm:space-y-3">
+          <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-center bg-gradient-to-r from-gray-900 via-green-800 to-gray-900 bg-clip-text text-transparent leading-tight">
             Discover Our Products
           </h1>
           <p className="text-gray-600 text-sm sm:text-base lg:text-lg max-w-xs sm:max-w-md md:max-w-2xl mx-auto leading-relaxed">

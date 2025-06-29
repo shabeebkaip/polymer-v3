@@ -6,22 +6,22 @@ import { useCmsStore } from "@/stores/cms";
 const Benefits: React.FC = () => {
   const { buyersBenefits, suppliersBenefits } = useCmsStore();
   return (
-    <section className="bg-gradient-to-br from-gray-50 via-white to-green-50/30 py-12 sm:py-16 lg:py-20">
+    <section className="bg-gradient-to-br from-gray-50 via-white to-green-50/30 py-8 sm:py-12 lg:py-16">
       <div className="container mx-auto px-4 sm:px-6">
-        <div className="flex flex-col items-center gap-8 sm:gap-12 lg:gap-16">
+        <div className="flex flex-col items-center gap-6 sm:gap-8 lg:gap-12">
           {/* Enhanced Header Section */}
-          <div className="flex flex-col items-center justify-center text-center gap-4 sm:gap-6 max-w-xs sm:max-w-2xl lg:max-w-4xl">
-            <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-green-100 text-green-700 rounded-full text-xs sm:text-sm font-medium mb-2">
+          <div className="flex flex-col items-center justify-center text-center gap-3 sm:gap-4 lg:gap-6 max-w-xs sm:max-w-2xl lg:max-w-4xl">
+            <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-green-100 text-green-700 rounded-full text-xs sm:text-sm font-medium mb-1">
               <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-500 rounded-full animate-pulse"></div>
               Why Choose Us
             </div>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight">
+            <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold leading-tight">
               Unique Advantages of{" "}
               <span className="bg-gradient-to-r from-[var(--green-gradient-from)] via-[var(--green-gradient-via)] to-[var(--green-gradient-to)] bg-clip-text text-transparent animate-gradient">
                 Polymers Hub
               </span>
             </h1>
-            <p className="text-[var(--text-gray-tertiary)] font-normal text-sm sm:text-base lg:text-lg xl:text-xl text-center max-w-xs sm:max-w-lg md:max-w-2xl lg:max-w-3xl leading-relaxed">
+            <p className="text-[var(--text-gray-tertiary)] font-normal text-sm sm:text-base lg:text-lg text-center max-w-xs sm:max-w-lg md:max-w-2xl lg:max-w-3xl leading-relaxed">
               Experience the future of polymer trading with our comprehensive platform. Whether you're sourcing 
               quality materials or expanding your market reach, we provide the tools and network to accelerate your success.
             </p>
@@ -29,7 +29,7 @@ const Benefits: React.FC = () => {
 
           {/* Enhanced Benefits Grid */}
           <div className="w-full max-w-7xl">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
               <div className="group hover:scale-105 transition-all duration-300">
                 <BenefitCard
                   subtitle="Free For Buyers"
