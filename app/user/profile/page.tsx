@@ -125,44 +125,52 @@ const Profile = () => {
                   `${user?.firstName || ""} ${user?.lastName || ""}`.trim() || user?.company || "User"
                 )}
               </CardTitle>
-              <p className="text-gray-600 capitalize">
-                {userLoading ? (
+              {userLoading ? (
+                <div className="text-gray-600 capitalize">
                   <Skeleton className="h-4 w-20 mx-auto mt-2" />
-                ) : (
-                  user?.user_type || "Member"
-                )}
-              </p>
+                </div>
+              ) : (
+                <p className="text-gray-600 capitalize">
+                  {user?.user_type || "Member"}
+                </p>
+              )}
             </CardHeader>
             <CardContent className="pt-4">
               <div className="space-y-4">
                 <div className="flex items-center gap-3 text-gray-600">
                   <Mail className="w-4 h-4 text-emerald-600" />
-                  <span className="text-sm">
-                    {userLoading ? <Skeleton className="h-4 w-32" /> : user?.email}
-                  </span>
+                  {userLoading ? (
+                    <Skeleton className="h-4 w-32" />
+                  ) : (
+                    <span className="text-sm">{user?.email}</span>
+                  )}
                 </div>
                 <div className="flex items-center gap-3 text-gray-600">
                   <Phone className="w-4 h-4 text-emerald-600" />
-                  <span className="text-sm">
-                    {userLoading ? (
-                      <Skeleton className="h-4 w-24" />
-                    ) : (
-                      `${user?.country_code || ""} ${user?.phone || ""}`.trim() || "Not provided"
-                    )}
-                  </span>
+                  {userLoading ? (
+                    <Skeleton className="h-4 w-24" />
+                  ) : (
+                    <span className="text-sm">
+                      {`${user?.country_code || ""} ${user?.phone || ""}`.trim() || "Not provided"}
+                    </span>
+                  )}
                 </div>
                 <div className="flex items-center gap-3 text-gray-600">
                   <MapPin className="w-4 h-4 text-emerald-600" />
-                  <span className="text-sm">
-                    {userLoading ? <Skeleton className="h-4 w-28" /> : user?.location || "Not provided"}
-                  </span>
+                  {userLoading ? (
+                    <Skeleton className="h-4 w-28" />
+                  ) : (
+                    <span className="text-sm">{user?.location || "Not provided"}</span>
+                  )}
                 </div>
                 {user?.website && (
                   <div className="flex items-center gap-3 text-gray-600">
                     <Globe className="w-4 h-4 text-emerald-600" />
-                    <span className="text-sm truncate">
-                      {userLoading ? <Skeleton className="h-4 w-32" /> : user?.website}
-                    </span>
+                    {userLoading ? (
+                      <Skeleton className="h-4 w-32" />
+                    ) : (
+                      <span className="text-sm truncate">{user?.website}</span>
+                    )}
                   </div>
                 )}
               </div>

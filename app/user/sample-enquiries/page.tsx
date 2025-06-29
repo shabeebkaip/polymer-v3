@@ -81,6 +81,118 @@ const SampleEnquiries = () => {
   };
   return (
     <div className="container mx-auto py-6 px-4 max-w-7xl">
+      {loading ? (
+        /* Full Page Loader */
+        <div className="space-y-8">
+          {/* Header Section Skeleton */}
+          <div className="mb-8">
+            <div className="flex items-center justify-between flex-wrap gap-4">
+              <div className="flex items-center gap-3">
+                <Skeleton className="w-10 h-10 rounded-lg" />
+                <div>
+                  <Skeleton className="h-8 w-48 mb-2" />
+                  <Skeleton className="h-4 w-64" />
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-3">
+                <Skeleton className="h-10 w-20 rounded-md" />
+                <Skeleton className="h-10 w-20 rounded-md" />
+              </div>
+            </div>
+
+            {/* Stats Cards Skeleton */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-6">
+              {Array.from({ length: 4 }).map((_, index) => (
+                <Card key={index} className="border-0 shadow-sm bg-gradient-to-br from-gray-50 to-gray-100/50">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-2">
+                        <Skeleton className="h-4 w-24" />
+                        <Skeleton className="h-8 w-12" />
+                      </div>
+                      <Skeleton className="w-10 h-10 rounded-lg" />
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+
+          {/* Search Section Skeleton */}
+          <Card className="mb-6 border-0 shadow-sm">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-4">
+                <div className="relative flex-1 max-w-md">
+                  <Skeleton className="h-10 w-full rounded-md" />
+                </div>
+                <Skeleton className="h-4 w-32" />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Table Section Skeleton */}
+          <Card className="border-0 shadow-sm">
+            <CardHeader className="pb-4">
+              <div className="flex items-center gap-2">
+                <Skeleton className="w-5 h-5 rounded" />
+                <Skeleton className="h-6 w-32" />
+              </div>
+            </CardHeader>
+            <CardContent className="p-0">
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-gray-50/50">
+                      <TableHead><Skeleton className="h-4 w-12" /></TableHead>
+                      <TableHead><Skeleton className="h-4 w-20" /></TableHead>
+                      <TableHead><Skeleton className="h-4 w-16" /></TableHead>
+                      <TableHead><Skeleton className="h-4 w-12" /></TableHead>
+                      <TableHead><Skeleton className="h-4 w-14" /></TableHead>
+                      <TableHead><Skeleton className="h-4 w-20" /></TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {Array.from({ length: 8 }).map((_, index) => (
+                      <TableRow key={index}>
+                        <TableCell><Skeleton className="h-4 w-8" /></TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-3">
+                            <Skeleton className="w-10 h-10 rounded-lg" />
+                            <div className="space-y-1">
+                              <Skeleton className="h-4 w-32" />
+                              <Skeleton className="h-3 w-16" />
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <Skeleton className="w-4 h-4 rounded" />
+                            <Skeleton className="h-4 w-24" />
+                          </div>
+                        </TableCell>
+                        <TableCell><Skeleton className="h-6 w-16 rounded-full" /></TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <Skeleton className="w-8 h-8 rounded-full" />
+                            <div className="space-y-1">
+                              <Skeleton className="h-4 w-36" />
+                              <Skeleton className="h-3 w-24" />
+                            </div>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      ) : (
+        /* Actual Content */
+        <>
       {/* Header Section */}
       <div className="mb-8">
         <div className="flex items-center justify-between flex-wrap gap-4">
@@ -116,7 +228,7 @@ const SampleEnquiries = () => {
                 <div>
                   <p className="text-emerald-600 text-sm font-medium">Total Enquiries</p>
                   <p className="text-2xl font-bold text-emerald-900">
-                    {loading ? "--" : enquiries.length}
+                    {enquiries.length}
                   </p>
                 </div>
                 <div className="w-10 h-10 bg-emerald-200 rounded-lg flex items-center justify-center">
@@ -132,7 +244,7 @@ const SampleEnquiries = () => {
                 <div>
                   <p className="text-blue-600 text-sm font-medium">Pending</p>
                   <p className="text-2xl font-bold text-blue-900">
-                    {loading ? "--" : enquiries.filter(e => e.status?.toLowerCase() === "pending").length}
+                    {enquiries.filter(e => e.status?.toLowerCase() === "pending").length}
                   </p>
                 </div>
                 <div className="w-10 h-10 bg-blue-200 rounded-lg flex items-center justify-center">
@@ -148,7 +260,7 @@ const SampleEnquiries = () => {
                 <div>
                   <p className="text-green-600 text-sm font-medium">Approved</p>
                   <p className="text-2xl font-bold text-green-900">
-                    {loading ? "--" : enquiries.filter(e => e.status?.toLowerCase() === "approved").length}
+                    {enquiries.filter(e => e.status?.toLowerCase() === "approved").length}
                   </p>
                 </div>
                 <div className="w-10 h-10 bg-green-200 rounded-lg flex items-center justify-center">
@@ -164,7 +276,7 @@ const SampleEnquiries = () => {
                 <div>
                   <p className="text-purple-600 text-sm font-medium">This Month</p>
                   <p className="text-2xl font-bold text-purple-900">
-                    {loading ? "--" : enquiries.filter(e => {
+                    {enquiries.filter(e => {
                       const enquiryDate = new Date(e.createdAt);
                       const currentDate = new Date();
                       return enquiryDate.getMonth() === currentDate.getMonth() && 
@@ -235,19 +347,7 @@ const SampleEnquiries = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {loading ? (
-                    // Loading skeleton
-                    Array.from({ length: 5 }).map((_, index) => (
-                      <TableRow key={index}>
-                        <TableCell><Skeleton className="h-4 w-8" /></TableCell>
-                        <TableCell><Skeleton className="h-4 w-32" /></TableCell>
-                        <TableCell><Skeleton className="h-4 w-20" /></TableCell>
-                        <TableCell><Skeleton className="h-4 w-24" /></TableCell>
-                        <TableCell><Skeleton className="h-6 w-16 rounded-full" /></TableCell>
-                        <TableCell><Skeleton className="h-4 w-36" /></TableCell>
-                      </TableRow>
-                    ))
-                  ) : filteredEnquiries.length === 0 ? (
+                  {filteredEnquiries.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={6} className="text-center py-12">
                         <div className="flex flex-col items-center gap-4">
@@ -348,6 +448,8 @@ const SampleEnquiries = () => {
           )}
         </CardContent>
       </Card>
+        </>
+      )}
     </div>
   );
 };
