@@ -28,7 +28,7 @@ export const createFinanceRequest = async (data: any) => {
     console.error("Error creating finance request:", error);
     throw error;
   }
-}
+};
 
 export const getUserInfo = async () => {
   try {
@@ -40,9 +40,22 @@ export const getUserInfo = async () => {
   }
 };
 
-export const getUserQuoteRequests = async () => {
+export const getUserQuoteRequests = async (params?: {
+  page?: number;
+  limit?: number;
+  search?: string;
+  status?: string;
+}) => {
   try {
-    const response = await axiosInstance.get("/quote-request/history");
+    const queryParams = new URLSearchParams();
+    
+    if (params?.page) queryParams.append('page', params.page.toString());
+    if (params?.limit) queryParams.append('limit', params.limit.toString());
+    if (params?.search) queryParams.append('search', params.search);
+    if (params?.status) queryParams.append('status', params.status);
+    
+    const url = `/quote-request/history${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+    const response = await axiosInstance.get(url);
     return response.data;
   } catch (error) {
     console.error("Error fetching user quote requests:", error);
@@ -58,13 +71,15 @@ export const getUserSampleRequests = async (params?: {
 }) => {
   try {
     const queryParams = new URLSearchParams();
-    
-    if (params?.page) queryParams.append('page', params.page.toString());
-    if (params?.limit) queryParams.append('limit', params.limit.toString());
-    if (params?.search) queryParams.append('search', params.search);
-    if (params?.status) queryParams.append('status', params.status);
-    
-    const url = `/sample-request/history${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+
+    if (params?.page) queryParams.append("page", params.page.toString());
+    if (params?.limit) queryParams.append("limit", params.limit.toString());
+    if (params?.search) queryParams.append("search", params.search);
+    if (params?.status) queryParams.append("status", params.status);
+
+    const url = `/sample-request/history${
+      queryParams.toString() ? `?${queryParams.toString()}` : ""
+    }`;
     const response = await axiosInstance.get(url);
     return response.data;
   } catch (error) {
@@ -101,4 +116,63 @@ export const getSidebarList = async () => {
     console.error("Error fetching sidebar list:", error);
     throw error;
   }
-}  
+};
+
+export const getSampleRequestDetail = async (id: string) => {
+  try {
+    const response = await axiosInstance.get(`/sample-request/history/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching sample request detail:", error);
+    throw error;
+  }
+};
+
+export const updateSampleRequestStatus = async (
+  id: string,
+  data: {
+    status:
+      | "pending"
+      | "responded"
+      | "sent"
+      | "delivered"
+      | "approved"
+      | "rejected"
+      | "cancelled";
+    statusMessage: string;
+  }
+) => {
+  try {
+    const response = await axiosInstance.patch(
+      `/sample-request/status/${id}`,
+      data
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error updating sample request status:", error);
+    throw error;
+  }
+};
+
+export const getQuoteRequestDetail = async (id: string) => {
+  try {
+    const response = await axiosInstance.get(`/quote-request/history/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching quote request detail:", error);
+    throw error;
+  }
+};
+
+export const updateQuoteRequestStatus = async (id: string, data: {
+  status: "pending" | "responded" | "negotiation" | "approved" | "rejected" | "cancelled" | "fulfilled";
+  statusMessage: string;
+}) => {
+  try {
+    const response = await axiosInstance.patch(`/quote-request/status/${id}`, data);
+    return response.data;
+  } catch (error) {
+    console.error("Error updating quote request status:", error);
+    throw error;
+  }
+};
