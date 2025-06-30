@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { ChevronLeft, ChevronRight, MapPin, Package, TrendingUp, Users, Clock, ArrowRight } from "lucide-react";
 import { useSharedState } from "@/stores/sharedStore";
 import { useUserInfo } from "@/lib/useUserInfo";
+import { useRouter } from "next/navigation";
 
 interface Request {
   id: string;
@@ -205,7 +206,7 @@ const BuyerOpportunities: React.FC = () => {
                 <div className="flex gap-4 px-4 overflow-x-auto scrollbar-hide pb-2">
                   {displayRequests.map((request) => (
                     <div key={request.id} className="flex-shrink-0 w-[calc(90.91%-0.5rem)]">
-                      <RequestCard request={request} getUrgencyColor={getUrgencyColor} />
+                      <RequestCard request={request} getUrgencyColor={getUrgencyColor} isGuest={isGuest} isSeller={isSeller} />
                     </div>
                   ))}
                 </div>
@@ -214,7 +215,7 @@ const BuyerOpportunities: React.FC = () => {
               <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {getCurrentRequests().map((request) => (
                   <div key={request.id} className="group">
-                    <RequestCard request={request} getUrgencyColor={getUrgencyColor} />
+                    <RequestCard request={request} getUrgencyColor={getUrgencyColor} isGuest={isGuest} isSeller={isSeller} />
                   </div>
                 ))}
               </div>
@@ -251,95 +252,127 @@ const BuyerOpportunities: React.FC = () => {
 };
 
 // Request Card Component
-const RequestCard: React.FC<{ request: Request; getUrgencyColor: (urgency: "low" | "medium" | "high") => string }> = ({ request, getUrgencyColor }) => (
-  <div className="bg-white rounded-xl shadow border hover:shadow-xl transition-all duration-200 overflow-hidden group">
-    {/* Header */}
-    <div className="bg-purple-700 text-white px-4 py-2 text-xs font-semibold flex items-center justify-between">
-      <span className="flex items-center gap-2">
-        <Users className="w-4 h-4" />
-        BULK ORDER REQUEST
-      </span>
-      <span className={`px-2 py-1 rounded text-xs font-bold border ${getUrgencyColor(request.urgency)}`}>
-        {request.urgency.toUpperCase()} PRIORITY
-      </span>
-    </div>
+const RequestCard: React.FC<{ 
+  request: Request; 
+  getUrgencyColor: (urgency: "low" | "medium" | "high") => string;
+  isGuest: boolean;
+  isSeller: boolean;
+}> = ({ request, getUrgencyColor, isGuest, isSeller }) => {
+  const router = useRouter();
+  
+  const handleButtonClick = () => {
+    if (isGuest) {
+      // Redirect to signup page for guests
+      router.push("/auth/register");
+    } else if (isSeller) {
+      // Handle quote submission for sellers
+      console.log("Submitting quote for request:", request.id);
+      // Add your quote submission logic here
+    }
+  };
 
-    <div className="p-5">
-      {/* Product Request Info */}
-      <h4 className="font-bold text-base text-gray-900 mb-1 line-clamp-1">{request.product}</h4>
-      <p className="text-gray-700 text-xs mb-3 line-clamp-2">{request.description}</p>
+  const getButtonText = () => {
+    if (isGuest) {
+      return "Sign Up to Submit Quote";
+    } else if (isSeller) {
+      return "Submit Quote";
+    }
+    return "View Request";
+  };
 
-      {/* Buyer Info */}
-      <div className="flex items-center gap-3 mb-3 p-2 bg-purple-50 rounded-lg">
-        <div className="w-8 h-8 bg-purple-100 rounded flex items-center justify-center">
-          <Users className="w-4 h-4 text-purple-600" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <h3 className="font-medium text-gray-900 text-sm truncate">{request.buyer.company}</h3>
-            {request.buyer.verified && (
-              <div className="bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-bold border border-green-200">
-                ✓
-              </div>
-            )}
-          </div>
-          <div className="flex items-center gap-2 text-xs text-gray-600">
-            <MapPin className="w-3 h-3" />
-            <span className="truncate">{request.buyer.location}</span>
-          </div>
-        </div>
+  return (
+    <div className="bg-white rounded-xl shadow border hover:shadow-xl transition-all duration-200 overflow-hidden group">
+      {/* Header */}
+      <div className="bg-purple-700 text-white px-4 py-2 text-xs font-semibold flex items-center justify-between">
+        <span className="flex items-center gap-2">
+          <Users className="w-4 h-4" />
+          BULK ORDER REQUEST
+        </span>
+        <span className={`px-2 py-1 rounded text-xs font-bold border ${getUrgencyColor(request.urgency)}`}>
+          {request.urgency.toUpperCase()} PRIORITY
+        </span>
       </div>
 
-      {/* Request Details */}
-      <div className="grid grid-cols-2 gap-3 mb-3">
-        <div className="bg-gray-50 p-3 rounded-lg">
-          <div className="flex items-center gap-2 mb-1">
-            <Package className="w-3 h-3 text-gray-400" />
-            <span className="text-xs text-gray-500 uppercase font-semibold">Quantity</span>
+      <div className="p-5">
+        {/* Product Request Info */}
+        <h4 className="font-bold text-base text-gray-900 mb-1 line-clamp-1">{request.product}</h4>
+        <p className="text-gray-700 text-xs mb-3 line-clamp-2">{request.description}</p>
+
+        {/* Buyer Info */}
+        <div className="flex items-center gap-3 mb-3 p-2 bg-purple-50 rounded-lg">
+          <div className="w-8 h-8 bg-purple-100 rounded flex items-center justify-center">
+            <Users className="w-4 h-4 text-purple-600" />
           </div>
-          <p className="font-bold text-purple-700 text-sm">{request.quantity}</p>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <h3 className="font-medium text-gray-900 text-sm truncate">{request.buyer.company}</h3>
+              {request.buyer.verified && (
+                <div className="bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-bold border border-green-200">
+                  ✓
+                </div>
+              )}
+            </div>
+            <div className="flex items-center gap-2 text-xs text-gray-600">
+              <MapPin className="w-3 h-3" />
+              <span className="truncate">{request.buyer.location}</span>
+            </div>
+          </div>
         </div>
 
-        <div className="bg-blue-50 p-3 rounded-lg">
-          <div className="flex items-center gap-2 mb-1">
-            <Clock className="w-3 h-3 text-blue-400" />
-            <span className="text-xs text-blue-500 uppercase font-semibold">Deadline</span>
+        {/* Request Details */}
+        <div className="grid grid-cols-2 gap-3 mb-3">
+          <div className="bg-gray-50 p-3 rounded-lg">
+            <div className="flex items-center gap-2 mb-1">
+              <Package className="w-3 h-3 text-gray-400" />
+              <span className="text-xs text-gray-500 uppercase font-semibold">Quantity</span>
+            </div>
+            <p className="font-bold text-purple-700 text-sm">{request.quantity}</p>
           </div>
-          <p className="font-bold text-blue-700 text-sm">{new Date(request.deadline).toLocaleDateString()}</p>
-        </div>
-      </div>
 
-      {/* Destination (if available) */}
-      {request.destination && (
-        <div className="bg-green-50 p-3 rounded-lg mb-3">
-          <div className="flex items-center gap-2 mb-1">
-            <MapPin className="w-3 h-3 text-green-400" />
-            <span className="text-xs text-green-500 uppercase font-semibold">Destination</span>
+          <div className="bg-blue-50 p-3 rounded-lg">
+            <div className="flex items-center gap-2 mb-1">
+              <Clock className="w-3 h-3 text-blue-400" />
+              <span className="text-xs text-blue-500 uppercase font-semibold">Deadline</span>
+            </div>
+            <p className="font-bold text-blue-700 text-sm">{new Date(request.deadline).toLocaleDateString()}</p>
           </div>
-          <p className="font-semibold text-green-700 text-sm">{request.destination}</p>
         </div>
-      )}
 
-      {/* Footer Info */}
-      <div className="flex items-center justify-between text-xs text-gray-600 mb-4">
-        <div className="flex items-center gap-1">
-          <TrendingUp className="w-4 h-4" />
-          <span>{request.responses} responses</span>
-        </div>
-        {request.budget && request.budget !== "Contact for quote" && (
-          <div className="font-semibold text-purple-700">
-            {request.budget}
+        {/* Destination (if available) */}
+        {request.destination && (
+          <div className="bg-green-50 p-3 rounded-lg mb-3">
+            <div className="flex items-center gap-2 mb-1">
+              <MapPin className="w-3 h-3 text-green-400" />
+              <span className="text-xs text-green-500 uppercase font-semibold">Destination</span>
+            </div>
+            <p className="font-semibold text-green-700 text-sm">{request.destination}</p>
           </div>
         )}
-      </div>
 
-      {/* Action Button */}
-      <button className="w-full bg-purple-700 text-white py-2 rounded font-medium border border-purple-800 hover:bg-purple-800 focus:outline-none focus:ring-2 focus:ring-purple-400 transition-all duration-200 flex items-center justify-center gap-2 shadow-sm focus:ring-offset-2 group">
-        <ArrowRight className="w-5 h-5 transition-transform duration-200 group-hover:translate-x-1" />
-        <span className="tracking-tight">Submit Quote</span>
-      </button>
+        {/* Footer Info */}
+        <div className="flex items-center justify-between text-xs text-gray-600 mb-4">
+          <div className="flex items-center gap-1">
+            <TrendingUp className="w-4 h-4" />
+            <span>{request.responses} responses</span>
+          </div>
+          {request.budget && request.budget !== "Contact for quote" && (
+            <div className="font-semibold text-purple-700">
+              {request.budget}
+            </div>
+          )}
+        </div>
+
+        {/* Action Button */}
+        <button 
+          onClick={handleButtonClick}
+          className="w-full bg-purple-700 text-white py-2 rounded font-medium border border-purple-800 hover:bg-purple-800 focus:outline-none focus:ring-2 focus:ring-purple-400 transition-all duration-200 flex items-center justify-center gap-2 shadow-sm focus:ring-offset-2 group"
+        >
+          <ArrowRight className="w-5 h-5 transition-transform duration-200 group-hover:translate-x-1" />
+          <span className="tracking-tight">{getButtonText()}</span>
+        </button>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default BuyerOpportunities;

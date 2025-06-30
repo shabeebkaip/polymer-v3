@@ -87,23 +87,24 @@ const Header: React.FC = () => {
   const navOptions =
     user?.user_type === "buyer"
       ? [
-          { href: "/user/profile", label: "Profile", icon: "👤" },
+          { href: "/user/profile", label: "Profile", icon: "👤", id: "profile" },
           {
             href: "/user/sample-requests",
             label: "Sample Requests",
             icon: "📋",
+            id: "sample-requests"
           },
-          { href: "/user/quote-requests", label: "Quote Requests", icon: "💼" },
-          { href: "", label: "Request Finance", icon: "💰" },
-          { href: "", label: "Post Open Requests", icon: "📝" },
+          { href: "/user/quote-requests", label: "Quote Requests", icon: "💼", id: "quote-requests" },
+          { href: "/user/finance", label: "Request Finance", icon: "💰", id: "finance" },
+          { href: "/user/open-requests", label: "Post Open Requests", icon: "📝", id: "open-requests" },
         ]
       : [
-          { href: "/user/profile", label: "Profile", icon: "👤" },
-          { href: "", label: "My Products", icon: "📦" },
-          { href: "", label: "Sample Request", icon: "📋" },
-          { href: "", label: "Sample Enquiries", icon: "💼" },
-          { href: "", label: "Post Offers", icon: "📝" },
-          { href: "", label: "Request Finance", icon: "💰" },
+          { href: "/user/profile", label: "Profile", icon: "👤", id: "profile" },
+          { href: "/user/products", label: "My Products", icon: "📦", id: "products" },
+          { href: "/user/sample-requests", label: "Sample Request", icon: "📋", id: "sample-request" },
+          { href: "/user/sample-enquiries", label: "Sample Enquiries", icon: "💼", id: "sample-enquiries" },
+          { href: "/user/offers", label: "Post Offers", icon: "📝", id: "offers" },
+          { href: "/user/finance", label: "Request Finance", icon: "💰", id: "finance" },
         ];
   return (
     <header className="bg-white/95 backdrop-blur-sm shadow-lg shadow-green-600/5 sticky top-0 z-20 border-b border-green-100/50">
@@ -265,7 +266,7 @@ const Header: React.FC = () => {
                 <div className="p-2">
                   {navOptions.map((item) => (
                     <button
-                      key={item.href}
+                      key={item.id}
                       onClick={() => handleNavigate(item.href)}
                       className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 text-left ${
                         pathname === item.href
