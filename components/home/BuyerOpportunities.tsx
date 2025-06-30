@@ -50,11 +50,11 @@ const BuyerOpportunities: React.FC = () => {
     try {
       if (Array.isArray(buyerOpportunities) && buyerOpportunities.length > 0) {
         // Transform API data to match our Request interface
-        return buyerOpportunities.map((item: any, index: number) => {
+        return buyerOpportunities.map((item: any) => {
           // Determine urgency based on delivery date or message content
           const deliveryDate = new Date(item.delivery_date);
           const daysUntilDelivery = Math.ceil((deliveryDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
-          const hasUrgentKeywords = item.message?.toLowerCase().includes('urgent') || item.message?.toLowerCase().includes('asap');
+          const hasUrgentKeywords = item.message?.toLowerCase().includes('urgent') || item.message?.toLowerCase().includes('asap') || item.message?.toLowerCase().includes('expedite');
           
           let urgency: "low" | "medium" | "high" = "medium";
           if (hasUrgentKeywords || daysUntilDelivery <= 7) {
@@ -68,19 +68,19 @@ const BuyerOpportunities: React.FC = () => {
           const transformedRequest = {
             id: item._id,
             type: "buyer-request" as const,
-            title: `${item.product?.productName || item.productName || 'Product Request'} - Bulk Order`,
+            title: `${item.product?.productName || 'Product Request'} - Buyer Opportunity`,
             buyer: {
-              company: item.user?.company || item.user?.companyName || item.buyerCompany || "Anonymous Company",
-              location: item.city && item.country ? `${item.city}, ${item.country}` : item.location || "Location not specified",
-              verified: item.status === 'approved' || item.user?.verified || false
+              company: item.user?.company || "Anonymous Company",
+              location: item.city && item.country ? `${item.city}, ${item.country}` : "Location not specified",
+              verified: item.status === 'approved'
             },
-            product: item.product?.productName || item.productName || "Product",
+            product: item.product?.productName || "Product",
             quantity: item.uom ? `${item.quantity} ${item.uom}` : `${item.quantity || 'N/A'}`,
-            budget: item.budget || "Contact for quote",
-            deadline: item.delivery_date || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-            description: item.message || `Bulk order requirement for ${item.product?.productName || item.productName || 'product'}${item.destination ? '. Delivery to ' + item.destination : ''}.`,
+            budget: "Contact for quote", // This field is not in the API response
+            deadline: item.delivery_date,
+            description: item.message || `Buyer opportunity for ${item.product?.productName || 'product'}${item.destination ? '. Delivery to ' + item.destination : ''}.`,
             urgency: urgency,
-            responses: item.responseMessage?.length || item.responses || 0,
+            responses: item.responseMessage?.length || item.statusMessage?.length || 0,
             // Additional fields from API
             destination: item.destination,
             sellerStatus: item.sellerStatus,
@@ -135,8 +135,8 @@ const BuyerOpportunities: React.FC = () => {
             <Users className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h3 className="text-xl font-semibold text-gray-900">Bulk Order Opportunities</h3>
-            <p className="text-gray-700 text-sm">Active bulk orders from verified buyers seeking suppliers</p>
+            <h3 className="text-xl font-semibold text-gray-900">Opportunities by Buyers</h3>
+            <p className="text-gray-700 text-sm">Active opportunities from verified buyers seeking suppliers</p>
           </div>
         </div>
         <span className="bg-gray-100 text-purple-700 px-3 py-1 rounded text-xs font-semibold border border-purple-200">
@@ -225,7 +225,7 @@ const BuyerOpportunities: React.FC = () => {
               <div className="bg-gray-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
                 <Users className="w-8 h-8 text-gray-400" />
               </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No Bulk Orders Available</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No Opportunities Available</h3>
               <p className="text-gray-600">Check back later for new opportunities from buyers.</p>
             </div>
           )}
@@ -286,7 +286,7 @@ const RequestCard: React.FC<{
       <div className="bg-purple-700 text-white px-4 py-2 text-xs font-semibold flex items-center justify-between">
         <span className="flex items-center gap-2">
           <Users className="w-4 h-4" />
-          BULK ORDER REQUEST
+          BUYER OPPORTUNITY
         </span>
         <span className={`px-2 py-1 rounded text-xs font-bold border ${getUrgencyColor(request.urgency)}`}>
           {request.urgency.toUpperCase()} PRIORITY
