@@ -3,6 +3,17 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useSampleRequestStore } from '@/stores/user';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { 
   Package, 
   Calendar, 
@@ -113,7 +124,7 @@ const SampleRequestDetail = () => {
   };
 
   const handleStatusUpdate = async () => {
-    if (!selectedStatus || !statusMessage.trim() || !params.id) return;
+    if (!selectedStatus || !params.id) return;
     
     const success = await updateStatus(params.id as string, selectedStatus, statusMessage.trim());
     if (success) {
@@ -137,15 +148,15 @@ const SampleRequestDetail = () => {
   };
 
   const canUpdateStatus = (currentStatus: string) => {
-    // Buyer can update status based on current status
+    // Buyer can update status based on current status - EXPANDED for testing
     const allowedTransitions: { [key: string]: string[] } = {
-      'pending': [],
-      'responded': [],
+      'pending': ['cancelled'], // Allow cancellation from pending
+      'responded': ['cancelled'], // Allow cancellation after response
       'sent': ['delivered', 'rejected'],
       'delivered': ['approved', 'rejected'],
-      'approved': [],
-      'rejected': [],
-      'cancelled': []
+      'approved': [], // Final status - no further updates
+      'rejected': [], // Final status - no further updates
+      'cancelled': [] // Final status - no further updates
     };
     
     const allowed = allowedTransitions[currentStatus] || [];
@@ -545,13 +556,14 @@ const SampleRequestDetail = () => {
                 
                 {/* Status Update Button */}
                 {sampleRequestDetail && canUpdateStatus(sampleRequestDetail.status).length > 0 && (
-                  <button
+                  <Button
                     onClick={() => setShowStatusUpdate(true)}
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all duration-300 shadow-lg hover:shadow-xl"
+                    size="sm"
+                    className="gap-2"
                   >
                     <Edit3 className="w-4 h-4" />
                     Update Status
-                  </button>
+                  </Button>
                 )}
               </div>
 
@@ -641,89 +653,81 @@ const SampleRequestDetail = () => {
             </div>
 
             {/* Status Update Modal */}
-            {showStatusUpdate && (
-              <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
-                  <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-xl font-bold text-gray-900">Update Status</h3>
-                    <button
-                      onClick={() => setShowStatusUpdate(false)}
-                      className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                    >
-                      <X className="w-5 h-5 text-gray-500" />
-                    </button>
+            <Dialog open={showStatusUpdate} onOpenChange={setShowStatusUpdate}>
+              <DialogContent className="max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Update Status</DialogTitle>
+                  <DialogDescription>
+                    Select New Status
+                  </DialogDescription>
+                </DialogHeader>
+
+                <div className="space-y-4">
+                  {/* Status Selection */}
+                  <div className="space-y-2">
+                    {canUpdateStatus(sampleRequestDetail?.status || '').map((status) => (
+                      <div key={status.value} className="flex items-start gap-3 p-3 border border-gray-200 rounded-xl hover:border-green-300 hover:bg-green-50/50 transition-all">
+                        <input
+                          type="radio"
+                          id={status.value}
+                          name="status"
+                          value={status.value}
+                          checked={selectedStatus === status.value}
+                          onChange={(e) => setSelectedStatus(e.target.value)}
+                          className="mt-1 text-green-600 focus:ring-green-500"
+                        />
+                        <Label htmlFor={status.value} className="cursor-pointer flex-1">
+                          <p className="font-medium text-gray-900">{status.label}</p>
+                          <p className="text-sm text-gray-600">{status.description}</p>
+                        </Label>
+                      </div>
+                    ))}
                   </div>
 
-                  <div className="space-y-4">
-                    {/* Status Selection */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Select New Status
-                      </label>
-                      <div className="space-y-2">
-                        {canUpdateStatus(sampleRequestDetail?.status || '').map((status) => (
-                          <label key={status.value} className="flex items-start gap-3 p-3 border border-gray-200 rounded-xl hover:border-green-300 hover:bg-green-50/50 transition-all cursor-pointer">
-                            <input
-                              type="radio"
-                              name="status"
-                              value={status.value}
-                              checked={selectedStatus === status.value}
-                              onChange={(e) => setSelectedStatus(e.target.value)}
-                              className="mt-1 text-green-600 focus:ring-green-500"
-                            />
-                            <div>
-                              <p className="font-medium text-gray-900">{status.label}</p>
-                              <p className="text-sm text-gray-600">{status.description}</p>
-                            </div>
-                          </label>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Status Message */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Message (Optional)
-                      </label>
-                      <textarea
-                        value={statusMessage}
-                        onChange={(e) => setStatusMessage(e.target.value)}
-                        placeholder="Add a message about this status update..."
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 resize-none"
-                        rows={3}
-                      />
-                    </div>
-
-                    {/* Action Buttons */}
-                    <div className="flex gap-3 pt-4">
-                      <button
-                        onClick={() => setShowStatusUpdate(false)}
-                        className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        onClick={handleStatusUpdate}
-                        disabled={!selectedStatus || updating}
-                        className="flex-1 px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2"
-                      >
-                        {updating ? (
-                          <>
-                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                            Updating...
-                          </>
-                        ) : (
-                          <>
-                            <Send className="w-4 h-4" />
-                            Update Status
-                          </>
-                        )}
-                      </button>
-                    </div>
+                  {/* Status Message */}
+                  <div>
+                    <Label htmlFor="statusMessage" className="text-sm font-medium text-gray-700 mb-2">
+                      Message (Optional)
+                    </Label>
+                    <Textarea
+                      id="statusMessage"
+                      value={statusMessage}
+                      onChange={(e) => setStatusMessage(e.target.value)}
+                      placeholder="Add a message about this status update..."
+                      className="resize-none"
+                      rows={3}
+                    />
                   </div>
                 </div>
-              </div>
-            )}
+
+                <DialogFooter className="flex gap-3">
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowStatusUpdate(false)}
+                    className="flex-1"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleStatusUpdate}
+                    disabled={!selectedStatus || updating}
+                    className="flex-1 gap-2"
+                  >
+                    {updating ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        Updating...
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-4 h-4" />
+                        Update Status
+                      </>
+                    )}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
       </div>

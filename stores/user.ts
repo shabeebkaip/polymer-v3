@@ -134,12 +134,16 @@ export const useSampleRequestStore = create<SampleRequestStore>((set, get) => ({
   updateStatus: async (id: string, status: string, statusMessage: string) => {
     set({ updating: true, error: null });
     try {
+      console.log("🔍 Store: Updating sample request status:", { id, status, statusMessage });
       const response = await updateSampleRequestStatus(id, { 
         status: status as any, 
         statusMessage 
       });
       
-      if (response.success) {
+      console.log("✅ Store: Sample request status response:", response);
+      
+      // Check if response has success property or just assume success if no error
+      if (response?.success !== false) {
         // Refresh the data after successful update
         const { fetchSampleRequestDetail } = get();
         await fetchSampleRequestDetail(id);
@@ -148,11 +152,12 @@ export const useSampleRequestStore = create<SampleRequestStore>((set, get) => ({
       } else {
         set({ 
           updating: false, 
-          error: "Failed to update status" 
+          error: response?.message || "Failed to update status" 
         });
         return false;
       }
     } catch (error) {
+      console.error("❌ Store: Error updating sample request status:", error);
       set({ 
         updating: false, 
         error: error instanceof Error ? error.message : "An error occurred" 
@@ -214,12 +219,16 @@ export const useQuoteRequestStore = create<QuoteRequestStore>((set, get) => ({
   updateStatus: async (id: string, status: string, statusMessage: string) => {
     set({ updating: true, error: null });
     try {
+      console.log("🔍 Store: Updating quote request status:", { id, status, statusMessage });
       const response = await updateQuoteRequestStatus(id, { 
         status: status as any, 
         statusMessage 
       });
       
-      if (response.success) {
+      console.log("✅ Store: Quote request status response:", response);
+      
+      // Check if response has success property or just assume success if no error
+      if (response?.success !== false) {
         // Refresh the data after successful update
         const { fetchQuoteRequestDetail } = get();
         await fetchQuoteRequestDetail(id);
@@ -228,11 +237,12 @@ export const useQuoteRequestStore = create<QuoteRequestStore>((set, get) => ({
       } else {
         set({ 
           updating: false, 
-          error: "Failed to update status" 
+          error: response?.message || "Failed to update status" 
         });
         return false;
       }
     } catch (error) {
+      console.error("❌ Store: Error updating quote request status:", error);
       set({ 
         updating: false, 
         error: error instanceof Error ? error.message : "An error occurred" 

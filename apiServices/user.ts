@@ -143,13 +143,24 @@ export const updateSampleRequestStatus = async (
   }
 ) => {
   try {
+    console.log("🔍 Updating sample request status:", { id, data });
     const response = await axiosInstance.patch(
       `/sample-request/status/${id}`,
       data
     );
+    console.log("✅ Sample request status updated successfully:", response.data);
     return response.data;
-  } catch (error) {
-    console.error("Error updating sample request status:", error);
+  } catch (error: any) {
+    console.error("❌ Error updating sample request status:", error);
+    if (error.response) {
+      console.error("Response data:", error.response.data);
+      console.error("Response status:", error.response.status);
+      console.error("Response headers:", error.response.headers);
+    } else if (error.request) {
+      console.error("Request was made but no response received:", error.request);
+    } else {
+      console.error("Error setting up request:", error.message);
+    }
     throw error;
   }
 };
@@ -164,15 +175,47 @@ export const getQuoteRequestDetail = async (id: string) => {
   }
 };
 
+// Debug function to test API connectivity
+export const testApiConnectivity = async () => {
+  try {
+    console.log("🔍 Testing API connectivity...");
+    const response = await axiosInstance.get("/user/profile");
+    console.log("✅ API connectivity test successful:", response.status);
+    return { success: true, status: response.status };
+  } catch (error: any) {
+    console.error("❌ API connectivity test failed:", error);
+    if (error.response) {
+      console.error("Response data:", error.response.data);
+      console.error("Response status:", error.response.status);
+    } else if (error.request) {
+      console.error("Request was made but no response received");
+    } else {
+      console.error("Error setting up request:", error.message);
+    }
+    return { success: false, error };
+  }
+};
+
 export const updateQuoteRequestStatus = async (id: string, data: {
   status: "pending" | "responded" | "negotiation" | "approved" | "rejected" | "cancelled" | "fulfilled";
   statusMessage: string;
 }) => {
   try {
+    console.log("🔍 Updating quote request status:", { id, data });
     const response = await axiosInstance.patch(`/quote-request/status/${id}`, data);
+    console.log("✅ Quote request status updated successfully:", response.data);
     return response.data;
-  } catch (error) {
-    console.error("Error updating quote request status:", error);
+  } catch (error: any) {
+    console.error("❌ Error updating quote request status:", error);
+    if (error.response) {
+      console.error("Response data:", error.response.data);
+      console.error("Response status:", error.response.status);
+      console.error("Response headers:", error.response.headers);
+    } else if (error.request) {
+      console.error("Request was made but no response received:", error.request);
+    } else {
+      console.error("Error setting up request:", error.message);
+    }
     throw error;
   }
 };
