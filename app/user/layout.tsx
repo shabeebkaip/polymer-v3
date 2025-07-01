@@ -1,6 +1,10 @@
+"use client";
+
 import MobileSettingsMenu from "@/components/shared/MobileSettings";
 import Sidebar from "@/components/shared/Sidebar";
 import UserPanelHeader from "@/components/shared/UserPanelHeader";
+import UserInitializer from "@/components/providers/UserInitializer";
+import { useAuthGuard } from "@/lib/useAuthGuard";
 import React, { ReactNode } from "react";
 
 interface UserLayoutProps {
@@ -8,8 +12,12 @@ interface UserLayoutProps {
 }
 
 const UserLayout: React.FC<UserLayoutProps> = ({ children }) => {
+  // Auth guard to protect all user routes
+  useAuthGuard();
+
   return (
     <>
+      <UserInitializer />
       <div className="min-h-screen bg-gray-50 md:block hidden">
         <div className="flex h-screen">
           {/* Sidebar */}

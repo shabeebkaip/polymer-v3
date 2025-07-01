@@ -640,3 +640,273 @@ export const useQuoteRequestsListStore = create<QuoteRequestsListStore>((set, ge
     });
   }
 }));
+
+// Finance Requests List Store
+interface FinanceRequestListItem {
+  _id: string;
+  userId: string;
+  productId: {
+    _id: string;
+    productName: string;
+  };
+  emiMonths: number;
+  quantity: number;
+  estimatedPrice: number;
+  notes: string;
+  status: "pending" | "approved" | "rejected" | "under_review" | "cancelled";
+  createdAt: string;
+  updatedAt: string;
+  __v?: number;
+}
+
+interface FinanceRequestsListResponse {
+  data: FinanceRequestListItem[];
+  total: number;
+  meta?: {
+    pagination: {
+      total: number;
+      totalPages: number;
+      currentPage: number;
+      limit: number;
+    };
+  };
+}
+
+interface FinanceRequestsListStore {
+  requests: FinanceRequestListItem[];
+  loading: boolean;
+  error: string | null;
+  currentPage: number;
+  totalPages: number;
+  totalRequests: number;
+  pageSize: number;
+  searchTerm: string;
+  statusFilter: string;
+  lastFetchParams: string | null;
+
+  setSearchTerm: (term: string) => void;
+  setStatusFilter: (status: string) => void;
+  setCurrentPage: (page: number) => void;
+  fetchFinanceRequests: (params?: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    status?: string;
+    forceRefresh?: boolean;
+  }) => Promise<void>;
+  clearFilters: () => void;
+  reset: () => void;
+}
+
+export const useFinanceRequestsListStore = create<FinanceRequestsListStore>((set, get) => ({
+  requests: [],
+  loading: false,
+  error: null,
+  currentPage: 1,
+  totalPages: 1,
+  totalRequests: 0,
+  pageSize: 10,
+  searchTerm: "",
+  statusFilter: "all",
+  lastFetchParams: null,
+
+  setSearchTerm: (term: string) => {
+    set({ searchTerm: term, currentPage: 1, lastFetchParams: null });
+  },
+
+  setStatusFilter: (status: string) => {
+    set({ statusFilter: status, currentPage: 1, lastFetchParams: null });
+  },
+
+  setCurrentPage: (page: number) => {
+    set({ currentPage: page });
+  },
+
+  fetchFinanceRequests: async (params = {}) => {
+    const state = get();
+    
+    // Build actual params
+    const actualParams = {
+      page: params.page ?? state.currentPage,
+      limit: params.limit ?? state.pageSize,
+      ...(params.search && { search: params.search }),
+      ...(params.status && params.status !== "all" && { status: params.status })
+    };
+
+    // Create a cache key to prevent duplicate calls
+    const cacheKey = JSON.stringify(actualParams);
+    
+    if ((state.lastFetchParams === cacheKey && !params.forceRefresh) || state.loading) {
+      console.log("🔄 Skipping duplicate/concurrent API call with params:", actualParams);
+      return;
+    }
+
+    try {
+      set({ loading: true, error: null, lastFetchParams: cacheKey });
+      console.log("🔍 Fetching finance requests from store with params:", actualParams);
+      
+      const { getFinanceRequests } = await import("@/apiServices/user");
+      const response = await getFinanceRequests();
+
+      if (response && response.data && Array.isArray(response.data)) {
+        const pagination = response.meta?.pagination;
+        
+        set({
+          requests: response.data,
+          totalRequests: pagination?.total || response.total || response.data.length,
+          totalPages: pagination?.totalPages || Math.ceil((response.total || response.data.length) / actualParams.limit),
+          currentPage: actualParams.page,
+          loading: false,
+          error: null
+        });
+      } else {
+        set({
+          requests: [],
+          totalRequests: 0,
+          totalPages: 1,
+          loading: false,
+          error: null
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching finance requests:", error);
+      set({
+        requests: [],
+        totalRequests: 0,
+        totalPages: 1,
+        loading: false,
+        error: error instanceof Error ? error.message : "Failed to fetch finance requests",
+        lastFetchParams: null
+      });
+    }
+  },
+
+  clearFilters: () => {
+    set({
+      searchTerm: "",
+      statusFilter: "all",
+      currentPage: 1,
+      lastFetchParams: null
+    });
+  },
+
+  reset: () => {
+    set({
+      requests: [],
+      loading: false,
+      error: null,
+      currentPage: 1,
+      totalPages: 1,
+      totalRequests: 0,
+      searchTerm: "",
+      statusFilter: "all",
+      lastFetchParams: null
+    });
+  }
+}));
+
+// Finance Request Detail Store
+interface FinanceRequestDetail {
+  _id: string;
+  user: User;
+  amount: number;
+  currency: string;
+  financeType: string;
+  purpose: string;
+  duration?: number;
+  interestRate?: number;
+  collateral?: string;
+  description: string;
+  documents?: string[];
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+  statusMessage?: Array<{
+    status: string;
+    message: string;
+    date: string;
+    _id: string;
+  }>;
+}
+
+interface FinanceRequestStore {
+  financeRequestDetail: FinanceRequestDetail | null;
+  loading: boolean;
+  error: string | null;
+  updating: boolean;
+  fetchFinanceRequestDetail: (id: string) => Promise<void>;
+  updateStatus: (id: string, status: string, statusMessage: string) => Promise<boolean>;
+  clearFinanceRequestDetail: () => void;
+}
+
+export const useFinanceRequestStore = create<FinanceRequestStore>((set, get) => ({
+  financeRequestDetail: null,
+  loading: false,
+  error: null,
+  updating: false,
+
+  fetchFinanceRequestDetail: async (id: string) => {
+    try {
+      set({ loading: true, error: null });
+      console.log("🔍 Fetching finance request detail for ID:", id);
+      
+      const { getFinanceRequestDetail } = await import("@/apiServices/user");
+      const response = await getFinanceRequestDetail(id);
+      
+      if (response && response.data) {
+        set({ 
+          financeRequestDetail: response.data, 
+          loading: false, 
+          error: null 
+        });
+        console.log("✅ Finance request detail fetched successfully:", response.data);
+      } else {
+        set({ 
+          financeRequestDetail: null, 
+          loading: false, 
+          error: "No data received" 
+        });
+      }
+    } catch (error) {
+      console.error("❌ Error fetching finance request detail:", error);
+      set({ 
+        financeRequestDetail: null, 
+        loading: false, 
+        error: error instanceof Error ? error.message : "Failed to fetch finance request detail" 
+      });
+    }
+  },
+
+  updateStatus: async (id: string, status: string, statusMessage: string) => {
+    try {
+      set({ updating: true });
+      console.log("🔍 Updating finance request status:", { id, status, statusMessage });
+      
+      const { updateFinanceRequestStatus } = await import("@/apiServices/user");
+      const response = await updateFinanceRequestStatus(id, {
+        status: status as any,
+        statusMessage
+      });
+      
+      // Refresh the finance request detail to get updated data
+      await get().fetchFinanceRequestDetail(id);
+      
+      set({ updating: false });
+      console.log("✅ Finance request status updated successfully");
+      return true;
+    } catch (error) {
+      console.error("❌ Error updating finance request status:", error);
+      set({ updating: false });
+      return false;
+    }
+  },
+
+  clearFinanceRequestDetail: () => {
+    set({ 
+      financeRequestDetail: null, 
+      loading: false, 
+      error: null,
+      updating: false
+    });
+  },
+}));

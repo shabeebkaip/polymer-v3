@@ -30,6 +30,16 @@ export const createFinanceRequest = async (data: any) => {
   }
 };
 
+export const getFinanceRequests = async () => {
+  try {
+    const response = await axiosInstance.get("/finance/history");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching finance requests:", error);
+    throw error;
+  }
+};
+
 export const getUserInfo = async () => {
   try {
     const response = await axiosInstance.get("/user/profile");
@@ -48,13 +58,15 @@ export const getUserQuoteRequests = async (params?: {
 }) => {
   try {
     const queryParams = new URLSearchParams();
-    
-    if (params?.page) queryParams.append('page', params.page.toString());
-    if (params?.limit) queryParams.append('limit', params.limit.toString());
-    if (params?.search) queryParams.append('search', params.search);
-    if (params?.status) queryParams.append('status', params.status);
-    
-    const url = `/quote-request/history${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+
+    if (params?.page) queryParams.append("page", params.page.toString());
+    if (params?.limit) queryParams.append("limit", params.limit.toString());
+    if (params?.search) queryParams.append("search", params.search);
+    if (params?.status) queryParams.append("status", params.status);
+
+    const url = `/quote-request/history${
+      queryParams.toString() ? `?${queryParams.toString()}` : ""
+    }`;
     const response = await axiosInstance.get(url);
     return response.data;
   } catch (error) {
@@ -148,7 +160,10 @@ export const updateSampleRequestStatus = async (
       `/sample-request/status/${id}`,
       data
     );
-    console.log("✅ Sample request status updated successfully:", response.data);
+    console.log(
+      "✅ Sample request status updated successfully:",
+      response.data
+    );
     return response.data;
   } catch (error: any) {
     console.error("❌ Error updating sample request status:", error);
@@ -157,7 +172,10 @@ export const updateSampleRequestStatus = async (
       console.error("Response status:", error.response.status);
       console.error("Response headers:", error.response.headers);
     } else if (error.request) {
-      console.error("Request was made but no response received:", error.request);
+      console.error(
+        "Request was made but no response received:",
+        error.request
+      );
     } else {
       console.error("Error setting up request:", error.message);
     }
@@ -196,13 +214,26 @@ export const testApiConnectivity = async () => {
   }
 };
 
-export const updateQuoteRequestStatus = async (id: string, data: {
-  status: "pending" | "responded" | "negotiation" | "approved" | "rejected" | "cancelled" | "fulfilled";
-  statusMessage: string;
-}) => {
+export const updateQuoteRequestStatus = async (
+  id: string,
+  data: {
+    status:
+      | "pending"
+      | "responded"
+      | "negotiation"
+      | "approved"
+      | "rejected"
+      | "cancelled"
+      | "fulfilled";
+    statusMessage: string;
+  }
+) => {
   try {
     console.log("🔍 Updating quote request status:", { id, data });
-    const response = await axiosInstance.patch(`/quote-request/status/${id}`, data);
+    const response = await axiosInstance.patch(
+      `/quote-request/status/${id}`,
+      data
+    );
     console.log("✅ Quote request status updated successfully:", response.data);
     return response.data;
   } catch (error: any) {
@@ -212,7 +243,10 @@ export const updateQuoteRequestStatus = async (id: string, data: {
       console.error("Response status:", error.response.status);
       console.error("Response headers:", error.response.headers);
     } else if (error.request) {
-      console.error("Request was made but no response received:", error.request);
+      console.error(
+        "Request was made but no response received:",
+        error.request
+      );
     } else {
       console.error("Error setting up request:", error.message);
     }
@@ -220,3 +254,50 @@ export const updateQuoteRequestStatus = async (id: string, data: {
   }
 };
 
+export const getFinanceRequestDetail = async (id: string) => {
+  try {
+    const response = await axiosInstance.get(`/finance/history/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching finance request detail:", error);
+    throw error;
+  }
+};
+
+export const updateFinanceRequestStatus = async (
+  id: string,
+  data: {
+    status:
+      | "pending"
+      | "approved"
+      | "rejected"
+      | "under_review"
+      | "cancelled";
+    statusMessage: string;
+  }
+) => {
+  try {
+    console.log("🔍 Updating finance request status:", { id, data });
+    const response = await axiosInstance.patch(
+      `/finance/status/${id}`,
+      data
+    );
+    console.log("✅ Finance request status updated successfully:", response.data);
+    return response.data;
+  } catch (error: any) {
+    console.error("❌ Error updating finance request status:", error);
+    if (error.response) {
+      console.error("Response data:", error.response.data);
+      console.error("Response status:", error.response.status);
+      console.error("Response headers:", error.response.headers);
+    } else if (error.request) {
+      console.error(
+        "Request was made but no response received:",
+        error.request
+      );
+    } else {
+      console.error("Error setting up request:", error.message);
+    }
+    throw error;
+  }
+};

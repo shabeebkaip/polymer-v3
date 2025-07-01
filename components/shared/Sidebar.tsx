@@ -30,6 +30,23 @@ import { Button } from "../ui/button";
 import Cookies from "js-cookie";
 import { useUserInfo } from "@/lib/useUserInfo";
 import { useSharedState } from "@/stores/sharedStore";
+import { useSidebarInitializer } from "@/lib/useSidebarInitializer";
+
+// Define types for sidebar items
+interface SidebarSubItem {
+  displayName: string;
+  route: string;
+  name: string;
+  icon: string;
+}
+
+interface SidebarItem {
+  displayName: string;
+  route: string;
+  name: string;
+  icon: string;
+  subItems?: SidebarSubItem[];
+}
 
 // Icon mapping for dynamic icons - using exact Lucide icon names
 const iconMap: Record<string, React.ComponentType<any>> = {
@@ -57,15 +74,29 @@ const iconMap: Record<string, React.ComponentType<any>> = {
 const Sidebar = () => {
   const pathname = usePathname();
   const router = useRouter();
-  const { user } = useUserInfo();
-  const { sidebarItems, sidebarLoading, fetchSidebarItems } = useSharedState();
+  const { user, isInitialized, loadUserFromCookies } = useUserInfo();
+  const { sidebarItems, sidebarLoading, fetchSidebarItems, refreshSidebarItems } = useSharedState();
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
 
+  // Use the sidebar initializer hook
+  useSidebarInitializer();
+
+  // Initialize user data from cookies on mount
   useEffect(() => {
-    if (user) {
-      fetchSidebarItems();
+    const token = Cookies.get("token");
+    
+    // Redirect to home if no token
+    if (!token) {
+      console.log("No token found, redirecting to home");
+      router.push("/");
+      return;
     }
-  }, [user, fetchSidebarItems]);
+
+    if (!isInitialized) {
+      console.log("Loading user from cookies...");
+      loadUserFromCookies();
+    }
+  }, [isInitialized, loadUserFromCookies, router]);
 
   const handleLogout = () => {
     Cookies.remove("token");
@@ -86,40 +117,170 @@ const Sidebar = () => {
     });
   };
 
-  // Fallback data in case API fails or is loading
-  const fallbackSidebarList = [
-    {
-      displayName: "Profile",
-      route: "/user/profile",
-      name: "profile",
-      icon: "User",
-      subItems: [],
-    },
-    {
-      displayName: "Settings",
-      route: "/user/settings",
-      name: "settings",
-      icon: "Settings",
-      subItems: [],
-    },
-    {
-      displayName: "Dashboard",
-      route: "/user/dashboard",
-      name: "dashboard",
-      icon: "LayoutDashboard",
-      subItems: [],
-    },
-  ];
+  // Comprehensive fallback data based on API structure
+  const getFallbackSidebarList = (userType?: string): SidebarItem[] => {
+    let sidebarItems: SidebarItem[] = [
+      {
+        displayName: "Profile",
+        route: "/user/profile",
+        name: "profile",
+        icon: "User",
+        subItems: [],
+      },
+    ];
+
+    if (userType === "expert") {
+      sidebarItems.push({
+        displayName: "Message",
+        route: "/user/message",
+        name: "message",
+        icon: "MessageCircle",
+        subItems: [],
+      });
+    } else if (userType === "seller") {
+      sidebarItems.push(
+        {
+          displayName: "Product",
+          route: "/user/product",
+          name: "product",
+          icon: "Package",
+          subItems: [],
+        },
+        {
+          displayName: "Procurement",
+          route: "/enquiries",
+          name: "enquiries",
+          icon: "ClipboardList",
+          subItems: [
+            {
+              displayName: "Sample Request Enquiries",
+              route: "/user/sample-enquiries",
+              name: "sample-request-enquiries",
+              icon: "Flask",
+            },
+            {
+              displayName: "Quote Request Enquiries",
+              route: "/user/quote-enquiries",
+              name: "quote-request-enquiries",
+              icon: "DollarSign",
+            },
+          ],
+        },
+        {
+          displayName: "Experts",
+          route: "/user/experts",
+          name: "experts",
+          icon: "Users",
+          subItems: [],
+        },
+        {
+          displayName: "Analytics",
+          route: "/user/analytics",
+          name: "analytics",
+          icon: "TrendingUp",
+          subItems: [],
+        },
+        {
+          displayName: "Orders",
+          route: "/user/orders",
+          name: "orders",
+          icon: "ShoppingBag",
+          subItems: [],
+        }
+      );
+    } else if (userType === "buyer") {
+      sidebarItems.push({
+        displayName: "Procurement",
+        route: "/procurement",
+        name: "procurement",
+        icon: "ClipboardList",
+        subItems: [
+          {
+            displayName: "Sample Request",
+            route: "/user/sample-requests",
+            name: "sample-request",
+            icon: "Flask",
+          },
+          {
+            displayName: "Quote Request",
+            route: "/user/quote-requests",
+            name: "quote-request",
+            icon: "DollarSign",
+          },
+          {
+            displayName: "Finance Request",
+            route: "/user/finance-requests",
+            name: "finance-request",
+            icon: "CreditCard",
+          },
+          {
+            displayName: "Product Requests",
+            route: "/user/product-requests",
+            name: "open-requests",
+            icon: "Truck",
+          },
+        ],
+      });
+    }
+
+    // Add common items for all user types
+    sidebarItems.push(
+      {
+        displayName: "Settings",
+        route: "/user/settings",
+        name: "settings",
+        icon: "Settings",
+        subItems: [],
+      },
+      {
+        displayName: "Privacy Policy",
+        route: "/privacy-policy",
+        name: "privacyPolicy",
+        icon: "ShieldCheck",
+        subItems: [],
+      },
+      {
+        displayName: "Terms & Conditions",
+        route: "/terms-and-Condition",
+        name: "termsAndCondition",
+        icon: "FileText",
+        subItems: [],
+      },
+      {
+        displayName: "Dashboard",
+        route: "/user/dashboard",
+        name: "dashboard",
+        icon: "LayoutDashboard",
+        subItems: [],
+      },
+      {
+        displayName: "Notifications",
+        route: "/user/notifications",
+        name: "notifications",
+        icon: "Bell",
+        subItems: [],
+      },
+      {
+        displayName: "Help & Support",
+        route: "/user/support",
+        name: "support",
+        icon: "HelpCircle",
+        subItems: [],
+      }
+    );
+
+    return sidebarItems;
+  };
 
   // Process and use API data when available
-  let displaySidebarList: any[] = [];
+  let displaySidebarList: SidebarItem[] = [];
 
   if (sidebarLoading) {
     // Show loading skeleton
     displaySidebarList = [];
   } else if (sidebarItems && sidebarItems.length > 0) {
     // Use API data directly since it matches the expected structure
-    displaySidebarList = sidebarItems.map((item: any) => ({
+    displaySidebarList = sidebarItems.map((item: any): SidebarItem => ({
       displayName: item.displayName,
       route: item.route,
       name: item.name,
@@ -127,8 +288,8 @@ const Sidebar = () => {
       subItems: item.subItems || [],
     }));
   } else {
-    // Use minimal fallback data if API is not available
-    displaySidebarList = fallbackSidebarList;
+    // Use comprehensive fallback data based on user type
+    displaySidebarList = getFallbackSidebarList(user?.user_type);
   }
 
   const renderIcon = (iconName: string, className: string = "") => {
@@ -140,10 +301,22 @@ const Sidebar = () => {
     return pathname === route || pathname.startsWith(route + "/");
   };
 
-  const hasActiveSubItem = (subItems: any[] = []) => {
+  const hasActiveSubItem = (subItems: SidebarSubItem[] = []) => {
     return subItems.some((subItem) => isActiveRoute(subItem.route));
   };
-  console.log("user", user);
+
+  // Debug logging
+  console.log("Sidebar debug:", {
+    user: !!user,
+    userDetails: user ? { firstName: user.firstName, email: user.email, user_type: user.user_type } : null,
+    isInitialized,
+    sidebarLoading,
+    sidebarItemsCount: sidebarItems.length,
+    hasToken: !!Cookies.get("token"),
+    tokenValue: Cookies.get("token")?.substring(0, 10) + "...",
+    usingFallback: sidebarItems.length === 0 && !sidebarLoading,
+    fallbackUserType: user?.user_type || "unknown"
+  });
   return (
     <div className="h-full bg-white border-r border-gray-200 flex flex-col">
       {/* User Profile Header */}
@@ -255,7 +428,7 @@ const Sidebar = () => {
                   {/* Sub items */}
                   {hasSubItems && isExpanded && (
                     <div className="ml-6 space-y-1">
-                      {item.subItems?.map((subItem: any) => {
+                      {item.subItems?.map((subItem: SidebarSubItem) => {
                         const isSubActive = isActiveRoute(subItem.route);
 
                         return (
@@ -300,6 +473,20 @@ const Sidebar = () => {
 
       {/* Logout Button */}
       <div className="flex-shrink-0 p-3 border-t border-gray-100">
+        {/* Debug button - remove in production */}
+        {process.env.NODE_ENV === 'development' && (
+          <Button
+            onClick={() => {
+              console.log("Manual sidebar refresh triggered");
+              refreshSidebarItems();
+            }}
+            variant="outline"
+            className="w-full justify-start gap-3 text-blue-600 hover:text-blue-700 hover:bg-blue-50 px-3 py-2 h-auto mb-2 text-xs"
+          >
+            🔄 Refresh Sidebar
+          </Button>
+        )}
+        
         <Button
           onClick={handleLogout}
           variant="ghost"

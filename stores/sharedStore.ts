@@ -39,7 +39,8 @@ interface SharedState {
   fetchSellers: () => Promise<void>;
   fetchBuyerOpportunities: () => Promise<void>;
   fetchSuppliersSpecialDeals: () => Promise<void>;
-  fetchSidebarItems: () => Promise<void>;
+  fetchSidebarItems: (retryCount?: number) => Promise<void>;
+  refreshSidebarItems: () => Promise<void>;
   // Setter methods for SSR hydration
   setIndustries: (industries: any[]) => void;
   setProductFamilies: (families: any[]) => void;
@@ -61,7 +62,7 @@ export const useSharedState = create<SharedState>((set, get) => ({
   sellersLoading: true,
   buyerOpportunitiesLoading: true,
   suppliersSpecialDealsLoading: true,
-  sidebarLoading: true,
+  sidebarLoading: false,
 
   fetchIndustries: async () => {
     const state = get();
@@ -138,11 +139,23 @@ export const useSharedState = create<SharedState>((set, get) => ({
     }
   },
 
-  fetchSidebarItems: async () => {
+  fetchSidebarItems: async (retryCount = 0) => {
+    const state = get();
+    
+    console.log("fetchSidebarItems called", { retryCount, loading: state.sidebarLoading });
+    
+    // Avoid multiple concurrent requests
+    if (state.sidebarLoading) {
+      console.log("Already loading sidebar items, skipping");
+      return;
+    }
+    
     set({ sidebarLoading: true });
 
     try {
+      console.log("Making API call to fetch sidebar items");
       const res = await getSidebarList();
+      console.log("Sidebar API response:", res);
       
       // Handle different response structures
       let sidebarData = [];
@@ -152,13 +165,35 @@ export const useSharedState = create<SharedState>((set, get) => ({
         sidebarData = res;
       } else if (res?.data?.data && Array.isArray(res.data.data)) {
         sidebarData = res.data.data;
+      } else if (res?.success && res?.data) {
+        // Handle success response structure
+        sidebarData = Array.isArray(res.data) ? res.data : [];
       }
       
+      console.log("Processed sidebar data:", sidebarData);
       set({ sidebarItems: sidebarData, sidebarLoading: false });
     } catch (err) {
       console.error("Failed to fetch sidebar items", err);
-      set({ sidebarLoading: false });
+      
+      // Retry logic for network errors
+      if (retryCount < 2 && (err as any)?.code !== 401) {
+        console.log(`Retrying sidebar fetch (attempt ${retryCount + 1}/2)`);
+        setTimeout(() => {
+          const { fetchSidebarItems } = get();
+          fetchSidebarItems(retryCount + 1);
+        }, 1000 * (retryCount + 1)); // Exponential backoff
+      } else {
+        console.log("Max retries reached or auth error, stopping");
+        set({ sidebarItems: [], sidebarLoading: false });
+      }
     }
+  },
+
+  refreshSidebarItems: async () => {
+    // Force refresh by clearing data first
+    set({ sidebarItems: [], sidebarLoading: false });
+    const { fetchSidebarItems } = get();
+    return fetchSidebarItems();
   },
 
   // Setter methods for SSR hydration
