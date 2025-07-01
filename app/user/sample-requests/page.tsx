@@ -1,6 +1,5 @@
 "use client";
 
-import { getUserSampleRequests } from "@/apiServices/user";
 import {
   Table,
   TableBody,
@@ -10,83 +9,42 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Package, Calendar, Building2, AlertCircle, CheckCircle, XCircle, Clock, Search, Filter, ChevronLeft, ChevronRight, Eye } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { useSampleRequestsListStore } from "@/stores/user";
 
 // Define types for the API response structure based on actual API data
-interface SampleRequest {
-  _id: string;
-  user: string;
-  product?: {
-    _id: string;
-    productName: string;
-    createdBy?: {
-      _id: string;
-      firstName: string;
-      lastName: string;
-      company: string;
-      email: string;
-    };
-  };
-  quantity: number;
-  uom?: string;
-  address?: string;
-  country?: string;
-  grade?: {
-    _id: string;
-    name: string;
-  };
-  application?: string;
-  expected_annual_volume?: number;
-  orderDate?: string;
-  neededBy?: string;
-  message?: string;
-  request_document?: string;
-  status: string;
-  createdAt: string;
-  updatedAt: string;
-  __v?: number;
-  statusMessage?: Array<{
-    status: string;
-    message: string;
-    date: string;
-    _id: string;
-  }>;
-}
-
-interface SampleRequestsResponse {
-  data: SampleRequest[];
-  meta?: {
-    pagination: {
-      page: number;
-      totalPages: number;
-      total: number;
-      limit: number;
-    };
-  };
-  // Fallback for older API structure
-  total?: number;
-  page?: number;
-  totalPages?: number;
-}
 
 const SampleRequest = () => {
   const router = useRouter();
-  const [requests, setRequests] = useState<SampleRequest[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalRequests, setTotalRequests] = useState(0);
-  const [pageSize] = useState(10); // Items per page
+  
+  // Zustand store
+  const {
+    requests,
+    loading,
+    error,
+    currentPage,
+    totalPages,
+    totalRequests,
+    pageSize,
+    searchTerm,
+    statusFilter,
+    setSearchTerm,
+    setStatusFilter,
+    setCurrentPage,
+    fetchSampleRequests,
+    clearFilters,
+    reset
+  } = useSampleRequestsListStore();
+
+  // Local state for debounced search
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
 
   // Debounce search term
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm);
-    }, 500); // 500ms delay
+    }, 500);
 
     return () => clearTimeout(timer);
   }, [searchTerm]);
@@ -95,69 +53,47 @@ const SampleRequest = () => {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape' && (searchTerm || statusFilter !== "all")) {
-        setSearchTerm("");
-        setStatusFilter("all");
-        setCurrentPage(1);
+        clearFilters();
       }
     };
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [searchTerm, statusFilter]);
+  }, [searchTerm, statusFilter, clearFilters]);
 
+  // Fetch data when component mounts or when filters change
   useEffect(() => {
-    const fetchRequests = async () => {
-      try {
-        setLoading(true);
-        // Add pagination and filter parameters to API call
-        const params = {
-          page: currentPage,
-          limit: pageSize,
-          ...(debouncedSearchTerm && { search: debouncedSearchTerm }),
-          ...(statusFilter !== "all" && { status: statusFilter })
-        };
-        
-        const response = await getUserSampleRequests(params);
-        
-        // Handle the new API response structure with data array and meta.pagination
-        if (response && response.data && Array.isArray(response.data)) {
-          setRequests(response.data);
-          // Extract pagination info from meta.pagination
-          const pagination = response.meta?.pagination;
-          if (pagination) {
-            setTotalRequests(pagination.total || 0);
-            setTotalPages(pagination.totalPages || 1);
-          } else {
-            // Fallback for older API structure
-            setTotalRequests(response.total || response.data.length);
-            setTotalPages(Math.ceil((response.total || response.data.length) / pageSize));
-          }
-        } else {
-          setRequests([]);
-          setTotalRequests(0);
-          setTotalPages(1);
-        }
-      } catch (error) {
-        console.error("Error fetching sample requests:", error);
-        setRequests([]);
-        setTotalRequests(0);
-        setTotalPages(1);
-      } finally {
-        setLoading(false);
-      }
+    const params = {
+      page: currentPage,
+      limit: pageSize,
+      ...(debouncedSearchTerm && { search: debouncedSearchTerm }),
+      ...(statusFilter !== "all" && { status: statusFilter })
     };
 
-    fetchRequests();
-  }, [currentPage, pageSize, debouncedSearchTerm, statusFilter]);
+    fetchSampleRequests(params);
+  }, [currentPage, pageSize, debouncedSearchTerm, statusFilter, fetchSampleRequests]);
 
   // Reset to first page when filters change
   useEffect(() => {
-    setCurrentPage(1);
-  }, [debouncedSearchTerm, statusFilter]);
+    if (currentPage !== 1 && (debouncedSearchTerm || statusFilter !== "all")) {
+      setCurrentPage(1);
+    }
+  }, [debouncedSearchTerm, statusFilter, currentPage, setCurrentPage]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      // Don't reset the store on unmount to preserve data when navigating back
+    };
+  }, []);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleClearFilters = () => {
+    clearFilters();
   };
 
   const getStatusIcon = (status: string) => {
@@ -363,11 +299,7 @@ const SampleRequest = () => {
             {/* Clear Filters Button */}
             {(searchTerm || statusFilter !== "all") && (
               <button
-                onClick={() => {
-                  setSearchTerm("");
-                  setStatusFilter("all");
-                  setCurrentPage(1);
-                }}
+                onClick={handleClearFilters}
                 className="inline-flex items-center justify-center px-6 py-4 bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 rounded-xl hover:from-gray-200 hover:to-gray-300 transition-all duration-300 border border-gray-200 font-medium group"
               >
                 <XCircle className="w-5 h-5 mr-2 group-hover:rotate-90 transition-transform duration-300" />
@@ -484,11 +416,7 @@ const SampleRequest = () => {
                     {statusFilter !== "all" && <div className="flex items-center gap-2"><Filter className="w-4 h-4" /> Status: {getStatusText(statusFilter)}</div>}
                   </div>
                   <button
-                    onClick={() => {
-                      setSearchTerm("");
-                      setStatusFilter("all");
-                      setCurrentPage(1);
-                    }}
+                    onClick={handleClearFilters}
                     className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all duration-300 font-medium shadow-lg hover:shadow-xl"
                   >
                     <XCircle className="w-5 h-5" />

@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { getUserQuoteRequests } from "@/apiServices/user";
 import {
   Table,
   TableBody,
@@ -32,6 +31,7 @@ import {
   ChevronLeft,
   ChevronRight
 } from "lucide-react";
+import { useQuoteRequestsListStore } from "@/stores/user";
 
 // Define the allowed statuses for quote requests based on API response
 const ALLOWED_STATUSES = [
@@ -40,121 +40,36 @@ const ALLOWED_STATUSES = [
 
 type QuoteStatus = typeof ALLOWED_STATUSES[number];
 
-interface QuoteRequest {
-  _id: string;
-  user: {
-    _id: string;
-    firstName: string;
-    lastName: string;
-    company: string;
-    email: string;
-    address: string;
-    phone: number;
-  };
-  product: {
-    _id: string;
-    productName: string;
-    createdBy: {
-      _id: string;
-      firstName: string;
-      lastName: string;
-      company: string;
-      email: string;
-    };
-  };
-  quantity: number;
-  uom: string;
-  grade: {
-    _id: string;
-    name: string;
-  };
-  incoterm?: {
-    _id: string;
-    name: string;
-  } | null;
-  postCode?: string;
-  city?: string;
-  country: string;
-  destination: string;
-  packagingType?: {
-    _id: string;
-    name: string;
-  };
-  packaging_size: string;
-  expected_annual_volume: number;
-  delivery_date: string;
-  application: string;
-  pricing?: string;
-  message: string;
-  request_document?: string;
-  open_request: boolean;
-  status: QuoteStatus;
-  createdAt: string;
-  updatedAt: string;
-  __v?: number;
-  statusMessage?: Array<{
-    status: string;
-    message: string;
-    date: string;
-    _id: string;
-  }>;
-  responseMessage?: Array<{
-    status: string;
-    response: string;
-    date: string;
-    _id: string;
-  }>;
-}
-
-interface QuoteRequestsResponse {
-  data: QuoteRequest[];
-  meta?: {
-    pagination: {
-      page: number;
-      totalPages: number;
-      total: number;
-      limit: number;
-    };
-  };
-  // Fallback for older API structure
-  total?: number;
-  page?: number;
-  totalPages?: number;
-  count?: number;
-  search?: string;
-  status?: string;
-}
-
-interface PaginationState {
-  currentPage: number;
-  totalPages: number;
-  totalItems: number;
-  hasNext: boolean;
-  hasPrev: boolean;
-}
-
 const QuoteRequests = () => {
   const router = useRouter();
-  const [quoteRequests, setQuoteRequests] = useState<QuoteRequest[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   
-  // Filters and pagination
-  const [searchTerm, setSearchTerm] = useState('');
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pagination, setPagination] = useState<PaginationState>();
-  const [showFilters, setShowFilters] = useState(false);
-  
-  const itemsPerPage = 10;
-  const pageSize = itemsPerPage; // For compatibility with sample requests page
+  // Zustand store
+  const {
+    requests: quoteRequests,
+    loading,
+    error,
+    currentPage,
+    totalPages,
+    totalRequests,
+    pageSize,
+    searchTerm,
+    statusFilter,
+    setSearchTerm,
+    setStatusFilter,
+    setCurrentPage,
+    fetchQuoteRequests,
+    clearFilters,
+    reset
+  } = useQuoteRequestsListStore();
+
+  // Local state for debounced search
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
 
   // Debounce search term
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm);
-    }, 500); // 500ms delay
+    }, 500);
 
     return () => clearTimeout(timer);
   }, [searchTerm]);
@@ -163,74 +78,39 @@ const QuoteRequests = () => {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape' && (searchTerm || statusFilter)) {
-        setSearchTerm("");
-        setStatusFilter("");
-        setCurrentPage(1);
+        clearFilters();
       }
     };
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [searchTerm, statusFilter]);
+  }, [searchTerm, statusFilter, clearFilters]);
 
-  const fetchQuoteRequests = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      
-      const params = {
-        page: currentPage,
-        limit: itemsPerPage,
-        ...(debouncedSearchTerm && { search: debouncedSearchTerm }),
-        ...(statusFilter && { status: statusFilter })
-      };
-
-      const response = await getUserQuoteRequests(params);
-      
-      // Handle the new API response structure with data array and meta.pagination
-      if (response && response.data && Array.isArray(response.data)) {
-        setQuoteRequests(response.data);
-        // Extract pagination info from meta.pagination
-        const paginationMeta = response.meta?.pagination;
-        if (paginationMeta) {
-          setPagination({
-            currentPage: paginationMeta.page || currentPage,
-            totalPages: paginationMeta.totalPages || 1,
-            totalItems: paginationMeta.total || 0,
-            hasNext: paginationMeta.page < paginationMeta.totalPages,
-            hasPrev: paginationMeta.page > 1
-          });
-        } else {
-          // Fallback for older API structure
-          setPagination({
-            currentPage: response.page || currentPage,
-            totalPages: response.totalPages || 1,
-            totalItems: response.total || response.data.length,
-            hasNext: (response.page || currentPage) < (response.totalPages || 1),
-            hasPrev: (response.page || currentPage) > 1
-          });
-        }
-      } else {
-        setError('Failed to fetch quote requests');
-      }
-    } catch (err) {
-      setError('An error occurred while fetching quote requests');
-      console.error('Error fetching quote requests:', err);
-    } finally {
-      setLoading(false);
-    }
-  }, [currentPage, debouncedSearchTerm, statusFilter]);
-
+  // Fetch data when component mounts or when filters change
   useEffect(() => {
-    fetchQuoteRequests();
-  }, [fetchQuoteRequests]);
+    const params = {
+      page: currentPage,
+      limit: pageSize,
+      ...(debouncedSearchTerm && { search: debouncedSearchTerm }),
+      ...(statusFilter && { status: statusFilter })
+    };
+
+    fetchQuoteRequests(params);
+  }, [currentPage, pageSize, debouncedSearchTerm, statusFilter, fetchQuoteRequests]);
 
   // Reset to first page when filters change
   useEffect(() => {
-    if (currentPage !== 1) {
+    if (currentPage !== 1 && (debouncedSearchTerm || statusFilter)) {
       setCurrentPage(1);
     }
-  }, [debouncedSearchTerm, statusFilter]);
+  }, [debouncedSearchTerm, statusFilter, currentPage, setCurrentPage]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      // Don't reset the store on unmount to preserve data when navigating back
+    };
+  }, []);
 
   const getStatusIcon = (status: QuoteStatus) => {
     switch (status) {
@@ -278,9 +158,8 @@ const QuoteRequests = () => {
   };
 
   const getStatsData = () => {
-    const totalItems = pagination?.totalItems || 0;
     const stats = {
-      total: totalItems,
+      total: totalRequests,
       pending: quoteRequests.filter(req => req.status === 'pending').length,
       responded: quoteRequests.filter(req => req.status === 'responded').length,
       approved: quoteRequests.filter(req => req.status === 'approved').length,
@@ -298,12 +177,6 @@ const QuoteRequests = () => {
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-  };
-
-  const clearFilters = () => {
-    setSearchTerm('');
-    setStatusFilter('');
-    setCurrentPage(1);
   };
 
   if (loading && quoteRequests.length === 0) {
@@ -422,7 +295,7 @@ const QuoteRequests = () => {
                     {debouncedSearchTerm || statusFilter ? " (Filtered)" : ""}
                   </h3>
                   <span className="bg-gradient-to-r from-green-100 to-emerald-100 text-green-700 px-3 py-1.5 rounded-full text-sm font-semibold border border-green-200/50">
-                    {pagination?.totalItems || 0} {(pagination?.totalItems || 0) === 1 ? 'result' : 'results'}
+                    {totalRequests} {totalRequests === 1 ? 'result' : 'results'}
                   </span>
                 </div>
                 {(debouncedSearchTerm || statusFilter) && (
@@ -503,7 +376,7 @@ const QuoteRequests = () => {
               <h3 className="text-lg font-semibold text-gray-900 mb-2">Error Loading Data</h3>
               <p className="text-gray-600 mb-4">{error}</p>
               <button
-                onClick={fetchQuoteRequests}
+                onClick={() => fetchQuoteRequests({ forceRefresh: true })}
                 className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all duration-300 font-medium shadow-lg hover:shadow-xl"
               >
                 Try Again
@@ -607,12 +480,12 @@ const QuoteRequests = () => {
           )}
           
           {/* Pagination */}
-          {pagination && pagination.totalPages > 1 && (
+          {totalPages > 1 && (
             <div className="border-t border-gray-200/60 bg-gradient-to-r from-gray-50/50 to-green-50/20 px-8 py-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center text-sm text-gray-600 font-medium">
                   <span className="bg-white/80 backdrop-blur-sm px-4 py-2 rounded-xl border border-gray-200/50">
-                    Showing <span className="font-bold text-green-600">{((currentPage - 1) * pageSize) + 1}</span> to <span className="font-bold text-green-600">{Math.min(currentPage * pageSize, pagination.totalItems)}</span> of <span className="font-bold text-green-600">{pagination.totalItems}</span> results
+                    Showing <span className="font-bold text-green-600">{((currentPage - 1) * pageSize) + 1}</span> to <span className="font-bold text-green-600">{Math.min(currentPage * pageSize, totalRequests)}</span> of <span className="font-bold text-green-600">{totalRequests}</span> results
                   </span>
                 </div>
                 
@@ -633,14 +506,14 @@ const QuoteRequests = () => {
 
                   {/* Page Numbers */}
                   <div className="flex items-center gap-2">
-                    {Array.from({ length: Math.min(pagination.totalPages, 5) }, (_, i) => {
+                    {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
                       let pageNumber;
-                      if (pagination.totalPages <= 5) {
+                      if (totalPages <= 5) {
                         pageNumber = i + 1;
                       } else if (currentPage <= 3) {
                         pageNumber = i + 1;
-                      } else if (currentPage >= pagination.totalPages - 2) {
-                        pageNumber = pagination.totalPages - 4 + i;
+                      } else if (currentPage >= totalPages - 2) {
+                        pageNumber = totalPages - 4 + i;
                       } else {
                         pageNumber = currentPage - 2 + i;
                       }
@@ -664,9 +537,9 @@ const QuoteRequests = () => {
                   {/* Next Button */}
                   <button
                     onClick={() => handlePageChange(currentPage + 1)}
-                    disabled={currentPage === pagination.totalPages}
+                    disabled={currentPage === totalPages}
                     className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 ${
-                      currentPage === pagination.totalPages
+                      currentPage === totalPages
                         ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                         : "bg-white/80 backdrop-blur-sm text-gray-700 border border-gray-200/50 hover:bg-white hover:shadow-lg hover:scale-105"
                     }`}
