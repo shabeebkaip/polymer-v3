@@ -40,6 +40,16 @@ export const getFinanceRequests = async () => {
   }
 };
 
+export const getFinanceDetails = async (id: string) => {
+  try {
+    const response = await axiosInstance.get(`/finance/history/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching finance details:", error);
+    throw error;
+  }
+};
+
 export const getUserInfo = async () => {
   try {
     const response = await axiosInstance.get("/user/profile");
@@ -267,22 +277,17 @@ export const getFinanceRequestDetail = async (id: string) => {
 export const updateFinanceRequestStatus = async (
   id: string,
   data: {
-    status:
-      | "pending"
-      | "approved"
-      | "rejected"
-      | "under_review"
-      | "cancelled";
+    status: "pending" | "approved" | "rejected" | "under_review" | "cancelled";
     statusMessage: string;
   }
 ) => {
   try {
     console.log("🔍 Updating finance request status:", { id, data });
-    const response = await axiosInstance.patch(
-      `/finance/status/${id}`,
-      data
+    const response = await axiosInstance.patch(`/finance/status/${id}`, data);
+    console.log(
+      "✅ Finance request status updated successfully:",
+      response.data
     );
-    console.log("✅ Finance request status updated successfully:", response.data);
     return response.data;
   } catch (error: any) {
     console.error("❌ Error updating finance request status:", error);
