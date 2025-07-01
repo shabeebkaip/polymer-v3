@@ -143,29 +143,46 @@ const Sidebar = () => {
   const hasActiveSubItem = (subItems: any[] = []) => {
     return subItems.some((subItem) => isActiveRoute(subItem.route));
   };
-
+  console.log("user", user);
   return (
-    <div className="h-full bg-white border-r border-gray-200">
-      {/* Header */}
-      <div className="p-6 border-b border-gray-100">
-        <div className="flex items-center gap-3 mb-2">
-          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-            <User className="w-5 h-5 text-white" />
+    <div className="h-full bg-white border-r border-gray-200 flex flex-col">
+      {/* User Profile Header */}
+      <div className="p-4 border-b border-gray-100 bg-gray-50/50">
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-md">
+            <User className="w-6 h-6 text-white" />
           </div>
-          <div>
-            <h3 className="font-semibold text-gray-900 text-sm">
-              {user?.first_name} {user?.last_name}
+          <div className="flex-1 min-w-0">
+            <h3 className="font-semibold text-gray-900 text-base truncate">
+              {user?.firstName && user?.lastName
+                ? `${user.firstName} ${user.lastName}`
+                : user?.firstName || user?.lastName || "User"}
             </h3>
-            <p className="text-xs text-gray-500 capitalize">
-              {user?.user_type}
-            </p>
+            <div className="flex items-center gap-2 mt-1">
+              <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-emerald-100 text-emerald-700 capitalize">
+                {user?.user_type || "Member"}
+              </span>
+              <div
+                className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"
+                title="Online"
+              ></div>
+            </div>
           </div>
         </div>
+
+        {/* Additional User Info */}
+        {user?.email && (
+          <div className="mt-3 pt-3 border-t border-gray-200">
+            <p className="text-xs text-gray-600 truncate" title={user.email}>
+              {user.email}
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Navigation */}
-      <div className="p-4">
-        <nav className="space-y-1">
+      <div className="flex-1 overflow-y-auto py-2">
+        <nav className="space-y-1 px-3">
           {sidebarLoading ? (
             // Loading skeleton
             <div className="space-y-2">
@@ -192,11 +209,11 @@ const Sidebar = () => {
                   {/* Main item */}
                   <div
                     className={`
-                      flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all duration-200 group
+                      flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer transition-colors duration-200 group
                       ${
                         showAsActive
-                          ? "bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-sm"
-                          : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                          ? "bg-emerald-50 text-emerald-700 border-l-3 border-emerald-600"
+                          : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                       }
                     `}
                     onClick={() => {
@@ -209,35 +226,27 @@ const Sidebar = () => {
                   >
                     {/* Icon */}
                     <div
-                      className={`
-                      w-8 h-8 rounded-md flex items-center justify-center transition-colors
-                      ${
-                        showAsActive
-                          ? "bg-emerald-100"
-                          : "bg-gray-100 group-hover:bg-gray-200"
-                      }
-                    `}
-                    >
-                      {renderIcon(
-                        item.icon,
+                      className={`flex-shrink-0 ${
                         showAsActive
                           ? "text-emerald-600"
                           : "text-gray-500 group-hover:text-gray-700"
-                      )}
+                      }`}
+                    >
+                      {renderIcon(item.icon)}
                     </div>
 
                     {/* Label */}
-                    <span className="flex-1 font-medium text-sm">
+                    <span className="flex-1 font-medium text-sm truncate">
                       {item.displayName}
                     </span>
 
                     {/* Expand/Collapse icon for items with subItems */}
                     {hasSubItems && (
-                      <div className="w-5 h-5 flex items-center justify-center">
+                      <div className="flex-shrink-0">
                         {isExpanded ? (
-                          <ChevronDown className="w-4 h-4 transition-transform duration-200" />
+                          <ChevronDown className="w-4 h-4 text-gray-400" />
                         ) : (
-                          <ChevronRight className="w-4 h-4 transition-transform duration-200" />
+                          <ChevronRight className="w-4 h-4 text-gray-400" />
                         )}
                       </div>
                     )}
@@ -245,7 +254,7 @@ const Sidebar = () => {
 
                   {/* Sub items */}
                   {hasSubItems && isExpanded && (
-                    <div className="ml-8 space-y-1 border-l-2 border-emerald-100 pl-4">
+                    <div className="ml-6 space-y-1">
                       {item.subItems?.map((subItem: any) => {
                         const isSubActive = isActiveRoute(subItem.route);
 
@@ -253,34 +262,28 @@ const Sidebar = () => {
                           <div
                             key={subItem.name || subItem.displayName}
                             className={`
-                              flex items-center gap-3 p-2.5 rounded-md cursor-pointer transition-all duration-200
+                              flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer transition-colors duration-200
                               ${
                                 isSubActive
-                                  ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                                  : "text-gray-500 hover:bg-gray-50 hover:text-gray-700"
+                                  ? "bg-emerald-50 text-emerald-700"
+                                  : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                               }
                             `}
                             onClick={() => router.push(subItem.route)}
                           >
                             {/* Sub item icon */}
                             <div
-                              className={`
-                              w-6 h-6 rounded flex items-center justify-center
-                              ${isSubActive ? "bg-emerald-100" : "bg-gray-100"}
-                            `}
+                              className={`flex-shrink-0 ${
+                                isSubActive
+                                  ? "text-emerald-600"
+                                  : "text-gray-400"
+                              }`}
                             >
-                              {renderIcon(
-                                subItem.icon,
-                                `w-3 h-3 ${
-                                  isSubActive
-                                    ? "text-emerald-600"
-                                    : "text-gray-400"
-                                }`
-                              )}
+                              {renderIcon(subItem.icon, "w-4 h-4")}
                             </div>
 
                             {/* Sub item label */}
-                            <span className="text-sm font-medium">
+                            <span className="text-sm font-medium truncate">
                               {subItem.displayName}
                             </span>
                           </div>
@@ -296,14 +299,14 @@ const Sidebar = () => {
       </div>
 
       {/* Logout Button */}
-      <div className="mt-auto p-4 border-t border-gray-100">
+      <div className="flex-shrink-0 p-3 border-t border-gray-100">
         <Button
           onClick={handleLogout}
           variant="ghost"
-          className="w-full justify-start gap-3 text-gray-600 hover:text-red-600 hover:bg-red-50"
+          className="w-full justify-start gap-3 text-gray-600 hover:text-red-600 hover:bg-red-50 px-3 py-2.5 h-auto"
         >
           <LogOut className="w-5 h-5" />
-          <span className="font-medium">Sign Out</span>
+          <span className="font-medium text-sm">Sign Out</span>
         </Button>
       </div>
     </div>

@@ -1,10 +1,9 @@
 // app/layout.tsx
-import Header from "@/components/shared/Header";
 import "./globals.css";
 import { Kanit } from "next/font/google";
-import Footer from "@/components/shared/Footer";
 import { Toaster } from "sonner";
-import PageNavigationLoader from "@/components/shared/PageNaigationLoader"; // ✅ Add this
+import PageNavigationLoader from "@/components/shared/PageNaigationLoader";
+import ConditionalLayout from "@/components/shared/ConditionalLayout";
 
 const kanit = Kanit({
   subsets: ["latin"],
@@ -21,13 +20,11 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${kanit.variable}`}>
       <body className="antialiased">
-        <Header />
-        <PageNavigationLoader /> {/* ✅ Loader inserted here */}
+        <PageNavigationLoader />
         <Toaster richColors position="top-right" />
-        <div className="md:min-h-screen flex flex-col justify-between">
-          <main className="flex-grow">{children}</main>
-        </div>
-        <Footer />
+        <ConditionalLayout>
+          {children}
+        </ConditionalLayout>
       </body>
     </html>
   );
