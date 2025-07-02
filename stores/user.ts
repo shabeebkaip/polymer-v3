@@ -1118,3 +1118,162 @@ export const useProductRequestsListStore = create<ProductRequestsListStore>((set
     });
   },
 }));
+
+// Product Request Detail Types
+interface ProductRequestDetailUser {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  company: string;
+  email: string;
+  address: string;
+  phone: number;
+}
+
+interface ProductRequestDetailProduct {
+  _id: string;
+  productName: string;
+  chemicalName: string;
+  description: string;
+  tradeName: string;
+  manufacturingMethod: string;
+  countryOfOrigin: string;
+  color: string;
+  productImages: Array<{
+    id: string;
+    name: string;
+    type: string;
+    fileUrl: string;
+    _id: string;
+  }>;
+  density: number;
+  mfi: number;
+  tensileStrength: number;
+  elongationAtBreak: number;
+  shoreHardness: number;
+  waterAbsorption: number;
+  createdBy: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    company: string;
+    email: string;
+    address: string;
+    phone: number;
+  };
+}
+
+interface ProductRequestDetail {
+  _id: string;
+  user: ProductRequestDetailUser;
+  product: ProductRequestDetailProduct;
+  quantity: number;
+  uom: string;
+  city: string;
+  country: string;
+  destination: string;
+  delivery_date: string;
+  message: string;
+  request_document: string;
+  status: "pending" | "approved" | "rejected" | "under_review" | "cancelled";
+  sellerStatus: "pending" | "accepted" | "in_progress" | "shipped" | "delivered" | "completed" | "cancelled" | "rejected";
+  statusMessage: Array<{
+    status: string;
+    message: string;
+    date: string;
+    _id: string;
+  }>;
+  createdAt: string;
+  updatedAt: string;
+  __v?: number;
+  statusTracking?: {
+    adminStatus: string;
+    sellerStatus: string;
+    lastUpdate: string;
+    totalUpdates: number;
+    statusHistory: Array<any>;
+  };
+}
+
+interface ProductRequestDetailStore {
+  productRequestDetail: ProductRequestDetail | null;
+  loading: boolean;
+  error: string | null;
+  updating: boolean;
+  fetchProductRequestDetail: (id: string) => Promise<void>;
+  updateStatus: (id: string, status: string, statusMessage: string) => Promise<boolean>;
+  clearProductRequestDetail: () => void;
+}
+
+export const useProductRequestDetailStore = create<ProductRequestDetailStore>((set, get) => ({
+  productRequestDetail: null,
+  loading: false,
+  error: null,
+  updating: false,
+
+  fetchProductRequestDetail: async (id: string) => {
+    set({ loading: true, error: null });
+    try {
+      console.log("🔍 Fetching product request detail for ID:", id);
+      
+      const { getBuyerProductRequestDetail } = await import("@/apiServices/user");
+      const response = await getBuyerProductRequestDetail(id);
+      
+      if (response && response.success && response.data) {
+        set({ 
+          productRequestDetail: response.data, 
+          loading: false, 
+          error: null 
+        });
+        console.log("✅ Product request detail fetched successfully:", response.data);
+      } else {
+        set({ 
+          productRequestDetail: null, 
+          loading: false, 
+          error: response?.message || "No data received" 
+        });
+      }
+    } catch (error) {
+      console.error("❌ Error fetching product request detail:", error);
+      set({ 
+        productRequestDetail: null, 
+        loading: false, 
+        error: error instanceof Error ? error.message : "Failed to fetch product request detail" 
+      });
+    }
+  },
+
+  updateStatus: async (id: string, status: string, statusMessage: string) => {
+    try {
+      set({ updating: true });
+      console.log("🔍 Updating product request status:", { id, status, statusMessage });
+      
+      // Note: Update this when the update API endpoint is available
+      // const { updateProductRequestStatus } = await import("@/apiServices/user");
+      // const response = await updateProductRequestStatus(id, {
+      //   status: status as any,
+      //   statusMessage
+      // });
+      
+      // Refresh the product request detail to get updated data
+      await get().fetchProductRequestDetail(id);
+      
+      set({ updating: false });
+      console.log("✅ Product request status updated successfully");
+      return true;
+    } catch (error) {
+      console.error("❌ Error updating product request status:", error);
+      set({ updating: false });
+      return false;
+    }
+  },
+
+  clearProductRequestDetail: () => {
+    set({ 
+      productRequestDetail: null, 
+      loading: false, 
+      error: null,
+      updating: false
+    });
+  },
+}));

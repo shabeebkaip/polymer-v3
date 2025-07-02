@@ -316,3 +316,23 @@ export const getBuyerProductRequests = async () => {
     throw error;
   }
 };
+
+export const getBuyerProductRequestDetail = async (id: string) => {
+  try {
+    const response = await axiosInstance.get(`/bulk-order/user-list/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching buyer product request detail:", error);
+    throw error;
+  }
+};
+
+export const createBuyerProductRequest = async (data: any) => {
+  try {
+    const response = await axiosInstance.post("/bulk-order/create", data);
+    return response.data;
+  } catch (error) {
+    console.error("Error creating buyer product request:", error);
+    throw error;
+  }
+};
