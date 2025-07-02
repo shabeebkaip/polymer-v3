@@ -1,19 +1,24 @@
 "use client";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { useUserInfo } from "@/lib/useUserInfo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import React, { useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Edit2, Save, X, User, Mail, Phone, Building, MapPin, Globe, Camera } from "lucide-react";
+import { Edit2, Save, X, User, Mail, Phone, Building, MapPin, Globe, Camera, FileText, Loader2 } from "lucide-react";
+import { editUserProfile } from "@/apiServices/user";
+import { toast } from "sonner";
 
 const Profile = () => {
-  const { user } = useUserInfo();
+  const { user, setUser } = useUserInfo();
   const userLoading = !user;
   const [isEditing, setIsEditing] = useState(false);
   const [editedUser, setEditedUser] = useState(user || {});
+  const [isSaving, setIsSaving] = useState(false);
 
   // Update editedUser when user data loads
   React.useEffect(() => {
@@ -32,11 +37,86 @@ const Profile = () => {
     setEditedUser(user || {});
   };
 
-  const handleSave = () => {
-    // TODO: Implement API call to save user data
-    console.log("Saving user data:", editedUser);
-    setIsEditing(false);
-    // After successful API call, you would update the user data
+  const handleSave = async () => {
+    if (!editedUser) return;
+    
+    // Basic validation
+    if (!editedUser.firstName || !editedUser.lastName) {
+      toast.error("First name and last name are required");
+      return;
+    }
+    
+    if (!editedUser.email) {
+      toast.error("Email is required");
+      return;
+    }
+    
+    if (!editedUser.company) {
+      toast.error("Company is required");
+      return;
+    }
+    
+    // Helper function to strip HTML tags and get text content
+    const getTextContent = (html: string) => {
+      return html ? html.replace(/<[^>]*>/g, '').trim() : '';
+    };
+    
+    // Validate about_us length
+    if (editedUser.about_us) {
+      const aboutUsTextLength = getTextContent(editedUser.about_us).length;
+      if (aboutUsTextLength > 2000) {
+        toast.error("About Us section exceeds maximum length of 2000 characters");
+        return;
+      }
+    }
+    
+    setIsSaving(true);
+    try {
+      // Prepare the data for API call
+      const updateData = {
+        firstName: editedUser.firstName?.trim(),
+        lastName: editedUser.lastName?.trim(),
+        company: editedUser.company?.trim(),
+        email: editedUser.email?.trim(),
+        website: editedUser.website?.trim(),
+        industry: editedUser.industry?.trim(),
+        address: editedUser.address?.trim(),
+        country_code: editedUser.country_code?.trim(),
+        phone: editedUser.phone ? Number(editedUser.phone) : undefined,
+        location: editedUser.location?.trim(),
+        vat_number: editedUser.vat_number?.trim(),
+        about_us: editedUser.about_us?.trim(), // Keep HTML content
+        Expert_department: editedUser.Expert_department?.trim(),
+        Expert_role: editedUser.Expert_role?.trim(),
+      };
+
+      // Remove undefined values
+      Object.keys(updateData).forEach(key => {
+        if (updateData[key as keyof typeof updateData] === undefined || updateData[key as keyof typeof updateData] === '') {
+          delete updateData[key as keyof typeof updateData];
+        }
+      });
+
+      console.log("Saving user profile data:", updateData);
+      
+      const response = await editUserProfile(updateData);
+      
+      if (response.success) {
+        // Update the user info in the store
+        const updatedUser = { ...user, ...updateData };
+        setUser(updatedUser);
+        setEditedUser(updatedUser);
+        setIsEditing(false);
+        toast.success("Profile updated successfully!");
+      } else {
+        throw new Error(response.message || "Failed to update profile");
+      }
+    } catch (error: any) {
+      console.error("Error updating profile:", error);
+      toast.error(error.message || "Failed to update profile. Please try again.");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleInputChange = (field: string, value: string) => {
@@ -71,10 +151,15 @@ const Profile = () => {
                   </Button>
                   <Button
                     onClick={handleSave}
-                    className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700"
+                    disabled={isSaving}
+                    className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50"
                   >
-                    <Save className="w-4 h-4" />
-                    Save Changes
+                    {isSaving ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Save className="w-4 h-4" />
+                    )}
+                    {isSaving ? "Saving..." : "Save Changes"}
                   </Button>
                 </>
               ) : (
@@ -259,7 +344,7 @@ const Profile = () => {
                   )}
                 </div>
 
-                {/* Phone */}
+                {/* Phone and Country Code */}
                 <div className="space-y-2">
                   <Label htmlFor="phone" className="text-sm font-medium text-gray-700">
                     Phone Number
@@ -267,26 +352,33 @@ const Profile = () => {
                   {userLoading ? (
                     <Skeleton className="h-12 w-full" />
                   ) : (
-                    <Input
-                      id="phone"
-                      className={`h-12 text-base transition-all duration-200 ${
-                        isEditing 
-                          ? "border-emerald-300 focus:border-emerald-500 focus:ring-emerald-500" 
-                          : "bg-gray-50 border-gray-200"
-                      }`}
-                      placeholder="Enter phone number"
-                      value={
-                        isEditing 
-                          ? `${editedUser?.country_code || ""} ${editedUser?.phone || ""}`.trim()
-                          : `${user?.country_code || ""} ${user?.phone || ""}`.trim()
-                      }
-                      onChange={(e) => {
-                        // For simplicity, storing the full phone number as one field
-                        // You might want to split country_code and phone separately
-                        handleInputChange("phone", e.target.value);
-                      }}
-                      readOnly={!isEditing}
-                    />
+                    <div className="flex gap-2">
+                      <Input
+                        id="country_code"
+                        className={`h-12 text-base transition-all duration-200 w-24 ${
+                          isEditing 
+                            ? "border-emerald-300 focus:border-emerald-500 focus:ring-emerald-500" 
+                            : "bg-gray-50 border-gray-200"
+                        }`}
+                        placeholder="+1"
+                        value={isEditing ? editedUser?.country_code || "" : user?.country_code || ""}
+                        onChange={(e) => handleInputChange("country_code", e.target.value)}
+                        readOnly={!isEditing}
+                      />
+                      <Input
+                        id="phone"
+                        className={`h-12 text-base transition-all duration-200 flex-1 ${
+                          isEditing 
+                            ? "border-emerald-300 focus:border-emerald-500 focus:ring-emerald-500" 
+                            : "bg-gray-50 border-gray-200"
+                        }`}
+                        placeholder="Enter phone number"
+                        value={isEditing ? editedUser?.phone || "" : user?.phone || ""}
+                        onChange={(e) => handleInputChange("phone", e.target.value)}
+                        readOnly={!isEditing}
+                        type="tel"
+                      />
+                    </div>
                   )}
                 </div>
 
@@ -379,6 +471,126 @@ const Profile = () => {
                       value={isEditing ? editedUser?.website || "" : user?.website || ""}
                       onChange={(e) => handleInputChange("website", e.target.value)}
                       readOnly={!isEditing}
+                    />
+                  )}
+                </div>
+
+                {/* Industry */}
+                <div className="space-y-2">
+                  <Label htmlFor="industry" className="text-sm font-medium text-gray-700">
+                    Industry
+                  </Label>
+                  {userLoading ? (
+                    <Skeleton className="h-12 w-full" />
+                  ) : (
+                    <Input
+                      id="industry"
+                      className={`h-12 text-base transition-all duration-200 ${
+                        isEditing 
+                          ? "border-emerald-300 focus:border-emerald-500 focus:ring-emerald-500" 
+                          : "bg-gray-50 border-gray-200"
+                      }`}
+                      placeholder="Enter industry"
+                      value={isEditing ? editedUser?.industry || "" : user?.industry || ""}
+                      onChange={(e) => handleInputChange("industry", e.target.value)}
+                      readOnly={!isEditing}
+                    />
+                  )}
+                </div>
+
+                {/* VAT Number */}
+                <div className="space-y-2">
+                  <Label htmlFor="vat_number" className="text-sm font-medium text-gray-700">
+                    VAT Number
+                  </Label>
+                  {userLoading ? (
+                    <Skeleton className="h-12 w-full" />
+                  ) : (
+                    <Input
+                      id="vat_number"
+                      className={`h-12 text-base transition-all duration-200 ${
+                        isEditing 
+                          ? "border-emerald-300 focus:border-emerald-500 focus:ring-emerald-500" 
+                          : "bg-gray-50 border-gray-200"
+                      }`}
+                      placeholder="Enter VAT number"
+                      value={isEditing ? editedUser?.vat_number || "" : user?.vat_number || ""}
+                      onChange={(e) => handleInputChange("vat_number", e.target.value)}
+                      readOnly={!isEditing}
+                    />
+                  )}
+                </div>
+
+                {/* Expert Fields - Only show for expert users */}
+                {user?.user_type === "expert" && (
+                  <>
+                    <div className="space-y-2">
+                      <Label htmlFor="Expert_department" className="text-sm font-medium text-gray-700">
+                        Expert Department
+                      </Label>
+                      {userLoading ? (
+                        <Skeleton className="h-12 w-full" />
+                      ) : (
+                        <Input
+                          id="Expert_department"
+                          className={`h-12 text-base transition-all duration-200 ${
+                            isEditing 
+                              ? "border-emerald-300 focus:border-emerald-500 focus:ring-emerald-500" 
+                              : "bg-gray-50 border-gray-200"
+                          }`}
+                          placeholder="Enter expert department"
+                          value={isEditing ? editedUser?.Expert_department || "" : user?.Expert_department || ""}
+                          onChange={(e) => handleInputChange("Expert_department", e.target.value)}
+                          readOnly={!isEditing}
+                        />
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="Expert_role" className="text-sm font-medium text-gray-700">
+                        Expert Role
+                      </Label>
+                      {userLoading ? (
+                        <Skeleton className="h-12 w-full" />
+                      ) : (
+                        <Input
+                          id="Expert_role"
+                          className={`h-12 text-base transition-all duration-200 ${
+                            isEditing 
+                              ? "border-emerald-300 focus:border-emerald-500 focus:ring-emerald-500" 
+                              : "bg-gray-50 border-gray-200"
+                          }`}
+                          placeholder="Enter expert role"
+                          value={isEditing ? editedUser?.Expert_role || "" : user?.Expert_role || ""}
+                          onChange={(e) => handleInputChange("Expert_role", e.target.value)}
+                          readOnly={!isEditing}
+                        />
+                      )}
+                    </div>
+                  </>
+                )}
+
+                {/* About Us */}
+                <div className="md:col-span-2 space-y-2">
+                  <Label htmlFor="about_us" className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                    <FileText className="w-4 h-4 text-emerald-600" />
+                    About Us
+                  </Label>
+                  {isEditing && (
+                    <p className="text-xs text-gray-600 mb-2">
+                      Use the formatting tools to style your content. You can add bold text, lists, links, and more to create a professional company description.
+                    </p>
+                  )}
+                  {userLoading ? (
+                    <Skeleton className="h-40 w-full" />
+                  ) : (
+                    <RichTextEditor
+                      value={isEditing ? editedUser?.about_us || "" : user?.about_us || ""}
+                      onChange={(value) => handleInputChange("about_us", value)}
+                      placeholder="Tell us about your company, expertise, mission, or what you do. You can format your text with bold, italic, lists, and more..."
+                      readOnly={!isEditing}
+                      maxLength={2000}
+                      className="min-h-[160px]"
                     />
                   )}
                 </div>

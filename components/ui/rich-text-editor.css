@@ -1,0 +1,76 @@
+/* Custom styles for Rich Text Editor */
+
+/* Toolbar buttons */
+.rich-text-toolbar button {
+  @apply p-1.5 rounded hover:bg-gray-200 transition-colors;
+}
+
+.rich-text-toolbar button:hover {
+  @apply bg-gray-200;
+}
+
+.rich-text-toolbar button:active {
+  @apply bg-gray-300;
+}
+
+/* Editor content styling */
+.rich-text-editor {
+  @apply min-h-[120px] p-4 text-base leading-relaxed outline-none;
+}
+
+.rich-text-editor:focus {
+  @apply ring-1 ring-emerald-500 border-emerald-500;
+}
+
+/* Placeholder styling when empty */
+.rich-text-editor:empty:before {
+  content: attr(data-placeholder);
+  @apply text-gray-400 pointer-events-none;
+}
+
+/* Prose styling for content */
+.rich-text-editor h1 {
+  @apply text-2xl font-bold mb-3 mt-2;
+}
+
+.rich-text-editor h2 {
+  @apply text-xl font-semibold mb-2 mt-2;
+}
+
+.rich-text-editor h3 {
+  @apply text-lg font-medium mb-2 mt-1;
+}
+
+.rich-text-editor p {
+  @apply mb-2 mt-0;
+}
+
+.rich-text-editor ul,
+.rich-text-editor ol {
+  @apply ml-4;
+}
+
+.rich-text-editor li {
+  @apply mb-1;
+}
+
+.rich-text-editor a {
+  @apply text-emerald-600 underline;
+}
+
+.rich-text-editor a:hover {
+  @apply text-emerald-700;
+}
+
+/* Character counter styling */
+.character-counter {
+  @apply text-xs text-gray-500;
+}
+
+.character-counter.warning {
+  @apply text-yellow-500;
+}
+
+.character-counter.error {
+  @apply text-red-500;
+}
