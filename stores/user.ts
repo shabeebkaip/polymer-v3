@@ -1163,6 +1163,47 @@ interface ProductRequestDetailProduct {
   };
 }
 
+interface SupplierOffer {
+  _id: string;
+  bulkOrderId: {
+    _id: string;
+    product: string;
+    quantity: number;
+    uom: string;
+    city: string;
+    country: string;
+    delivery_date: string;
+  };
+  supplierId: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    company: string;
+    email: string;
+  };
+  pricePerUnit: number;
+  availableQuantity: number;
+  deliveryTimeInDays: number;
+  incotermAndPackaging: string;
+  message: string;
+  status: "pending" | "approved" | "rejected";
+  statusMessage: Array<{
+    status: string;
+    message: string;
+    date: string;
+    updatedBy: string;
+    _id: string;
+  }>;
+  createdAt: string;
+  updatedAt: string;
+  __v?: number;
+}
+
+interface ProductRequestDetailResponse {
+  order: ProductRequestDetail;
+  offers: SupplierOffer[];
+}
+
 interface ProductRequestDetail {
   _id: string;
   user: ProductRequestDetailUser;
@@ -1197,6 +1238,7 @@ interface ProductRequestDetail {
 
 interface ProductRequestDetailStore {
   productRequestDetail: ProductRequestDetail | null;
+  supplierOffers: SupplierOffer[];
   loading: boolean;
   error: string | null;
   updating: boolean;
@@ -1207,6 +1249,7 @@ interface ProductRequestDetailStore {
 
 export const useProductRequestDetailStore = create<ProductRequestDetailStore>((set, get) => ({
   productRequestDetail: null,
+  supplierOffers: [],
   loading: false,
   error: null,
   updating: false,
@@ -1221,7 +1264,8 @@ export const useProductRequestDetailStore = create<ProductRequestDetailStore>((s
       
       if (response && response.success && response.data) {
         set({ 
-          productRequestDetail: response.data, 
+          productRequestDetail: response.data.order, 
+          supplierOffers: response.data.offers || [],
           loading: false, 
           error: null 
         });
@@ -1229,6 +1273,7 @@ export const useProductRequestDetailStore = create<ProductRequestDetailStore>((s
       } else {
         set({ 
           productRequestDetail: null, 
+          supplierOffers: [],
           loading: false, 
           error: response?.message || "No data received" 
         });
@@ -1237,6 +1282,7 @@ export const useProductRequestDetailStore = create<ProductRequestDetailStore>((s
       console.error("❌ Error fetching product request detail:", error);
       set({ 
         productRequestDetail: null, 
+        supplierOffers: [],
         loading: false, 
         error: error instanceof Error ? error.message : "Failed to fetch product request detail" 
       });
@@ -1271,6 +1317,7 @@ export const useProductRequestDetailStore = create<ProductRequestDetailStore>((s
   clearProductRequestDetail: () => {
     set({ 
       productRequestDetail: null, 
+      supplierOffers: [],
       loading: false, 
       error: null,
       updating: false

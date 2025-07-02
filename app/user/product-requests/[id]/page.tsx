@@ -41,6 +41,7 @@ const ProductRequestDetail = () => {
 
   const {
     productRequestDetail,
+    supplierOffers,
     loading,
     error,
     updating,
@@ -171,7 +172,7 @@ const ProductRequestDetail = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-green-50/20 to-emerald-50/30">
-      <div className="container mx-auto px-6 py-8 max-w-7xl">
+      <div className="container mx-auto px-6 py-8 ">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
           <Button
@@ -409,6 +410,179 @@ const ProductRequestDetail = () => {
                 </div>
               )}
             </div>
+
+            {/* Supplier Offers */}
+            {supplierOffers && supplierOffers.length > 0 && (
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50 p-8">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
+                    <Building2 className="w-6 h-6 text-green-600" />
+                    Supplier Offers
+                  </h2>
+                  <div className="bg-green-100 px-4 py-2 rounded-full">
+                    <span className="text-green-700 font-semibold">{supplierOffers.length} Offer{supplierOffers.length > 1 ? 's' : ''} Received</span>
+                  </div>
+                </div>
+
+                {/* Offers Summary */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 p-4 bg-gray-50 rounded-xl">
+                  <div className="text-center">
+                    <p className="text-sm text-gray-600">Pending Offers</p>
+                    <p className="text-2xl font-bold text-amber-600">
+                      {supplierOffers.filter(offer => offer.status === 'pending').length}
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm text-gray-600">Approved Offers</p>
+                    <p className="text-2xl font-bold text-green-600">
+                      {supplierOffers.filter(offer => offer.status === 'approved').length}
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm text-gray-600">Best Price</p>
+                    <p className="text-2xl font-bold text-blue-600">
+                      ${Math.min(...supplierOffers.map(offer => offer.pricePerUnit)).toFixed(2)}
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="space-y-6">
+                  {supplierOffers.map((offer, index) => {
+                    const offerStatus = getStatusBadge(offer.status);
+                    const totalCost = offer.pricePerUnit * productRequestDetail.quantity;
+                    
+                    return (
+                      <div key={offer._id} className="border border-gray-200 rounded-xl p-6 hover:shadow-md transition-shadow">
+                        {/* Offer Header */}
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="flex items-center gap-3">
+                            <div className="bg-green-100 p-2 rounded-lg">
+                              <Building2 className="w-5 h-5 text-green-600" />
+                            </div>
+                            <div>
+                              <h4 className="font-bold text-gray-900">
+                                {offer.supplierId.firstName} {offer.supplierId.lastName}
+                              </h4>
+                              <p className="text-sm text-gray-600">{offer.supplierId.company}</p>
+                            </div>
+                          </div>
+                          <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium border ${offerStatus.class}`}>
+                            <offerStatus.icon className="w-3 h-3" />
+                            {offerStatus.text}
+                          </span>
+                        </div>
+
+                        {/* Offer Details Grid */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                          <div className="bg-green-50 p-3 rounded-lg">
+                            <p className="text-xs text-green-600 font-medium mb-1">Price per Unit</p>
+                            <p className="font-bold text-gray-900">${offer.pricePerUnit.toFixed(2)}</p>
+                          </div>
+                          <div className="bg-emerald-50 p-3 rounded-lg">
+                            <p className="text-xs text-emerald-600 font-medium mb-1">Total Cost</p>
+                            <p className="font-bold text-gray-900">${totalCost.toLocaleString()}</p>
+                          </div>
+                          <div className="bg-teal-50 p-3 rounded-lg">
+                            <p className="text-xs text-teal-600 font-medium mb-1">Delivery Time</p>
+                            <p className="font-bold text-gray-900">{offer.deliveryTimeInDays} days</p>
+                          </div>
+                          <div className="bg-blue-50 p-3 rounded-lg">
+                            <p className="text-xs text-blue-600 font-medium mb-1">Available Qty</p>
+                            <p className="font-bold text-gray-900">{offer.availableQuantity.toLocaleString()}</p>
+                          </div>
+                        </div>
+
+                        {/* Additional Details */}
+                        <div className="space-y-3">
+                          <div className="flex items-start gap-3">
+                            <Package className="w-4 h-4 text-gray-500 mt-1" />
+                            <div>
+                              <p className="text-sm font-medium text-gray-700">Incoterm & Packaging</p>
+                              <p className="text-gray-600">{offer.incotermAndPackaging}</p>
+                            </div>
+                          </div>
+                          
+                          {offer.message && (
+                            <div className="flex items-start gap-3">
+                              <MessageSquare className="w-4 h-4 text-gray-500 mt-1" />
+                              <div>
+                                <p className="text-sm font-medium text-gray-700">Supplier Message</p>
+                                <p className="text-gray-600">{offer.message}</p>
+                              </div>
+                            </div>
+                          )}
+
+                          <div className="flex items-center gap-3">
+                            <Mail className="w-4 h-4 text-gray-500" />
+                            <div>
+                              <p className="text-sm font-medium text-gray-700">Contact</p>
+                              <p className="text-gray-600">{offer.supplierId.email}</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Status Messages */}
+                        {offer.statusMessage && offer.statusMessage.length > 0 && (
+                          <div className="mt-4 pt-4 border-t border-gray-200">
+                            <p className="text-sm font-medium text-gray-700 mb-2">Status History</p>
+                            <div className="space-y-2">
+                              {offer.statusMessage.slice(-3).map((statusMsg, msgIndex) => (
+                                <div key={statusMsg._id} className="bg-gray-50 p-2 rounded text-xs">
+                                  <div className="flex justify-between items-center">
+                                    <span className="font-medium capitalize">{statusMsg.status}</span>
+                                    <span className="text-gray-500">{formatDate(statusMsg.date)}</span>
+                                  </div>
+                                  <p className="text-gray-600 mt-1">{statusMsg.message}</p>
+                                  <p className="text-gray-500 text-xs">Updated by: {statusMsg.updatedBy}</p>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Action Buttons */}
+                        {offer.status === 'pending' && (
+                          <div className="mt-4 pt-4 border-t border-gray-200 flex gap-3">
+                            <Button
+                              size="sm"
+                              className="bg-green-600 hover:bg-green-700 text-white"
+                            >
+                              <CheckCircle className="w-4 h-4 mr-2" />
+                              Accept Offer
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="border-red-200 text-red-700 hover:bg-red-50"
+                            >
+                              <XCircle className="w-4 h-4 mr-2" />
+                              Reject Offer
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* No Offers State */}
+            {supplierOffers && supplierOffers.length === 0 && (
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50 p-8">
+                <div className="text-center py-8">
+                  <Building2 className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold text-gray-700 mb-2">No Supplier Offers Yet</h3>
+                  <p className="text-gray-500 mb-4">
+                    Your request is being reviewed by suppliers. You'll see offers here once they respond.
+                  </p>
+                  <div className="inline-flex items-center gap-2 text-sm text-green-600">
+                    <Clock className="w-4 h-4" />
+                    Waiting for supplier responses...
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Right Column - Sidebar */}
