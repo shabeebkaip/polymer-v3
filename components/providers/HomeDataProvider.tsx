@@ -113,11 +113,18 @@ export default function HomeDataProvider({ children, initialData }: HomeDataProv
     }
   }, [isHydrated, industries, productFamilies, sellers, buyerOpportunities, suppliersSpecialDeals]);
 
-  // Show preloader until hydration is complete
-  const isLoading = !isClient || !isHydrated;
+  // Only show preloader when actually fetching data, not just for hydration
+  const isLoading = !isClient || (!isHydrated && (
+    !initialData.industries?.length || 
+    !initialData.productFamilies?.length || 
+    !initialData.sellers?.length
+  ));
 
   return (
-    <AnimatedPreloader isLoading={isLoading}>
+    <AnimatedPreloader 
+      isLoading={isLoading} 
+      message="Loading marketplace data..."
+    >
       {children}
     </AnimatedPreloader>
   );
