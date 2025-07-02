@@ -306,3 +306,13 @@ export const updateFinanceRequestStatus = async (
     throw error;
   }
 };
+
+export const getBuyerProductRequests = async () => {
+  try {
+    const response = await axiosInstance.get("/bulk-order/user-list");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching buyer product requests:", error);
+    throw error;
+  }
+};

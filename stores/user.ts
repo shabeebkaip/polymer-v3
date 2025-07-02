@@ -910,3 +910,211 @@ export const useFinanceRequestStore = create<FinanceRequestStore>((set, get) => 
     });
   },
 }));
+
+// Product Requests Types
+interface ProductRequestUser {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  company: string;
+  email: string;
+  address: string;
+  phone: number;
+}
+
+interface ProductRequestProduct {
+  _id: string;
+  productName: string;
+  createdBy: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    company: string;
+    email: string;
+  };
+}
+
+interface ProductRequestListItem {
+  _id: string;
+  user: ProductRequestUser;
+  product: ProductRequestProduct;
+  quantity: number;
+  uom: string;
+  city: string;
+  country: string;
+  destination: string;
+  delivery_date: string;
+  message: string;
+  request_document: string;
+  status: "pending" | "approved" | "rejected" | "under_review" | "cancelled";
+  sellerStatus: "pending" | "accepted" | "in_progress" | "shipped" | "delivered" | "completed" | "cancelled" | "rejected";
+  statusMessage: Array<{
+    status: string;
+    message: string;
+    date: string;
+    _id: string;
+  }>;
+  createdAt: string;
+  updatedAt: string;
+  statusTracking?: {
+    adminStatus: string;
+    sellerStatus: string;
+    lastUpdate: string;
+    totalUpdates: number;
+  };
+}
+
+interface ProductRequestsListResponse {
+  success: boolean;
+  message: string;
+  data: ProductRequestListItem[];
+  meta: {
+    pagination: {
+      total: number;
+      page: number;
+      totalPages: number;
+      count: number;
+      limit: number;
+    };
+    filters: {
+      search: string;
+      status: string;
+    };
+  };
+}
+
+interface ProductRequestsListStore {
+  requests: ProductRequestListItem[];
+  loading: boolean;
+  error: string | null;
+  currentPage: number;
+  totalPages: number;
+  totalRequests: number;
+  pageSize: number;
+  searchTerm: string;
+  statusFilter: string;
+  lastFetchParams: string | null;
+
+  setSearchTerm: (term: string) => void;
+  setStatusFilter: (status: string) => void;
+  setCurrentPage: (page: number) => void;
+  fetchProductRequests: (params?: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    status?: string;
+    forceRefresh?: boolean;
+  }) => Promise<void>;
+  clearFilters: () => void;
+  reset: () => void;
+}
+
+export const useProductRequestsListStore = create<ProductRequestsListStore>((set, get) => ({
+  requests: [],
+  loading: false,
+  error: null,
+  currentPage: 1,
+  totalPages: 1,
+  totalRequests: 0,
+  pageSize: 10,
+  searchTerm: "",
+  statusFilter: "all",
+  lastFetchParams: null,
+
+  setSearchTerm: (term: string) => {
+    set({ searchTerm: term });
+  },
+
+  setStatusFilter: (status: string) => {
+    set({ statusFilter: status });
+  },
+
+  setCurrentPage: (page: number) => {
+    set({ currentPage: page });
+  },
+
+  fetchProductRequests: async (params = {}) => {
+    const state = get();
+    
+    // Build actual params
+    const actualParams = {
+      page: params.page ?? state.currentPage,
+      limit: params.limit ?? state.pageSize,
+      ...(params.search && { search: params.search }),
+      ...(params.status && params.status !== "all" && { status: params.status })
+    };
+
+    // Create a cache key to prevent duplicate calls
+    const cacheKey = JSON.stringify(actualParams);
+    
+    // If we already fetched with these exact params and it's not a forced refresh, skip
+    // Also check if we're currently loading to prevent race conditions
+    if ((state.lastFetchParams === cacheKey && !params.forceRefresh) || state.loading) {
+      console.log("🔄 Skipping duplicate/concurrent API call for product requests with params:", actualParams);
+      return;
+    }
+
+    try {
+      set({ loading: true, error: null, lastFetchParams: cacheKey });
+      console.log("🔍 Fetching product requests from store with params:", actualParams);
+      
+      const { getBuyerProductRequests } = await import("@/apiServices/user");
+      const response: ProductRequestsListResponse = await getBuyerProductRequests();
+
+      if (response && response.success && response.data && Array.isArray(response.data)) {
+        const pagination = response.meta?.pagination;
+        
+        set({
+          requests: response.data,
+          totalRequests: pagination?.total || response.data.length,
+          totalPages: pagination?.totalPages || Math.ceil(response.data.length / actualParams.limit),
+          currentPage: pagination?.page || actualParams.page,
+          loading: false,
+          error: null
+        });
+        console.log("✅ Product requests fetched successfully:", response.data.length, "items");
+      } else {
+        set({
+          requests: [],
+          totalRequests: 0,
+          totalPages: 1,
+          loading: false,
+          error: response?.message || "No data received"
+        });
+      }
+    } catch (error) {
+      console.error("❌ Error fetching product requests:", error);
+      set({
+        requests: [],
+        totalRequests: 0,
+        totalPages: 1,
+        loading: false,
+        error: error instanceof Error ? error.message : "Failed to fetch product requests",
+        lastFetchParams: null
+      });
+    }
+  },
+
+  clearFilters: () => {
+    set({
+      searchTerm: "",
+      statusFilter: "all",
+      currentPage: 1,
+      lastFetchParams: null
+    });
+  },
+
+  reset: () => {
+    set({
+      requests: [],
+      loading: false,
+      error: null,
+      currentPage: 1,
+      totalPages: 1,
+      totalRequests: 0,
+      searchTerm: "",
+      statusFilter: "all",
+      lastFetchParams: null
+    });
+  },
+}));
