@@ -167,20 +167,20 @@ const Sidebar = () => {
           icon: "Users",
           subItems: [],
         },
-        {
-          displayName: "Analytics",
-          route: "/user/analytics",
-          name: "analytics",
-          icon: "TrendingUp",
-          subItems: [],
-        },
-        {
-          displayName: "Orders",
-          route: "/user/orders",
-          name: "orders",
-          icon: "ShoppingBag",
-          subItems: [],
-        }
+        // {
+        //   displayName: "Analytics",
+        //   route: "/user/analytics",
+        //   name: "analytics",
+        //   icon: "TrendingUp",
+        //   subItems: [],
+        // },
+        // {
+        //   displayName: "Orders",
+        //   route: "/user/orders",
+        //   name: "orders",
+        //   icon: "ShoppingBag",
+        //   subItems: [],
+        // }
       );
     } else if (userType === "buyer") {
       sidebarItems.push({
@@ -219,48 +219,48 @@ const Sidebar = () => {
 
     // Add common items for all user types
     sidebarItems.push(
-      {
-        displayName: "Settings",
-        route: "/user/settings",
-        name: "settings",
-        icon: "Settings",
-        subItems: [],
-      },
-      {
-        displayName: "Privacy Policy",
-        route: "/privacy-policy",
-        name: "privacyPolicy",
-        icon: "ShieldCheck",
-        subItems: [],
-      },
-      {
-        displayName: "Terms & Conditions",
-        route: "/terms-and-Condition",
-        name: "termsAndCondition",
-        icon: "FileText",
-        subItems: [],
-      },
-      {
-        displayName: "Dashboard",
-        route: "/user/dashboard",
-        name: "dashboard",
-        icon: "LayoutDashboard",
-        subItems: [],
-      },
-      {
-        displayName: "Notifications",
-        route: "/user/notifications",
-        name: "notifications",
-        icon: "Bell",
-        subItems: [],
-      },
-      {
-        displayName: "Help & Support",
-        route: "/user/support",
-        name: "support",
-        icon: "HelpCircle",
-        subItems: [],
-      }
+      // {
+      //   displayName: "Settings",
+      //   route: "/user/settings",
+      //   name: "settings",
+      //   icon: "Settings",
+      //   subItems: [],
+      // },
+      // {
+      //   displayName: "Privacy Policy",
+      //   route: "/privacy-policy",
+      //   name: "privacyPolicy",
+      //   icon: "ShieldCheck",
+      //   subItems: [],
+      // },
+      // {
+      //   displayName: "Terms & Conditions",
+      //   route: "/terms-and-Condition",
+      //   name: "termsAndCondition",
+      //   icon: "FileText",
+      //   subItems: [],
+      // },
+      // {
+      //   displayName: "Dashboard",
+      //   route: "/user/dashboard",
+      //   name: "dashboard",
+      //   icon: "LayoutDashboard",
+      //   subItems: [],
+      // },
+      // {
+      //   displayName: "Notifications",
+      //   route: "/user/notifications",
+      //   name: "notifications",
+      //   icon: "Bell",
+      //   subItems: [],
+      // },
+      // {
+      //   displayName: "Help & Support",
+      //   route: "/user/support",
+      //   name: "support",
+      //   icon: "HelpCircle",
+      //   subItems: [],
+      // }
     );
 
     return sidebarItems;
