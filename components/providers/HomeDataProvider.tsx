@@ -33,6 +33,11 @@ export default function HomeDataProvider({ children, initialData }: HomeDataProv
     sellers,
     buyerOpportunities,
     suppliersSpecialDeals,
+    industriesLoading,
+    familiesLoading,
+    sellersLoading,
+    buyerOpportunitiesLoading,
+    suppliersSpecialDealsLoading,
     setIndustries,
     setProductFamilies, 
     setSellers,
@@ -113,12 +118,14 @@ export default function HomeDataProvider({ children, initialData }: HomeDataProv
     }
   }, [isHydrated, industries, productFamilies, sellers, buyerOpportunities, suppliersSpecialDeals]);
 
-  // Only show preloader when actually fetching data, not just for hydration
-  const isLoading = !isClient || (!isHydrated && (
-    !initialData.industries?.length || 
-    !initialData.productFamilies?.length || 
-    !initialData.sellers?.length
-  ));
+  // Only show preloader when actively fetching data (not for cached data)
+  const isLoading = !isClient || (
+    (industriesLoading && !industries?.length) ||
+    (familiesLoading && !productFamilies?.length) ||
+    (sellersLoading && !sellers?.length) ||
+    (buyerOpportunitiesLoading && !buyerOpportunities?.length) ||
+    (suppliersSpecialDealsLoading && !suppliersSpecialDeals?.length)
+  );
 
   return (
     <AnimatedPreloader 

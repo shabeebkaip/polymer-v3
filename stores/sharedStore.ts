@@ -21,6 +21,11 @@ interface SidebarItem {
   subItems?: SidebarSubItem[];
 }
 
+interface CacheMetadata {
+  lastFetch: number;
+  ttl: number; // Time to live in milliseconds
+}
+
 interface SharedState {
   industries: any[];
   productFamilies: any[];
@@ -28,19 +33,35 @@ interface SharedState {
   buyerOpportunities: any[];
   suppliersSpecialDeals: any[];
   sidebarItems: SidebarItem[];
+  
+  // Cache metadata
+  industriesCache: CacheMetadata | null;
+  productFamiliesCache: CacheMetadata | null;
+  sellersCache: CacheMetadata | null;
+  buyerOpportunitiesCache: CacheMetadata | null;
+  suppliersSpecialDealsCache: CacheMetadata | null;
+  sidebarCache: CacheMetadata | null;
+  
   industriesLoading: boolean;
   familiesLoading: boolean;
   sellersLoading: boolean;
   buyerOpportunitiesLoading: boolean;
   suppliersSpecialDealsLoading: boolean;
   sidebarLoading: boolean;
-  fetchIndustries: () => Promise<void>;
-  fetchProductFamilies: () => Promise<void>;
-  fetchSellers: () => Promise<void>;
-  fetchBuyerOpportunities: () => Promise<void>;
-  fetchSuppliersSpecialDeals: () => Promise<void>;
-  fetchSidebarItems: (retryCount?: number) => Promise<void>;
+  
+  // Enhanced fetch methods with caching
+  fetchIndustries: (forceRefresh?: boolean) => Promise<void>;
+  fetchProductFamilies: (forceRefresh?: boolean) => Promise<void>;
+  fetchSellers: (forceRefresh?: boolean) => Promise<void>;
+  fetchBuyerOpportunities: (forceRefresh?: boolean) => Promise<void>;
+  fetchSuppliersSpecialDeals: (forceRefresh?: boolean) => Promise<void>;
+  fetchSidebarItems: (retryCount?: number, forceRefresh?: boolean) => Promise<void>;
   refreshSidebarItems: () => Promise<void>;
+  
+  // Cache management
+  invalidateCache: (cacheKey?: string) => void;
+  isCacheValid: (cacheKey: string) => boolean;
+  
   // Setter methods for SSR hydration
   setIndustries: (industries: any[]) => void;
   setProductFamilies: (families: any[]) => void;
@@ -50,6 +71,16 @@ interface SharedState {
   setSidebarItems: (items: SidebarItem[]) => void;
 }
 
+// Cache configuration
+const CACHE_DURATION = {
+  industries: 30 * 60 * 1000, // 30 minutes
+  productFamilies: 30 * 60 * 1000, // 30 minutes  
+  sellers: 15 * 60 * 1000, // 15 minutes
+  buyerOpportunities: 5 * 60 * 1000, // 5 minutes (more dynamic)
+  suppliersSpecialDeals: 5 * 60 * 1000, // 5 minutes (more dynamic)
+  sidebar: 60 * 60 * 1000, // 1 hour
+};
+
 export const useSharedState = create<SharedState>((set, get) => ({
   industries: [],
   productFamilies: [],
@@ -57,90 +88,207 @@ export const useSharedState = create<SharedState>((set, get) => ({
   buyerOpportunities: [],
   suppliersSpecialDeals: [],
   sidebarItems: [],
-  industriesLoading: true,
-  familiesLoading: true,
-  sellersLoading: true,
-  buyerOpportunitiesLoading: true,
-  suppliersSpecialDealsLoading: true,
+  
+  // Cache metadata
+  industriesCache: null,
+  productFamiliesCache: null,
+  sellersCache: null,
+  buyerOpportunitiesCache: null,
+  suppliersSpecialDealsCache: null,
+  sidebarCache: null,
+  
+  industriesLoading: false, // Changed default to false since we have caching
+  familiesLoading: false,
+  sellersLoading: false,
+  buyerOpportunitiesLoading: false,
+  suppliersSpecialDealsLoading: false,
   sidebarLoading: false,
 
-  fetchIndustries: async () => {
+  // Cache management helpers
+  isCacheValid: (cacheKey: string) => {
     const state = get();
-    if (state.industries.length > 0) return; // Already fetched
+    const cache = state[`${cacheKey}Cache` as keyof SharedState] as CacheMetadata | null;
+    
+    if (!cache) return false;
+    
+    const now = Date.now();
+    return (now - cache.lastFetch) < cache.ttl;
+  },
+
+  invalidateCache: (cacheKey?: string) => {
+    if (cacheKey) {
+      set({ [`${cacheKey}Cache`]: null } as any);
+    } else {
+      // Invalidate all caches
+      set({
+        industriesCache: null,
+        productFamiliesCache: null,
+        sellersCache: null,
+        buyerOpportunitiesCache: null,
+        suppliersSpecialDealsCache: null,
+        sidebarCache: null,
+      });
+    }
+  },
+
+  fetchIndustries: async (forceRefresh = false) => {
+    const state = get();
+    
+    // Check cache validity
+    if (!forceRefresh && state.industries.length > 0 && state.isCacheValid('industries')) {
+      console.log('🚀 Industries loaded from cache');
+      return;
+    }
 
     set({ industriesLoading: true });
 
     try {
+      console.log('🌐 Fetching industries from API');
       const res = await getIndustryList();
-      set({ industries: res?.data || [], industriesLoading: false });
+      const now = Date.now();
+      
+      set({ 
+        industries: res?.data || [], 
+        industriesLoading: false,
+        industriesCache: {
+          lastFetch: now,
+          ttl: CACHE_DURATION.industries
+        }
+      });
     } catch (err) {
       console.error("Failed to fetch industries", err);
       set({ industriesLoading: false });
     }
   },
 
-  fetchProductFamilies: async () => {
+  fetchProductFamilies: async (forceRefresh = false) => {
     const state = get();
-    if (state.productFamilies.length > 0) return; // Already fetched
+    
+    // Check cache validity
+    if (!forceRefresh && state.productFamilies.length > 0 && state.isCacheValid('productFamilies')) {
+      console.log('🚀 Product families loaded from cache');
+      return;
+    }
 
     set({ familiesLoading: true });
 
     try {
+      console.log('🌐 Fetching product families from API');
       const res = await getProductFamilies();
-      set({ productFamilies: res?.data || [], familiesLoading: false });
+      const now = Date.now();
+      
+      set({ 
+        productFamilies: res?.data || [], 
+        familiesLoading: false,
+        productFamiliesCache: {
+          lastFetch: now,
+          ttl: CACHE_DURATION.productFamilies
+        }
+      });
     } catch (err) {
       console.error("Failed to fetch product families", err);
       set({ familiesLoading: false });
     }
   },
 
-  fetchSellers: async () => {
+  fetchSellers: async (forceRefresh = false) => {
     const state = get();
-    if (state.sellers.length > 0) return; // Already fetched
+    
+    // Check cache validity
+    if (!forceRefresh && state.sellers.length > 0 && state.isCacheValid('sellers')) {
+      console.log('🚀 Sellers loaded from cache');
+      return;
+    }
 
     set({ sellersLoading: true });
 
     try {
+      console.log('🌐 Fetching sellers from API');
       const res = await getSellers();
-      set({ sellers: res?.data || [], sellersLoading: false });
+      const now = Date.now();
+      
+      set({ 
+        sellers: res?.data || [], 
+        sellersLoading: false,
+        sellersCache: {
+          lastFetch: now,
+          ttl: CACHE_DURATION.sellers
+        }
+      });
     } catch (err) {
       console.error("Failed to fetch sellers", err);
       set({ sellersLoading: false });
     }
   },
 
-  fetchBuyerOpportunities: async () => {
+  fetchBuyerOpportunities: async (forceRefresh = false) => {
     const state = get();
-    if (state.buyerOpportunities.length > 0) return; // Already fetched
+    
+    // Check cache validity
+    if (!forceRefresh && state.buyerOpportunities.length > 0 && state.isCacheValid('buyerOpportunities')) {
+      console.log('🚀 Buyer opportunities loaded from cache');
+      return;
+    }
 
     set({ buyerOpportunitiesLoading: true });
 
     try {
+      console.log('🌐 Fetching buyer opportunities from API');
       const res = await getBuyerOpportunities();
-      set({ buyerOpportunities: res?.data || [], buyerOpportunitiesLoading: false });
+      const now = Date.now();
+      
+      set({ 
+        buyerOpportunities: res?.data || [], 
+        buyerOpportunitiesLoading: false,
+        buyerOpportunitiesCache: {
+          lastFetch: now,
+          ttl: CACHE_DURATION.buyerOpportunities
+        }
+      });
     } catch (err) {
       console.error("Failed to fetch buyer opportunities", err);
       set({ buyerOpportunitiesLoading: false });
     }
   },
 
-  fetchSuppliersSpecialDeals: async () => {
+  fetchSuppliersSpecialDeals: async (forceRefresh = false) => {
     const state = get();
-    if (state.suppliersSpecialDeals.length > 0) return; // Already fetched
+    
+    // Check cache validity
+    if (!forceRefresh && state.suppliersSpecialDeals.length > 0 && state.isCacheValid('suppliersSpecialDeals')) {
+      console.log('🚀 Suppliers special deals loaded from cache');
+      return;
+    }
 
     set({ suppliersSpecialDealsLoading: true });
 
     try {
+      console.log('🌐 Fetching suppliers special deals from API');
       const res = await getSuppliersSpecialDeals();
-      set({ suppliersSpecialDeals: res?.data || [], suppliersSpecialDealsLoading: false });
+      const now = Date.now();
+      
+      set({ 
+        suppliersSpecialDeals: res?.data || [], 
+        suppliersSpecialDealsLoading: false,
+        suppliersSpecialDealsCache: {
+          lastFetch: now,
+          ttl: CACHE_DURATION.suppliersSpecialDeals
+        }
+      });
     } catch (err) {
       console.error("Failed to fetch suppliers special deals", err);
       set({ suppliersSpecialDealsLoading: false });
     }
   },
 
-  fetchSidebarItems: async (retryCount = 0) => {
+  fetchSidebarItems: async (retryCount = 0, forceRefresh = false) => {
     const state = get();
+    
+    // Check cache validity
+    if (!forceRefresh && state.sidebarItems.length > 0 && state.isCacheValid('sidebar')) {
+      console.log('🚀 Sidebar items loaded from cache');
+      return;
+    }
     
     console.log("fetchSidebarItems called", { retryCount, loading: state.sidebarLoading });
     
@@ -153,77 +301,120 @@ export const useSharedState = create<SharedState>((set, get) => ({
     set({ sidebarLoading: true });
 
     try {
-      console.log("Making API call to fetch sidebar items");
+      console.log("🌐 Fetching sidebar items from API");
       const res = await getSidebarList();
-      console.log("Sidebar API response:", res);
+      const now = Date.now();
       
-      // Handle different response structures
-      let sidebarData = [];
-      if (res?.data && Array.isArray(res.data)) {
-        sidebarData = res.data;
-      } else if (Array.isArray(res)) {
-        sidebarData = res;
-      } else if (res?.data?.data && Array.isArray(res.data.data)) {
-        sidebarData = res.data.data;
-      } else if (res?.success && res?.data) {
-        // Handle success response structure
-        sidebarData = Array.isArray(res.data) ? res.data : [];
-      }
-      
-      console.log("Processed sidebar data:", sidebarData);
-      set({ sidebarItems: sidebarData, sidebarLoading: false });
-    } catch (err) {
-      console.error("Failed to fetch sidebar items", err);
-      
-      // Retry logic for network errors
-      if (retryCount < 2 && (err as any)?.code !== 401) {
-        console.log(`Retrying sidebar fetch (attempt ${retryCount + 1}/2)`);
-        setTimeout(() => {
-          const { fetchSidebarItems } = get();
-          fetchSidebarItems(retryCount + 1);
-        }, 1000 * (retryCount + 1)); // Exponential backoff
+      if (res?.success && res?.data) {
+        set({ 
+          sidebarItems: res.data,
+          sidebarLoading: false,
+          sidebarCache: {
+            lastFetch: now,
+            ttl: CACHE_DURATION.sidebar
+          }
+        });
+        console.log("✅ Sidebar items fetched successfully:", res.data.length);
       } else {
-        console.log("Max retries reached or auth error, stopping");
-        set({ sidebarItems: [], sidebarLoading: false });
+        throw new Error(res?.message || "Failed to fetch sidebar items");
+      }
+    } catch (error) {
+      console.error("❌ Failed to fetch sidebar items:", error);
+      
+      if (retryCount < 2) {
+        console.log(`🔄 Retrying sidebar fetch (attempt ${retryCount + 1})`);
+        setTimeout(() => {
+          get().fetchSidebarItems(retryCount + 1, forceRefresh);
+        }, 1000 * (retryCount + 1));
+      } else {
+        set({ sidebarLoading: false });
+        console.error("❌ Max retries reached for sidebar items");
       }
     }
   },
 
   refreshSidebarItems: async () => {
-    // Force refresh by clearing data first
-    set({ sidebarItems: [], sidebarLoading: false });
-    const { fetchSidebarItems } = get();
-    return fetchSidebarItems();
+    // Force refresh by invalidating cache
+    get().invalidateCache('sidebar');
+    return get().fetchSidebarItems(0, true);
   },
 
-  // Setter methods for SSR hydration
+  // Setter methods for SSR hydration with cache metadata
   setIndustries: (industries) => {
     console.log("setIndustries called with:", industries?.length);
-    set({ industries, industriesLoading: false });
+    const now = Date.now();
+    set({ 
+      industries, 
+      industriesLoading: false,
+      industriesCache: {
+        lastFetch: now,
+        ttl: CACHE_DURATION.industries
+      }
+    });
   },
 
   setProductFamilies: (productFamilies) => {
     console.log("setProductFamilies called with:", productFamilies?.length);
-    set({ productFamilies, familiesLoading: false });
+    const now = Date.now();
+    set({ 
+      productFamilies, 
+      familiesLoading: false,
+      productFamiliesCache: {
+        lastFetch: now,
+        ttl: CACHE_DURATION.productFamilies
+      }
+    });
   },
 
   setSellers: (sellers) => {
     console.log("setSellers called with:", sellers?.length);
-    set({ sellers, sellersLoading: false });
+    const now = Date.now();
+    set({ 
+      sellers, 
+      sellersLoading: false,
+      sellersCache: {
+        lastFetch: now,
+        ttl: CACHE_DURATION.sellers
+      }
+    });
   },
 
   setBuyerOpportunities: (buyerOpportunities) => {
     console.log("setBuyerOpportunities called with:", buyerOpportunities?.length);
-    set({ buyerOpportunities, buyerOpportunitiesLoading: false });
+    const now = Date.now();
+    set({ 
+      buyerOpportunities, 
+      buyerOpportunitiesLoading: false,
+      buyerOpportunitiesCache: {
+        lastFetch: now,
+        ttl: CACHE_DURATION.buyerOpportunities
+      }
+    });
   },
 
   setSuppliersSpecialDeals: (suppliersSpecialDeals) => {
     console.log("setSuppliersSpecialDeals called with:", suppliersSpecialDeals?.length);
-    set({ suppliersSpecialDeals, suppliersSpecialDealsLoading: false });
+    const now = Date.now();
+    set({ 
+      suppliersSpecialDeals, 
+      suppliersSpecialDealsLoading: false,
+      suppliersSpecialDealsCache: {
+        lastFetch: now,
+        ttl: CACHE_DURATION.suppliersSpecialDeals
+      }
+    });
   },
 
   setSidebarItems: (sidebarItems) => {
     console.log("setSidebarItems called with:", sidebarItems?.length);
-    set({ sidebarItems, sidebarLoading: false });
+    const now = Date.now();
+    set({ 
+      sidebarItems, 
+      sidebarLoading: false,
+      sidebarCache: {
+        lastFetch: now,
+        ttl: CACHE_DURATION.sidebar
+      }
+    });
   },
 }));
