@@ -39,20 +39,6 @@ export const useUserInfo = create<UserStore>((set, get) => ({
         const parsedUser = JSON.parse(userInfo);
         console.log("Parsed user from cookies:", parsedUser);
         set({ user: parsedUser, isInitialized: true });
-        
-        // Auto-fetch sidebar data when user is loaded
-        if (typeof window !== 'undefined') {
-          // Small delay to ensure component is mounted
-          setTimeout(() => {
-            import('@/stores/sharedStore').then(({ useSharedState }) => {
-              const { sidebarItems, sidebarLoading, fetchSidebarItems } = useSharedState.getState();
-              if (sidebarItems.length === 0 && !sidebarLoading) {
-                console.log("Auto-fetching sidebar items after user load");
-                fetchSidebarItems();
-              }
-            });
-          }, 100);
-        }
       } catch (error) {
         console.error("Failed to parse user info from cookies:", error);
         set({ user: null, isInitialized: true });

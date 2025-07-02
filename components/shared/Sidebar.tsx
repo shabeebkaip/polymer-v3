@@ -29,8 +29,6 @@ import {
 import { Button } from "../ui/button";
 import Cookies from "js-cookie";
 import { useUserInfo } from "@/lib/useUserInfo";
-import { useSharedState } from "@/stores/sharedStore";
-import { useSidebarInitializer } from "@/lib/useSidebarInitializer";
 
 // Define types for sidebar items
 interface SidebarSubItem {
@@ -75,11 +73,7 @@ const Sidebar = () => {
   const pathname = usePathname();
   const router = useRouter();
   const { user, isInitialized, loadUserFromCookies } = useUserInfo();
-  const { sidebarItems, sidebarLoading, fetchSidebarItems, refreshSidebarItems } = useSharedState();
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
-
-  // Use the sidebar initializer hook
-  useSidebarInitializer();
 
   // Initialize user data from cookies on mount
   useEffect(() => {
@@ -272,25 +266,8 @@ const Sidebar = () => {
     return sidebarItems;
   };
 
-  // Process and use API data when available
-  let displaySidebarList: SidebarItem[] = [];
-
-  if (sidebarLoading) {
-    // Show loading skeleton
-    displaySidebarList = [];
-  } else if (sidebarItems && sidebarItems.length > 0) {
-    // Use API data directly since it matches the expected structure
-    displaySidebarList = sidebarItems.map((item: any): SidebarItem => ({
-      displayName: item.displayName,
-      route: item.route,
-      name: item.name,
-      icon: item.icon,
-      subItems: item.subItems || [],
-    }));
-  } else {
-    // Use comprehensive fallback data based on user type
-    displaySidebarList = getFallbackSidebarList(user?.user_type);
-  }
+  // Process and use fallback data only - no API dependency
+  const displaySidebarList: SidebarItem[] = getFallbackSidebarList(user?.user_type);
 
   const renderIcon = (iconName: string, className: string = "") => {
     const IconComponent = iconMap[iconName] || User; // Default to User icon if not found
@@ -310,12 +287,10 @@ const Sidebar = () => {
     user: !!user,
     userDetails: user ? { firstName: user.firstName, email: user.email, user_type: user.user_type } : null,
     isInitialized,
-    sidebarLoading,
-    sidebarItemsCount: sidebarItems.length,
     hasToken: !!Cookies.get("token"),
     tokenValue: Cookies.get("token")?.substring(0, 10) + "...",
-    usingFallback: sidebarItems.length === 0 && !sidebarLoading,
-    fallbackUserType: user?.user_type || "unknown"
+    fallbackUserType: user?.user_type || "unknown",
+    sidebarItemsCount: displaySidebarList.length
   });
   return (
     <div className="h-full bg-white border-r border-gray-200 flex flex-col">
@@ -356,21 +331,7 @@ const Sidebar = () => {
       {/* Navigation */}
       <div className="flex-1 overflow-y-auto py-2">
         <nav className="space-y-1 px-3">
-          {sidebarLoading ? (
-            // Loading skeleton
-            <div className="space-y-2">
-              {Array.from({ length: 6 }).map((_, index) => (
-                <div
-                  key={index}
-                  className="flex items-center gap-3 p-3 animate-pulse"
-                >
-                  <div className="w-8 h-8 bg-gray-200 rounded-md"></div>
-                  <div className="h-4 bg-gray-200 rounded flex-1"></div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            displaySidebarList?.map((item) => {
+          {displaySidebarList?.map((item) => {
               const isActive = isActiveRoute(item.route);
               const hasSubItems = item.subItems && item.subItems.length > 0;
               const isExpanded = expandedItems.has(item.displayName);
@@ -464,29 +425,14 @@ const Sidebar = () => {
                       })}
                     </div>
                   )}
-                </div>
-              );
-            })
-          )}
+                </div>                );
+              })
+            }
         </nav>
       </div>
 
       {/* Logout Button */}
-      <div className="flex-shrink-0 p-3 border-t border-gray-100">
-        {/* Debug button - remove in production */}
-        {process.env.NODE_ENV === 'development' && (
-          <Button
-            onClick={() => {
-              console.log("Manual sidebar refresh triggered");
-              refreshSidebarItems();
-            }}
-            variant="outline"
-            className="w-full justify-start gap-3 text-blue-600 hover:text-blue-700 hover:bg-blue-50 px-3 py-2 h-auto mb-2 text-xs"
-          >
-            🔄 Refresh Sidebar
-          </Button>
-        )}
-        
+      <div className="flex-shrink-0 p-3 border-t border-gray-100">        
         <Button
           onClick={handleLogout}
           variant="ghost"

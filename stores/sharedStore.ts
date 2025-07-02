@@ -5,21 +5,6 @@ import {
   getSellers,
 } from "@/apiServices/shared";
 import { getBuyerOpportunities, getSuppliersSpecialDeals } from "@/apiServices/dealsAndRequests";
-import { getSidebarList } from "@/apiServices/user";
-
-interface SidebarSubItem {
-  displayName: string;
-  route: string;
-  icon?: string;
-}
-
-interface SidebarItem {
-  displayName: string;
-  route: string;
-  user: string;
-  icon?: string;
-  subItems?: SidebarSubItem[];
-}
 
 interface CacheMetadata {
   lastFetch: number;
@@ -32,7 +17,6 @@ interface SharedState {
   sellers: any[];
   buyerOpportunities: any[];
   suppliersSpecialDeals: any[];
-  sidebarItems: SidebarItem[];
   
   // Cache metadata
   industriesCache: CacheMetadata | null;
@@ -40,14 +24,12 @@ interface SharedState {
   sellersCache: CacheMetadata | null;
   buyerOpportunitiesCache: CacheMetadata | null;
   suppliersSpecialDealsCache: CacheMetadata | null;
-  sidebarCache: CacheMetadata | null;
   
   industriesLoading: boolean;
   familiesLoading: boolean;
   sellersLoading: boolean;
   buyerOpportunitiesLoading: boolean;
   suppliersSpecialDealsLoading: boolean;
-  sidebarLoading: boolean;
   
   // Enhanced fetch methods with caching
   fetchIndustries: (forceRefresh?: boolean) => Promise<void>;
@@ -55,8 +37,6 @@ interface SharedState {
   fetchSellers: (forceRefresh?: boolean) => Promise<void>;
   fetchBuyerOpportunities: (forceRefresh?: boolean) => Promise<void>;
   fetchSuppliersSpecialDeals: (forceRefresh?: boolean) => Promise<void>;
-  fetchSidebarItems: (retryCount?: number, forceRefresh?: boolean) => Promise<void>;
-  refreshSidebarItems: () => Promise<void>;
   
   // Cache management
   invalidateCache: (cacheKey?: string) => void;
@@ -68,7 +48,6 @@ interface SharedState {
   setSellers: (sellers: any[]) => void;
   setBuyerOpportunities: (opportunities: any[]) => void;
   setSuppliersSpecialDeals: (deals: any[]) => void;
-  setSidebarItems: (items: SidebarItem[]) => void;
 }
 
 // Cache configuration
@@ -78,7 +57,6 @@ const CACHE_DURATION = {
   sellers: 15 * 60 * 1000, // 15 minutes
   buyerOpportunities: 5 * 60 * 1000, // 5 minutes (more dynamic)
   suppliersSpecialDeals: 5 * 60 * 1000, // 5 minutes (more dynamic)
-  sidebar: 60 * 60 * 1000, // 1 hour
 };
 
 export const useSharedState = create<SharedState>((set, get) => ({
@@ -87,7 +65,6 @@ export const useSharedState = create<SharedState>((set, get) => ({
   sellers: [],
   buyerOpportunities: [],
   suppliersSpecialDeals: [],
-  sidebarItems: [],
   
   // Cache metadata
   industriesCache: null,
@@ -95,14 +72,12 @@ export const useSharedState = create<SharedState>((set, get) => ({
   sellersCache: null,
   buyerOpportunitiesCache: null,
   suppliersSpecialDealsCache: null,
-  sidebarCache: null,
   
   industriesLoading: false, // Changed default to false since we have caching
   familiesLoading: false,
   sellersLoading: false,
   buyerOpportunitiesLoading: false,
   suppliersSpecialDealsLoading: false,
-  sidebarLoading: false,
 
   // Cache management helpers
   isCacheValid: (cacheKey: string) => {
@@ -126,7 +101,6 @@ export const useSharedState = create<SharedState>((set, get) => ({
         sellersCache: null,
         buyerOpportunitiesCache: null,
         suppliersSpecialDealsCache: null,
-        sidebarCache: null,
       });
     }
   },
@@ -281,64 +255,6 @@ export const useSharedState = create<SharedState>((set, get) => ({
     }
   },
 
-  fetchSidebarItems: async (retryCount = 0, forceRefresh = false) => {
-    const state = get();
-    
-    // Check cache validity
-    if (!forceRefresh && state.sidebarItems.length > 0 && state.isCacheValid('sidebar')) {
-      console.log('🚀 Sidebar items loaded from cache');
-      return;
-    }
-    
-    console.log("fetchSidebarItems called", { retryCount, loading: state.sidebarLoading });
-    
-    // Avoid multiple concurrent requests
-    if (state.sidebarLoading) {
-      console.log("Already loading sidebar items, skipping");
-      return;
-    }
-    
-    set({ sidebarLoading: true });
-
-    try {
-      console.log("🌐 Fetching sidebar items from API");
-      const res = await getSidebarList();
-      const now = Date.now();
-      
-      if (res?.success && res?.data) {
-        set({ 
-          sidebarItems: res.data,
-          sidebarLoading: false,
-          sidebarCache: {
-            lastFetch: now,
-            ttl: CACHE_DURATION.sidebar
-          }
-        });
-        console.log("✅ Sidebar items fetched successfully:", res.data.length);
-      } else {
-        throw new Error(res?.message || "Failed to fetch sidebar items");
-      }
-    } catch (error) {
-      console.error("❌ Failed to fetch sidebar items:", error);
-      
-      if (retryCount < 2) {
-        console.log(`🔄 Retrying sidebar fetch (attempt ${retryCount + 1})`);
-        setTimeout(() => {
-          get().fetchSidebarItems(retryCount + 1, forceRefresh);
-        }, 1000 * (retryCount + 1));
-      } else {
-        set({ sidebarLoading: false });
-        console.error("❌ Max retries reached for sidebar items");
-      }
-    }
-  },
-
-  refreshSidebarItems: async () => {
-    // Force refresh by invalidating cache
-    get().invalidateCache('sidebar');
-    return get().fetchSidebarItems(0, true);
-  },
-
   // Setter methods for SSR hydration with cache metadata
   setIndustries: (industries) => {
     console.log("setIndustries called with:", industries?.length);
@@ -401,19 +317,6 @@ export const useSharedState = create<SharedState>((set, get) => ({
       suppliersSpecialDealsCache: {
         lastFetch: now,
         ttl: CACHE_DURATION.suppliersSpecialDeals
-      }
-    });
-  },
-
-  setSidebarItems: (sidebarItems) => {
-    console.log("setSidebarItems called with:", sidebarItems?.length);
-    const now = Date.now();
-    set({ 
-      sidebarItems, 
-      sidebarLoading: false,
-      sidebarCache: {
-        lastFetch: now,
-        ttl: CACHE_DURATION.sidebar
       }
     });
   },
