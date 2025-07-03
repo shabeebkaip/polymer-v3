@@ -8,8 +8,22 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { FlaskConical, Package, Calendar, Building2, AlertCircle, CheckCircle, XCircle, Clock, Search, Filter, ChevronLeft, ChevronRight, Eye } from "lucide-react";
-import { useEffect, useState, useCallback } from "react";
+import {
+  FlaskConical,
+  Package,
+  Calendar,
+  Building2,
+  AlertCircle,
+  CheckCircle,
+  XCircle,
+  Clock,
+  Search,
+  Filter,
+  ChevronLeft,
+  ChevronRight,
+  Eye,
+} from "lucide-react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getUserSampleEnquiries } from "@/apiServices/user";
 import { useSampleEnquiriesStore } from "@/stores/sampleEnquiriesStore";
@@ -23,15 +37,18 @@ const statusOptions = [
 
 const SampleEnquiries = () => {
   const router = useRouter();
-  
+
   // Zustand store
-  const { enquiries, meta, setEnquiries, clearEnquiries } = useSampleEnquiriesStore();
+  const { enquiries, meta, setEnquiries, clearEnquiries } =
+    useSampleEnquiriesStore();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Filter states
   const [searchTerm, setSearchTerm] = useState(meta?.filters?.search || "");
-  const [statusFilter, setStatusFilter] = useState(meta?.filters?.status || "all");
+  const [statusFilter, setStatusFilter] = useState(
+    meta?.filters?.status || "all"
+  );
   const [currentPage, setCurrentPage] = useState(meta?.pagination?.page || 1);
   const pageSize = 10;
 
@@ -50,13 +67,13 @@ const SampleEnquiries = () => {
   // Keyboard shortcut for clearing filters (Escape key)
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && (searchTerm || statusFilter !== "all")) {
+      if (event.key === "Escape" && (searchTerm || statusFilter !== "all")) {
         clearFilters();
       }
     };
 
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
   }, [searchTerm, statusFilter]);
 
   // Fetch data when component mounts or when filters change
@@ -68,7 +85,7 @@ const SampleEnquiries = () => {
           page: currentPage,
           limit: pageSize,
           ...(debouncedSearchTerm && { search: debouncedSearchTerm }),
-          ...(statusFilter !== "all" && { status: statusFilter })
+          ...(statusFilter !== "all" && { status: statusFilter }),
         };
 
         const response = await getUserSampleEnquiries(params);
@@ -84,7 +101,13 @@ const SampleEnquiries = () => {
     };
 
     fetchEnquiries();
-  }, [currentPage, debouncedSearchTerm, statusFilter, setEnquiries, clearEnquiries]);
+  }, [
+    currentPage,
+    debouncedSearchTerm,
+    statusFilter,
+    setEnquiries,
+    clearEnquiries,
+  ]);
 
   // Reset to first page when filters change
   useEffect(() => {
@@ -100,7 +123,7 @@ const SampleEnquiries = () => {
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const clearFilters = () => {
@@ -130,8 +153,9 @@ const SampleEnquiries = () => {
   };
 
   const getStatusBadge = (status: string) => {
-    const baseClasses = "inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium";
-    
+    const baseClasses =
+      "inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium";
+
     switch (status) {
       case "approved":
         return `${baseClasses} bg-green-100 text-green-700 border border-green-200`;
@@ -182,7 +206,7 @@ const SampleEnquiries = () => {
           <div className="absolute inset-0 bg-gradient-to-r from-green-600/5 via-emerald-600/5 to-teal-600/5"></div>
           <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-green-200/20 to-emerald-200/20 rounded-full blur-3xl -translate-y-48 translate-x-48"></div>
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-gradient-to-tr from-emerald-200/15 to-green-200/15 rounded-full blur-3xl translate-y-32 -translate-x-32"></div>
-          
+
           <div className="relative z-10">
             <div className="flex items-center gap-5 mb-8">
               <div className="relative">
@@ -206,8 +230,12 @@ const SampleEnquiries = () => {
               <div className="group bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-200/50 hover:shadow-xl hover:scale-105 transition-all duration-500 hover:bg-white/90">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-600 text-sm font-medium mb-1">Total Enquiries</p>
-                    <p className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">{totalRequests}</p>
+                    <p className="text-gray-600 text-sm font-medium mb-1">
+                      Total Enquiries
+                    </p>
+                    <p className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                      {totalRequests}
+                    </p>
                   </div>
                   <div className="bg-gradient-to-br from-green-100 to-emerald-100 p-3 rounded-xl group-hover:from-green-200 group-hover:to-emerald-200 transition-all duration-300">
                     <FlaskConical className="w-6 h-6 text-green-600" />
@@ -217,9 +245,11 @@ const SampleEnquiries = () => {
               <div className="group bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-200/50 hover:shadow-xl hover:scale-105 transition-all duration-500 hover:bg-white/90">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-600 text-sm font-medium mb-1">Pending</p>
+                    <p className="text-gray-600 text-sm font-medium mb-1">
+                      Pending
+                    </p>
                     <p className="text-3xl font-bold bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
-                      {enquiries.filter(r => r.status === "pending").length}
+                      {enquiries.filter((r) => r.status === "pending").length}
                     </p>
                   </div>
                   <div className="bg-gradient-to-br from-yellow-100 to-orange-100 p-3 rounded-xl group-hover:from-yellow-200 group-hover:to-orange-200 transition-all duration-300">
@@ -230,9 +260,11 @@ const SampleEnquiries = () => {
               <div className="group bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-200/50 hover:shadow-xl hover:scale-105 transition-all duration-500 hover:bg-white/90">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-600 text-sm font-medium mb-1">Approved</p>
+                    <p className="text-gray-600 text-sm font-medium mb-1">
+                      Approved
+                    </p>
                     <p className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
-                      {enquiries.filter(r => r.status === "approved").length}
+                      {enquiries.filter((r) => r.status === "approved").length}
                     </p>
                   </div>
                   <div className="bg-gradient-to-br from-green-100 to-emerald-100 p-3 rounded-xl group-hover:from-green-200 group-hover:to-emerald-200 transition-all duration-300">
@@ -243,13 +275,21 @@ const SampleEnquiries = () => {
               <div className="group bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-200/50 hover:shadow-xl hover:scale-105 transition-all duration-500 hover:bg-white/90">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-600 text-sm font-medium mb-1">This Month</p>
+                    <p className="text-gray-600 text-sm font-medium mb-1">
+                      This Month
+                    </p>
                     <p className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
-                      {enquiries.filter(e => {
-                        const enquiryDate = new Date(e.createdAt);
-                        const currentDate = new Date();
-                        return enquiryDate.getMonth() === currentDate.getMonth() && enquiryDate.getFullYear() === currentDate.getFullYear();
-                      }).length}
+                      {
+                        enquiries.filter((e) => {
+                          const enquiryDate = new Date(e.createdAt);
+                          const currentDate = new Date();
+                          return (
+                            enquiryDate.getMonth() === currentDate.getMonth() &&
+                            enquiryDate.getFullYear() ===
+                              currentDate.getFullYear()
+                          );
+                        }).length
+                      }
                     </p>
                   </div>
                   <div className="bg-gradient-to-br from-blue-100 to-cyan-100 p-3 rounded-xl group-hover:from-blue-200 group-hover:to-cyan-200 transition-all duration-300">
@@ -304,8 +344,18 @@ const SampleEnquiries = () => {
                   <option value="cancelled">Cancelled</option>
                 </select>
                 <div className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  <svg
+                    className="w-5 h-5 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
                   </svg>
                 </div>
               </div>
@@ -326,7 +376,9 @@ const SampleEnquiries = () => {
           {/* Active Filters Display */}
           {(debouncedSearchTerm || statusFilter !== "all") && (
             <div className="flex items-center gap-3 mt-6 pt-6 border-t border-gray-200/60">
-              <span className="text-sm font-medium text-gray-700">Active filters:</span>
+              <span className="text-sm font-medium text-gray-700">
+                Active filters:
+              </span>
               <div className="flex items-center gap-2 flex-wrap">
                 {debouncedSearchTerm && (
                   <span className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-100 to-emerald-100 text-green-700 rounded-full text-sm font-medium border border-green-200/50 group">
@@ -366,17 +418,20 @@ const SampleEnquiries = () => {
                 <div className="flex items-center gap-3">
                   <h3 className="text-lg font-semibold text-gray-900">
                     Sample Enquiries
-                    {debouncedSearchTerm || statusFilter !== "all" ? " (Filtered)" : ""}
+                    {debouncedSearchTerm || statusFilter !== "all"
+                      ? " (Filtered)"
+                      : ""}
                   </h3>
                   <span className="bg-gradient-to-r from-green-100 to-emerald-100 text-green-700 px-3 py-1.5 rounded-full text-sm font-semibold border border-green-200/50">
-                    {totalRequests} {totalRequests === 1 ? 'result' : 'results'}
+                    {totalRequests} {totalRequests === 1 ? "result" : "results"}
                   </span>
                 </div>
                 {(debouncedSearchTerm || statusFilter !== "all") && (
                   <div className="text-sm text-gray-600 font-medium">
                     {debouncedSearchTerm && `Search: "${debouncedSearchTerm}"`}
                     {debouncedSearchTerm && statusFilter !== "all" && " • "}
-                    {statusFilter !== "all" && `Status: ${getStatusText(statusFilter)}`}
+                    {statusFilter !== "all" &&
+                      `Status: ${getStatusText(statusFilter)}`}
                   </div>
                 )}
               </div>
@@ -388,10 +443,16 @@ const SampleEnquiries = () => {
               <div className="relative mx-auto mb-6 w-16 h-16">
                 <div className="absolute inset-0 rounded-full border-4 border-green-200"></div>
                 <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-green-600 animate-spin"></div>
-                <div className="absolute inset-2 rounded-full border-2 border-transparent border-t-emerald-500 animate-spin" style={{animationDirection: 'reverse', animationDuration: '0.8s'}}></div>
+                <div
+                  className="absolute inset-2 rounded-full border-2 border-transparent border-t-emerald-500 animate-spin"
+                  style={{
+                    animationDirection: "reverse",
+                    animationDuration: "0.8s",
+                  }}
+                ></div>
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                {debouncedSearchTerm || statusFilter !== "all" 
+                {debouncedSearchTerm || statusFilter !== "all"
                   ? "Searching your sample enquiries..."
                   : "Loading your sample enquiries..."}
               </h3>
@@ -414,12 +475,12 @@ const SampleEnquiries = () => {
                 </div>
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-3">
-                {debouncedSearchTerm || statusFilter !== "all" 
-                  ? "No Matching Enquiries Found" 
+                {debouncedSearchTerm || statusFilter !== "all"
+                  ? "No Matching Enquiries Found"
                   : "No Sample Enquiries"}
               </h3>
               <p className="text-gray-600 mb-6 max-w-md mx-auto leading-relaxed">
-                {debouncedSearchTerm || statusFilter !== "all" 
+                {debouncedSearchTerm || statusFilter !== "all"
                   ? `No sample enquiries match your current filters. Try adjusting your search term or status filter to find what you're looking for.`
                   : "You haven't received any sample enquiries yet. They will appear here once customers start requesting samples from you."}
               </p>
@@ -427,8 +488,18 @@ const SampleEnquiries = () => {
                 <div className="space-y-4">
                   <div className="text-sm text-gray-500 bg-gray-50 rounded-xl p-4 inline-block">
                     <div className="font-medium mb-2">Current filters:</div>
-                    {debouncedSearchTerm && <div className="flex items-center gap-2"><Search className="w-4 h-4" /> Search: "{debouncedSearchTerm}"</div>}
-                    {statusFilter !== "all" && <div className="flex items-center gap-2"><Filter className="w-4 h-4" /> Status: {getStatusText(statusFilter)}</div>}
+                    {debouncedSearchTerm && (
+                      <div className="flex items-center gap-2">
+                        <Search className="w-4 h-4" /> Search: "
+                        {debouncedSearchTerm}"
+                      </div>
+                    )}
+                    {statusFilter !== "all" && (
+                      <div className="flex items-center gap-2">
+                        <Filter className="w-4 h-4" /> Status:{" "}
+                        {getStatusText(statusFilter)}
+                      </div>
+                    )}
                   </div>
                   <button
                     onClick={clearFilters}
@@ -444,21 +515,41 @@ const SampleEnquiries = () => {
             <Table>
               <TableHeader className="bg-gradient-to-r from-gray-50/80 to-green-50/30">
                 <TableRow className="border-gray-200/60">
-                  <TableHead className="font-bold text-gray-900 py-4">SL NO</TableHead>
-                  <TableHead className="font-bold text-gray-900 py-4">Product</TableHead>
-                  <TableHead className="font-bold text-gray-900 py-4">Quantity</TableHead>
-                  <TableHead className="font-bold text-gray-900 py-4">Company</TableHead>
-                  <TableHead className="font-bold text-gray-900 py-4">Date</TableHead>
-                  <TableHead className="font-bold text-gray-900 py-4">Status</TableHead>
-                  <TableHead className="font-bold text-gray-900 py-4 text-center">Actions</TableHead>
+                  <TableHead className="font-bold text-gray-900 py-4">
+                    SL NO
+                  </TableHead>
+                  <TableHead className="font-bold text-gray-900 py-4">
+                    Product
+                  </TableHead>
+                  <TableHead className="font-bold text-gray-900 py-4">
+                    Quantity
+                  </TableHead>
+                  <TableHead className="font-bold text-gray-900 py-4">
+                    Company
+                  </TableHead>
+                  <TableHead className="font-bold text-gray-900 py-4">
+                    Date
+                  </TableHead>
+                  <TableHead className="font-bold text-gray-900 py-4">
+                    Status
+                  </TableHead>
+                  <TableHead className="font-bold text-gray-900 py-4 text-center">
+                    Actions
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {enquiries.map((item, index) => (
-                  <TableRow key={item._id || index} className="hover:bg-gradient-to-r hover:from-green-50/30 hover:to-emerald-50/30 transition-all duration-300 border-gray-200/40 group">
+                  <TableRow
+                    key={item._id || index}
+                    className="hover:bg-gradient-to-r hover:from-green-50/30 hover:to-emerald-50/30 transition-all duration-300 border-gray-200/40 group"
+                  >
                     <TableCell className="font-bold text-gray-900 py-6">
                       <span className="bg-gradient-to-r from-green-100 to-emerald-100 text-green-700 px-3 py-2 rounded-lg text-sm font-bold border border-green-200/50">
-                        #{((currentPage - 1) * pageSize + index + 1).toString().padStart(3, '0')}
+                        #
+                        {((currentPage - 1) * pageSize + index + 1)
+                          .toString()
+                          .padStart(3, "0")}
                       </span>
                     </TableCell>
                     <TableCell className="py-6">
@@ -471,7 +562,10 @@ const SampleEnquiries = () => {
                             {item.product?.productName || "Test Product"}
                           </p>
                           <p className="text-sm text-gray-600 mt-1">
-                            Grade: <span className="font-medium">{item.product?.grade || "Medical Grade"}</span>
+                            Grade:{" "}
+                            <span className="font-medium">
+                              {item.product?.grade || "Medical Grade"}
+                            </span>
                           </p>
                         </div>
                       </div>
@@ -505,17 +599,22 @@ const SampleEnquiries = () => {
                         </div>
                         <span className="text-gray-900 font-medium">
                           {item.createdAt
-                            ? new Date(item.createdAt).toLocaleDateString("en-US", {
-                                year: "numeric",
-                                month: "short",
-                                day: "numeric",
-                              })
+                            ? new Date(item.createdAt).toLocaleDateString(
+                                "en-US",
+                                {
+                                  year: "numeric",
+                                  month: "short",
+                                  day: "numeric",
+                                }
+                              )
                             : "Jun 30, 2025"}
                         </span>
                       </div>
                     </TableCell>
                     <TableCell className="py-6">
-                      <span className={getStatusBadge(item.status || "pending")}>
+                      <span
+                        className={getStatusBadge(item.status || "pending")}
+                      >
                         {getStatusIcon(item.status || "pending")}
                         {getStatusText(item.status || "pending")}
                       </span>
@@ -523,7 +622,9 @@ const SampleEnquiries = () => {
                     <TableCell className="py-6">
                       <div className="flex items-center justify-center">
                         <button
-                          onClick={() => router.push(`/user/sample-enquiries/${item._id}`)}
+                          onClick={() =>
+                            router.push(`/user/sample-enquiries/${item._id}`)
+                          }
                           className="group inline-flex items-center justify-center w-10 h-10 bg-gradient-to-br from-green-100 to-emerald-100 hover:from-green-200 hover:to-emerald-200 rounded-xl transition-all duration-300 hover:shadow-lg hover:scale-110"
                           title="View Enquiry Details"
                         >
@@ -536,17 +637,29 @@ const SampleEnquiries = () => {
               </TableBody>
             </Table>
           )}
-          
+
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="border-t border-gray-200/60 bg-gradient-to-r from-gray-50/50 to-green-50/20 px-8 py-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center text-sm text-gray-600 font-medium">
                   <span className="bg-white/80 backdrop-blur-sm px-4 py-2 rounded-xl border border-gray-200/50">
-                    Showing <span className="font-bold text-green-600">{((currentPage - 1) * pageSize) + 1}</span> to <span className="font-bold text-green-600">{Math.min(currentPage * pageSize, totalRequests)}</span> of <span className="font-bold text-green-600">{totalRequests}</span> results
+                    Showing{" "}
+                    <span className="font-bold text-green-600">
+                      {(currentPage - 1) * pageSize + 1}
+                    </span>{" "}
+                    to{" "}
+                    <span className="font-bold text-green-600">
+                      {Math.min(currentPage * pageSize, totalRequests)}
+                    </span>{" "}
+                    of{" "}
+                    <span className="font-bold text-green-600">
+                      {totalRequests}
+                    </span>{" "}
+                    results
                   </span>
                 </div>
-                
+
                 <div className="flex items-center gap-3">
                   {/* Previous Button */}
                   <button

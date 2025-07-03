@@ -361,3 +361,26 @@ export const editUserProfile = async (data: any) => {
     throw error;
   }
 };
+
+export const getRecievedSampleEnquiryDetail = async (id: string) => {
+  try {
+    const response = await axiosInstance.get(`/sample-request/received/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching received sample enquiry detail:", error);
+    throw error;
+  }
+};
+
+export const updateSampleEnquiryStatus = async (id: string, status: string, message?: string) => {
+  try {
+    const response = await axiosInstance.put(`/sample-request/received/${id}/status`, {
+      status,
+      message
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error updating sample enquiry status:", error);
+    throw error;
+  }
+};
