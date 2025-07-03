@@ -135,9 +135,9 @@ export const getUserSampleEnquiries = async (params?: {
   }
 };
 
-export const getUserQuoteEnquiries = async () => {
+export const getUserQuoteEnquiries = async (params?: any) => {
   try {
-    const response = await axiosInstance.get("/quote-request/received");
+    const response = await axiosInstance.get("/quote-request/received", { params });
     return response.data;
   } catch (error) {
     console.error("Error fetching user quote enquiries:", error);
