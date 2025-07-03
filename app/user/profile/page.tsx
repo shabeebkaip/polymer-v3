@@ -4,6 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { useUserInfo } from "@/lib/useUserInfo";
+import { getUserInfo } from "@/apiServices/user";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,19 +14,29 @@ import { Edit2, Save, X, User, Mail, Phone, Building, MapPin, Globe, Camera, Fil
 import { editUserProfile } from "@/apiServices/user";
 import { toast } from "sonner";
 
+
 const Profile = () => {
-  const { user, setUser } = useUserInfo();
+  const { setUser: setUserStore } = useUserInfo();
+  const [user, setUser] = useState<any>(null);
   const userLoading = !user;
   const [isEditing, setIsEditing] = useState(false);
-  const [editedUser, setEditedUser] = useState(user || {});
+  const [editedUser, setEditedUser] = useState<any>({});
   const [isSaving, setIsSaving] = useState(false);
 
-  // Update editedUser when user data loads
+  // Fetch user info from API on mount
   React.useEffect(() => {
-    if (user) {
-      setEditedUser(user);
-    }
-  }, [user]);
+    const fetchUser = async () => {
+      try {
+        const data = await getUserInfo();
+        const userObj = data?.userInfo || data;
+        setUser(userObj);
+        setEditedUser(userObj);
+      } catch (err) {
+        toast.error("Failed to load user info");
+      }
+    };
+    fetchUser();
+  }, []);
 
   const handleEdit = () => {
     setIsEditing(true);
@@ -39,28 +50,26 @@ const Profile = () => {
 
   const handleSave = async () => {
     if (!editedUser) return;
-    
+
     // Basic validation
     if (!editedUser.firstName || !editedUser.lastName) {
       toast.error("First name and last name are required");
       return;
     }
-    
-    if (!editedUser.email) {
-      toast.error("Email is required");
-      return;
-    }
-    
+
     if (!editedUser.company) {
       toast.error("Company is required");
       return;
     }
-    
+
     // Helper function to strip HTML tags and get text content
     const getTextContent = (html: string) => {
       return html ? html.replace(/<[^>]*>/g, '').trim() : '';
     };
-    
+
+    // Debug: log about_us value before save
+    console.log('About Us value before save:', editedUser.about_us);
+
     // Validate about_us length
     if (editedUser.about_us) {
       const aboutUsTextLength = getTextContent(editedUser.about_us).length;
@@ -69,15 +78,14 @@ const Profile = () => {
         return;
       }
     }
-    
+
     setIsSaving(true);
     try {
       // Prepare the data for API call
-      const updateData = {
+      const updateData: any = {
         firstName: editedUser.firstName?.trim(),
         lastName: editedUser.lastName?.trim(),
         company: editedUser.company?.trim(),
-        email: editedUser.email?.trim(),
         website: editedUser.website?.trim(),
         industry: editedUser.industry?.trim(),
         address: editedUser.address?.trim(),
@@ -90,22 +98,39 @@ const Profile = () => {
         Expert_role: editedUser.Expert_role?.trim(),
       };
 
-      // Remove undefined values
+      // For sellers, ensure vat_number and company_logo are present
+      if (user?.user_type === "seller") {
+        if (!updateData.vat_number) {
+          toast.error("VAT number is required for sellers");
+          setIsSaving(false);
+          return;
+        }
+        if (!user.company_logo) {
+          toast.error("Company logo is required for sellers");
+          setIsSaving(false);
+          return;
+        }
+        updateData.company_logo = user.company_logo;
+      }
+
+      // Remove undefined or empty values
       Object.keys(updateData).forEach(key => {
-        if (updateData[key as keyof typeof updateData] === undefined || updateData[key as keyof typeof updateData] === '') {
-          delete updateData[key as keyof typeof updateData];
+        if (updateData[key] === undefined || updateData[key] === "") {
+          delete updateData[key];
         }
       });
 
       console.log("Saving user profile data:", updateData);
-      
+
       const response = await editUserProfile(updateData);
-      
+
       if (response.success) {
-        // Update the user info in the store
-        const updatedUser = { ...user, ...updateData };
-        setUser(updatedUser);
-        setEditedUser(updatedUser);
+        // After save, fetch latest user info from API and update both local and store
+        const latest = await getUserInfo();
+        const latestUser = latest?.userInfo || latest;
+        setUser(latestUser);
+        setUserStore(latestUser);
+        setEditedUser(latestUser);
         setIsEditing(false);
         toast.success("Profile updated successfully!");
       } else {
@@ -331,15 +356,11 @@ const Profile = () => {
                     <Input
                       id="email"
                       type="email"
-                      className={`h-12 text-base transition-all duration-200 ${
-                        isEditing 
-                          ? "border-emerald-300 focus:border-emerald-500 focus:ring-emerald-500" 
-                          : "bg-gray-50 border-gray-200"
-                      }`}
+                      className="h-12 text-base transition-all duration-200 bg-gray-50 border-gray-200"
                       placeholder="Enter email address"
-                      value={isEditing ? editedUser?.email || "" : user?.email || ""}
-                      onChange={(e) => handleInputChange("email", e.target.value)}
-                      readOnly={!isEditing}
+                      value={user?.email || ""}
+                      readOnly
+                      tabIndex={-1}
                     />
                   )}
                 </div>

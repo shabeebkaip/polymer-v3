@@ -339,7 +339,7 @@ export const createBuyerProductRequest = async (data: any) => {
 
 export const editUserProfile = async (data: any) => {
   try {
-    const response = await axiosInstance.patch("/user/edit", data);
+    const response = await axiosInstance.put("/user/edit", data);
     return response.data;
   } catch (error) {
     console.error("Error editing user profile:", error);
