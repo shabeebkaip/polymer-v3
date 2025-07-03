@@ -110,9 +110,24 @@ export const getUserSampleRequests = async (params?: {
   }
 };
 
-export const getUserSampleEnquiries = async () => {
+export const getUserSampleEnquiries = async (params?: {
+  page?: number;
+  limit?: number;
+  search?: string;
+  status?: string;
+}) => {
   try {
-    const response = await axiosInstance.get("/sample-request/received");
+    const queryParams = new URLSearchParams();
+
+    if (params?.page) queryParams.append("page", params.page.toString());
+    if (params?.limit) queryParams.append("limit", params.limit.toString());
+    if (params?.search) queryParams.append("search", params.search);
+    if (params?.status) queryParams.append("status", params.status);
+
+    const url = `/sample-request/received${
+      queryParams.toString() ? `?${queryParams.toString()}` : ""
+    }`;
+    const response = await axiosInstance.get(url);
     return response.data;
   } catch (error) {
     console.error("Error fetching user sample enquiries:", error);
