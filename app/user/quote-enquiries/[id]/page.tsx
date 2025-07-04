@@ -65,18 +65,17 @@ const QuoteEnquiryDetails = () => {
     enquiryDetail,
     loading,
     error,
-    updating,
     setEnquiryDetail,
     clearEnquiryDetail,
     setLoading,
-    setError,
-    setUpdating
+    setError
   } = useQuoteEnquiriesStore();
 
   const [statusModalOpen, setStatusModalOpen] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState('');
   const [statusMessage, setStatusMessage] = useState('');
   const [loadingDetail, setLoadingDetail] = useState(true);
+  const [localUpdating, setLocalUpdating] = useState(false);
 
   const statusOptions: StatusOption[] = [
     {
@@ -161,7 +160,7 @@ const QuoteEnquiryDetails = () => {
     if (!selectedStatus || !enquiryDetail) return;
 
     try {
-      setUpdating(true);
+      setLocalUpdating(true);
       
       const response = await updateQuoteEnquiryStatus(enquiryDetail._id, selectedStatus, statusMessage);
       
@@ -180,7 +179,7 @@ const QuoteEnquiryDetails = () => {
       console.error('Error updating status:', error);
       toast.error('Failed to update status');
     } finally {
-      setUpdating(false);
+      setLocalUpdating(false);
     }
   };
 
@@ -249,6 +248,8 @@ const QuoteEnquiryDetails = () => {
     );
   }
   console.log('Quote enquiry detail:', enquiryDetail);
+  console.log('statusModalOpen:', statusModalOpen);
+  console.log('localUpdating:', localUpdating);
   
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-green-50/30 to-emerald-50/40">
@@ -286,10 +287,16 @@ const QuoteEnquiryDetails = () => {
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   Back to Enquiries
                 </Button>
+                
                 <Button
-                  onClick={() => setStatusModalOpen(true)}
+                  onClick={() => {
+                    console.log('Update Status button clicked, current statusModalOpen:', statusModalOpen);
+                    console.log('Setting statusModalOpen to true...');
+                    setStatusModalOpen(true);
+                    console.log('statusModalOpen should now be true');
+                  }}
                   className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-6 shadow-lg"
-                  disabled={updating}
+                  disabled={localUpdating}
                 >
                   <Settings className="w-4 h-4 mr-2" />
                   Update Status
@@ -644,9 +651,12 @@ const QuoteEnquiryDetails = () => {
               
               <div className="space-y-4">
                 <Button
-                  onClick={() => setStatusModalOpen(true)}
+                  onClick={() => {
+                    console.log('Update Status button clicked (sidebar)');
+                    setStatusModalOpen(true);
+                  }}
                   className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white py-3 shadow-lg"
-                  disabled={updating}
+                  disabled={localUpdating}
                 >
                   <Settings className="w-5 h-5 mr-3" />
                   Update Status
@@ -673,6 +683,94 @@ const QuoteEnquiryDetails = () => {
             </div>
           </div>
         </div>
+
+        {/* Status Update Modal */}
+        {statusModalOpen && (
+          <Dialog open={true} onOpenChange={(open) => {
+            console.log('Dialog open state changing to:', open);
+            if (!open) {
+              setStatusModalOpen(false);
+            }
+          }}>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <Settings className="w-5 h-5 text-emerald-600" />
+                  Update Quote Enquiry Status
+                </DialogTitle>
+                <DialogDescription>
+                  Change the status of this quote enquiry and add a message for the buyer.
+                </DialogDescription>
+              </DialogHeader>
+              
+              <div className="space-y-4 py-4">
+                <div>
+                  <Label htmlFor="status" className="text-sm font-medium">
+                    New Status
+                  </Label>
+                  <div className="grid grid-cols-1 gap-2 mt-2">
+                    {statusOptions.map((option) => {
+                      const IconComponent = option.icon;
+                      return (
+                        <button
+                          key={option.value}
+                          type="button"
+                          onClick={() => setSelectedStatus(option.value)}
+                          className={`flex items-center gap-3 p-3 rounded-lg border text-left transition-colors ${
+                            selectedStatus === option.value
+                              ? option.color
+                              : 'border-gray-200 hover:bg-gray-50'
+                          }`}
+                        >
+                          <IconComponent className="w-4 h-4" />
+                          <div>
+                            <div className="font-medium">{option.label}</div>
+                            <div className="text-xs opacity-70">{option.description}</div>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+                
+                <div>
+                  <Label htmlFor="message" className="text-sm font-medium">
+                    Message (Optional)
+                  </Label>
+                  <Textarea
+                    id="message"
+                    placeholder="Add a message for the buyer..."
+                    value={statusMessage}
+                    onChange={(e) => setStatusMessage(e.target.value)}
+                    className="mt-2"
+                    rows={3}
+                  />
+                </div>
+              </div>
+              
+              <DialogFooter className="gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setStatusModalOpen(false);
+                    setSelectedStatus('');
+                    setStatusMessage('');
+                  }}
+                  disabled={localUpdating}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleStatusChange}
+                  disabled={!selectedStatus || localUpdating}
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                >
+                  {localUpdating ? 'Updating...' : 'Update Status'}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
     </div>
   );

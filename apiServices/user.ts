@@ -146,12 +146,11 @@ export const getReceivedQuoteEnquiryDetail = async (id: string) => {
     throw error;
   }
 };
-
-export const updateQuoteEnquiryStatus = async (id: string, status: string, message?: string) => {
+ export const updateQuoteEnquiryStatus = async (id: string, status: string, message?: string) => {
   try {
-    const response = await axiosInstance.put(`/quote-request/received/${id}/status`, {
+    const response = await axiosInstance.patch(`/quote-request/status/${id}`, {
       status,
-      message
+      statusMessage: message || ""
     });
     return response.data;
   } catch (error) {
