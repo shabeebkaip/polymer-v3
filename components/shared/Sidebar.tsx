@@ -223,9 +223,9 @@ const Sidebar = () => {
             icon: "CreditCard",
           },
           {
-            displayName: "Product Requests",
+            displayName: "Sourcing Requests",
             route: "/user/product-requests",
-            name: "open-requests",
+            name: "sourcing-requests",
             icon: "Truck",
           },
         ],
