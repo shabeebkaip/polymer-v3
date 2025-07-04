@@ -129,40 +129,21 @@ const TechnicalProperties: React.FC<TechnicalPropertiesProps> = ({
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="elongation_at_break" className="text-sm font-medium text-gray-700">
+                <Label htmlFor="elongationAtBreak" className="text-sm font-medium text-gray-700">
                   Elongation at Break
                   <span className="text-gray-400 text-xs ml-1">(%)</span>
                 </Label>
                 <div className="relative">
                   <Input
-                    id="elongation_at_break"
+                    id="elongationAtBreak"
                     type="number"
                     step="0.1"
                     placeholder="Enter elongation at break"
-                    value={data?.elongation_at_break || ""}
-                    onChange={(e) => onFieldChange("elongation_at_break", e.target.value)}
+                    value={data?.elongationAtBreak || ""}
+                    onChange={(e) => onFieldChange("elongationAtBreak", e.target.value)}
                     className="pr-8 border-gray-300 focus:border-indigo-500 focus:ring-indigo-200 transition-all duration-200"
                   />
                   <div className="absolute right-3 top-2.5 text-sm text-gray-500 pointer-events-none">%</div>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="flexural_modulus" className="text-sm font-medium text-gray-700">
-                  Flexural Modulus
-                  <span className="text-gray-400 text-xs ml-1">(MPa)</span>
-                </Label>
-                <div className="relative">
-                  <Input
-                    id="flexural_modulus"
-                    type="number"
-                    step="0.1"
-                    placeholder="Enter flexural modulus"
-                    value={data?.flexural_modulus || ""}
-                    onChange={(e) => onFieldChange("flexural_modulus", e.target.value)}
-                    className="pr-12 border-gray-300 focus:border-indigo-500 focus:ring-indigo-200 transition-all duration-200"
-                  />
-                  <div className="absolute right-3 top-2.5 text-sm text-gray-500 pointer-events-none">MPa</div>
                 </div>
               </div>
             </div>

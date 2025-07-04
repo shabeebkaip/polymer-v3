@@ -1,5 +1,29 @@
 import axiosInstance from "@/lib/axiosInstance";
 
+// 🛠️ Reusable function for dropdown API calls with timeout handling
+const fetchDropdownData = async (endpoint: string, entityName: string) => {
+  try {
+    const response = await axiosInstance.get(endpoint);
+    return response.data;
+  } catch (error: any) {
+    console.error(`Error fetching ${entityName}:`, {
+      message: error.message,
+      code: error.code,
+      status: error.response?.status,
+      url: error.config?.url,
+      timeout: error.code === 'ECONNABORTED'
+    });
+    
+    // Return empty array as fallback for timeout errors to prevent UI crashes
+    if (error.code === 'ECONNABORTED') {
+      console.warn(`${entityName} API timed out, returning empty array`);
+      return { data: [], success: false, message: "Request timed out" };
+    }
+    
+    throw error;
+  }
+};
+
 
 export interface UploadedFile {
   id: string;
@@ -50,73 +74,31 @@ export const getSellers = async () => {
 
 // ✅ These remain client-side (no need to switch)
 export const getGrades = async () => {
-  try {
-    const response = await axiosInstance.get("/grade/list");
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching grades:", error);
-    throw error;
-  }
+  return fetchDropdownData("/grade/list", "grades");
 };
 
 export const getIncoterms = async () => {
-  try {
-    const response = await axiosInstance.get("/incoterm/list");
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching incoterms:", error);
-    throw error;
-  }
+  return fetchDropdownData("/incoterm/list", "incoterms");
 };
 
 export const getPackagingTypes = async () => {
-  try {
-    const response = await axiosInstance.get("/packaging-type/list");
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching packaging types:", error);
-    throw error;
-  }
+  return fetchDropdownData("/packaging-type/list", "packaging types");
 };
 
 export const getChemicalFamilies = async () => {
-  try {
-    const response = await axiosInstance.get("/chemical-family/list");
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching chemical families:", error);
-    throw error;
-  }
+  return fetchDropdownData("/chemical-family/list", "chemical families");
 };
 
 export const getPolymersType = async () => {
-  try {
-    const response = await axiosInstance.get("/polymer-type/list");
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching polymers type:", error);
-    throw error;
-  }
+  return fetchDropdownData("/polymer-type/list", "polymer types");
 };
 
 export const getPhysicalForms = async () => {
-  try {
-    const response = await axiosInstance.get("/physical-form/list");
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching physical forms:", error);
-    throw error;
-  }
+  return fetchDropdownData("/physical-form/list", "physical forms");
 };
 
 export const getPaymentTerms = async () => {
-  try {
-    const response = await axiosInstance.get("/payment-terms/list");
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching payment terms:", error);
-    throw error;
-  }
+  return fetchDropdownData("/payment-terms/list", "payment terms");
 };
 
 export const postFileUpload = async (data: FormData): Promise<UploadedFile> => {

@@ -176,12 +176,61 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
     setCompletedSteps(new Set());
   };
 
+  // Helper function to get fields for each step
+  const getStepFields = (stepComponent: string): (keyof ProductFormData)[] => {
+    switch (stepComponent) {
+      case 'general':
+        return ['productName', 'chemicalName', 'tradeName'];
+      case 'details':
+        return ['chemicalFamily', 'product_family', 'polymerType', 'physicalForm', 'industry'];
+      case 'images':
+        return ['productImages'];
+      case 'technical':
+        return ['density', 'mfi', 'tensileStrength'];
+      case 'trade':
+        return ['minimum_order_quantity', 'stock', 'uom', 'price', 'incoterms', 'paymentTerms'];
+      case 'package':
+        return ['packagingType', 'packagingWeight'];
+      case 'environmental':
+        return ['recyclable', 'bioDegradable'];
+      case 'certification':
+        return ['fdaApproved', 'medicalGrade'];
+      case 'documents':
+        return ['safety_data_sheet', 'technical_data_sheet', 'certificate_of_analysis'];
+      default:
+        return [];
+    }
+  };
+
+  // Helper function to check if a field is required
+  const isFieldRequired = (fieldName: keyof ProductFormData): boolean => {
+    if (!isEditMode) {
+      // All core fields required for new products
+      const allRequiredFields: (keyof ProductFormData)[] = [
+        "productName", "chemicalName", "tradeName", "chemicalFamily", 
+        "product_family", "polymerType", "physicalForm", 
+        "minimum_order_quantity", "stock", "uom", "price"
+      ];
+      return allRequiredFields.includes(fieldName) || 
+             fieldName === "industry" || fieldName === "incoterms" || fieldName === "productImages";
+    } else {
+      // Only core business fields required for edits
+      const coreRequiredFields: (keyof ProductFormData)[] = [
+        "productName", "chemicalName", "tradeName", "chemicalFamily", 
+        "polymerType", "physicalForm", "price", "uom", "industry"
+      ];
+      return coreRequiredFields.includes(fieldName);
+    }
+  };
+
   const handleSubmit = () => {
     const toastId = toast.loading(
       isEditMode ? "Updating Product" : "Creating product..."
     );
     const validationErrors: ValidationErrors = {};
 
+    // For edit mode, only validate required fields if they're completely empty
+    // For create mode, validate all required fields strictly
     const requiredFields: RequiredField[] = [
       { field: "productName", label: "Product Name" },
       { field: "chemicalName", label: "Chemical Name" },
@@ -196,37 +245,82 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
       { field: "price", label: "Price" },
     ];
 
-    requiredFields.forEach(({ field, label }) => {
-      const value = data[field];
-      if (
-        value === undefined ||
-        value === null ||
-        value === "" ||
-        (Array.isArray(value) && value.length === 0)
-      ) {
-        validationErrors[field] = `${label} is required`;
+    if (!isEditMode) {
+      // Strict validation for new products - ALL required fields
+      requiredFields.forEach(({ field, label }) => {
+        const value = data[field];
+        if (
+          value === undefined ||
+          value === null ||
+          value === "" ||
+          (Array.isArray(value) && value.length === 0)
+        ) {
+          validationErrors[field] = `${label} is required`;
+        }
+      });
+
+      if (data.industry.length === 0) {
+        validationErrors.industry = "At least one industry must be selected";
       }
-    });
 
-    if (data.industry.length === 0) {
-      validationErrors.industry = "At least one industry must be selected";
-    }
+      if (data.incoterms.length === 0) {
+        validationErrors.incoterms = "At least one incoterm must be selected";
+      }
 
-    if (data.incoterms.length === 0) {
-      validationErrors.incoterms = "At least one incoterm must be selected";
-    }
+      if (data.productImages.length === 0) {
+        validationErrors.productImages = "At least one product image is required";
+      }
+    } else {
+      // Smart validation for editing - validate core business fields
+      const coreRequiredFields = [
+        { field: "productName", label: "Product Name" },
+        { field: "chemicalName", label: "Chemical Name" },
+        { field: "tradeName", label: "Trade Name" },
+        { field: "chemicalFamily", label: "Chemical Family" },
+        { field: "polymerType", label: "Polymer Type" },
+        { field: "physicalForm", label: "Physical Form" },
+        { field: "price", label: "Price" },
+        { field: "uom", label: "Unit of Measure" }
+      ];
 
-    if (data.productImages.length === 0) {
-      validationErrors.productImages = "At least one product image is required";
+      coreRequiredFields.forEach(({ field, label }) => {
+        const value = data[field];
+        if (!value || value === "" || (Array.isArray(value) && value.length === 0)) {
+          validationErrors[field] = `${label} is required`;
+        }
+      });
+
+      // Validate at least one industry for business logic
+      if (data.industry.length === 0) {
+        validationErrors.industry = "At least one industry must be selected";
+      }
     }
 
     if (Object.keys(validationErrors).length > 0) {
       console.warn("Validation errors:", validationErrors);
-      toast.error("Please fill in all required fields", {
-        id: toastId,
-      });
+      
+      const errorCount = Object.keys(validationErrors).length;
+      const errorMessage = isEditMode 
+        ? `Please fill in ${errorCount} required field${errorCount > 1 ? 's' : ''} to save changes`
+        : `Please complete ${errorCount} required field${errorCount > 1 ? 's' : ''} to create the product`;
+      
+      toast.error(errorMessage, { id: toastId });
 
       setError(validationErrors);
+      
+      // Navigate to the first step that has errors
+      const stepWithError = FORM_STEPS.find(step => {
+        const stepFields = getStepFields(step.component);
+        return stepFields.some((field: keyof ProductFormData) => validationErrors[field]);
+      });
+      
+      if (stepWithError && stepWithError.id !== currentStep) {
+        setCurrentStep(stepWithError.id);
+        toast.info(`Navigated to ${stepWithError.title} section to fix errors`, {
+          duration: 3000
+        });
+      }
+      
       return;
     }
 
@@ -239,12 +333,9 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
         formatted.price = Number(formatted.price);
       }
 
-      // Convert leadTime from string to Date if provided
-      if (formatted.leadTime) {
-        // Assuming leadTime is in days, convert to date
-        const leadTimeDate = new Date();
-        leadTimeDate.setDate(leadTimeDate.getDate() + Number(formatted.leadTime));
-        formatted.leadTime = leadTimeDate.toISOString();
+      // Ensure leadTime is a string (keep as-is if already string)
+      if (formatted.leadTime && typeof formatted.leadTime !== 'string') {
+        formatted.leadTime = String(formatted.leadTime);
       }
 
       // Fix paymentTerms - should be single ObjectId, not array
@@ -485,7 +576,7 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
                 Step {currentStep} of {FORM_STEPS.length}
               </h2>
               <Badge variant="outline" className="bg-green-100 text-green-700 border-green-300">
-                {Math.round((currentStep / FORM_STEPS.length) * 100)}% Complete
+                {Math.round(((currentStep - 1) / FORM_STEPS.length) * 100)}% Complete
               </Badge>
             </div>
             
@@ -493,7 +584,7 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
             <div className="w-full bg-gray-200 rounded-full h-2 mb-6">
               <div 
                 className="bg-gradient-to-r from-green-500 to-emerald-500 h-2 rounded-full transition-all duration-500"
-                style={{ width: `${(currentStep / FORM_STEPS.length) * 100}%` }}
+                style={{ width: `${((currentStep - 1) / FORM_STEPS.length) * 100}%` }}
               />
             </div>
 
@@ -592,6 +683,17 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
           </div>
 
           <div className="flex gap-3">
+            {/* Save Changes button - always visible in edit mode */}
+            {isEditMode && (
+              <Button
+                onClick={handleSubmit}
+                className="flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-lg"
+              >
+                <Save className="w-4 h-4" />
+                Save Changes
+              </Button>
+            )}
+            
             <Button
               onClick={resetForm}
               variant="outline"
@@ -616,9 +718,28 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
               <Badge variant="secondary" className="text-xs">
                 💾 Your progress is automatically saved
               </Badge>
+              {isEditMode && (
+                <Badge variant="secondary" className="text-xs bg-emerald-100 text-emerald-700">
+                  ✨ Use "Save Changes" button to save edits at any step
+                </Badge>
+              )}
             </div>
           </CardContent>
         </Card>
+
+        {/* Floating Save Button for Edit Mode */}
+        {isEditMode && (
+          <div className="fixed bottom-6 right-6 z-50">
+            <Button
+              onClick={handleSubmit}
+              size="lg"
+              className="flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-2xl rounded-full px-6 py-3 animate-pulse hover:animate-none transition-all duration-300"
+            >
+              <Save className="w-5 h-5" />
+              Save Changes
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

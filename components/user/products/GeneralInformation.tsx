@@ -48,9 +48,6 @@ const GeneralInformation: React.FC<GeneralInformationProps> = ({
               : 'border-gray-300 focus:border-green-500 focus:ring-green-200'
           }`}
         />
-        {error.productName && (
-          <p className="text-xs text-red-600 mt-1">{error.productName}</p>
-        )}
       </div>
 
       <div className="space-y-2">
@@ -72,9 +69,6 @@ const GeneralInformation: React.FC<GeneralInformationProps> = ({
               : 'border-gray-300 focus:border-green-500 focus:ring-green-200'
           }`}
         />
-        {error.chemicalName && (
-          <p className="text-xs text-red-600 mt-1">{error.chemicalName}</p>
-        )}
       </div>
 
       <div className="space-y-2">
@@ -96,9 +90,6 @@ const GeneralInformation: React.FC<GeneralInformationProps> = ({
               : 'border-gray-300 focus:border-green-500 focus:ring-green-200'
           }`}
         />
-        {error.tradeName && (
-          <p className="text-xs text-red-600 mt-1">{error.tradeName}</p>
-        )}
       </div>
 
       <div className="col-span-full space-y-2">

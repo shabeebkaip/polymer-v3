@@ -346,7 +346,7 @@ const ProductDetailClient: React.FC<ProductDetailClientProps> = ({
                     <div className="flex items-center gap-2">
                       <span className="text-sm text-gray-600">Lead Time:</span>
                       <span className="font-medium text-gray-900">
-                        {new Date(product.leadTime).toLocaleDateString()}
+                        {product.leadTime}
                       </span>
                     </div>
                   ) : null}
@@ -749,7 +749,7 @@ const ProductDetailClient: React.FC<ProductDetailClientProps> = ({
                       Lead Time
                     </span>
                     <p className="text-gray-900 font-medium">
-                      {new Date(product.leadTime).toLocaleDateString()}
+                      {product.leadTime}
                     </p>
                   </div>
                 ) : null}

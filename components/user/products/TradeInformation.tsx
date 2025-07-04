@@ -64,15 +64,14 @@ const TradeInformation: React.FC<TradeInformationProps> = ({
             onFieldChange("minimum_order_quantity", Number(e.target.value));
             onFieldError("minimum_order_quantity");
           }}
+          error={error?.minimum_order_quantity ? true : false}
+          helperText={error?.minimum_order_quantity}
           className={`transition-all duration-200 ${
             error?.minimum_order_quantity 
               ? 'border-red-300 focus:border-red-500 focus:ring-red-200' 
               : 'border-gray-300 focus:border-blue-500 focus:ring-blue-200'
           }`}
         />
-        {error?.minimum_order_quantity && (
-          <p className="text-xs text-red-600 mt-1">{error.minimum_order_quantity}</p>
-        )}
       </div>
 
       <div className="space-y-2">
@@ -89,15 +88,14 @@ const TradeInformation: React.FC<TradeInformationProps> = ({
             onFieldChange("stock", Number(e.target.value));
             onFieldError("stock");
           }}
+          error={error?.stock ? true : false}
+          helperText={error?.stock}
           className={`transition-all duration-200 ${
             error?.stock 
               ? 'border-red-300 focus:border-red-500 focus:ring-red-200' 
               : 'border-gray-300 focus:border-blue-500 focus:ring-blue-200'
           }`}
         />
-        {error?.stock && (
-          <p className="text-xs text-red-600 mt-1">{error.stock}</p>
-        )}
       </div>
 
       <div className="space-y-2">
@@ -150,6 +148,8 @@ const TradeInformation: React.FC<TradeInformationProps> = ({
               onFieldChange("price", e.target.value);
               onFieldError("price");
             }}
+            error={error?.price ? true : false}
+            helperText={error?.price}
             className={`pr-20 transition-all duration-200 ${
               error?.price 
                 ? 'border-red-300 focus:border-red-500 focus:ring-red-200' 
@@ -160,9 +160,6 @@ const TradeInformation: React.FC<TradeInformationProps> = ({
             USD / {data.uom || 'unit'}
           </div>
         </div>
-        {error?.price && (
-          <p className="text-xs text-red-600 mt-1">{error.price}</p>
-        )}
       </div>
 
       <div className="space-y-2">
