@@ -25,6 +25,7 @@ import {
   LogOut,
   ChevronDown,
   ChevronRight,
+  Send,
 } from "lucide-react";
 import { Button } from "../ui/button";
 import Cookies from "js-cookie";
@@ -67,6 +68,7 @@ const iconMap: Record<string, React.ComponentType<any>> = {
   Truck: Truck,
   ShoppingCart: ShoppingCart,
   Heart: Heart,
+  Send: Send,
 };
 
 const Sidebar = () => {
@@ -160,6 +162,19 @@ const Sidebar = () => {
             },
           ],
         },
+        {
+          displayName: "Submitted Offers",
+          route: "/user/submitted-offers",
+          name: "submitted-offers",
+          icon: "Send",
+          subItems: [],
+        },
+        {
+          displayName: "Promotions",
+          route: "/user/promotions",
+          name: "promotions",
+          icon: "ShoppingCart",
+        }, 
         {
           displayName: "Experts",
           route: "/user/experts",
