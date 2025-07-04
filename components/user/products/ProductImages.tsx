@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import ImageUpload from "../../shared/ImageUpload";
+import { Card, CardContent } from "../../ui/card";
 import { ProductFormData, UploadedFile } from "@/types/product";
 
 interface ProductImagesProps {
@@ -38,13 +39,23 @@ const ProductImages: React.FC<ProductImagesProps> = ({
     updatedPreviews.splice(index, 1);
     setPreviews(updatedPreviews);
   };
-  console.log("Previews:", previews);
+
   return (
     <>
-      <div className="col-span-3">
-        <h4 className="text-xl">Product Images</h4>
+      <div className="col-span-full mb-6">
+        <Card className="border-purple-200 bg-purple-50/50">
+          <CardContent className="p-4">
+            <h4 className="text-lg font-semibold text-purple-800 mb-2">Product Images</h4>
+            <p className="text-sm text-purple-600">Upload high-quality images to showcase your product</p>
+            <div className="mt-3 flex items-center gap-2 text-xs text-purple-700">
+              <span className="px-2 py-1 bg-purple-100 rounded">Required</span>
+              <span>At least 1 image needed</span>
+            </div>
+          </CardContent>
+        </Card>
       </div>
-      <div className="col-span-3">
+      
+      <div className="col-span-full">
         <ImageUpload
           onFilesUpload={handleFilesUpload}
           previews={previews}

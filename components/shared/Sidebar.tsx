@@ -135,7 +135,7 @@ const Sidebar = () => {
       sidebarItems.push(
         {
           displayName: "Product",
-          route: "/user/product",
+          route: "/user/products",
           name: "product",
           icon: "Package",
           subItems: [],

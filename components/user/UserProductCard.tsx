@@ -15,13 +15,13 @@ interface UserProductCardProps {
 const UserProductCard: React.FC<UserProductCardProps> = ({ product }) => {
   const router = useRouter();
   return (
-    <div className="group bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-emerald-200 h-full flex flex-col">
-      <div className="p-4 flex flex-col gap-3 flex-1">
+    <div className="group bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200/50 hover:border-green-300/50 h-full flex flex-col">
+      <div className="p-6 flex flex-col gap-4 flex-1">
         <div className="relative overflow-hidden rounded-xl">
           <img
             src={product?.productImages?.[0]?.fileUrl || FALLBACK_PRODUCT_IMAGE}
             alt="Product"
-            className="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-300"
+            className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300"
             onError={(e) => {
               (e.target as HTMLImageElement).src = FALLBACK_PRODUCT_IMAGE;
             }}
@@ -40,7 +40,7 @@ const UserProductCard: React.FC<UserProductCardProps> = ({ product }) => {
             />
           </div>
           <div className="flex-1 min-w-0">
-            <h4 className="font-semibold text-base text-gray-900 truncate group-hover:text-emerald-700 transition-colors duration-200">
+            <h4 className="font-semibold text-base text-gray-900 truncate group-hover:text-green-700 transition-colors duration-200">
               {product?.productName || 'Untitled Product'}
             </h4>
             <p className="text-xs text-gray-500 flex items-center gap-1">
@@ -71,23 +71,23 @@ const UserProductCard: React.FC<UserProductCardProps> = ({ product }) => {
         </div>
 
         {/* CTA Buttons */}
-        <div className="grid grid-cols-2 gap-2 mt-auto">
+        <div className="grid grid-cols-2 gap-3 mt-auto">
           <Button
             variant={"secondary"}
             color="green"
-            className="cursor-pointer px-2 py-1.5 bg-gradient-to-r from-emerald-500 to-green-600 text-white rounded-md hover:from-emerald-600 hover:to-green-700 transition-all duration-300 text-xs font-medium"
+            className="cursor-pointer px-3 py-2.5 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl hover:from-green-600 hover:to-emerald-700 transition-all duration-300 text-sm font-medium shadow-lg"
             onClick={() => {
               router.push(`/user/products/${product._id}`);
             }}
           >
-            <Pencil className="w-3 h-3 mr-1" /> Edit
+            <Pencil className="w-4 h-4 mr-2" /> Edit
           </Button>
 
           <Button 
             variant={"destructive"} 
-            className="cursor-pointer px-2 py-1.5 border border-red-500 text-red-600 rounded-md hover:bg-red-50 transition-all duration-300 hover:border-red-600 text-xs font-medium"
+            className="cursor-pointer px-3 py-2.5 bg-red-50 border border-red-300 text-red-700 rounded-xl hover:bg-red-100 hover:border-red-400 hover:text-red-800 transition-all duration-300 text-sm font-medium"
           >
-            <Delete className="w-3 h-3 mr-1" /> Delete
+            <Delete className="w-4 h-4 mr-2" /> Delete
           </Button>
         </div>
       </div>

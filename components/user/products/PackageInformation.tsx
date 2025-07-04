@@ -1,6 +1,9 @@
 import React from "react";
 import { Label } from "../../ui/label";
 import { Input } from "../../ui/input";
+import { Card, CardContent } from "../../ui/card";
+import { Badge } from "../../ui/badge";
+import { Package, Weight, Clock, Shield, Thermometer, Truck } from "lucide-react";
 import MultiSelect from "@/components/shared/MultiSelect";
 
 interface PackagingType {
@@ -10,7 +13,7 @@ interface PackagingType {
 
 interface PackageInformationProps {
   data: {
-    packagingType?: string[]; // ✅ this should match actual usage
+    packagingType?: string[];
     packagingWeight?: string;
     storageConditions?: string;
     shelfLife?: string;
@@ -27,54 +30,149 @@ const PackageInformation: React.FC<PackageInformationProps> = ({
 }) => {
   return (
     <>
-      <div className="col-span-3">
-        <h4 className="text-xl">Package Information</h4>
+      <div className="col-span-full mb-6">
+        <Card className="border-teal-200 bg-teal-50/50">
+          <CardContent className="p-4">
+            <h4 className="text-lg font-semibold text-teal-800 mb-2">Package & Storage Information</h4>
+            <p className="text-sm text-teal-600">Define packaging specifications and storage requirements</p>
+            <Badge variant="secondary" className="mt-2 text-xs">Optional - Helps with logistics planning</Badge>
+          </CardContent>
+        </Card>
       </div>
 
-      <div>
-        <MultiSelect
-          label="Packaging Type"
-          placeholder="Select Packaging Type"
-          options={packagingTypes}
-          selected={data.packagingType || []}
-          onChange={(selected) => onFieldChange("packagingType", selected)}
-        />
+      {/* Packaging Details */}
+      <div className="col-span-full mb-6">
+        <Card className="border-gray-200">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2 mb-4 p-2 rounded-lg bg-teal-50">
+              <Package className="w-5 h-5 text-teal-600" />
+              <h5 className="font-semibold text-gray-800">Packaging Details</h5>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                  <Package className="w-4 h-4" />
+                  Packaging Type
+                  <span className="text-gray-400 text-xs">(Optional)</span>
+                </Label>
+                <MultiSelect
+                  label=""
+                  placeholder="Select packaging types"
+                  options={packagingTypes}
+                  selected={data.packagingType || []}
+                  onChange={(selected) => onFieldChange("packagingType", selected)}
+                />
+                <p className="text-xs text-gray-500">e.g., Bags, Drums, Bulk containers</p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="packagingWeight" className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                  <Weight className="w-4 h-4" />
+                  Package Weight
+                  <span className="text-gray-400 text-xs">(Optional)</span>
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="packagingWeight"
+                    type="number"
+                    step="0.1"
+                    placeholder="Enter package weight"
+                    value={data.packagingWeight || ""}
+                    onChange={(e) => onFieldChange("packagingWeight", e.target.value)}
+                    className="pr-12 border-gray-300 focus:border-teal-500 focus:ring-teal-200 transition-all duration-200"
+                  />
+                  <div className="absolute right-3 top-2.5 text-sm text-gray-500 pointer-events-none">kg</div>
+                </div>
+                <p className="text-xs text-gray-500">Standard package weight</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
-      <div>
-        <Label htmlFor="packagingWeight" className="block mb-1">
-          Package Weight
-        </Label>
-        <Input
-          className="text-lg px-4"
-          placeholder="Package Weight"
-          value={data?.packagingWeight || ""}
-          onChange={(e) => onFieldChange("packagingWeight", e.target.value)}
-        />
+      {/* Storage & Handling */}
+      <div className="col-span-full">
+        <Card className="border-gray-200">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2 mb-4 p-2 rounded-lg bg-blue-50">
+              <Shield className="w-5 h-5 text-blue-600" />
+              <h5 className="font-semibold text-gray-800">Storage & Handling</h5>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="storageConditions" className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                  <Thermometer className="w-4 h-4" />
+                  Storage Conditions
+                  <span className="text-gray-400 text-xs">(Optional)</span>
+                </Label>
+                <Input
+                  id="storageConditions"
+                  placeholder="e.g., Store in cool, dry place at 15-25°C"
+                  value={data.storageConditions || ""}
+                  onChange={(e) => onFieldChange("storageConditions", e.target.value)}
+                  className="border-gray-300 focus:border-teal-500 focus:ring-teal-200 transition-all duration-200"
+                />
+                <p className="text-xs text-gray-500">Temperature, humidity, and other storage requirements</p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="shelfLife" className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                  <Clock className="w-4 h-4" />
+                  Shelf Life
+                  <span className="text-gray-400 text-xs">(Optional)</span>
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="shelfLife"
+                    placeholder="Enter shelf life"
+                    value={data.shelfLife || ""}
+                    onChange={(e) => onFieldChange("shelfLife", e.target.value)}
+                    className="pr-20 border-gray-300 focus:border-teal-500 focus:ring-teal-200 transition-all duration-200"
+                  />
+                  <div className="absolute right-3 top-2.5 text-sm text-gray-500 pointer-events-none">months</div>
+                </div>
+                <p className="text-xs text-gray-500">Product shelf life under recommended storage conditions</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
-      <div>
-        <Label htmlFor="storageConditions" className="block mb-1">
-          Storage Conditions
-        </Label>
-        <Input
-          className="text-lg px-4"
-          placeholder="Storage Conditions"
-          value={data?.storageConditions || ""}
-          onChange={(e) => onFieldChange("storageConditions", e.target.value)}
-        />
-      </div>
-
-      <div>
-        <Label htmlFor="shelfLife" className="block mb-1">
-          Shelf Life
-        </Label>
-        <Input
-          className="text-lg px-4"
-          placeholder="Shelf Life"
-          value={data?.shelfLife || ""}
-          onChange={(e) => onFieldChange("shelfLife", e.target.value)}
-        />
+      {/* Logistics Information */}
+      <div className="col-span-full mt-6">
+        <Card className="border-orange-200 bg-orange-50/30">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <Truck className="w-5 h-5 text-orange-600" />
+              <h6 className="font-medium text-gray-800">Logistics Benefits</h6>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">
+              <div className="flex items-start gap-2">
+                <div className="w-2 h-2 bg-orange-400 rounded-full mt-2"></div>
+                <div>
+                  <p className="font-medium">Better Quotes</p>
+                  <p className="text-xs">Accurate packaging info helps suppliers provide precise shipping costs</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-2">
+                <div className="w-2 h-2 bg-orange-400 rounded-full mt-2"></div>
+                <div>
+                  <p className="font-medium">Faster Delivery</p>
+                  <p className="text-xs">Clear storage requirements prevent delays and handling issues</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-2">
+                <div className="w-2 h-2 bg-orange-400 rounded-full mt-2"></div>
+                <div>
+                  <p className="font-medium">Quality Assurance</p>
+                  <p className="text-xs">Proper specifications ensure product integrity during transport</p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </>
   );
