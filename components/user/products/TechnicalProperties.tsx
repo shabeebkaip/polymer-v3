@@ -37,6 +37,7 @@ const PROPERTY_CATEGORIES = [
       { key: "mfi", label: "Melt Flow Index (MFI)", unit: "g/10min", placeholder: "Enter MFI value" },
       { key: "tensileStrength", label: "Tensile Strength", unit: "MPa", placeholder: "Enter tensile strength" },
       { key: "elongationAtBreak", label: "Elongation at Break", unit: "%", placeholder: "Enter elongation at break" },
+      { key: "flexuralModulus", label: "Flexural Modulus", unit: "%", placeholder: "Enter Flexural Modulus" },
       { key: "shoreHardness", label: "Shore Hardness", unit: "Shore A/D", placeholder: "Enter shore hardness" },
       { key: "waterAbsorption", label: "Water Absorption", unit: "%", placeholder: "Enter water absorption" },
     ]
@@ -120,36 +121,6 @@ const TechnicalProperties: React.FC<TechnicalPropertiesProps> = ({
           </div>
         );
       })}
-
-      {/* Additional Properties */}
-      <div className="col-span-full">
-        <Card className="border-gray-200">
-          <CardContent className="p-4">
-            <h5 className="font-semibold text-gray-800 mb-4">Additional Properties</h5>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="elongationAtBreak" className="text-sm font-medium text-gray-700">
-                  Elongation at Break
-                  <span className="text-gray-400 text-xs ml-1">(%)</span>
-                </Label>
-                <div className="relative">
-                  <Input
-                    id="elongationAtBreak"
-                    type="number"
-                    step="0.1"
-                    placeholder="Enter elongation at break"
-                    value={data?.elongationAtBreak || ""}
-                    onChange={(e) => onFieldChange("elongationAtBreak", e.target.value)}
-                    className="pr-8 border-gray-300 focus:border-indigo-500 focus:ring-indigo-200 transition-all duration-200"
-                  />
-                  <div className="absolute right-3 top-2.5 text-sm text-gray-500 pointer-events-none">%</div>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
     </>
   );
 };
