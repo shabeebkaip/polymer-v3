@@ -21,12 +21,12 @@ const UserLayout: React.FC<UserLayoutProps> = ({ children }) => {
       <div className="min-h-screen bg-gray-50 md:block hidden">
         <div className="flex h-screen">
           {/* Sidebar */}
-          <div className="w-72 bg-white shadow-sm">
+          <div className="w-72 bg-white shadow-sm flex-shrink-0 overflow-hidden">
             <Sidebar />
           </div>
           
           {/* Main Content Area */}
-          <div className="flex-1 flex flex-col">
+          <div className="flex-1 flex flex-col min-w-0">
             {/* Header */}
             <UserPanelHeader />
             

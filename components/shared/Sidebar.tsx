@@ -293,11 +293,11 @@ const Sidebar = () => {
     sidebarItemsCount: displaySidebarList.length
   });
   return (
-    <div className="h-full bg-white border-r border-gray-200 flex flex-col">
+    <div className="h-full w-full bg-white border-r border-gray-200 flex flex-col overflow-hidden">
       {/* User Profile Header */}
-      <div className="p-4 border-b border-gray-100 bg-gray-50/50">
+      <div className="p-4 border-b border-gray-100 bg-gray-50/50 flex-shrink-0">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-md">
+          <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-md flex-shrink-0">
             <User className="w-6 h-6 text-white" />
           </div>
           <div className="flex-1 min-w-0">
@@ -311,7 +311,7 @@ const Sidebar = () => {
                 {user?.user_type || "Member"}
               </span>
               <div
-                className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"
+                className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse flex-shrink-0"
                 title="Online"
               ></div>
             </div>
@@ -330,7 +330,7 @@ const Sidebar = () => {
 
       {/* Navigation */}
       <div className="flex-1 overflow-y-auto py-2">
-        <nav className="space-y-1 px-3">
+        <nav className="space-y-1 px-3 min-w-0">
           {displaySidebarList?.map((item) => {
               const isActive = isActiveRoute(item.route);
               const hasSubItems = item.subItems && item.subItems.length > 0;
@@ -339,11 +339,11 @@ const Sidebar = () => {
               const showAsActive = isActive || hasActiveChild;
 
               return (
-                <div key={item.name || item.displayName} className="space-y-1">
+                <div key={item.name || item.displayName} className="space-y-1 min-w-0">
                   {/* Main item */}
                   <div
                     className={`
-                      flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer transition-colors duration-200 group
+                      flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer transition-colors duration-200 group min-w-0
                       ${
                         showAsActive
                           ? "bg-emerald-50 text-emerald-700 border-l-3 border-emerald-600"
@@ -370,7 +370,7 @@ const Sidebar = () => {
                     </div>
 
                     {/* Label */}
-                    <span className="flex-1 font-medium text-sm truncate">
+                    <span className="flex-1 font-medium text-sm truncate min-w-0">
                       {item.displayName}
                     </span>
 
@@ -388,7 +388,7 @@ const Sidebar = () => {
 
                   {/* Sub items */}
                   {hasSubItems && isExpanded && (
-                    <div className="ml-6 space-y-1">
+                    <div className="ml-4 space-y-1 pr-2 min-w-0">
                       {item.subItems?.map((subItem: SidebarSubItem) => {
                         const isSubActive = isActiveRoute(subItem.route);
 
@@ -396,7 +396,7 @@ const Sidebar = () => {
                           <div
                             key={subItem.name || subItem.displayName}
                             className={`
-                              flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer transition-colors duration-200
+                              flex items-center gap-2 px-2 py-2 rounded-lg cursor-pointer transition-colors duration-200 min-w-0
                               ${
                                 isSubActive
                                   ? "bg-emerald-50 text-emerald-700"
@@ -417,7 +417,7 @@ const Sidebar = () => {
                             </div>
 
                             {/* Sub item label */}
-                            <span className="text-sm font-medium truncate">
+                            <span className="text-sm font-medium truncate min-w-0">
                               {subItem.displayName}
                             </span>
                           </div>
@@ -436,10 +436,10 @@ const Sidebar = () => {
         <Button
           onClick={handleLogout}
           variant="ghost"
-          className="w-full justify-start gap-3 text-gray-600 hover:text-red-600 hover:bg-red-50 px-3 py-2.5 h-auto"
+          className="w-full justify-start gap-3 text-gray-600 hover:text-red-600 hover:bg-red-50 px-3 py-2.5 h-auto min-w-0"
         >
-          <LogOut className="w-5 h-5" />
-          <span className="font-medium text-sm">Sign Out</span>
+          <LogOut className="w-5 h-5 flex-shrink-0" />
+          <span className="font-medium text-sm truncate">Sign Out</span>
         </Button>
       </div>
     </div>
