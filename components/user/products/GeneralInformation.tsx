@@ -20,11 +20,11 @@ const GeneralInformation: React.FC<GeneralInformationProps> = ({
 }) => {
   return (
     <>
-      <div className="col-span-full mb-6">
+      <div className="col-span-full mb-4 sm:mb-6">
         <Card className="border-green-200 bg-green-50/50">
-          <CardContent className="p-4">
-            <h4 className="text-lg font-semibold text-green-800 mb-2">Basic Product Information</h4>
-            <p className="text-sm text-green-600">Enter the core details that identify your product</p>
+          <CardContent className="p-3 sm:p-4">
+            <h4 className="text-base sm:text-lg font-semibold text-green-800 mb-2">Basic Product Information</h4>
+            <p className="text-xs sm:text-sm text-green-600">Enter the core details that identify your product</p>
           </CardContent>
         </Card>
       </div>
@@ -92,7 +92,7 @@ const GeneralInformation: React.FC<GeneralInformationProps> = ({
         />
       </div>
 
-      <div className="col-span-full space-y-2">
+      <div className="col-span-full sm:col-span-1 space-y-2">
         <Label htmlFor="description" className="text-sm font-medium text-gray-700">
           Description
           <span className="text-gray-400 text-xs ml-1">(Optional)</span>
@@ -102,8 +102,8 @@ const GeneralInformation: React.FC<GeneralInformationProps> = ({
           placeholder="Provide a detailed description of your product..."
           value={data.description || ""}
           onChange={(e) => onFieldChange("description", e.target.value)}
-          className="min-h-[100px] resize-y border-gray-300 focus:border-green-500 focus:ring-green-200 transition-all duration-200"
-          rows={4}
+          className="min-h-[80px] sm:min-h-[100px] resize-y border-gray-300 focus:border-green-500 focus:ring-green-200 transition-all duration-200"
+          rows={3}
         />
         <p className="text-xs text-gray-500">Help buyers understand your product better with a comprehensive description</p>
       </div>

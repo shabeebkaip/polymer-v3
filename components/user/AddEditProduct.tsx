@@ -557,39 +557,46 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
   console.log("Errors", error);
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50">
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 bg-clip-text text-transparent mb-2">
+        <div className="text-center mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 bg-clip-text text-transparent mb-2">
             {isEditMode ? 'Edit Product' : 'Add New Product'}
           </h1>
-          <p className="text-gray-600">
+          <p className="text-sm sm:text-base text-gray-600 px-4">
             {isEditMode ? 'Update your product information' : 'Create a comprehensive product listing'}
           </p>
         </div>
 
         {/* Progress Stepper */}
-        <Card className="mb-8 border-0 shadow-lg bg-white/70 backdrop-blur-sm">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-800">
+        <Card className="mb-6 sm:mb-8 border-0 shadow-lg bg-white/70 backdrop-blur-sm">
+          <CardContent className="p-4 sm:p-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-2">
+              <h2 className="text-base sm:text-lg font-semibold text-gray-800">
                 Step {currentStep} of {FORM_STEPS.length}
               </h2>
-              <Badge variant="outline" className="bg-green-100 text-green-700 border-green-300">
+              <Badge variant="outline" className="bg-green-100 text-green-700 border-green-300 text-xs sm:text-sm">
                 {Math.round(((currentStep - 1) / FORM_STEPS.length) * 100)}% Complete
               </Badge>
             </div>
             
             {/* Progress bar */}
-            <div className="w-full bg-gray-200 rounded-full h-2 mb-6">
+            <div className="w-full bg-gray-200 rounded-full h-2 mb-4 sm:mb-6">
               <div 
                 className="bg-gradient-to-r from-green-500 to-emerald-500 h-2 rounded-full transition-all duration-500"
                 style={{ width: `${((currentStep - 1) / FORM_STEPS.length) * 100}%` }}
               />
             </div>
 
+            {/* Current step info for mobile */}
+            <div className="mb-4 sm:hidden text-center">
+              <p className="text-sm font-medium text-gray-600">
+                {FORM_STEPS[currentStep - 1].title}
+              </p>
+            </div>
+
             {/* Step indicators */}
-            <div className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-9 gap-2">
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-9 gap-1 sm:gap-2">
               {FORM_STEPS.map((step) => {
                 const Icon = step.icon;
                 const isCompleted = completedSteps.has(step.id);
@@ -602,21 +609,22 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
                     onClick={() => isAccessible && goToStep(step.id)}
                     disabled={!isAccessible}
                     className={`
-                      p-3 rounded-lg text-center transition-all duration-300 group
+                      p-2 sm:p-3 rounded-lg text-center transition-all duration-300 group relative min-h-[3rem] sm:min-h-[4rem]
                       ${isCurrent 
                         ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg scale-105' 
                         : isCompleted
-                        ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                        ? 'bg-green-100 text-green-700 hover:bg-green-200 active:bg-green-300'
                         : isAccessible
-                        ? 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        ? 'bg-gray-100 text-gray-600 hover:bg-gray-200 active:bg-gray-300'
                         : 'bg-gray-50 text-gray-400 cursor-not-allowed'
                       }
                     `}
                   >
-                    <Icon className="w-5 h-5 mx-auto mb-1" />
-                    <div className="text-xs font-medium truncate">{step.title}</div>
+                    <Icon className="w-4 h-4 sm:w-5 sm:h-5 mx-auto mb-1" />
+                    <div className="text-xs font-medium truncate hidden sm:block">{step.title}</div>
+                    <div className="text-xs font-medium truncate sm:hidden">{step.id}</div>
                     {isCompleted && (
-                      <CheckCircle className="w-3 h-3 mx-auto mt-1 text-green-600" />
+                      <CheckCircle className="w-2 h-2 sm:w-3 sm:h-3 mx-auto mt-1 text-green-600" />
                     )}
                   </button>
                 );
@@ -627,100 +635,116 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
 
         {/* Main Form Content */}
         <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
-          <CardHeader className="bg-gradient-to-r from-green-500/10 via-emerald-500/10 to-teal-500/10">
+          <CardHeader className="bg-gradient-to-r from-green-500/10 via-emerald-500/10 to-teal-500/10 p-4 sm:p-6">
             <div className="flex items-center space-x-3">
               {React.createElement(FORM_STEPS[currentStep - 1].icon, { 
-                className: "w-6 h-6 text-green-600" 
+                className: "w-5 h-5 sm:w-6 sm:h-6 text-green-600 flex-shrink-0" 
               })}
-              <div>
-                <CardTitle className="text-xl text-gray-800">
+              <div className="min-w-0 flex-1">
+                <CardTitle className="text-lg sm:text-xl text-gray-800 truncate">
                   {FORM_STEPS[currentStep - 1].title}
                 </CardTitle>
-                <p className="text-sm text-gray-600 mt-1">
+                <p className="text-xs sm:text-sm text-gray-600 mt-1">
                   {FORM_STEPS[currentStep - 1].description}
                 </p>
               </div>
             </div>
           </CardHeader>
           
-          <CardContent className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <CardContent className="p-4 sm:p-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {renderCurrentStep()}
             </div>
           </CardContent>
         </Card>
 
         {/* Navigation and Actions */}
-        <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-between items-center">
-          <div className="flex gap-3">
+        <div className="mt-6 sm:mt-8 flex flex-col gap-4 items-center">
+          {/* Primary Navigation */}
+          <div className="flex gap-3 w-full sm:w-auto justify-center">
             <Button
               onClick={prevStep}
               disabled={currentStep === 1}
               variant="outline"
-              className="flex items-center gap-2 border-green-300 text-green-700 hover:bg-green-50"
+              size="lg"
+              className="flex items-center gap-2 border-green-300 text-green-700 hover:bg-green-50 px-6 py-3 min-h-[44px]"
             >
               <ChevronLeft className="w-4 h-4" />
-              Previous
+              <span className="hidden sm:inline">Previous</span>
+              <span className="sm:hidden">Prev</span>
             </Button>
             
             {currentStep < FORM_STEPS.length ? (
               <Button
                 onClick={nextStep}
-                className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white"
+                size="lg"
+                className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-6 py-3 min-h-[44px]"
               >
-                Next
+                <span className="hidden sm:inline">Next</span>
+                <span className="sm:hidden">Next</span>
                 <ChevronRight className="w-4 h-4" />
               </Button>
             ) : (
               <Button
                 onClick={handleSubmit}
-                className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-lg"
+                size="lg"
+                className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-lg px-6 py-3 min-h-[44px]"
               >
                 <Save className="w-4 h-4" />
-                {isEditMode ? 'Update Product' : 'Create Product'}
+                <span className="hidden sm:inline">{isEditMode ? 'Update Product' : 'Create Product'}</span>
+                <span className="sm:hidden">{isEditMode ? 'Update' : 'Create'}</span>
               </Button>
             )}
           </div>
 
-          <div className="flex gap-3">
+          {/* Secondary Actions */}
+          <div className="flex flex-wrap gap-3 justify-center">
             {/* Save Changes button - always visible in edit mode */}
             {isEditMode && (
               <Button
                 onClick={handleSubmit}
-                className="flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-lg"
+                size="lg"
+                className="flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-lg px-6 py-3 min-h-[44px]"
               >
                 <Save className="w-4 h-4" />
-                Save Changes
+                <span className="hidden sm:inline">Save Changes</span>
+                <span className="sm:hidden">Save</span>
               </Button>
             )}
             
             <Button
               onClick={resetForm}
               variant="outline"
-              className="flex items-center gap-2 border-gray-300 text-gray-600 hover:bg-gray-50"
+              size="lg"
+              className="flex items-center gap-2 border-gray-300 text-gray-600 hover:bg-gray-50 px-6 py-3 min-h-[44px]"
             >
               <RotateCcw className="w-4 h-4" />
-              Reset Form
+              <span className="hidden sm:inline">Reset Form</span>
+              <span className="sm:hidden">Reset</span>
             </Button>
           </div>
         </div>
 
         {/* Quick Actions */}
-        <Card className="mt-6 border-0 bg-gradient-to-r from-green-50 to-emerald-50">
-          <CardContent className="p-4">
-            <div className="flex flex-wrap gap-2 justify-center">
+        <Card className="mt-4 sm:mt-6 border-0 bg-gradient-to-r from-green-50 to-emerald-50">
+          <CardContent className="p-3 sm:p-4">
+            <div className="flex flex-wrap gap-1 sm:gap-2 justify-center">
               <Badge variant="secondary" className="text-xs">
-                💡 Tip: You can navigate between completed steps
+                💡 <span className="hidden sm:inline">Tip: You can navigate between completed steps</span>
+                <span className="sm:hidden">Navigate steps</span>
               </Badge>
               <Badge variant="secondary" className="text-xs">
-                📝 Required fields are marked with validation
+                📝 <span className="hidden sm:inline">Required fields are marked with validation</span>
+                <span className="sm:hidden">Required fields marked</span>
               </Badge>
               <Badge variant="secondary" className="text-xs">
-                💾 Your progress is automatically saved
+                💾 <span className="hidden sm:inline">Your progress is automatically saved</span>
+                <span className="sm:hidden">Auto-saved</span>
               </Badge>
               {isEditMode && (
                 <Badge variant="secondary" className="text-xs bg-emerald-100 text-emerald-700">
-                  ✨ Use "Save Changes" button to save edits at any step
+                  ✨ <span className="hidden sm:inline">Use "Save Changes" button to save edits at any step</span>
+                  <span className="sm:hidden">Save anytime</span>
                 </Badge>
               )}
             </div>
@@ -729,14 +753,15 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
 
         {/* Floating Save Button for Edit Mode */}
         {isEditMode && (
-          <div className="fixed bottom-6 right-6 z-50">
+          <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50">
             <Button
               onClick={handleSubmit}
               size="lg"
-              className="flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-2xl rounded-full px-6 py-3 animate-pulse hover:animate-none transition-all duration-300"
+              className="flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-2xl rounded-full px-4 py-3 sm:px-6 animate-pulse hover:animate-none transition-all duration-300"
             >
-              <Save className="w-5 h-5" />
-              Save Changes
+              <Save className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="hidden sm:inline">Save Changes</span>
+              <span className="sm:hidden">Save</span>
             </Button>
           </div>
         )}

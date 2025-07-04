@@ -41,11 +41,11 @@ const TradeInformation: React.FC<TradeInformationProps> = ({
 
   return (
     <>
-      <div className="col-span-full mb-6">
+      <div className="col-span-full mb-4 sm:mb-6">
         <Card className="border-blue-200 bg-blue-50/50">
-          <CardContent className="p-4">
-            <h4 className="text-lg font-semibold text-blue-800 mb-2">Trade & Pricing Information</h4>
-            <p className="text-sm text-blue-600">Set pricing, quantities, and trade terms</p>
+          <CardContent className="p-3 sm:p-4">
+            <h4 className="text-base sm:text-lg font-semibold text-blue-800 mb-2">Trade & Pricing Information</h4>
+            <p className="text-xs sm:text-sm text-blue-600">Set pricing, quantities, and trade terms</p>
           </CardContent>
         </Card>
       </div>
@@ -150,13 +150,13 @@ const TradeInformation: React.FC<TradeInformationProps> = ({
             }}
             error={error?.price ? true : false}
             helperText={error?.price}
-            className={`pr-20 transition-all duration-200 ${
+            className={`pr-16 sm:pr-20 transition-all duration-200 ${
               error?.price 
                 ? 'border-red-300 focus:border-red-500 focus:ring-red-200' 
                 : 'border-gray-300 focus:border-blue-500 focus:ring-blue-200'
             }`}
           />
-          <div className="absolute right-3 top-2.5 text-sm text-gray-500 pointer-events-none">
+          <div className="absolute right-2 sm:right-3 top-2.5 text-xs sm:text-sm text-gray-500 pointer-events-none">
             USD / {data.uom || 'unit'}
           </div>
         </div>

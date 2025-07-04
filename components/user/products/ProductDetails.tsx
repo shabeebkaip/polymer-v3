@@ -42,11 +42,11 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
 }) => {
   return (
     <>
-      <div className="col-span-full mb-6">
+      <div className="col-span-full mb-4 sm:mb-6">
         <Card className="border-emerald-200 bg-emerald-50/50">
-          <CardContent className="p-4">
-            <h4 className="text-lg font-semibold text-emerald-800 mb-2">Technical Specifications</h4>
-            <p className="text-sm text-emerald-600">Define the technical characteristics and categories</p>
+          <CardContent className="p-3 sm:p-4">
+            <h4 className="text-base sm:text-lg font-semibold text-emerald-800 mb-2">Technical Specifications</h4>
+            <p className="text-xs sm:text-sm text-emerald-600">Define the technical characteristics and categories</p>
           </CardContent>
         </Card>
       </div>
