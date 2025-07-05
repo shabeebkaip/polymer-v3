@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import axiosInstance from "@/lib/axiosInstance";
+import { QuoteRequest } from "@/types/quote";
 
 // ============================================================================
 // USER PROFILE & AUTHENTICATION
@@ -39,7 +40,7 @@ export const getSidebarList = async () => {
 // QUOTE REQUESTS (Buyer Side)
 // ============================================================================
 
-export const createQuoteRequest = async (data: any) => {
+export const createQuoteRequest = async (data: QuoteRequest) => {
   try {
     const response = await axiosInstance.post("/quote-request/create", data);
     return response.data;

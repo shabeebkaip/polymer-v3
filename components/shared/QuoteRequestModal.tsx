@@ -35,6 +35,7 @@ import { Calendar as CalendarIcon, MapPin, Package, Truck, Clock } from "lucide-
 import { createQuoteRequest } from "@/apiServices/user";
 import { useUserInfo } from "@/lib/useUserInfo";
 import { useRouter } from "next/navigation";
+import { ProductQuoteRequest } from "@/types/quote";
 import Cookies from "js-cookie";
 
 interface Grade {
@@ -130,22 +131,20 @@ const QuoteRequestModal = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Use refs for immediate updates without triggering re-renders
-  const dataRef = useRef({
+  const dataRef = useRef<Partial<ProductQuoteRequest>>({
+    requestType: "product_quote",
     product: productId,
-    quantity: "",
+    quantity: 0,
     uom: uom,
     grade: "",
     incoterm: "",
-    postCode: "",
-    city: "",
     country: "",
     destination: "",
     packagingType: "",
     packaging_size: "",
-    expected_annual_volume: "",
-    delivery_date: undefined as Date | undefined,
+    expected_annual_volume: undefined,
+    delivery_date: undefined,
     application: "",
-    pricing: "",
     message: "",
     request_document: "",
     open_request: false,
@@ -153,21 +152,19 @@ const QuoteRequestModal = ({
 
   // Memoized initial data to prevent recreating on every render
   const initialData = useMemo(() => ({
+    requestType: "product_quote" as const,
     product: productId,
-    quantity: "",
+    quantity: 0,
     uom: uom,
     grade: "",
     incoterm: "",
-    postCode: "",
-    city: "",
     country: "",
     destination: "",
     packagingType: "",
     packaging_size: "",
-    expected_annual_volume: "",
-    delivery_date: undefined as Date | undefined,
+    expected_annual_volume: undefined,
+    delivery_date: undefined,
     application: "",
-    pricing: "",
     message: "",
     request_document: "",
     open_request: false,
@@ -188,7 +185,7 @@ const QuoteRequestModal = ({
     const currentData = dataRef.current;
     const errors: string[] = [];
     
-    if (!currentData.quantity) errors.push("Please enter the quantity");
+    if (!currentData.quantity || currentData.quantity <= 0) errors.push("Please enter a valid quantity");
     if (!currentData.grade) errors.push("Please select the grade");
     if (!currentData.incoterm) errors.push("Please select the incoterm");
     if (!currentData.country) errors.push("Please enter the country");
@@ -247,8 +244,13 @@ const QuoteRequestModal = ({
   }, [token, loadDropdowns, router]);
 
   // Optimized field change handler with immediate UI updates
-  const onFieldChange = useCallback((field: string, value: string | Date | undefined) => {
-    const processedValue = value instanceof Date ? value : value || "";
+  const onFieldChange = useCallback((field: string, value: string | number | Date | undefined) => {
+    let processedValue: any = value;
+    
+    // Handle numeric fields
+    if (field === "quantity" || field === "expected_annual_volume") {
+      processedValue = value && typeof value === "string" ? parseFloat(value) || 0 : value;
+    }
     
     // Update ref immediately for internal tracking
     dataRef.current = {
@@ -283,8 +285,30 @@ const QuoteRequestModal = ({
     const toastId = toast.loading("Creating Quote Request...");
     
     try {
-      // Use the current data from ref for submission
-      await createQuoteRequest(dataRef.current);
+      // Prepare data according to unified schema for product_quote
+      const submitData: ProductQuoteRequest = {
+        requestType: "product_quote",
+        product: dataRef.current.product!,
+        quantity: dataRef.current.quantity || 0,
+        uom: dataRef.current.uom!,
+        country: dataRef.current.country!,
+        destination: dataRef.current.destination!,
+        packaging_size: dataRef.current.packaging_size!,
+        delivery_date: dataRef.current.delivery_date!,
+        // Only include ObjectId fields if they have valid values
+        ...(dataRef.current.grade && dataRef.current.grade.trim() && { grade: dataRef.current.grade }),
+        ...(dataRef.current.incoterm && dataRef.current.incoterm.trim() && { incoterm: dataRef.current.incoterm }),
+        ...(dataRef.current.packagingType && dataRef.current.packagingType.trim() && { packagingType: dataRef.current.packagingType }),
+        // Include other optional fields only if they have values
+        ...(dataRef.current.expected_annual_volume && { expected_annual_volume: dataRef.current.expected_annual_volume }),
+        ...(dataRef.current.application && dataRef.current.application.trim() && { application: dataRef.current.application }),
+        ...(dataRef.current.message && dataRef.current.message.trim() && { message: dataRef.current.message }),
+        ...(dataRef.current.request_document && dataRef.current.request_document.trim() && { request_document: dataRef.current.request_document }),
+        open_request: dataRef.current.open_request || false,
+        sourceSection: "product_detail",
+      };
+      
+      await createQuoteRequest(submitData);
       toast.dismiss(toastId);
       toast.success("Quote request created successfully!");
       setOpen(false);
@@ -378,7 +402,7 @@ const QuoteRequestModal = ({
                           type="number"
                           min="1"
                           onChange={(e: any) => onFieldChange("quantity", e.target.value)}
-                          value={data?.quantity}
+                          value={data?.quantity || ""}
                         />
                         <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-medium text-emerald-600 border-l border-gray-200 pl-3">
                           {data?.uom}
@@ -503,7 +527,7 @@ const QuoteRequestModal = ({
                         className="bg-white border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 transition-all duration-200"
                         type="number"
                         onChange={(e: any) => onFieldChange("expected_annual_volume", e.target.value)}
-                        value={data?.expected_annual_volume}
+                        value={data?.expected_annual_volume || ""}
                       />
                     </div>
 

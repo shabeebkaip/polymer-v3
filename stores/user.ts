@@ -71,24 +71,86 @@ interface SampleRequestDetail {
 }
 
 interface QuoteRequestDetail {
-  _id: string;
-  user: User;
-  product: Product;
-  grade: Grade;
-  quantity: number;
-  uom: string;
-  phone: string;
-  address: string;
-  country: string;
-  application: string;
-  expected_annual_volume: number;
-  orderDate: string;
-  neededBy: string;
-  message: string;
-  request_document?: string;
+  requestType: string;
   status: string;
   createdAt: string;
   updatedAt: string;
+  statusHistory: any[];
+  requester: {
+    _id: string;
+    name: string;
+    email: string;
+    phone: number;
+    company: string;
+    address: {
+      full: string;
+    };
+  };
+  quoteType: string;
+  product: {
+    _id: string;
+    productName: string;
+    chemicalName: string;
+    description: string;
+    productImages: Array<{
+      id: string;
+      name: string;
+      type: string;
+      fileUrl: string;
+      _id: string;
+    }>;
+    countryOfOrigin: string;
+    specifications: any;
+    creator: {
+      _id: string;
+      name: string;
+      company: string;
+      email: string;
+    };
+  };
+  orderDetails: {
+    quantity: number;
+    uom: string;
+    destination: string;
+    country: string;
+    deliveryDate: string;
+    packagingSize: string;
+  };
+  specifications: {
+    grade: {
+      _id: string;
+      name: string;
+      description: string;
+    };
+    incoterm: {
+      _id: string;
+      name: string;
+    };
+  };
+  unified: {
+    type: string;
+    title: string;
+    quantity: number;
+    deliveryDate: string;
+    location: string;
+    destination: string;
+    isProductQuote: boolean;
+    isDealQuote: boolean;
+    statusIcon: string;
+    priorityLevel: string;
+  };
+  timeline: {
+    requested: string;
+    lastUpdate: string;
+    deadline: string;
+    statusUpdates: number;
+  };
+  metadata: {
+    canEdit: boolean;
+    canCancel: boolean;
+    nextActions: string[];
+    estimatedProcessingTime: string;
+  };
 }
 
 interface SampleRequestStore {

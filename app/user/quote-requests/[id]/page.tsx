@@ -231,7 +231,7 @@ const QuoteRequestDetail = () => {
                     Quote Request Details
                   </h1>
                   <p className="text-gray-600 text-lg mt-2 font-medium">
-                    Request ID: #{quoteRequestDetail._id.slice(-8).toUpperCase()}
+                    Request ID: #{params.id?.toString().slice(-8).toUpperCase() || 'N/A'}
                   </p>
                 </div>
               </div>
@@ -272,20 +272,16 @@ const QuoteRequestDetail = () => {
                       <p className="font-semibold text-gray-900">{quoteRequestDetail.product.chemicalName}</p>
                     </div>
                     <div className="bg-gray-50 rounded-xl p-4">
-                      <p className="text-sm text-gray-600 mb-1">Trade Name</p>
-                      <p className="font-semibold text-gray-900">{quoteRequestDetail.product.tradeName}</p>
+                      <p className="text-sm text-gray-600 mb-1">Product Type</p>
+                      <p className="font-semibold text-gray-900">{quoteRequestDetail.quoteType}</p>
                     </div>
                     <div className="bg-gray-50 rounded-xl p-4">
-                      <p className="text-sm text-gray-600 mb-1">Color</p>
-                      <p className="font-semibold text-gray-900">{quoteRequestDetail.product.color}</p>
+                      <p className="text-sm text-gray-600 mb-1">Request Type</p>
+                      <p className="font-semibold text-gray-900">{quoteRequestDetail.requestType}</p>
                     </div>
                     <div className="bg-gray-50 rounded-xl p-4">
                       <p className="text-sm text-gray-600 mb-1">Country of Origin</p>
                       <p className="font-semibold text-gray-900">{quoteRequestDetail.product.countryOfOrigin}</p>
-                    </div>
-                    <div className="bg-gray-50 rounded-xl p-4 col-span-2">
-                      <p className="text-sm text-gray-600 mb-1">Manufacturing Method</p>
-                      <p className="font-semibold text-gray-900">{quoteRequestDetail.product.manufacturingMethod}</p>
                     </div>
                   </div>
                 </div>
@@ -294,9 +290,9 @@ const QuoteRequestDetail = () => {
                   <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-6 border border-green-200/50">
                     <h4 className="font-semibold text-green-900 mb-3 flex items-center gap-2">
                       <Beaker className="w-5 h-5" />
-                      Grade: {quoteRequestDetail.grade.name}
+                      Grade: {quoteRequestDetail.specifications.grade.name}
                     </h4>
-                    <p className="text-green-700 text-sm mb-3">{quoteRequestDetail.grade.description}</p>
+                    <p className="text-green-700 text-sm mb-3">{quoteRequestDetail.specifications.grade.description}</p>
                   </div>
 
                   {/* Product Images */}
@@ -344,24 +340,24 @@ const QuoteRequestDetail = () => {
                     <Package className="w-4 h-4 text-gray-600" />
                     <p className="text-sm text-gray-600">Quantity</p>
                   </div>
-                  <p className="font-bold text-xl text-gray-900">{quoteRequestDetail.quantity} {quoteRequestDetail.uom}</p>
+                  <p className="font-bold text-xl text-gray-900">{quoteRequestDetail.orderDetails.quantity} {quoteRequestDetail.orderDetails.uom}</p>
                 </div>
 
                 <div className="bg-gray-50 rounded-xl p-4">
                   <div className="flex items-center gap-2 mb-2">
                     <Target className="w-4 h-4 text-gray-600" />
-                    <p className="text-sm text-gray-600">Annual Volume</p>
+                    <p className="text-sm text-gray-600">Packaging Size</p>
                   </div>
-                  <p className="font-bold text-xl text-gray-900">{quoteRequestDetail.expected_annual_volume.toLocaleString()} {quoteRequestDetail.uom}</p>
+                  <p className="font-bold text-xl text-gray-900">{quoteRequestDetail.orderDetails.packagingSize}</p>
                 </div>
 
                 <div className="bg-gray-50 rounded-xl p-4">
                   <div className="flex items-center gap-2 mb-2">
                     <Calendar className="w-4 h-4 text-gray-600" />
-                    <p className="text-sm text-gray-600">Needed By</p>
+                    <p className="text-sm text-gray-600">Delivery Date</p>
                   </div>
                   <p className="font-semibold text-gray-900">
-                    {new Date(quoteRequestDetail.neededBy).toLocaleDateString('en-US', {
+                    {new Date(quoteRequestDetail.orderDetails.deliveryDate).toLocaleDateString('en-US', {
                       year: 'numeric',
                       month: 'short',
                       day: 'numeric'
@@ -373,83 +369,43 @@ const QuoteRequestDetail = () => {
               <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                    <Factory className="w-5 h-5 text-gray-600" />
-                    Application
+                    <MapPin className="w-5 h-5 text-gray-600" />
+                    Destination Country
                   </h4>
-                  <p className="text-gray-700 bg-gray-50 rounded-xl p-4">{quoteRequestDetail.application}</p>
+                  <p className="text-gray-700 bg-gray-50 rounded-xl p-4">{quoteRequestDetail.orderDetails.country}</p>
                 </div>
 
                 <div>
                   <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                    <FileText className="w-5 h-5 text-gray-600" />
-                    Message
+                    <MapPin className="w-5 h-5 text-gray-600" />
+                    Full Destination
                   </h4>
-                  <p className="text-gray-700 bg-gray-50 rounded-xl p-4">{quoteRequestDetail.message}</p>
+                  <p className="text-gray-700 bg-gray-50 rounded-xl p-4">{quoteRequestDetail.orderDetails.destination}</p>
                 </div>
               </div>
 
-              {quoteRequestDetail.request_document && (
-                <div className="mt-6 bg-blue-50 rounded-xl p-4 border border-blue-200">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="bg-blue-100 p-2 rounded-lg">
-                        <FileText className="w-5 h-5 text-blue-600" />
-                      </div>
-                      <div>
-                        <p className="font-semibold text-blue-900">Attached Document</p>
-                        <p className="text-sm text-blue-700">{quoteRequestDetail.request_document}</p>
-                      </div>
-                    </div>
-                    <button className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                      <Download className="w-4 h-4" />
-                      Download
-                    </button>
-                  </div>
-                </div>
-              )}
+              {/* Technical specifications would go here if available in the API */}
             </div>
 
-            {/* Technical Properties */}
+            {/* Incoterm Information */}
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50 p-8">
               <div className="flex items-center gap-3 mb-6">
                 <div className="bg-gradient-to-br from-purple-100 to-indigo-100 p-3 rounded-xl">
-                  <Settings className="w-6 h-6 text-purple-600" />
+                  <Truck className="w-6 h-6 text-purple-600" />
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900">Technical Properties</h2>
+                <h2 className="text-2xl font-bold text-gray-900">Shipping Terms</h2>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-xl p-4 border border-purple-200/50">
-                  <p className="text-sm text-purple-600 mb-1">Density</p>
-                  <p className="font-semibold text-purple-900">{quoteRequestDetail.product.density} g/cm³</p>
-                </div>
-                <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-xl p-4 border border-purple-200/50">
-                  <p className="text-sm text-purple-600 mb-1">Melt Flow Index (MFI)</p>
-                  <p className="font-semibold text-purple-900">{quoteRequestDetail.product.mfi} g/10min</p>
-                </div>
-                <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-xl p-4 border border-purple-200/50">
-                  <p className="text-sm text-purple-600 mb-1">Tensile Strength</p>
-                  <p className="font-semibold text-purple-900">{quoteRequestDetail.product.tensileStrength} MPa</p>
-                </div>
-                <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-xl p-4 border border-purple-200/50">
-                  <p className="text-sm text-purple-600 mb-1">Elongation at Break</p>
-                  <p className="font-semibold text-purple-900">{quoteRequestDetail.product.elongationAtBreak}%</p>
-                </div>
-                <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-xl p-4 border border-purple-200/50">
-                  <p className="text-sm text-purple-600 mb-1">Shore Hardness</p>
-                  <p className="font-semibold text-purple-900">{quoteRequestDetail.product.shoreHardness} Shore D</p>
-                </div>
-                <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-xl p-4 border border-purple-200/50">
-                  <p className="text-sm text-purple-600 mb-1">Water Absorption</p>
-                  <p className="font-semibold text-purple-900">{quoteRequestDetail.product.waterAbsorption}%</p>
-                </div>
+              <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-xl p-6 border border-purple-200/50">
+                <p className="text-sm text-purple-600 mb-2">Incoterm</p>
+                <p className="font-bold text-xl text-purple-900">{quoteRequestDetail.specifications.incoterm.name}</p>
               </div>
             </div>
           </div>
 
           {/* Sidebar - Right Side */}
           <div className="space-y-8">
-            {/* User Information */}
+            {/* Requester Information */}
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50 p-6">
               <div className="flex items-center gap-3 mb-6">
                 <div className="bg-gradient-to-br from-green-100 to-emerald-100 p-3 rounded-xl">
@@ -465,31 +421,29 @@ const QuoteRequestDetail = () => {
                   </div>
                   <div>
                     <p className="font-semibold text-gray-900">
-                      {quoteRequestDetail.user.firstName} {quoteRequestDetail.user.lastName}
+                      {quoteRequestDetail.requester.name}
                     </p>
-                    <p className="text-sm text-gray-600">{quoteRequestDetail.user.userType}</p>
+                    <p className="text-sm text-gray-600">Buyer</p>
                   </div>
                 </div>
 
                 <div className="space-y-3">
                   <div className="flex items-center gap-3 text-gray-700">
                     <Building2 className="w-4 h-4 text-gray-500" />
-                    <span className="text-sm">{quoteRequestDetail.user.company}</span>
+                    <span className="text-sm">{quoteRequestDetail.requester.company}</span>
                   </div>
                   <div className="flex items-center gap-3 text-gray-700">
                     <Mail className="w-4 h-4 text-gray-500" />
-                    <span className="text-sm">{quoteRequestDetail.user.email}</span>
+                    <span className="text-sm">{quoteRequestDetail.requester.email}</span>
                   </div>
                   <div className="flex items-center gap-3 text-gray-700">
                     <Phone className="w-4 h-4 text-gray-500" />
-                    <span className="text-sm">{quoteRequestDetail.phone}</span>
+                    <span className="text-sm">{quoteRequestDetail.requester.phone}</span>
                   </div>
                   <div className="flex items-start gap-3 text-gray-700">
                     <MapPin className="w-4 h-4 text-gray-500 mt-0.5" />
                     <div className="text-sm">
-                      <p>{quoteRequestDetail.address}</p>
-                      <p>{quoteRequestDetail.user.city}, {quoteRequestDetail.user.state}</p>
-                      <p>{quoteRequestDetail.country} - {quoteRequestDetail.user.pincode}</p>
+                      <p>{quoteRequestDetail.requester.address.full}</p>
                     </div>
                   </div>
                 </div>
@@ -512,7 +466,7 @@ const QuoteRequestDetail = () => {
                   </div>
                   <div>
                     <p className="font-semibold text-gray-900">
-                      {quoteRequestDetail.product.createdBy.firstName} {quoteRequestDetail.product.createdBy.lastName}
+                      {quoteRequestDetail.product.creator.name}
                     </p>
                     <p className="text-sm text-gray-600">Supplier</p>
                   </div>
@@ -521,23 +475,11 @@ const QuoteRequestDetail = () => {
                 <div className="space-y-3">
                   <div className="flex items-center gap-3 text-gray-700">
                     <Building2 className="w-4 h-4 text-gray-500" />
-                    <span className="text-sm">{quoteRequestDetail.product.createdBy.company}</span>
+                    <span className="text-sm">{quoteRequestDetail.product.creator.company}</span>
                   </div>
                   <div className="flex items-center gap-3 text-gray-700">
                     <Mail className="w-4 h-4 text-gray-500" />
-                    <span className="text-sm">{quoteRequestDetail.product.createdBy.email}</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-gray-700">
-                    <Phone className="w-4 h-4 text-gray-500" />
-                    <span className="text-sm">{quoteRequestDetail.product.createdBy.phone}</span>
-                  </div>
-                  <div className="flex items-start gap-3 text-gray-700">
-                    <MapPin className="w-4 h-4 text-gray-500 mt-0.5" />
-                    <div className="text-sm">
-                      <p>{quoteRequestDetail.product.createdBy.address}</p>
-                      <p>{quoteRequestDetail.product.createdBy.city}, {quoteRequestDetail.product.createdBy.state}</p>
-                      <p>{quoteRequestDetail.product.createdBy.country}</p>
-                    </div>
+                    <span className="text-sm">{quoteRequestDetail.product.creator.email}</span>
                   </div>
                 </div>
               </div>
@@ -545,25 +487,11 @@ const QuoteRequestDetail = () => {
 
             {/* Status Timeline */}
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50 p-6">
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                  <div className="bg-gradient-to-br from-indigo-100 to-purple-100 p-3 rounded-xl">
-                    <Clock className="w-6 h-6 text-indigo-600" />
-                  </div>
-                  <h3 className="text-xl font-bold text-gray-900">Status Timeline</h3>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="bg-gradient-to-br from-indigo-100 to-purple-100 p-3 rounded-xl">
+                  <Clock className="w-6 h-6 text-indigo-600" />
                 </div>
-                
-                {/* Status Update Button */}
-                {quoteRequestDetail && canUpdateStatus(quoteRequestDetail.status).length > 0 && (
-                  <Button
-                    onClick={() => setShowStatusUpdate(true)}
-                    size="sm"
-                    className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
-                  >
-                    <Edit3 className="w-3 h-3 mr-1" />
-                    Update
-                  </Button>
-                )}
+                <h3 className="text-xl font-bold text-gray-900">Status Timeline</h3>
               </div>
 
               {/* Timeline Progress */}
