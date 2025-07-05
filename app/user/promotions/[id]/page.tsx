@@ -257,15 +257,18 @@ const PromotionDetail = () => {
               </div>
 
               {/* Action Buttons */}
-              <div className="flex items-center gap-2">
-                <button className="p-3 text-gray-600 hover:text-green-700 hover:bg-green-50 rounded-xl transition-colors duration-200">
-                  <Eye className="w-5 h-5" />
+              <div className="flex items-center gap-3">
+                <button className="px-4 py-2 bg-green-100 text-green-700 hover:bg-green-200 rounded-xl transition-colors duration-200 font-medium flex items-center gap-2">
+                  <Eye className="w-4 h-4" />
+                  View
                 </button>
-                {promotionDetail.status?.toLowerCase() === 'pending' && (
-                  <button className="p-3 text-gray-600 hover:text-blue-700 hover:bg-blue-50 rounded-xl transition-colors duration-200">
-                    <Edit className="w-5 h-5" />
-                  </button>
-                )}
+                <button 
+                  onClick={() => router.push(`/user/promotions/${promotionId}/edit`)}
+                  className="px-4 py-2 bg-blue-100 text-blue-700 hover:bg-blue-200 rounded-xl transition-colors duration-200 font-medium flex items-center gap-2"
+                >
+                  <Edit className="w-4 h-4" />
+                  Edit
+                </button>
               </div>
             </div>
           </div>

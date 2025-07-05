@@ -503,6 +503,26 @@ export const getPromotionDetail = async (id: string) => {
   }
 }
 
+export const updatePromotion = async (id: string, offerPrice: number) => {
+  try {
+    const response = await axiosInstance.put(`/best-deal/edit/${id}`, { offerPrice });
+    console.log("✅ Promotion updated successfully:", response.data);
+    return response.data;
+  } catch (error: any) {
+    console.error("❌ Error updating promotion:", error);
+    if (error.response) {
+      console.error("Response data:", error.response.data);
+      console.error("Response status:", error.response.status);
+      console.error("Response headers:", error.response.headers);
+    } else if (error.request) {
+      console.error("Request was made but no response received:", error.request);
+    } else {
+      console.error("Error setting up request:", error.message);
+    }
+    throw error;
+  }
+}
+
 // ============================================================================
 // UTILITY & DEBUG FUNCTIONS
 // ============================================================================
