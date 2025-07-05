@@ -27,8 +27,10 @@ import {
   ChevronLeft,
   ChevronRight
 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 const Promotions = () => {
+  const router = useRouter();
   const {
     promotions,
     meta,
@@ -265,7 +267,9 @@ const Promotions = () => {
             )}
 
             {/* Create Button */}
-            <button className="px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all duration-200 font-medium flex items-center gap-2 shadow-lg">
+            <button 
+              onClick={() => router.push('/user/promotions/add')}
+            className="px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all duration-200 font-medium flex items-center gap-2 shadow-lg">
               <Plus className="w-4 h-4" />
               Create Deal
             </button>

@@ -1,3 +1,4 @@
+import { create } from 'zustand';
 import axiosInstance from "@/lib/axiosInstance";
 
 // ============================================================================
@@ -470,6 +471,25 @@ export const getCreatedPromotionsForSeller = async () => {
     return response.data;
   } catch (error) {
     console.error("Error fetching created promotions for seller:", error);
+    throw error;
+  }
+}
+export const createPromotion = async (data: any) => {
+  try {
+    const response = await axiosInstance.post("/best-deal/create", data);
+    console.log("✅ Promotion created successfully:", response.data);
+    return response.data;
+  } catch (error: any) {
+    console.error("❌ Error creating promotion:", error);
+    if (error.response) {
+      console.error("Response data:", error.response.data);
+      console.error("Response status:", error.response.status);
+      console.error("Response headers:", error.response.headers);
+    } else if (error.request) {
+      console.error("Request was made but no response received:", error.request);
+    } else {
+      console.error("Error setting up request:", error.message);
+    }
     throw error;
   }
 }
