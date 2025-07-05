@@ -1,12 +1,14 @@
 import { create } from 'zustand';
-import { getCreatedPromotionsForSeller } from '@/apiServices/user';
+import { getCreatedPromotionsForSeller, getPromotionDetail } from '@/apiServices/user';
 import { 
   PromotionStore, 
   PromotionState,
   Promotion, 
   Meta, 
   PromotionResponse,
-  PromotionFilters 
+  PromotionFilters,
+  PromotionDetail,
+  PromotionDetailResponse
 } from '@/types/promotion';
 
 const usePromotionsStore = create<PromotionStore>((set, get) => ({
@@ -21,6 +23,11 @@ const usePromotionsStore = create<PromotionStore>((set, get) => ({
   },
   currentPage: 1,
   itemsPerPage: 10,
+
+  // Detail State
+  promotionDetail: null,
+  detailLoading: false,
+  detailError: null,
 
   // Actions
   fetchPromotions: async () => {
@@ -99,6 +106,67 @@ const usePromotionsStore = create<PromotionStore>((set, get) => ({
     const filtered = get().getFilteredPromotions();
     
     return Math.ceil(filtered.length / itemsPerPage);
+  },
+
+  // Detail Actions
+  fetchPromotionDetail: async (id: string) => {
+    set({ detailLoading: true, detailError: null });
+    
+    try {
+      const response = await getPromotionDetail(id);
+      
+      if (response.success && response.data && response.data.deal) {
+        // Map the API response structure to our expected structure
+        const deal = response.data.deal;
+        const mappedDetail: PromotionDetail = {
+          _id: deal.id,
+          product: deal.product,
+          seller: deal.seller,
+          offerPrice: deal.offerPrice,
+          status: deal.status,
+          adminNote: deal.adminNote,
+          createdAt: deal.createdAt,
+          updatedAt: deal.updatedAt,
+          isActive: deal.isActive || false,
+          validUntil: deal.validUntil,
+          minimumQuantity: deal.minimumQuantity,
+          dealType: deal.dealType,
+          statusIcon: deal.statusIcon
+        };
+        
+        set({ 
+          promotionDetail: mappedDetail,
+          detailLoading: false 
+        });
+      } else {
+        set({ 
+          detailError: response.message || 'Failed to fetch promotion detail',
+          detailLoading: false 
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching promotion detail:', error);
+      set({ 
+        detailError: 'Failed to fetch promotion detail',
+        detailLoading: false 
+      });
+    }
+  },
+
+  clearPromotionDetail: () => {
+    set({ 
+      promotionDetail: null, 
+      detailLoading: false, 
+      detailError: null 
+    });
+  },
+
+  setDetailLoading: (loading: boolean) => {
+    set({ detailLoading: loading });
+  },
+
+  setDetailError: (error: string | null) => {
+    set({ detailError: error });
   }
 }));
 

@@ -72,4 +72,91 @@ export interface PromotionActions {
   getTotalPages: () => number;
 }
 
-export type PromotionStore = PromotionState & PromotionActions;
+// Promotion Detail Types (based on API response structure)
+export interface PromotionProduct {
+  id: string;
+  productName: string;
+  chemicalName?: string;
+  tradeName?: string;
+  description?: string;
+  price?: number;
+  uom?: string;
+  stock?: number;
+  countryOfOrigin?: string;
+  color?: string;
+  manufacturingMethod?: string;
+  specifications?: {
+    density?: number;
+    mfi?: number;
+    tensileStrength?: number;
+    elongationAtBreak?: number;
+    shoreHardness?: number;
+    waterAbsorption?: number;
+  };
+  creator?: {
+    id: string;
+    name: string;
+    company: string;
+    email: string;
+  };
+  productImages?: Array<{
+    id: string;
+    name: string;
+    type: string;
+    fileUrl: string;
+    _id: string;
+  }>;
+}
+
+export interface PromotionSeller {
+  id: string;
+  name: string;
+  email: string;
+  phone?: number;
+  company: string;
+  location?: string;
+  address?: {
+    full: string;
+  };
+  firstName?: string;
+  lastName?: string;
+  isVerified?: boolean;
+}
+
+export interface PromotionDetail {
+  _id: string;
+  product: PromotionProduct;
+  seller: PromotionSeller;
+  offerPrice: number;
+  status: string;
+  adminNote?: string;
+  createdAt: string;
+  updatedAt: string;
+  isActive: boolean;
+  validUntil?: string;
+  minimumQuantity?: string;
+  dealType?: string;
+  statusIcon?: string;
+}
+
+export interface PromotionDetailResponse {
+  success: boolean;
+  message: string;
+  data: PromotionDetail;
+}
+
+// Updated Store types with detail functionality
+export interface PromotionDetailState {
+  promotionDetail: PromotionDetail | null;
+  detailLoading: boolean;
+  detailError: string | null;
+}
+
+export interface PromotionDetailActions {
+  fetchPromotionDetail: (id: string) => Promise<void>;
+  clearPromotionDetail: () => void;
+  setDetailLoading: (loading: boolean) => void;
+  setDetailError: (error: string | null) => void;
+}
+
+export type PromotionStore = PromotionState & PromotionActions & PromotionDetailState & PromotionDetailActions;

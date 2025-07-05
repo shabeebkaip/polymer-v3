@@ -13,6 +13,7 @@ import {
   Search, 
   Plus, 
   Eye,
+  Edit,
   ChevronDown,
   Package,
   TrendingUp,
@@ -378,9 +379,24 @@ const Promotions = () => {
                         </div>
                       </TableCell>
                       <TableCell className="py-4 text-center">
-                        <button className="p-2 text-gray-600 hover:text-green-700 hover:bg-green-50 rounded-lg transition-colors">
-                          <Eye className="w-4 h-4" />
-                        </button>
+                        <div className="flex items-center justify-center gap-2">
+                          <button 
+                            onClick={() => router.push(`/user/promotions/${promotion.id}`)}
+                            className="p-2 text-gray-600 hover:text-green-700 hover:bg-green-50 rounded-lg transition-colors"
+                            title="View Details"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                          {promotion.status === 'pending' && (
+                            <button 
+                              className="p-2 text-gray-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors" 
+                              onClick={() => router.push(`/user/promotions/${promotion.id}/edit`)}
+                              title="Edit Promotion"
+                            >
+                              <Edit className="w-4 h-4" />
+                            </button>
+                          )}
+                        </div>
                       </TableCell>
                     </TableRow>
                   );

@@ -493,6 +493,15 @@ export const createPromotion = async (data: any) => {
     throw error;
   }
 }
+export const getPromotionDetail = async (id: string) => {
+  try {
+    const response = await axiosInstance.get(`/best-deal/list/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching promotion detail:", error);
+    throw error;
+  }
+}
 
 // ============================================================================
 // UTILITY & DEBUG FUNCTIONS
