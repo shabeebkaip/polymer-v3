@@ -266,7 +266,7 @@ const RequestCard: React.FC<{
       router.push("/auth/register");
     } else if (isSeller) {
       // Handle quote submission for sellers
-      console.log("Submitting quote for request:", request.id);
+      router.push(`/user/submitted-offers/add/${request.id}`);
       // Add your quote submission logic here
     }
   };
@@ -279,7 +279,7 @@ const RequestCard: React.FC<{
     }
     return "View Request";
   };
-
+  console.log("Request Card Rendered:", request);
   return (
     <div className="bg-white rounded-xl shadow border hover:shadow-xl transition-all duration-200 overflow-hidden group">
       {/* Header */}

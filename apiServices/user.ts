@@ -415,6 +415,51 @@ export const getBuyerProductRequestDetail = async (id: string) => {
   }
 };
 
+// ==========================================================================
+// SELLER SUBMITTED OFFERS
+// ==========================================================================
+
+export const getSellerSubmittedOffers = async () => {
+  try {
+    const response = await axiosInstance.get("/bulk-order/supplier-offer/history");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching seller submitted offers:", error);
+    throw error;
+  }
+}
+
+export const getSellerSubmittedOfferDetail = async (bulkOrderId: string) => {
+  try {
+    const response = await axiosInstance.get(`/bulk-order/supplier-offer/history/${bulkOrderId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching seller submitted offer detail:", error);
+    throw error;
+  }
+}
+
+export const sellerSubmitOffer = async ( data: any) => {
+  try {
+   
+    const response = await axiosInstance.post(`/bulk-order/supplier-offer/create`, data);
+    console.log("✅ Offer submitted successfully:", response.data);
+    return response.data;
+  } catch (error: any) {
+    console.error("❌ Error submitting offer:", error);
+    if (error.response) {
+      console.error("Response data:", error.response.data);
+      console.error("Response status:", error.response.status);
+      console.error("Response headers:", error.response.headers);
+    } else if (error.request) {
+      console.error("Request was made but no response received:", error.request);
+    } else {
+      console.error("Error setting up request:", error.message);
+    }
+    throw error;
+  }
+}
+
 // ============================================================================
 // UTILITY & DEBUG FUNCTIONS
 // ============================================================================
