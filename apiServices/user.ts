@@ -461,6 +461,20 @@ export const sellerSubmitOffer = async ( data: any) => {
 }
 
 // ============================================================================
+// PROMOTIONS & DISCOUNTS
+// ============================================================================
+
+export const getCreatedPromotionsForSeller = async () => {
+  try {
+    const response = await axiosInstance.get("/best-deal/list");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching created promotions for seller:", error);
+    throw error;
+  }
+}
+
+// ============================================================================
 // UTILITY & DEBUG FUNCTIONS
 // ============================================================================
 
