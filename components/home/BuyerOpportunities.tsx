@@ -13,6 +13,7 @@ interface Request {
     company: string;
     location: string;
     verified: boolean;
+    name?: string;
   };
   product: string;
   quantity: string;
@@ -21,11 +22,15 @@ interface Request {
   description: string;
   urgency: "low" | "medium" | "high";
   responses: number;
-  // Additional fields from API
+  // Additional fields from new API structure
   destination?: string;
   sellerStatus?: string;
   requestDocument?: string;
   createdAt?: string;
+  priority?: string;
+  tradeName?: string;
+  chemicalName?: string;
+  daysLeft?: number;
 }
 
 
@@ -39,8 +44,18 @@ const BuyerOpportunities: React.FC = () => {
   const isBuyer = Boolean(user && userType === "buyer");
   const isSeller = Boolean(user && userType === "seller");
 
-  // Check if we have real data
-  const hasRealData = Array.isArray(buyerOpportunities) && buyerOpportunities.length > 0;
+  // Check if we have real data - handle both old and new API structures
+  const hasRealData = React.useMemo(() => {
+    if (!buyerOpportunities) return false;
+    
+    // Check for new API structure with data property
+    if (typeof buyerOpportunities === 'object' && 'data' in buyerOpportunities) {
+      return Array.isArray((buyerOpportunities as any).data) && (buyerOpportunities as any).data.length > 0;
+    }
+    
+    // Fallback to old structure where buyerOpportunities is directly an array
+    return Array.isArray(buyerOpportunities) && buyerOpportunities.length > 0;
+  }, [buyerOpportunities]);
   
   // Show loading only if we're loading AND don't have data yet
   const showLoading = buyerOpportunitiesLoading && !hasRealData;
@@ -48,44 +63,63 @@ const BuyerOpportunities: React.FC = () => {
   // Transform and display requests data
   const displayRequests = React.useMemo(() => {
     try {
-      if (Array.isArray(buyerOpportunities) && buyerOpportunities.length > 0) {
+      // Check if buyerOpportunities has a data array (new API structure) or is array itself (old structure)
+      let dataArray: any[] = [];
+      
+      if (buyerOpportunities && typeof buyerOpportunities === 'object') {
+        // Check for new API structure with data property
+        if ('data' in buyerOpportunities && Array.isArray((buyerOpportunities as any).data)) {
+          dataArray = (buyerOpportunities as any).data;
+        } 
+        // Fallback to old structure where buyerOpportunities is directly an array
+        else if (Array.isArray(buyerOpportunities)) {
+          dataArray = buyerOpportunities;
+        }
+      }
+      
+      if (dataArray.length > 0) {
         // Transform API data to match our Request interface
-        return buyerOpportunities.map((item: any) => {
-          // Determine urgency based on delivery date or message content
-          const deliveryDate = new Date(item.delivery_date);
+        return dataArray.map((item: any) => {
+          // Determine urgency based on priority field or delivery date
+          const priority = item.priority?.toLowerCase() || 'normal';
+          const deliveryDate = new Date(item.deadline);
           const daysUntilDelivery = Math.ceil((deliveryDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
-          const hasUrgentKeywords = item.message?.toLowerCase().includes('urgent') || item.message?.toLowerCase().includes('asap') || item.message?.toLowerCase().includes('expedite');
           
           let urgency: "low" | "medium" | "high" = "medium";
-          if (hasUrgentKeywords || daysUntilDelivery <= 7) {
+          if (priority === 'high' || daysUntilDelivery <= 7) {
             urgency = "high";
-          } else if (daysUntilDelivery <= 30) {
+          } else if (priority === 'normal' && daysUntilDelivery <= 30) {
             urgency = "medium";
           } else {
             urgency = "low";
           }
 
           const transformedRequest = {
-            id: item._id,
+            id: item.id,
             type: "buyer-request" as const,
-            title: `${item.product?.productName || 'Product Request'} - Buyer Opportunity`,
+            title: `${item.productName || 'Product Request'} - Buyer Opportunity`,
             buyer: {
-              company: item.user?.company || "Anonymous Company",
-              location: item.city && item.country ? `${item.city}, ${item.country}` : "Location not specified",
-              verified: item.status === 'approved'
+              company: item.buyer?.company || "Anonymous Company",
+              location: item.buyer?.location || (item.city && item.country ? `${item.city}, ${item.country}` : "Location not specified"),
+              verified: item.buyer?.isVerified || false,
+              name: item.buyer?.name
             },
-            product: item.product?.productName || "Product",
+            product: item.productName || "Product",
             quantity: item.uom ? `${item.quantity} ${item.uom}` : `${item.quantity || 'N/A'}`,
             budget: "Contact for quote", // This field is not in the API response
-            deadline: item.delivery_date,
-            description: item.message || `Buyer opportunity for ${item.product?.productName || 'product'}${item.destination ? '. Delivery to ' + item.destination : ''}.`,
+            deadline: item.deadline,
+            description: item.description || `Buyer opportunity for ${item.productName || 'product'}${item.destination ? '. Delivery to ' + item.destination : ''}.`,
             urgency: urgency,
-            responses: item.responseMessage?.length || item.statusMessage?.length || 0,
+            responses: item.responses?.count || 0,
             // Additional fields from API
             destination: item.destination,
             sellerStatus: item.sellerStatus,
             requestDocument: item.request_document,
-            createdAt: item.createdAt
+            createdAt: item.createdAt,
+            priority: item.priority,
+            tradeName: item.tradeName,
+            chemicalName: item.chemicalName,
+            daysLeft: daysUntilDelivery
           };
           
           return transformedRequest;
@@ -260,6 +294,31 @@ const RequestCard: React.FC<{
 }> = ({ request, getUrgencyColor, isGuest, isSeller }) => {
   const router = useRouter();
   
+  // Helper function to format dates safely (local to component)
+  const formatDate = (dateString: string | null | undefined): string => {
+    if (!dateString) return "No deadline";
+    
+    try {
+      // Handle both ISO strings and regular date strings
+      const date = new Date(dateString);
+      
+      // Check if the date is valid
+      if (isNaN(date.getTime())) {
+        console.warn("Invalid date string:", dateString);
+        return "No deadline";
+      }
+      
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+    } catch (error) {
+      console.error("Error formatting date:", error, dateString);
+      return "No deadline";
+    }
+  };
+  
   const handleButtonClick = () => {
     if (isGuest) {
       // Redirect to signup page for guests
@@ -267,7 +326,6 @@ const RequestCard: React.FC<{
     } else if (isSeller) {
       // Handle quote submission for sellers
       router.push(`/user/submitted-offers/add/${request.id}`);
-      // Add your quote submission logic here
     }
   };
 
@@ -279,7 +337,6 @@ const RequestCard: React.FC<{
     }
     return "View Request";
   };
-  console.log("Request Card Rendered:", request);
   return (
     <div className="bg-white rounded-xl shadow border hover:shadow-xl transition-all duration-200 overflow-hidden group">
       {/* Header */}
@@ -334,7 +391,7 @@ const RequestCard: React.FC<{
               <Clock className="w-3 h-3 text-blue-400" />
               <span className="text-xs text-blue-500 uppercase font-semibold">Deadline</span>
             </div>
-            <p className="font-bold text-blue-700 text-sm">{new Date(request.deadline).toLocaleDateString()}</p>
+            <p className="font-bold text-blue-700 text-sm">{formatDate(request.deadline)}</p>
           </div>
         </div>
 

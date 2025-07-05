@@ -233,6 +233,21 @@ const SpecialDeals: React.FC = () => {
     }).format(price);
   };
 
+  const formatDate = (dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      // Use a consistent format that works the same on server and client
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      });
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return 'Invalid Date';
+    }
+  };
+
   // Only show deals to buyers and guests, hide from suppliers
   if (isSupplier) {
     return null;
@@ -333,6 +348,7 @@ const SpecialDeals: React.FC = () => {
                       <DealCard 
                         deal={deal} 
                         formatPrice={formatPrice} 
+                        formatDate={formatDate}
                         isGuest={isGuest}
                         isBuyer={isBuyer}
                       />
@@ -347,6 +363,7 @@ const SpecialDeals: React.FC = () => {
                     <DealCard 
                       deal={deal} 
                       formatPrice={formatPrice} 
+                      formatDate={formatDate}
                       isGuest={isGuest}
                       isBuyer={isBuyer}
                     />
@@ -394,9 +411,10 @@ const SpecialDeals: React.FC = () => {
 const DealCard: React.FC<{
   deal: Deal;
   formatPrice: (price: number) => string;
+  formatDate: (dateString: string) => string;
   isGuest: boolean;
   isBuyer: boolean;
-}> = ({ deal, formatPrice, isGuest, isBuyer }) => {
+}> = ({ deal, formatPrice, formatDate, isGuest, isBuyer }) => {
   const router = useRouter();
   
   const handleButtonClick = () => {
@@ -483,7 +501,7 @@ const DealCard: React.FC<{
           <div className="flex items-center gap-1">
             <Calendar className="w-4 h-4" />
             <span>
-              Valid till {new Date(deal.validUntil).toLocaleDateString()}
+              Valid till {formatDate(deal.validUntil)}
             </span>
           </div>
         </div>

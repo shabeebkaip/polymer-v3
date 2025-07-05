@@ -101,7 +101,7 @@ const SubmitOffer = () => {
 
   // State management
   const [bulkOrder, setBulkOrder] = useState<BulkOrder | null>(null);
-  const [incoterms, setIncoterms] = useState<{id: string, name: string}[]>([]);
+  const [incoterms, setIncoterms] = useState<{_id: string, name: string}[]>([]);
   const [uploadedFile, setUploadedFile] = useState<UploadedFile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -134,7 +134,11 @@ const SubmitOffer = () => {
         // Load bulk order details
         const bulkOrdersResponse = await getBuyerOpportunities();
         if (bulkOrdersResponse.data) {
-          const foundOrder = bulkOrdersResponse.data.find((order: any) => order._id === bulkOrderId);
+          // Handle both new and old API structures
+          const dataArray = bulkOrdersResponse.data || bulkOrdersResponse;
+          const foundOrder = dataArray.find((order: any) => 
+            order.id === bulkOrderId || order._id === bulkOrderId
+          );
           if (foundOrder) {
             setBulkOrder(foundOrder);
             // Pre-fill quantity if available
@@ -374,10 +378,10 @@ const SubmitOffer = () => {
                     <Label className="text-sm font-medium text-gray-600">Buyer Information</Label>
                     <div className="bg-white/60 p-3 rounded-lg mt-1">
                       <p className="font-medium text-gray-900">
-                        {bulkOrder.user.firstName} {bulkOrder.user.lastName}
+                        {bulkOrder?.user?.firstName} {bulkOrder?.user?.lastName}
                       </p>
-                      <p className="text-sm text-gray-600">{bulkOrder.user.company}</p>
-                      <p className="text-sm text-gray-600">{bulkOrder.user.email}</p>
+                      <p className="text-sm text-gray-600">{bulkOrder?.user?.company}</p>
+                      <p className="text-sm text-gray-600">{bulkOrder?.user?.email}</p>
                     </div>
                   </div>
 
@@ -494,7 +498,7 @@ const SubmitOffer = () => {
                         </SelectTrigger>
                         <SelectContent>
                           {incoterms.map((incoterm) => (
-                            <SelectItem key={incoterm.id} value={incoterm.name}>
+                            <SelectItem key={incoterm._id} value={incoterm.name}>
                               {incoterm.name}
                             </SelectItem>
                           ))}
