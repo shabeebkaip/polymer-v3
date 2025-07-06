@@ -71,6 +71,7 @@ interface SampleRequestDetail {
 }
 
 interface QuoteRequestDetail {
+  _id: string;
   requestType: "product_quote" | "deal_quote";
   status: string;
   createdAt: string;
@@ -87,27 +88,8 @@ interface QuoteRequestDetail {
     };
   };
   quoteType: string;
-  product?: {
-    _id: string;
-    productName: string;
-    chemicalName: string;
-    description: string;
-    productImages: Array<{
-      id: string;
-      name: string;
-      type: string;
-      fileUrl: string;
-      _id: string;
-    }>;
-    countryOfOrigin: string;
-    specifications: any;
-    creator: {
-      _id: string;
-      name: string;
-      company: string;
-      email: string;
-    };
-  };
+  
+  // Deal quote specific fields
   bestDeal?: {
     _id: string;
     offerPrice: number;
@@ -118,7 +100,7 @@ interface QuoteRequestDetail {
       _id: string;
       productName: string;
       chemicalName: string;
-      tradeName?: string;
+      tradeName: string;
       productImages: Array<{
         id: string;
         name: string;
@@ -127,35 +109,65 @@ interface QuoteRequestDetail {
         _id: string;
       }>;
       countryOfOrigin: string;
-      color?: string;
+      color: string;
+      createdBy?: {
+        _id: string;
+        firstName: string;
+        lastName: string;
+        company: string;
+        email: string;
+      };
     };
   };
-  orderDetails: {
-    quantity?: number;
-    uom?: string;
-    destination?: string;
-    country?: string;
-    deliveryDate?: string;
-    packagingSize?: string;
-    desiredQuantity?: number;
-    shippingCountry?: string;
-    paymentTerms?: string;
-    deliveryDeadline?: string;
+  orderDetails?: {
+    desiredQuantity: number;
+    shippingCountry: string;
+    paymentTerms: string;
+    deliveryDeadline: string;
   };
-  specifications?: {
-    grade: {
+  
+  // Product quote specific fields
+  productQuote?: {
+    product: {
       _id: string;
-      name: string;
-      description: string;
+      productName: string;
+      description?: string;
+      chemicalName?: string;
+      countryOfOrigin?: string;
+      createdBy: {
+        _id: string;
+        firstName: string;
+        lastName: string;
+        company: string;
+        email: string;
+      };
+      productImages?: Array<{
+        id: string;
+        fileUrl: string;
+        name: string;
+      }>;
     };
+    packaging_size: string;
     incoterm: {
       _id: string;
       name: string;
     };
+    grade?: {
+      name: string;
+      description?: string;
+    };
+    country?: string;
+    uom?: string;
+    packagingType?: string;
+    expected_annual_volume?: number;
+    application?: string;
+    price?: string;
+    lead_time?: string;
+    terms?: string;
   };
+  
   unified: {
     type: string;
-    title?: string;
     quantity: number;
     deliveryDate: string;
     location: string;

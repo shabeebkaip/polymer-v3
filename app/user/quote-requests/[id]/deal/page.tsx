@@ -33,7 +33,7 @@ type QuoteRequestType = "product_quote" | "deal_quote";
 type QuoteStatus = "pending" | "responded" | "negotiation" | "accepted" | "in_progress" | 
   "shipped" | "delivered" | "completed" | "rejected" | "cancelled";
 
-const QuoteRequestDetail = () => {
+const DealQuoteDetail = () => {
   const router = useRouter();
   const params = useParams();
   const { quoteRequestDetail, loading, error, fetchQuoteRequestDetail, clearQuoteRequestDetail } = useQuoteRequestStore();
@@ -130,17 +130,11 @@ const QuoteRequestDetail = () => {
     }
   };
 
-  // Helper function to get product information based on quote type
+  // Helper function to get product information for deal quotes only
   const getProductInfo = () => {
-    if (!quoteRequestDetail) return null;
+    if (!quoteRequestDetail || quoteRequestDetail.requestType !== 'deal_quote') return null;
     
-    if (quoteRequestDetail.requestType === 'product_quote' && quoteRequestDetail.productQuote) {
-      return quoteRequestDetail.productQuote.product;
-    } else if (quoteRequestDetail.requestType === 'deal_quote' && quoteRequestDetail.bestDeal) {
-      return quoteRequestDetail.bestDeal.product;
-    }
-    
-    return null;
+    return quoteRequestDetail.bestDeal?.product || null;
   };
 
   // Helper function to get supplier information
@@ -149,37 +143,21 @@ const QuoteRequestDetail = () => {
     return productInfo?.createdBy || null;
   };
 
-  // Helper function to get request-specific details
+  // Helper function to get deal quote specific details
   const getRequestDetails = () => {
-    if (!quoteRequestDetail) return null;
+    if (!quoteRequestDetail || quoteRequestDetail.requestType !== 'deal_quote') return null;
     
-    if (quoteRequestDetail.requestType === 'deal_quote' && quoteRequestDetail.orderDetails) {
-      return {
-        quantity: quoteRequestDetail.orderDetails.desiredQuantity || quoteRequestDetail.unified?.quantity || 0,
-        unit: 'MT', // Default unit for deals
-        destination: quoteRequestDetail.orderDetails.shippingCountry || quoteRequestDetail.unified?.location || 'N/A',
-        deliveryDate: quoteRequestDetail.orderDetails.deliveryDeadline || quoteRequestDetail.unified?.deliveryDate || '',
-        grade: 'N/A', // Not applicable for deals
-        packagingSize: 'N/A', // Not applicable for deals
-        incoterm: 'N/A', // Not applicable for deals
-        offerPrice: quoteRequestDetail.bestDeal?.offerPrice || null,
-        paymentTerms: quoteRequestDetail.orderDetails.paymentTerms || null
-      };
-    } else if (quoteRequestDetail.requestType === 'product_quote') {
-      return {
-        quantity: quoteRequestDetail.unified?.quantity || 0,
-        unit: 'units',
-        destination: quoteRequestDetail.unified?.location || 'N/A',
-        deliveryDate: quoteRequestDetail.unified?.deliveryDate || '',
-        grade: 'N/A',
-        packagingSize: quoteRequestDetail.productQuote?.packaging_size || 'N/A',
-        incoterm: quoteRequestDetail.productQuote?.incoterm?.name || 'N/A',
-        offerPrice: null,
-        paymentTerms: null
-      };
-    }
-    
-    return null;
+    return {
+      quantity: quoteRequestDetail.orderDetails?.desiredQuantity || quoteRequestDetail.unified?.quantity || 0,
+      unit: 'MT',
+      destination: quoteRequestDetail.orderDetails?.shippingCountry || quoteRequestDetail.unified?.destination || 'N/A',
+      deliveryDate: quoteRequestDetail.orderDetails?.deliveryDeadline || quoteRequestDetail.unified?.deliveryDate || '',
+      offerPrice: quoteRequestDetail.bestDeal?.offerPrice || null,
+      paymentTerms: quoteRequestDetail.orderDetails?.paymentTerms || null,
+      dealStatus: quoteRequestDetail.bestDeal?.status || 'N/A',
+      adminNote: quoteRequestDetail.bestDeal?.adminNote || '',
+      dealCreatedAt: quoteRequestDetail.bestDeal?.createdAt || null
+    };
   };
 
   if (loading) {
@@ -206,7 +184,29 @@ const QuoteRequestDetail = () => {
             <XCircle className="w-8 h-8 text-red-500" />
           </div>
           <h3 className="text-lg font-semibold text-gray-900 mb-2">Error Loading Details</h3>
-          <p className="text-gray-600 mb-4">{error || "Quote request details not found"}</p>
+          <p className="text-gray-600 mb-4">{error || "Deal quote details not found"}</p>
+          <button
+            onClick={() => router.push('/user/quote-requests')}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to Quote Requests
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Redirect if this is not a deal quote
+  if (quoteRequestDetail.requestType !== 'deal_quote') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-green-50/20 to-emerald-50/30 flex items-center justify-center">
+        <div className="text-center">
+          <div className="bg-orange-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+            <AlertCircle className="w-8 h-8 text-orange-500" />
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">Wrong Quote Type</h3>
+          <p className="text-gray-600 mb-4">This page is for deal quotes only. This appears to be a product quote.</p>
           <button
             onClick={() => router.push('/user/quote-requests')}
             className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
@@ -248,7 +248,7 @@ const QuoteRequestDetail = () => {
                 </div>
                 <div>
                   <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 via-green-800 to-emerald-800 bg-clip-text text-transparent">
-                    Quote Request Details
+                    Deal Quote Details
                   </h1>
                   <p className="text-gray-600 text-lg mt-2 font-medium">
                     Request ID: #{params.id?.toString().slice(-8).toUpperCase() || 'N/A'}
@@ -274,15 +274,9 @@ const QuoteRequestDetail = () => {
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50 p-8">
               <div className="flex items-center gap-3 mb-6">
                 <div className="bg-gradient-to-br from-green-100 to-emerald-100 p-3 rounded-xl">
-                  {quoteRequestDetail.requestType === 'deal_quote' ? (
-                    <Tags className="w-6 h-6 text-green-600" />
-                  ) : (
-                    <Package className="w-6 h-6 text-green-600" />
-                  )}
+                  <Tags className="w-6 h-6 text-green-600" />
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900">
-                  {quoteRequestDetail.requestType === 'deal_quote' ? 'Deal Information' : 'Product Information'}
-                </h2>
+                <h2 className="text-2xl font-bold text-gray-900">Deal Information</h2>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -292,9 +286,7 @@ const QuoteRequestDetail = () => {
                       {getProductInfo()?.productName || 'N/A'}
                     </h3>
                     <p className="text-gray-600">
-                      {quoteRequestDetail.requestType === 'deal_quote' 
-                        ? (quoteRequestDetail.bestDeal?.product?.tradeName || 'No description available')
-                        : 'No description available'}
+                      {getProductInfo()?.tradeName || 'No description available'}
                     </p>
                   </div>
 
@@ -779,4 +771,4 @@ const QuoteRequestDetail = () => {
   );
 };
 
-export default QuoteRequestDetail;
+export default DealQuoteDetail;
