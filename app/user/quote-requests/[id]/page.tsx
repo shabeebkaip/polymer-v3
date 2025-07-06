@@ -48,6 +48,17 @@ const QuoteRequestDetail = () => {
     };
   }, [params.id, fetchQuoteRequestDetail, clearQuoteRequestDetail]);
 
+  // Redirect to appropriate specific page based on quote type
+  useEffect(() => {
+    if (quoteRequestDetail && params.id) {
+      const redirectPath = quoteRequestDetail.requestType === 'deal_quote' 
+        ? `/user/quote-requests/${params.id}/deal`
+        : `/user/quote-requests/${params.id}/product`;
+      
+      router.replace(redirectPath);
+    }
+  }, [quoteRequestDetail, params.id, router]);
+
   const getStatusTimeline = () => {
     const statusOrder = ['pending', 'responded', 'negotiation', 'accepted', 'in_progress', 'shipped', 'delivered', 'completed', 'rejected', 'cancelled'];
     const currentStatusIndex = statusOrder.indexOf(quoteRequestDetail?.status || '');

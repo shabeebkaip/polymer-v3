@@ -134,13 +134,13 @@ const QuoteRequestDetail = () => {
   const getProductInfo = () => {
     if (!quoteRequestDetail || quoteRequestDetail.requestType !== 'product_quote') return null;
     
-    return quoteRequestDetail.productQuote?.product || null;
+    return quoteRequestDetail.product || null;
   };
 
   // Helper function to get supplier information
   const getSupplierInfo = () => {
     const productInfo = getProductInfo();
-    return productInfo?.createdBy || null;
+    return productInfo?.creator || null;
   };
 
   // Helper function to get product quote specific details
@@ -148,14 +148,14 @@ const QuoteRequestDetail = () => {
     if (!quoteRequestDetail || quoteRequestDetail.requestType !== 'product_quote') return null;
     
     return {
-      quantity: quoteRequestDetail.unified?.quantity || 0,
-      unit: 'units',
-      destination: quoteRequestDetail.unified?.location || 'N/A',
-      deliveryDate: quoteRequestDetail.unified?.deliveryDate || '',
-      grade: quoteRequestDetail.productQuote?.grade?.name || 'N/A',
-      packagingSize: quoteRequestDetail.productQuote?.packaging_size || 'N/A',
-      incoterm: quoteRequestDetail.productQuote?.incoterm?.name || 'N/A',
-      price: quoteRequestDetail.productQuote?.price || null
+      quantity: quoteRequestDetail.orderDetails?.quantity || quoteRequestDetail.unified?.quantity || 0,
+      unit: quoteRequestDetail.orderDetails?.uom || 'units',
+      destination: quoteRequestDetail.orderDetails?.destination || quoteRequestDetail.unified?.destination || 'N/A',
+      country: quoteRequestDetail.orderDetails?.country || quoteRequestDetail.unified?.location || 'N/A',
+      deliveryDate: quoteRequestDetail.orderDetails?.deliveryDate || quoteRequestDetail.unified?.deliveryDate || '',
+      grade: quoteRequestDetail.specifications?.grade?.name || 'N/A',
+      packagingSize: quoteRequestDetail.orderDetails?.packagingSize || 'N/A',
+      incoterm: quoteRequestDetail.specifications?.incoterm?.name || 'N/A'
     };
   };
 
@@ -319,27 +319,14 @@ const QuoteRequestDetail = () => {
 
                 <div className="space-y-4">
                   {/* Product-specific grade information */}
-                  {quoteRequestDetail.productQuote?.grade && (
+                  {quoteRequestDetail.specifications?.grade && (
                     <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-6 border border-green-200/50">
                       <h4 className="font-semibold text-green-900 mb-3 flex items-center gap-2">
                         <Beaker className="w-5 h-5" />
-                        Grade: {quoteRequestDetail.productQuote.grade.name}
+                        Grade: {quoteRequestDetail.specifications.grade.name}
                       </h4>
                       <p className="text-green-700 text-sm mb-3">
-                        {quoteRequestDetail.productQuote.grade.description || 'No description available'}
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Product quote price information */}
-                  {getRequestDetails()?.price && (
-                    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200/50">
-                      <h4 className="font-semibold text-blue-900 mb-3 flex items-center gap-2">
-                        <DollarSign className="w-5 h-5" />
-                        Quoted Price
-                      </h4>
-                      <p className="text-2xl font-bold text-blue-900">
-                        ${getRequestDetails()?.price}
+                        {quoteRequestDetail.specifications.grade.description || 'No description available'}
                       </p>
                     </div>
                   )}
@@ -446,21 +433,6 @@ const QuoteRequestDetail = () => {
                   </p>
                 </div>
               </div>
-
-              {/* Product Quote Price */}
-              {getRequestDetails()?.price && (
-                <div className="mt-6">
-                  <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                    <DollarSign className="w-5 h-5 text-gray-600" />
-                    Quoted Price
-                  </h4>
-                  <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4 border border-green-200">
-                    <p className="font-bold text-2xl text-green-600">
-                      ${getRequestDetails()?.price}
-                    </p>
-                  </div>
-                </div>
-              )}
             </div>
 
             {/* Shipping Terms */}
@@ -549,7 +521,7 @@ const QuoteRequestDetail = () => {
                     </div>
                     <div>
                       <p className="font-semibold text-gray-900">
-                        {`${getSupplierInfo()?.firstName || ''} ${getSupplierInfo()?.lastName || ''}`.trim() || 'N/A'}
+                        {getSupplierInfo()?.name || 'N/A'}
                       </p>
                       <p className="text-sm text-gray-600">Supplier</p>
                     </div>

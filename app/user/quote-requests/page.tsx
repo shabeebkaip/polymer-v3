@@ -620,7 +620,12 @@ const QuoteRequests = () => {
                     <TableCell className="py-6">
                       <div className="flex items-center justify-center">
                         <button
-                          onClick={() => router.push(`/user/quote-requests/${item._id}`)}
+                          onClick={() => {
+                            const routePath = item.requestType === 'deal_quote' 
+                              ? `/user/quote-requests/${item._id}/deal`
+                              : `/user/quote-requests/${item._id}/product`;
+                            router.push(routePath);
+                          }}
                           className="group inline-flex items-center justify-center w-10 h-10 bg-gradient-to-br from-green-100 to-emerald-100 hover:from-green-200 hover:to-emerald-200 rounded-xl transition-all duration-300 hover:shadow-lg hover:scale-110"
                           title="View Request Details"
                         >

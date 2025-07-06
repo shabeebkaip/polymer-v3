@@ -130,17 +130,18 @@ const DealQuoteDetail = () => {
     }
   };
 
-  // Helper function to get product information for deal quotes only
-  const getProductInfo = () => {
+  // Helper function to get deal product information for deal quotes only
+  const getDealProductInfo = () => {
     if (!quoteRequestDetail || quoteRequestDetail.requestType !== 'deal_quote') return null;
     
     return quoteRequestDetail.bestDeal?.product || null;
   };
 
-  // Helper function to get supplier information
-  const getSupplierInfo = () => {
-    const productInfo = getProductInfo();
-    return productInfo?.createdBy || null;
+  // Helper function to get best deal information
+  const getBestDealInfo = () => {
+    if (!quoteRequestDetail || quoteRequestDetail.requestType !== 'deal_quote') return null;
+    
+    return quoteRequestDetail.bestDeal || null;
   };
 
   // Helper function to get deal quote specific details
@@ -149,14 +150,13 @@ const DealQuoteDetail = () => {
     
     return {
       quantity: quoteRequestDetail.orderDetails?.desiredQuantity || quoteRequestDetail.unified?.quantity || 0,
-      unit: 'MT',
+      unit: 'units',
       destination: quoteRequestDetail.orderDetails?.shippingCountry || quoteRequestDetail.unified?.destination || 'N/A',
       deliveryDate: quoteRequestDetail.orderDetails?.deliveryDeadline || quoteRequestDetail.unified?.deliveryDate || '',
-      offerPrice: quoteRequestDetail.bestDeal?.offerPrice || null,
+      offerPrice: getBestDealInfo()?.offerPrice || null,
       paymentTerms: quoteRequestDetail.orderDetails?.paymentTerms || null,
-      dealStatus: quoteRequestDetail.bestDeal?.status || 'N/A',
-      adminNote: quoteRequestDetail.bestDeal?.adminNote || '',
-      dealCreatedAt: quoteRequestDetail.bestDeal?.createdAt || null
+      dealStatus: getBestDealInfo()?.status || 'N/A',
+      adminNote: getBestDealInfo()?.adminNote || ''
     };
   };
 
@@ -283,10 +283,10 @@ const DealQuoteDetail = () => {
                 <div className="space-y-4">
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                      {getProductInfo()?.productName || 'N/A'}
+                      {getDealProductInfo()?.productName || 'N/A'}
                     </h3>
                     <p className="text-gray-600">
-                      {getProductInfo()?.tradeName || 'No description available'}
+                      {getDealProductInfo()?.tradeName || 'No description available'}
                     </p>
                   </div>
 
@@ -294,29 +294,25 @@ const DealQuoteDetail = () => {
                     <div className="bg-gray-50 rounded-xl p-4">
                       <p className="text-sm text-gray-600 mb-1">Chemical Name</p>
                       <p className="font-semibold text-gray-900">
-                        {getProductInfo()?.chemicalName || 'N/A'}
+                        {getDealProductInfo()?.chemicalName || 'N/A'}
                       </p>
                     </div>
                     <div className="bg-gray-50 rounded-xl p-4">
                       <p className="text-sm text-gray-600 mb-1">Quote Type</p>
                       <p className="font-semibold text-gray-900 capitalize">
-                        {quoteRequestDetail.quoteType || quoteRequestDetail.requestType?.replace('_', ' ') || 'N/A'}
+                        Deal Quote
                       </p>
                     </div>
                     <div className="bg-gray-50 rounded-xl p-4">
                       <p className="text-sm text-gray-600 mb-1">Country of Origin</p>
                       <p className="font-semibold text-gray-900">
-                        {getProductInfo()?.countryOfOrigin || 'N/A'}
+                        {getDealProductInfo()?.countryOfOrigin || 'N/A'}
                       </p>
                     </div>
                     <div className="bg-gray-50 rounded-xl p-4">
-                      <p className="text-sm text-gray-600 mb-1">
-                        {quoteRequestDetail.requestType === 'deal_quote' ? 'Deal Status' : 'Product Color'}
-                      </p>
-                      <p className="font-semibold text-gray-900">
-                        {quoteRequestDetail.requestType === 'deal_quote' 
-                          ? (quoteRequestDetail.bestDeal?.status || 'N/A')
-                          : 'N/A'}
+                      <p className="text-sm text-gray-600 mb-1">Deal Status</p>
+                      <p className="font-semibold text-gray-900 capitalize">
+                        {getRequestDetails()?.dealStatus || 'N/A'}
                       </p>
                     </div>
                   </div>
@@ -363,22 +359,22 @@ const DealQuoteDetail = () => {
                     </div>
                   )}
 
-                  {/* Product-specific grade information */}
-                  {quoteRequestDetail.requestType === 'product_quote' && quoteRequestDetail.productQuote?.grade && (
+                  {/* Deal Price Information */}
+                  {getRequestDetails()?.offerPrice && (
                     <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-6 border border-green-200/50">
                       <h4 className="font-semibold text-green-900 mb-3 flex items-center gap-2">
-                        <Beaker className="w-5 h-5" />
-                        Grade: {quoteRequestDetail.productQuote.grade.name}
+                        <DollarSign className="w-5 h-5" />
+                        Deal Offer Price
                       </h4>
-                      <p className="text-green-700 text-sm mb-3">
-                        {quoteRequestDetail.productQuote.grade.description || 'No description available'}
+                      <p className="text-2xl font-bold text-green-900">
+                        ${getRequestDetails()?.offerPrice}
                       </p>
                     </div>
                   )}
 
                   {/* Product Images */}
                   {(() => {
-                    const productInfo = getProductInfo();
+                    const productInfo = getDealProductInfo();
                     const images = productInfo?.productImages;
                     return images && images.length > 0 && (
                       <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-6 border border-blue-200/50">
@@ -433,14 +429,10 @@ const DealQuoteDetail = () => {
                 <div className="bg-gray-50 rounded-xl p-4">
                   <div className="flex items-center gap-2 mb-2">
                     <Target className="w-4 h-4 text-gray-600" />
-                    <p className="text-sm text-gray-600">
-                      {quoteRequestDetail.requestType === 'product_quote' ? 'Packaging Size' : 'Payment Terms'}
-                    </p>
+                    <p className="text-sm text-gray-600">Payment Terms</p>
                   </div>
                   <p className="font-bold text-xl text-gray-900">
-                    {quoteRequestDetail.requestType === 'product_quote' 
-                      ? getRequestDetails()?.packagingSize 
-                      : getRequestDetails()?.paymentTerms || 'N/A'}
+                    {getRequestDetails()?.paymentTerms || 'N/A'}
                   </p>
                 </div>
 
@@ -472,30 +464,31 @@ const DealQuoteDetail = () => {
                   </p>
                 </div>
 
-                {quoteRequestDetail.requestType === 'product_quote' && (
-                  <div>
-                    <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                      <Beaker className="w-5 h-5 text-gray-600" />
-                      Grade
-                    </h4>
-                    <p className="text-gray-700 bg-gray-50 rounded-xl p-4">
-                      {getRequestDetails()?.grade}
-                    </p>
-                  </div>
-                )}
+                <div>
+                  <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                    <DollarSign className="w-5 h-5 text-gray-600" />
+                    Payment Terms
+                  </h4>
+                  <p className="text-gray-700 bg-gray-50 rounded-xl p-4">
+                    {getRequestDetails()?.paymentTerms || 'N/A'}
+                  </p>
+                </div>
+              </div>
 
-                {quoteRequestDetail.requestType === 'deal_quote' && getRequestDetails()?.offerPrice && (
-                  <div>
-                    <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                      <DollarSign className="w-5 h-5 text-gray-600" />
-                      Offer Price
-                    </h4>
-                    <p className="bg-gray-50 rounded-xl p-4 font-bold text-green-600">
+              {/* Deal Offer Price */}
+              {getRequestDetails()?.offerPrice && (
+                <div className="mt-6">
+                  <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                    <DollarSign className="w-5 h-5 text-gray-600" />
+                    Deal Offer Price
+                  </h4>
+                  <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4 border border-green-200">
+                    <p className="font-bold text-2xl text-green-600">
                       ${getRequestDetails()?.offerPrice}
                     </p>
                   </div>
-                )}
-              </div>
+                </div>
+              )}
 
               {/* Additional Details for Deal Quotes */}
               {quoteRequestDetail.requestType === 'deal_quote' && quoteRequestDetail.orderDetails && (
@@ -552,23 +545,6 @@ const DealQuoteDetail = () => {
                 </div>
               )}
             </div>
-
-            {/* Shipping Terms - Only for product quotes */}
-            {quoteRequestDetail.requestType === 'product_quote' && getRequestDetails()?.incoterm !== 'N/A' && (
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50 p-8">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="bg-gradient-to-br from-purple-100 to-indigo-100 p-3 rounded-xl">
-                    <Truck className="w-6 h-6 text-purple-600" />
-                  </div>
-                  <h2 className="text-2xl font-bold text-gray-900">Shipping Terms</h2>
-                </div>
-
-                <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-xl p-6 border border-purple-200/50">
-                  <p className="text-sm text-purple-600 mb-2">Incoterm</p>
-                  <p className="font-bold text-xl text-purple-900">{getRequestDetails()?.incoterm}</p>
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Sidebar - Right Side */}
@@ -622,42 +598,40 @@ const DealQuoteDetail = () => {
               </div>
             </div>
 
-            {/* Supplier Information */}
-            {getSupplierInfo() && (
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50 p-6">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="bg-gradient-to-br from-orange-100 to-red-100 p-3 rounded-xl">
-                    <Factory className="w-6 h-6 text-orange-600" />
-                  </div>
-                  <h3 className="text-xl font-bold text-gray-900">Supplier Details</h3>
+            {/* Deal Information */}
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50 p-6">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="bg-gradient-to-br from-orange-100 to-red-100 p-3 rounded-xl">
+                  <Factory className="w-6 h-6 text-orange-600" />
                 </div>
-
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-gradient-to-br from-orange-100 to-red-100 rounded-full flex items-center justify-center">
-                      <Factory className="w-6 h-6 text-orange-600" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-gray-900">
-                        {`${getSupplierInfo()?.firstName || ''} ${getSupplierInfo()?.lastName || ''}`.trim() || 'N/A'}
-                      </p>
-                      <p className="text-sm text-gray-600">Supplier</p>
-                    </div>
-                  </div>
-
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-3 text-gray-700">
-                      <Building2 className="w-4 h-4 text-gray-500" />
-                      <span className="text-sm">{getSupplierInfo()?.company || 'N/A'}</span>
-                    </div>
-                    <div className="flex items-center gap-3 text-gray-700">
-                      <Mail className="w-4 h-4 text-gray-500" />
-                      <span className="text-sm">{getSupplierInfo()?.email || 'N/A'}</span>
-                    </div>
-                  </div>
-                </div>
+                <h3 className="text-xl font-bold text-gray-900">Deal Information</h3>
               </div>
-            )}
+
+              <div className="space-y-4">
+                <div className="bg-gray-50 rounded-xl p-4">
+                  <p className="text-sm text-gray-600 mb-2">Deal Status</p>
+                  <p className="font-semibold text-gray-900 capitalize">
+                    {getRequestDetails()?.dealStatus || 'N/A'}
+                  </p>
+                </div>
+                {getRequestDetails()?.offerPrice && (
+                  <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4 border border-green-200/50">
+                    <p className="text-sm text-green-600 mb-2">Offer Price</p>
+                    <p className="font-bold text-xl text-green-900">
+                      ${getRequestDetails()?.offerPrice}
+                    </p>
+                  </div>
+                )}
+                {getRequestDetails()?.adminNote && (
+                  <div className="bg-gray-50 rounded-xl p-4">
+                    <p className="text-sm text-gray-600 mb-2">Admin Note</p>
+                    <p className="text-gray-700 text-sm">
+                      {getRequestDetails()?.adminNote}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
 
             {/* Status Timeline */}
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50 p-6">
