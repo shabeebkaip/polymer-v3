@@ -39,8 +39,16 @@ import {
   Edit3,
   Send,
   X,
-  TrendingUp
+  TrendingUp,
+  DollarSign,
+  Tags
 } from "lucide-react";
+
+// Define types for the unified quote request structure
+type QuoteRequestType = "product_quote" | "deal_quote";
+
+type QuoteStatus = "pending" | "responded" | "negotiation" | "accepted" | "in_progress" | 
+  "shipped" | "delivered" | "completed" | "rejected" | "cancelled";
 
 const QuoteRequestDetail = () => {
   const router = useRouter();
@@ -53,7 +61,7 @@ const QuoteRequestDetail = () => {
   // Define which statuses a buyer can update to
   const buyerAllowedStatuses = [
     { value: 'negotiation', label: 'Start Negotiation', description: 'Negotiate terms and pricing' },
-    { value: 'approved', label: 'Approve Quote', description: 'Accept the quoted price and terms' },
+    { value: 'accepted', label: 'Accept Quote', description: 'Accept the quoted price and terms' },
     { value: 'rejected', label: 'Reject Quote', description: 'Quote does not meet requirements' },
     { value: 'cancelled', label: 'Cancel Request', description: 'Cancel this quote request' }
   ];
@@ -80,7 +88,7 @@ const QuoteRequestDetail = () => {
   };
 
   const getStatusTimeline = () => {
-    const statusOrder = ['pending', 'responded', 'negotiation', 'approved', 'fulfilled', 'rejected', 'cancelled'];
+    const statusOrder = ['pending', 'responded', 'negotiation', 'accepted', 'in_progress', 'shipped', 'delivered', 'completed', 'rejected', 'cancelled'];
     const currentStatusIndex = statusOrder.indexOf(quoteRequestDetail?.status || '');
     
     return statusOrder.map((status, index) => ({
@@ -93,13 +101,16 @@ const QuoteRequestDetail = () => {
   };
 
   const canUpdateStatus = (currentStatus: string) => {
-    // Buyer can update status based on current status - EXPANDED for testing
+    // Buyer can update status based on current status
     const allowedTransitions: { [key: string]: string[] } = {
       'pending': ['cancelled'], // Allow cancellation from pending
-      'responded': ['negotiation', 'approved', 'rejected'],
-      'negotiation': ['approved', 'rejected'],
-      'approved': [], // Final status - no further updates
-      'fulfilled': [], // Final status - no further updates  
+      'responded': ['negotiation', 'accepted', 'rejected'],
+      'negotiation': ['accepted', 'rejected'],
+      'accepted': [], // Final status - no further updates
+      'in_progress': [], // Supplier controlled
+      'shipped': [], // Supplier controlled
+      'delivered': [], // Supplier controlled
+      'completed': [], // Final status - no further updates  
       'rejected': [], // Final status - no further updates
       'cancelled': [] // Final status - no further updates
     };
@@ -110,8 +121,8 @@ const QuoteRequestDetail = () => {
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case "approved":
-      case "fulfilled":
+      case "accepted":
+      case "completed":
         return <CheckCircle className="w-5 h-5 text-green-500" />;
       case "rejected":
       case "cancelled":
@@ -120,6 +131,12 @@ const QuoteRequestDetail = () => {
         return <TrendingUp className="w-5 h-5 text-blue-500" />;
       case "responded":
         return <AlertCircle className="w-5 h-5 text-orange-500" />;
+      case "in_progress":
+        return <Clock className="w-5 h-5 text-purple-500" />;
+      case "shipped":
+        return <Truck className="w-5 h-5 text-indigo-500" />;
+      case "delivered":
+        return <CheckCircle className="w-5 h-5 text-emerald-500" />;
       case "pending":
       default:
         return <Clock className="w-5 h-5 text-yellow-500" />;
@@ -130,9 +147,9 @@ const QuoteRequestDetail = () => {
     const baseClasses = "inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium";
     
     switch (status) {
-      case "approved":
+      case "accepted":
         return `${baseClasses} bg-green-100 text-green-700 border border-green-200`;
-      case "fulfilled":
+      case "completed":
         return `${baseClasses} bg-green-100 text-green-800 border border-green-300`;
       case "rejected":
         return `${baseClasses} bg-red-100 text-red-700 border border-red-200`;
@@ -142,6 +159,12 @@ const QuoteRequestDetail = () => {
         return `${baseClasses} bg-blue-100 text-blue-700 border border-blue-200`;
       case "responded":
         return `${baseClasses} bg-orange-100 text-orange-700 border border-orange-200`;
+      case "in_progress":
+        return `${baseClasses} bg-purple-100 text-purple-700 border border-purple-200`;
+      case "shipped":
+        return `${baseClasses} bg-indigo-100 text-indigo-700 border border-indigo-200`;
+      case "delivered":
+        return `${baseClasses} bg-emerald-100 text-emerald-700 border border-emerald-200`;
       case "pending":
         return `${baseClasses} bg-yellow-100 text-yellow-700 border border-yellow-200`;
       default:
@@ -154,11 +177,63 @@ const QuoteRequestDetail = () => {
       case "pending": return "Pending";
       case "responded": return "Responded";
       case "negotiation": return "Negotiation";
-      case "approved": return "Approved";
+      case "accepted": return "Accepted";
       case "rejected": return "Rejected";
       case "cancelled": return "Cancelled";
-      case "fulfilled": return "Fulfilled";
+      case "in_progress": return "In Progress";
+      case "shipped": return "Shipped";
+      case "delivered": return "Delivered";
+      case "completed": return "Completed";
       default: return "Unknown";
+    }
+  };
+
+  // Helper function to get product information based on quote type
+  const getProductInfo = () => {
+    if (!quoteRequestDetail) return null;
+    
+    if (quoteRequestDetail.requestType === 'product_quote' && quoteRequestDetail.product) {
+      return quoteRequestDetail.product;
+    } else if (quoteRequestDetail.requestType === 'deal_quote' && quoteRequestDetail.bestDeal) {
+      return quoteRequestDetail.bestDeal.product;
+    }
+    
+    return null;
+  };
+
+  // Helper function to get supplier information
+  const getSupplierInfo = () => {
+    const productInfo = getProductInfo();
+    if (quoteRequestDetail?.requestType === 'product_quote' && quoteRequestDetail.product) {
+      return quoteRequestDetail.product.creator;
+    }
+    return null;
+  };
+
+  // Helper function to get request-specific details
+  const getRequestDetails = () => {
+    if (!quoteRequestDetail) return null;
+    
+    if (quoteRequestDetail.requestType === 'product_quote') {
+      return {
+        quantity: quoteRequestDetail.orderDetails?.quantity || quoteRequestDetail.unified?.quantity || 0,
+        unit: quoteRequestDetail.orderDetails?.uom || 'units',
+        destination: quoteRequestDetail.orderDetails?.destination || quoteRequestDetail.unified?.destination || 'N/A',
+        deliveryDate: quoteRequestDetail.orderDetails?.deliveryDate || quoteRequestDetail.unified?.deliveryDate || '',
+        grade: quoteRequestDetail.specifications?.grade?.name || 'N/A',
+        packagingSize: quoteRequestDetail.orderDetails?.packagingSize || 'N/A',
+        incoterm: quoteRequestDetail.specifications?.incoterm?.name || 'N/A',
+        country: quoteRequestDetail.orderDetails?.country || 'N/A'
+      };
+    } else {
+      return {
+        quantity: quoteRequestDetail.orderDetails?.desiredQuantity || quoteRequestDetail.unified?.quantity || 0,
+        unit: 'units',
+        destination: quoteRequestDetail.orderDetails?.shippingCountry || quoteRequestDetail.unified?.destination || 'N/A',
+        deliveryDate: quoteRequestDetail.orderDetails?.deliveryDeadline || quoteRequestDetail.unified?.deliveryDate || '',
+        paymentTerms: quoteRequestDetail.orderDetails?.paymentTerms || 'N/A',
+        offerPrice: quoteRequestDetail.bestDeal?.offerPrice || null
+      };
     }
   };
 
@@ -242,6 +317,18 @@ const QuoteRequestDetail = () => {
                   {getStatusIcon(quoteRequestDetail.status)}
                   {getStatusText(quoteRequestDetail.status)}
                 </span>
+                
+                {/* Add status update button if actions are available */}
+                {canUpdateStatus(quoteRequestDetail.status).length > 0 && (
+                  <Button
+                    onClick={() => setShowStatusUpdate(true)}
+                    variant="outline"
+                    className="bg-white/80 hover:bg-white hover:shadow-lg transition-all duration-300"
+                  >
+                    <Edit3 className="w-4 h-4 mr-2" />
+                    Update Status
+                  </Button>
+                )}
               </div>
             </div>
           </div>
@@ -254,73 +341,130 @@ const QuoteRequestDetail = () => {
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50 p-8">
               <div className="flex items-center gap-3 mb-6">
                 <div className="bg-gradient-to-br from-green-100 to-emerald-100 p-3 rounded-xl">
-                  <Package className="w-6 h-6 text-green-600" />
+                  {quoteRequestDetail.requestType === 'deal_quote' ? (
+                    <Tags className="w-6 h-6 text-green-600" />
+                  ) : (
+                    <Package className="w-6 h-6 text-green-600" />
+                  )}
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900">Product Information</h2>
+                <h2 className="text-2xl font-bold text-gray-900">
+                  {quoteRequestDetail.requestType === 'deal_quote' ? 'Deal Information' : 'Product Information'}
+                </h2>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{quoteRequestDetail.product.productName}</h3>
-                    <p className="text-gray-600">{quoteRequestDetail.product.description}</p>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                      {getProductInfo()?.productName || quoteRequestDetail.unified?.title || 'N/A'}
+                    </h3>
+                    <p className="text-gray-600">
+                      {quoteRequestDetail.requestType === 'product_quote' && quoteRequestDetail.product?.description
+                        ? quoteRequestDetail.product.description
+                        : 'No description available'}
+                    </p>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-gray-50 rounded-xl p-4">
                       <p className="text-sm text-gray-600 mb-1">Chemical Name</p>
-                      <p className="font-semibold text-gray-900">{quoteRequestDetail.product.chemicalName}</p>
+                      <p className="font-semibold text-gray-900">
+                        {getProductInfo()?.chemicalName || 'N/A'}
+                      </p>
                     </div>
                     <div className="bg-gray-50 rounded-xl p-4">
-                      <p className="text-sm text-gray-600 mb-1">Product Type</p>
-                      <p className="font-semibold text-gray-900">{quoteRequestDetail.quoteType}</p>
+                      <p className="text-sm text-gray-600 mb-1">Quote Type</p>
+                      <p className="font-semibold text-gray-900">
+                        {quoteRequestDetail.quoteType || 'N/A'}
+                      </p>
                     </div>
                     <div className="bg-gray-50 rounded-xl p-4">
-                      <p className="text-sm text-gray-600 mb-1">Request Type</p>
-                      <p className="font-semibold text-gray-900">{quoteRequestDetail.requestType}</p>
+                      <p className="text-sm text-gray-600 mb-1">Supplier Company</p>
+                      <p className="font-semibold text-gray-900">
+                        {getSupplierInfo()?.company || 'N/A'}
+                      </p>
                     </div>
                     <div className="bg-gray-50 rounded-xl p-4">
                       <p className="text-sm text-gray-600 mb-1">Country of Origin</p>
-                      <p className="font-semibold text-gray-900">{quoteRequestDetail.product.countryOfOrigin}</p>
+                      <p className="font-semibold text-gray-900">
+                        {getProductInfo()?.countryOfOrigin || 'N/A'}
+                      </p>
                     </div>
                   </div>
                 </div>
 
                 <div className="space-y-4">
-                  <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-6 border border-green-200/50">
-                    <h4 className="font-semibold text-green-900 mb-3 flex items-center gap-2">
-                      <Beaker className="w-5 h-5" />
-                      Grade: {quoteRequestDetail.specifications.grade.name}
-                    </h4>
-                    <p className="text-green-700 text-sm mb-3">{quoteRequestDetail.specifications.grade.description}</p>
-                  </div>
-
-                  {/* Product Images */}
-                  {quoteRequestDetail.product.productImages && quoteRequestDetail.product.productImages.length > 0 && (
-                    <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-6 border border-blue-200/50">
-                      <h4 className="font-semibold text-blue-900 mb-3 flex items-center gap-2">
-                        <Layers className="w-5 h-5" />
-                        Product Images
+                  {/* Deal-specific information */}
+                  {quoteRequestDetail.requestType === 'deal_quote' && quoteRequestDetail.bestDeal && (
+                    <div className="bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl p-6 border border-emerald-200/50">
+                      <h4 className="font-semibold text-emerald-900 mb-3 flex items-center gap-2">
+                        <DollarSign className="w-5 h-5" />
+                        Deal Offer: ${quoteRequestDetail.bestDeal.offerPrice}
                       </h4>
-                      <div className="grid grid-cols-2 gap-3">
-                        {quoteRequestDetail.product.productImages.slice(0, 4).map((image, index) => (
-                          <div key={image.id} className="relative group">
-                            <img
-                              src={image.fileUrl}
-                              alt={image.name}
-                              className="w-full h-20 object-cover rounded-lg border border-blue-200"
-                            />
-                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors rounded-lg"></div>
-                          </div>
-                        ))}
-                      </div>
-                      {quoteRequestDetail.product.productImages.length > 4 && (
-                        <p className="text-xs text-blue-600 mt-2">
-                          +{quoteRequestDetail.product.productImages.length - 4} more images
+                      <p className="text-emerald-700 text-sm mb-3">
+                        Payment Terms: {getRequestDetails()?.paymentTerms}
+                      </p>
+                      {quoteRequestDetail.bestDeal.adminNote && (
+                        <p className="text-emerald-600 text-sm">
+                          Note: {quoteRequestDetail.bestDeal.adminNote}
+                        </p>
+                      )}
+                      {quoteRequestDetail.requestType === 'deal_quote' && quoteRequestDetail.bestDeal?.product?.tradeName && (
+                        <p className="text-emerald-600 text-sm mt-2">
+                          Trade Name: {quoteRequestDetail.bestDeal.product.tradeName}
+                        </p>
+                      )}
+                      {quoteRequestDetail.requestType === 'deal_quote' && quoteRequestDetail.bestDeal?.product?.color && (
+                        <p className="text-emerald-600 text-sm">
+                          Color: {quoteRequestDetail.bestDeal.product.color}
                         </p>
                       )}
                     </div>
                   )}
+
+                  {/* Product-specific grade information */}
+                  {quoteRequestDetail.requestType === 'product_quote' && quoteRequestDetail.specifications?.grade && (
+                    <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-6 border border-green-200/50">
+                      <h4 className="font-semibold text-green-900 mb-3 flex items-center gap-2">
+                        <Beaker className="w-5 h-5" />
+                        Grade: {quoteRequestDetail.specifications.grade.name}
+                      </h4>
+                      <p className="text-green-700 text-sm mb-3">
+                        {quoteRequestDetail.specifications.grade.description || 'No description available'}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Product Images */}
+                  {(() => {
+                    const productInfo = getProductInfo();
+                    const images = productInfo?.productImages;
+                    return images && images.length > 0 && (
+                      <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-6 border border-blue-200/50">
+                        <h4 className="font-semibold text-blue-900 mb-3 flex items-center gap-2">
+                          <Layers className="w-5 h-5" />
+                          Product Images
+                        </h4>
+                        <div className="grid grid-cols-2 gap-3">
+                          {images.slice(0, 4).map((image: any, index: number) => (
+                            <div key={image.id} className="relative group">
+                              <img
+                                src={image.fileUrl}
+                                alt={image.name}
+                                className="w-full h-20 object-cover rounded-lg border border-blue-200"
+                              />
+                              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors rounded-lg"></div>
+                            </div>
+                          ))}
+                        </div>
+                        {images.length > 4 && (
+                          <p className="text-xs text-blue-600 mt-2">
+                            +{images.length - 4} more images
+                          </p>
+                        )}
+                      </div>
+                    );
+                  })()}
                 </div>
               </div>
             </div>
@@ -340,15 +484,23 @@ const QuoteRequestDetail = () => {
                     <Package className="w-4 h-4 text-gray-600" />
                     <p className="text-sm text-gray-600">Quantity</p>
                   </div>
-                  <p className="font-bold text-xl text-gray-900">{quoteRequestDetail.orderDetails.quantity} {quoteRequestDetail.orderDetails.uom}</p>
+                  <p className="font-bold text-xl text-gray-900">
+                    {getRequestDetails()?.quantity} {getRequestDetails()?.unit}
+                  </p>
                 </div>
 
                 <div className="bg-gray-50 rounded-xl p-4">
                   <div className="flex items-center gap-2 mb-2">
                     <Target className="w-4 h-4 text-gray-600" />
-                    <p className="text-sm text-gray-600">Packaging Size</p>
+                    <p className="text-sm text-gray-600">
+                      {quoteRequestDetail.requestType === 'product_quote' ? 'Packaging Size' : 'Payment Terms'}
+                    </p>
                   </div>
-                  <p className="font-bold text-xl text-gray-900">{quoteRequestDetail.orderDetails.packagingSize}</p>
+                  <p className="font-bold text-xl text-gray-900">
+                    {quoteRequestDetail.requestType === 'product_quote' 
+                      ? getRequestDetails()?.packagingSize 
+                      : getRequestDetails()?.paymentTerms || 'N/A'}
+                  </p>
                 </div>
 
                 <div className="bg-gray-50 rounded-xl p-4">
@@ -357,11 +509,13 @@ const QuoteRequestDetail = () => {
                     <p className="text-sm text-gray-600">Delivery Date</p>
                   </div>
                   <p className="font-semibold text-gray-900">
-                    {new Date(quoteRequestDetail.orderDetails.deliveryDate).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'short',
-                      day: 'numeric'
-                    })}
+                    {getRequestDetails()?.deliveryDate ? 
+                      new Date(getRequestDetails()!.deliveryDate!).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                      }) : 'N/A'
+                    }
                   </p>
                 </div>
               </div>
@@ -370,37 +524,69 @@ const QuoteRequestDetail = () => {
                 <div>
                   <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
                     <MapPin className="w-5 h-5 text-gray-600" />
-                    Destination Country
+                    Destination
                   </h4>
-                  <p className="text-gray-700 bg-gray-50 rounded-xl p-4">{quoteRequestDetail.orderDetails.country}</p>
+                  <p className="text-gray-700 bg-gray-50 rounded-xl p-4">
+                    {getRequestDetails()?.destination}
+                  </p>
                 </div>
 
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                    <MapPin className="w-5 h-5 text-gray-600" />
-                    Full Destination
-                  </h4>
-                  <p className="text-gray-700 bg-gray-50 rounded-xl p-4">{quoteRequestDetail.orderDetails.destination}</p>
-                </div>
+                {quoteRequestDetail.requestType === 'product_quote' && (
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                      <MapPin className="w-5 h-5 text-gray-600" />
+                      Country
+                    </h4>
+                    <p className="text-gray-700 bg-gray-50 rounded-xl p-4">
+                      {getRequestDetails()?.country}
+                    </p>
+                  </div>
+                )}
+
+                {quoteRequestDetail.requestType === 'product_quote' && getRequestDetails()?.grade !== 'N/A' && (
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                      <Beaker className="w-5 h-5 text-gray-600" />
+                      Grade
+                    </h4>
+                    <p className="text-gray-700 bg-gray-50 rounded-xl p-4">
+                      {getRequestDetails()?.grade}
+                    </p>
+                  </div>
+                )}
+
+                {quoteRequestDetail.requestType === 'deal_quote' && getRequestDetails()?.offerPrice && (
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                      <DollarSign className="w-5 h-5 text-gray-600" />
+                      Offer Price
+                    </h4>
+                    <p className="bg-gray-50 rounded-xl p-4 font-bold text-green-600">
+                      ${getRequestDetails()?.offerPrice}
+                    </p>
+                  </div>
+                )}
               </div>
 
-              {/* Technical specifications would go here if available in the API */}
+              {/* Message if available - remove since it's not in the API response */}
             </div>
 
-            {/* Incoterm Information */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50 p-8">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="bg-gradient-to-br from-purple-100 to-indigo-100 p-3 rounded-xl">
-                  <Truck className="w-6 h-6 text-purple-600" />
+            {/* Shipping Terms - Only for product quotes */}
+            {quoteRequestDetail.requestType === 'product_quote' && getRequestDetails()?.incoterm !== 'N/A' && (
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50 p-8">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="bg-gradient-to-br from-purple-100 to-indigo-100 p-3 rounded-xl">
+                    <Truck className="w-6 h-6 text-purple-600" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-gray-900">Shipping Terms</h2>
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900">Shipping Terms</h2>
-              </div>
 
-              <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-xl p-6 border border-purple-200/50">
-                <p className="text-sm text-purple-600 mb-2">Incoterm</p>
-                <p className="font-bold text-xl text-purple-900">{quoteRequestDetail.specifications.incoterm.name}</p>
+                <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-xl p-6 border border-purple-200/50">
+                  <p className="text-sm text-purple-600 mb-2">Incoterm</p>
+                  <p className="font-bold text-xl text-purple-900">{getRequestDetails()?.incoterm}</p>
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
           {/* Sidebar - Right Side */}
@@ -421,7 +607,7 @@ const QuoteRequestDetail = () => {
                   </div>
                   <div>
                     <p className="font-semibold text-gray-900">
-                      {quoteRequestDetail.requester.name}
+                      {quoteRequestDetail.requester?.name || 'N/A'}
                     </p>
                     <p className="text-sm text-gray-600">Buyer</p>
                   </div>
@@ -430,60 +616,66 @@ const QuoteRequestDetail = () => {
                 <div className="space-y-3">
                   <div className="flex items-center gap-3 text-gray-700">
                     <Building2 className="w-4 h-4 text-gray-500" />
-                    <span className="text-sm">{quoteRequestDetail.requester.company}</span>
+                    <span className="text-sm">{quoteRequestDetail.requester?.company || 'N/A'}</span>
                   </div>
                   <div className="flex items-center gap-3 text-gray-700">
                     <Mail className="w-4 h-4 text-gray-500" />
-                    <span className="text-sm">{quoteRequestDetail.requester.email}</span>
+                    <span className="text-sm">{quoteRequestDetail.requester?.email || 'N/A'}</span>
                   </div>
-                  <div className="flex items-center gap-3 text-gray-700">
-                    <Phone className="w-4 h-4 text-gray-500" />
-                    <span className="text-sm">{quoteRequestDetail.requester.phone}</span>
-                  </div>
-                  <div className="flex items-start gap-3 text-gray-700">
-                    <MapPin className="w-4 h-4 text-gray-500 mt-0.5" />
-                    <div className="text-sm">
-                      <p>{quoteRequestDetail.requester.address.full}</p>
+                  {quoteRequestDetail.requester?.phone && (
+                    <div className="flex items-center gap-3 text-gray-700">
+                      <Phone className="w-4 h-4 text-gray-500" />
+                      <span className="text-sm">{quoteRequestDetail.requester.phone}</span>
                     </div>
-                  </div>
+                  )}
+                  {quoteRequestDetail.requester?.address?.full && (
+                    <div className="flex items-start gap-3 text-gray-700">
+                      <MapPin className="w-4 h-4 text-gray-500 mt-0.5" />
+                      <div className="text-sm">
+                        <p>{quoteRequestDetail.requester.address.full}</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
 
             {/* Supplier Information */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50 p-6">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="bg-gradient-to-br from-orange-100 to-red-100 p-3 rounded-xl">
-                  <Factory className="w-6 h-6 text-orange-600" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900">Supplier Details</h3>
-              </div>
-
-              <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-orange-100 to-red-100 rounded-full flex items-center justify-center">
+            {getSupplierInfo() && (
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50 p-6">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="bg-gradient-to-br from-orange-100 to-red-100 p-3 rounded-xl">
                     <Factory className="w-6 h-6 text-orange-600" />
                   </div>
-                  <div>
-                    <p className="font-semibold text-gray-900">
-                      {quoteRequestDetail.product.creator.name}
-                    </p>
-                    <p className="text-sm text-gray-600">Supplier</p>
-                  </div>
+                  <h3 className="text-xl font-bold text-gray-900">Supplier Details</h3>
                 </div>
 
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3 text-gray-700">
-                    <Building2 className="w-4 h-4 text-gray-500" />
-                    <span className="text-sm">{quoteRequestDetail.product.creator.company}</span>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 bg-gradient-to-br from-orange-100 to-red-100 rounded-full flex items-center justify-center">
+                      <Factory className="w-6 h-6 text-orange-600" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-900">
+                        {getSupplierInfo()?.name || 'N/A'}
+                      </p>
+                      <p className="text-sm text-gray-600">Supplier</p>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-3 text-gray-700">
-                    <Mail className="w-4 h-4 text-gray-500" />
-                    <span className="text-sm">{quoteRequestDetail.product.creator.email}</span>
+
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3 text-gray-700">
+                      <Building2 className="w-4 h-4 text-gray-500" />
+                      <span className="text-sm">{getSupplierInfo()?.company || 'N/A'}</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-gray-700">
+                      <Mail className="w-4 h-4 text-gray-500" />
+                      <span className="text-sm">{getSupplierInfo()?.email || 'N/A'}</span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            )}
 
             {/* Status Timeline */}
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50 p-6">

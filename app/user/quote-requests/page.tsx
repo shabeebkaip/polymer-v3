@@ -29,23 +29,101 @@ import {
   Activity,
   Loader2,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Gift
 } from "lucide-react";
 import { useQuoteRequestsListStore } from "@/stores/user";
 
 // Define the allowed statuses for quote requests based on API response
 const ALLOWED_STATUSES = [
-  "pending", "responded", "approved", "rejected", "cancelled"
+  "pending", "responded", "negotiation", "accepted", "in_progress", 
+  "shipped", "delivered", "completed", "rejected", "cancelled"
 ] as const;
 
 type QuoteStatus = typeof ALLOWED_STATUSES[number];
 
+// Define quote request types
+type QuoteRequestType = "product_quote" | "deal_quote" | "all";
+
+// Interface for the unified quote request structure
+interface QuoteRequest {
+  _id: string;
+  requestType: QuoteRequestType;
+  status: QuoteStatus;
+  createdAt: string;
+  updatedAt: string;
+  statusMessage: any[];
+  productName: string;
+  productId: string;
+  company: string;
+  companyId: string | null;
+  quantity: number;
+  unit: string;
+  destination: string;
+  deliveryDate: string;
+  grade: string;
+  buyer: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    name: string;
+    company: string;
+    email: string;
+  };
+  unified: {
+    statusIcon: string;
+    priorityLevel: string;
+    quantity: number;
+    deliveryDate: string;
+    location: string;
+    productInfo: string;
+    type: QuoteRequestType;
+    title: string;
+  };
+  quoteType: string;
+  productQuote?: {
+    product: {
+      _id: string;
+      productName: string;
+      createdBy: {
+        _id: string;
+        firstName: string;
+        lastName: string;
+        company: string;
+        email: string;
+      };
+    };
+    packaging_size: string;
+    incoterm: {
+      _id: string;
+      name: string;
+    };
+  };
+  dealQuote?: {
+    bestDeal: {
+      _id: string;
+      productId: {
+        _id: string;
+        productName: string;
+      };
+      offerPrice: number;
+      status: string;
+    };
+    paymentTerms: string;
+    offerPrice: number;
+  };
+}
+
 const QuoteRequests = () => {
   const router = useRouter();
   
-  // Zustand store
+  // Local state for filters
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+  const [quoteTypeFilter, setQuoteTypeFilter] = useState<"all" | "product_quote" | "deal_quote">("all");
+  
+  // Zustand store (we'll cast the data to our new interface)
   const {
-    requests: quoteRequests,
+    requests: rawRequests,
     loading,
     error,
     currentPage,
@@ -62,8 +140,16 @@ const QuoteRequests = () => {
     reset
   } = useQuoteRequestsListStore();
 
+  // Cast the requests to the new unified structure and apply client-side filtering
+  const allQuoteRequests = rawRequests as unknown as QuoteRequest[];
+  const quoteRequests = quoteTypeFilter === "all" 
+    ? allQuoteRequests 
+    : allQuoteRequests.filter(req => req.requestType === quoteTypeFilter);
+
   // Local state for debounced search
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
+  useEffect(() => {
+    setDebouncedSearchTerm(searchTerm);
+  }, [searchTerm]);
 
   // Debounce search term
   useEffect(() => {
@@ -77,14 +163,15 @@ const QuoteRequests = () => {
   // Keyboard shortcut for clearing filters (Escape key)
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && (searchTerm || statusFilter)) {
+      if (event.key === 'Escape' && (searchTerm || statusFilter || quoteTypeFilter !== "all")) {
         clearFilters();
+        setQuoteTypeFilter("all");
       }
     };
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [searchTerm, statusFilter, clearFilters]);
+  }, [searchTerm, statusFilter, quoteTypeFilter, clearFilters]);
 
   // Fetch data when component mounts or when filters change
   useEffect(() => {
@@ -114,13 +201,19 @@ const QuoteRequests = () => {
 
   const getStatusIcon = (status: QuoteStatus) => {
     switch (status) {
-      case "approved":
+      case "accepted":
+      case "completed":
         return <CheckCircle className="w-4 h-4 text-green-500" />;
       case "rejected":
       case "cancelled":
         return <XCircle className="w-4 h-4 text-red-500" />;
       case "responded":
+      case "negotiation":
         return <AlertCircle className="w-4 h-4 text-orange-500" />;
+      case "in_progress":
+      case "shipped":
+      case "delivered":
+        return <Activity className="w-4 h-4 text-blue-500" />;
       case "pending":
       default:
         return <Clock className="w-4 h-4 text-yellow-500" />;
@@ -131,14 +224,22 @@ const QuoteRequests = () => {
     const baseClasses = "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border";
     
     switch (status) {
-      case "approved":
+      case "accepted":
+      case "completed":
         return `${baseClasses} bg-green-50 text-green-700 border-green-200`;
       case "rejected":
         return `${baseClasses} bg-red-50 text-red-700 border-red-200`;
       case "cancelled":
         return `${baseClasses} bg-gray-50 text-gray-700 border-gray-200`;
       case "responded":
+      case "negotiation":
         return `${baseClasses} bg-orange-50 text-orange-700 border-orange-200`;
+      case "in_progress":
+        return `${baseClasses} bg-blue-50 text-blue-700 border-blue-200`;
+      case "shipped":
+        return `${baseClasses} bg-purple-50 text-purple-700 border-purple-200`;
+      case "delivered":
+        return `${baseClasses} bg-indigo-50 text-indigo-700 border-indigo-200`;
       case "pending":
         return `${baseClasses} bg-yellow-50 text-yellow-700 border-yellow-200`;
       default:
@@ -150,7 +251,12 @@ const QuoteRequests = () => {
     switch (status) {
       case "pending": return "Pending";
       case "responded": return "Responded";
-      case "approved": return "Approved";
+      case "negotiation": return "Negotiation";
+      case "accepted": return "Accepted";
+      case "in_progress": return "In Progress";
+      case "shipped": return "Shipped";
+      case "delivered": return "Delivered";
+      case "completed": return "Completed";
       case "rejected": return "Rejected";
       case "cancelled": return "Cancelled";
       default: return "Unknown";
@@ -158,20 +264,28 @@ const QuoteRequests = () => {
   };
 
   const getStatsData = () => {
+    // Filter by quote type first
+    const filteredRequests = quoteTypeFilter === "all" 
+      ? quoteRequests 
+      : quoteRequests.filter(req => req.requestType === quoteTypeFilter);
+    
     const stats = {
       total: totalRequests,
-      pending: quoteRequests.filter(req => req.status === 'pending').length,
-      responded: quoteRequests.filter(req => req.status === 'responded').length,
-      approved: quoteRequests.filter(req => req.status === 'approved').length,
-      rejected: quoteRequests.filter(req => req.status === 'rejected').length,
+      pending: filteredRequests.filter(req => req.status === 'pending').length,
+      responded: filteredRequests.filter(req => req.status === 'responded').length,
+      accepted: filteredRequests.filter(req => req.status === 'accepted').length,
+      rejected: filteredRequests.filter(req => req.status === 'rejected').length,
+      completed: filteredRequests.filter(req => req.status === 'completed').length,
+      productQuotes: quoteRequests.filter(req => req.requestType === 'product_quote').length,
+      dealQuotes: quoteRequests.filter(req => req.requestType === 'deal_quote').length,
     };
     
     return [
       { label: 'Total Requests', value: stats.total, icon: FileText, color: 'text-blue-600', bgColor: 'bg-blue-50' },
+      { label: 'Product Quotes', value: stats.productQuotes, icon: Package, color: 'text-purple-600', bgColor: 'bg-purple-50' },
+      { label: 'Deal Quotes', value: stats.dealQuotes, icon: Gift, color: 'text-blue-600', bgColor: 'bg-blue-50' },
       { label: 'Pending', value: stats.pending, icon: Clock, color: 'text-yellow-600', bgColor: 'bg-yellow-50' },
-      { label: 'Responded', value: stats.responded, icon: AlertCircle, color: 'text-orange-600', bgColor: 'bg-orange-50' },
-      { label: 'Approved', value: stats.approved, icon: CheckCircle, color: 'text-green-600', bgColor: 'bg-green-50' },
-      { label: 'Rejected', value: stats.rejected, icon: XCircle, color: 'text-red-600', bgColor: 'bg-red-50' },
+      { label: 'Completed', value: stats.completed, icon: CheckCircle, color: 'text-green-600', bgColor: 'bg-green-50' },
     ];
   };
 
@@ -271,10 +385,27 @@ const QuoteRequests = () => {
               <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 pointer-events-none" />
             </div>
 
+            {/* Quote Type Filter */}
+            <div className="relative">
+              <select
+                value={quoteTypeFilter}
+                onChange={(e) => setQuoteTypeFilter(e.target.value as "all" | "product_quote" | "deal_quote")}
+                className="appearance-none bg-white/70 border border-gray-300 rounded-xl px-4 py-3 pr-10 focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 min-w-[160px]"
+              >
+                <option value="all">All Types</option>
+                <option value="product_quote">Product Quotes</option>
+                <option value="deal_quote">Deal Quotes</option>
+              </select>
+              <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 pointer-events-none" />
+            </div>
+
             {/* Clear Filters */}
-            {(searchTerm || statusFilter) && (
+            {(searchTerm || statusFilter || quoteTypeFilter !== "all") && (
               <button
-                onClick={clearFilters}
+                onClick={() => {
+                  clearFilters();
+                  setQuoteTypeFilter("all");
+                }}
                 className="px-4 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors duration-200 font-medium"
               >
                 Clear Filters
@@ -292,17 +423,19 @@ const QuoteRequests = () => {
                 <div className="flex items-center gap-3">
                   <h3 className="text-lg font-semibold text-gray-900">
                     Quote Requests
-                    {debouncedSearchTerm || statusFilter ? " (Filtered)" : ""}
+                    {debouncedSearchTerm || statusFilter || quoteTypeFilter !== "all" ? " (Filtered)" : ""}
                   </h3>
                   <span className="bg-gradient-to-r from-green-100 to-emerald-100 text-green-700 px-3 py-1.5 rounded-full text-sm font-semibold border border-green-200/50">
-                    {totalRequests} {totalRequests === 1 ? 'result' : 'results'}
+                    {quoteRequests.length} {quoteRequests.length === 1 ? 'result' : 'results'}
                   </span>
                 </div>
-                {(debouncedSearchTerm || statusFilter) && (
+                {(debouncedSearchTerm || statusFilter || quoteTypeFilter !== "all") && (
                   <div className="text-sm text-gray-600 font-medium">
                     {debouncedSearchTerm && `Search: "${debouncedSearchTerm}"`}
-                    {debouncedSearchTerm && statusFilter && " • "}
+                    {debouncedSearchTerm && (statusFilter || quoteTypeFilter !== "all") && " • "}
                     {statusFilter && `Status: ${getStatusText(statusFilter as QuoteStatus)}`}
+                    {statusFilter && quoteTypeFilter !== "all" && " • "}
+                    {quoteTypeFilter !== "all" && `Type: ${quoteTypeFilter === 'product_quote' ? 'Product Quotes' : 'Deal Quotes'}`}
                   </div>
                 )}
               </div>
@@ -340,24 +473,28 @@ const QuoteRequests = () => {
                 </div>
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-3">
-                {debouncedSearchTerm || statusFilter 
+                {debouncedSearchTerm || statusFilter || quoteTypeFilter !== "all"
                   ? "No Matching Requests Found" 
                   : "No Quote Requests"}
               </h3>
               <p className="text-gray-600 mb-6 max-w-md mx-auto leading-relaxed">
-                {debouncedSearchTerm || statusFilter 
-                  ? `No quote requests match your current filters. Try adjusting your search term or status filter to find what you're looking for.`
-                  : "You haven't made any quote requests yet. Start by exploring our marketplace and requesting quotes from suppliers."}
+                {debouncedSearchTerm || statusFilter || quoteTypeFilter !== "all"
+                  ? `No quote requests match your current filters. Try adjusting your search term, status filter, or quote type filter to find what you're looking for.`
+                  : "You haven't made any quote requests yet. Start by exploring our marketplace and requesting quotes from suppliers or grabbing special deals."}
               </p>
-              {(debouncedSearchTerm || statusFilter) && (
+              {(debouncedSearchTerm || statusFilter || quoteTypeFilter !== "all") && (
                 <div className="space-y-4">
                   <div className="text-sm text-gray-500 bg-gray-50 rounded-xl p-4 inline-block">
                     <div className="font-medium mb-2">Current filters:</div>
                     {debouncedSearchTerm && <div className="flex items-center gap-2"><Search className="w-4 h-4" /> Search: "{debouncedSearchTerm}"</div>}
                     {statusFilter && <div className="flex items-center gap-2"><Filter className="w-4 h-4" /> Status: {getStatusText(statusFilter as QuoteStatus)}</div>}
+                    {quoteTypeFilter !== "all" && <div className="flex items-center gap-2"><Package className="w-4 h-4" /> Type: {quoteTypeFilter === 'product_quote' ? 'Product Quotes' : 'Deal Quotes'}</div>}
                   </div>
                   <button
-                    onClick={clearFilters}
+                    onClick={() => {
+                      clearFilters();
+                      setQuoteTypeFilter("all");
+                    }}
                     className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all duration-300 font-medium shadow-lg hover:shadow-xl"
                   >
                     <XCircle className="w-5 h-5" />
@@ -388,6 +525,7 @@ const QuoteRequests = () => {
                 <TableRow className="border-gray-200/60">
                   <TableHead className="font-bold text-gray-900 py-4">SL NO</TableHead>
                   <TableHead className="font-bold text-gray-900 py-4">Product</TableHead>
+                  <TableHead className="font-bold text-gray-900 py-4">Type</TableHead>
                   <TableHead className="font-bold text-gray-900 py-4">Quantity</TableHead>
                   <TableHead className="font-bold text-gray-900 py-4">Company</TableHead>
                   <TableHead className="font-bold text-gray-900 py-4">Date</TableHead>
@@ -410,22 +548,36 @@ const QuoteRequests = () => {
                         </div>
                         <div>
                           <p className="font-semibold text-gray-900 line-clamp-1 text-base">
-                            {item.product?.productName || "N/A"}
+                            {item.productName || item.unified?.productInfo || "N/A"}
                           </p>
                           <p className="text-sm text-gray-600 mt-1">
-                            Grade: <span className="font-medium">{item.grade?.name || "N/A"}</span>
+                            Grade: <span className="font-medium">{item.grade || "N/A"}</span>
                           </p>
                         </div>
                       </div>
                     </TableCell>
                     <TableCell className="py-6">
                       <div className="flex items-center gap-3">
-                        <span className="font-bold text-gray-900 text-lg">
-                          {item.quantity || "N/A"}
+                        <div className="w-8 h-8 bg-gradient-to-br from-blue-100 to-purple-100 rounded-lg flex items-center justify-center">
+                          {item.requestType === 'deal_quote' ? (
+                            <Gift className="w-4 h-4 text-blue-600" />
+                          ) : (
+                            <Package className="w-4 h-4 text-purple-600" />
+                          )}
+                        </div>
+                        <span className="text-gray-900 font-medium">
+                          {item.quoteType || (item.requestType === 'deal_quote' ? 'Deal Quote' : 'Product Quote')}
                         </span>
-                        {item.uom && (
+                      </div>
+                    </TableCell>
+                    <TableCell className="py-6">
+                      <div className="flex items-center gap-3">
+                        <span className="font-bold text-gray-900 text-lg">
+                          {item.quantity || item.unified?.quantity || "N/A"}
+                        </span>
+                        {item.unit && item.unit !== "N/A" && (
                           <span className="text-sm text-gray-600 bg-gray-100 px-3 py-1.5 rounded-lg font-medium">
-                            {item.uom}
+                            {item.unit}
                           </span>
                         )}
                       </div>
@@ -436,7 +588,10 @@ const QuoteRequests = () => {
                           <Building2 className="w-4 h-4 text-teal-600" />
                         </div>
                         <span className="text-gray-900 font-medium">
-                          {item.product?.createdBy?.company || "N/A"}
+                          {item.company || 
+                           item.productQuote?.product?.createdBy?.company || 
+                           item.dealQuote?.bestDeal?.productId?.productName || 
+                           "N/A"}
                         </span>
                       </div>
                     </TableCell>

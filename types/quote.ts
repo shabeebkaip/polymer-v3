@@ -34,7 +34,6 @@ export interface ProductQuoteRequest extends QuoteRequestBase {
 export interface DealQuoteRequest extends QuoteRequestBase {
   requestType: "deal_quote";
   bestDealId: string; // Deal/Promotion ID
-  quantity: number;
   desiredQuantity: number;
   shippingCountry: string;
   paymentTerms: string;

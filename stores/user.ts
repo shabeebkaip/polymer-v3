@@ -71,7 +71,7 @@ interface SampleRequestDetail {
 }
 
 interface QuoteRequestDetail {
-  requestType: string;
+  requestType: "product_quote" | "deal_quote";
   status: string;
   createdAt: string;
   updatedAt: string;
@@ -87,7 +87,7 @@ interface QuoteRequestDetail {
     };
   };
   quoteType: string;
-  product: {
+  product?: {
     _id: string;
     productName: string;
     chemicalName: string;
@@ -108,15 +108,41 @@ interface QuoteRequestDetail {
       email: string;
     };
   };
-  orderDetails: {
-    quantity: number;
-    uom: string;
-    destination: string;
-    country: string;
-    deliveryDate: string;
-    packagingSize: string;
+  bestDeal?: {
+    _id: string;
+    offerPrice: number;
+    status: string;
+    adminNote: string;
+    createdAt: string;
+    product: {
+      _id: string;
+      productName: string;
+      chemicalName: string;
+      tradeName?: string;
+      productImages: Array<{
+        id: string;
+        name: string;
+        type: string;
+        fileUrl: string;
+        _id: string;
+      }>;
+      countryOfOrigin: string;
+      color?: string;
+    };
   };
-  specifications: {
+  orderDetails: {
+    quantity?: number;
+    uom?: string;
+    destination?: string;
+    country?: string;
+    deliveryDate?: string;
+    packagingSize?: string;
+    desiredQuantity?: number;
+    shippingCountry?: string;
+    paymentTerms?: string;
+    deliveryDeadline?: string;
+  };
+  specifications?: {
     grade: {
       _id: string;
       name: string;
@@ -129,7 +155,7 @@ interface QuoteRequestDetail {
   };
   unified: {
     type: string;
-    title: string;
+    title?: string;
     quantity: number;
     deliveryDate: string;
     location: string;

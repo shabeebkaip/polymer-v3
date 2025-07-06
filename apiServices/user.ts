@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import axiosInstance from "@/lib/axiosInstance";
-import { QuoteRequest } from "@/types/quote";
+import { QuoteRequest, DealQuoteRequest } from "@/types/quote";
 
 // ============================================================================
 // USER PROFILE & AUTHENTICATION
@@ -511,6 +511,25 @@ export const updatePromotion = async (id: string, offerPrice: number) => {
     return response.data;
   } catch (error: any) {
     console.error("❌ Error updating promotion:", error);
+    if (error.response) {
+      console.error("Response data:", error.response.data);
+      console.error("Response status:", error.response.status);
+      console.error("Response headers:", error.response.headers);
+    } else if (error.request) {
+      console.error("Request was made but no response received:", error.request);
+    } else {
+      console.error("Error setting up request:", error.message);
+    }
+    throw error;
+  }
+}
+export const createDealQuoteRequest = async (data: DealQuoteRequest) => {
+  try {
+    const response = await axiosInstance.post("/best-deal/buyer-deal-quote", data);
+    console.log("✅ Deal quote request created successfully:", response.data);
+    return response.data;
+  } catch (error: any) {  
+    console.error("❌ Error creating deal quote request:", error);
     if (error.response) {
       console.error("Response data:", error.response.data);
       console.error("Response status:", error.response.status);

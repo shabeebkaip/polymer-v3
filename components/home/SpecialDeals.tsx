@@ -14,6 +14,7 @@ import { useSharedState } from "@/stores/sharedStore";
 import { FALLBACK_COMPANY_IMAGE } from "@/lib/fallbackImages";
 import { useUserInfo } from "@/lib/useUserInfo";
 import { useRouter } from "next/navigation";
+import QuoteDealRequestModal from "@/components/shared/QuoteDealRequestModal";
 
 interface Deal {
   id: string;
@@ -421,11 +422,8 @@ const DealCard: React.FC<{
     if (isGuest) {
       // Redirect to signup page for guests
       router.push("/auth/register");
-    } else if (isBuyer) {
-      // Handle deal grabbing for buyers
-      console.log("Grabbing deal:", deal.id);
-      // Add your deal grabbing logic here
     }
+    // For buyers, the QuoteDealRequestModal will handle the click
   };
 
   const getButtonText = () => {
@@ -435,6 +433,34 @@ const DealCard: React.FC<{
       return "Grab This Deal";
     }
     return "View Deal";
+  };
+
+  // For buyers, render the deal quote modal; for others, render a regular button
+  const renderActionButton = () => {
+    if (isBuyer) {
+      return (
+        <QuoteDealRequestModal
+          dealId={deal.id}
+          dealTitle={deal.title}
+          dealProduct={deal.product}
+          dealSupplier={deal.supplier.name}
+          dealMinQuantity={deal.minQuantity}
+          dealPrice={deal.discountedPrice}
+          buttonText={getButtonText()}
+          className="w-full"
+        />
+      );
+    }
+
+    return (
+      <button 
+        onClick={handleButtonClick}
+        className="w-full bg-green-700 text-white py-2 rounded font-medium border border-green-800 hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-400 transition-all duration-200 flex items-center justify-center gap-2 shadow-sm focus:ring-offset-2 group"
+      >
+        <Zap className="w-5 h-5 transition-transform duration-200 group-hover:scale-110" />
+        <span className="tracking-tight">{getButtonText()}</span>
+      </button>
+    );
   };
 
   return (
@@ -507,13 +533,7 @@ const DealCard: React.FC<{
         </div>
 
         {/* Action Button */}
-        <button 
-          onClick={handleButtonClick}
-          className="w-full bg-green-700 text-white py-2 rounded font-medium border border-green-800 hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-400 transition-all duration-200 flex items-center justify-center gap-2 shadow-sm focus:ring-offset-2 group"
-        >
-          <Zap className="w-5 h-5 transition-transform duration-200 group-hover:scale-110" />
-          <span className="tracking-tight">{getButtonText()}</span>
-        </button>
+        {renderActionButton()}
       </div>
     </div>
   );
