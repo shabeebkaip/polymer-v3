@@ -22,14 +22,7 @@ import {
 } from "lucide-react";
 import { useFinanceRequestsListStore } from "@/stores/user";
 
-// Define the allowed statuses for finance requests
-const ALLOWED_STATUSES = [
-  "pending",
-  "approved",
-  "rejected",
-  "under_review",
-  "cancelled",
-] as const;
+
 
 
 const FinanceRequests = () => {
@@ -131,15 +124,6 @@ const FinanceRequests = () => {
       currency: "USD",
     }).format(amount);
   };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  };
-
   const getStatsData = () => {
     const stats = {
       total: totalRequests,
