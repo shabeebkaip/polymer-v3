@@ -4,12 +4,13 @@ import { Suspense, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { getProductDetails } from "@/apiServices/products";
 import ProductDetailClient from "@/components/product/ProductDetailClient";
+import type { Product } from "@/types/product";
 
 export default function ProductPage() {
   const params = useParams();
   const id = (params as { id?: string })?.id;
 
-  const [product, setProduct] = useState<any>(null);
+  const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -21,7 +22,7 @@ export default function ProductPage() {
     }
 
     getProductDetails(id)
-      .then((res) => setProduct(res.data))
+      .then((res) => setProduct(res.data as Product))
       .catch((err) => {
         console.error("Failed to fetch product:", err);
         setError("Failed to load product.");
