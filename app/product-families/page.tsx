@@ -18,7 +18,7 @@ const Page: React.FC = () => {
   useEffect(() => {
     getProductFamilies()
       .then((response) => {
-        const data = response?.data?.map((item: any) => ({
+        const data = response?.data?.map((item: ProductFamily) => ({
           _id: item._id,
           name: item.name,
           image: item.image,
