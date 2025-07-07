@@ -4,12 +4,9 @@ import CategoryCard from "@/components/home/CategoryCard";
 import { getProductFamilies } from "@/apiServices/shared";
 import { Package, Layers, Zap, Award } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ProductFamily } from "@/types/productFamily";
 
-interface ProductFamily {
-  _id: string;
-  name: string;
-  image: string;
-}
+
 
 const Page: React.FC = () => {
   const [productFamilies, setProductFamilies] = useState<ProductFamily[]>([]);

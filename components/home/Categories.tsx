@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import useIsMobile from "@/lib/useIsMobile";
 import { Skeleton } from "../ui/skeleton";
 import { useSharedState } from "@/stores/sharedStore";
+import { ProductFamily } from "@/types/productFamily";
 
 interface CategoryData {
   id: string;
@@ -21,11 +22,7 @@ interface IndustryItem {
   image: string;
 }
 
-interface ProductFamily {
-  _id: string;
-  name: string;
-  image: string;
-}
+
 
 const categoryData: CategoryData[] = [
   {
