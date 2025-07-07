@@ -9,6 +9,7 @@ import { useUserInfo } from "@/lib/useUserInfo";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { FALLBACK_USER_AVATAR } from "@/lib/fallbackImages";
+import MessageNotificationBell from "./MessageNotificationBell";
 
 // --- TypeScript Types ---
 type NavbarLinkProps = {
@@ -215,8 +216,13 @@ const Header: React.FC = () => {
 
           {/* Enhanced User Menu */}
           {user && (
-            <Popover open={isUserPopoverOpen} onOpenChange={setIsUserPopoverOpen}>
-              <PopoverTrigger asChild>
+            <div className="flex items-center space-x-4">
+              {/* Message Notification Bell */}
+              <MessageNotificationBell />
+              
+              {/* User Menu Popover */}
+              <Popover open={isUserPopoverOpen} onOpenChange={setIsUserPopoverOpen}>
+                <PopoverTrigger asChild>
                 <button
                   type="button"
                   className="md:flex hidden items-center gap-3 px-4 py-2.5 border border-green-200 text-gray-700 rounded-xl hover:bg-green-50 hover:border-green-300 transition-all duration-200 shadow-sm hover:shadow-md"
@@ -291,6 +297,7 @@ const Header: React.FC = () => {
                 </div>
               </PopoverContent>
             </Popover>
+            </div>
           )}
 
           {/* Enhanced Auth Buttons */}

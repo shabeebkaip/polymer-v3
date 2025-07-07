@@ -198,38 +198,47 @@ const Sidebar = () => {
         // }
       );
     } else if (userType === "buyer") {
-      sidebarItems.push({
-        displayName: "Procurement",
-        route: "/procurement",
-        name: "procurement",
-        icon: "ClipboardList",
-        subItems: [
-          {
-            displayName: "Sample Request",
-            route: "/user/sample-requests",
-            name: "sample-request",
-            icon: "Flask",
-          },
-          {
-            displayName: "Quote Request",
-            route: "/user/quote-requests",
-            name: "quote-request",
-            icon: "DollarSign",
-          },
-          {
-            displayName: "Finance Request",
-            route: "/user/finance-requests",
-            name: "finance-request",
-            icon: "CreditCard",
-          },
-          {
-            displayName: "Sourcing Requests",
-            route: "/user/product-requests",
-            name: "sourcing-requests",
-            icon: "Truck",
-          },
-        ],
-      });
+      sidebarItems.push(
+        {
+          displayName: "Messages",
+          route: "/user/messages",
+          name: "messages",
+          icon: "MessageCircle",
+          subItems: [],
+        },
+        {
+          displayName: "Procurement",
+          route: "/procurement",
+          name: "procurement",
+          icon: "ClipboardList",
+          subItems: [
+            {
+              displayName: "Sample Request",
+              route: "/user/sample-requests",
+              name: "sample-request",
+              icon: "Flask",
+            },
+            {
+              displayName: "Quote Request",
+              route: "/user/quote-requests",
+              name: "quote-request",
+              icon: "DollarSign",
+            },
+            {
+              displayName: "Finance Request",
+              route: "/user/finance-requests",
+              name: "finance-request",
+              icon: "CreditCard",
+            },
+            {
+              displayName: "Sourcing Requests",
+              route: "/user/product-requests",
+              name: "sourcing-requests",
+              icon: "Truck",
+            },
+          ],
+        }
+      );
     }
 
     // Add common items for all user types

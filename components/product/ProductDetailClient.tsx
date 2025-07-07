@@ -1,15 +1,17 @@
-import React, { useState, useRef, useLayoutEffect } from "react";
+import React, { useState, useRef, useLayoutEffect, useEffect } from "react";
 import CompanyDetails from "@/components/product/CompanyDetails";
 import ImageContainers from "@/components/product/ImageContainers";
 import GeneralTabInformation from "./GeneralTabInformation";
 import TradeInformation from "./TradeInformation";
 import { useUserInfo } from "@/lib/useUserInfo";
+import { useProductChat } from "@/hooks/useProductChat";
 import { AnimatePresence, motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import SampleRequestModal from "@/components/shared/SampleRequestModal";
 import QuoteRequestModal from "@/components/shared/QuoteRequestModal";
 import ActionButtons from "@/components/shared/ActionButtons";
+import ProductChatModal from "@/components/chat/ProductChatModal";
 import { FALLBACK_COMPANY_IMAGE } from "@/lib/fallbackImages";
 import {
   Star,
@@ -127,8 +129,28 @@ const ProductDetailClient: React.FC<ProductDetailClientProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<"general" | "trade">("general");
   const [isFavorite, setIsFavorite] = useState(false);
+  
+  // Simple local chat state instead of complex hook
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  
   const { user } = useUserInfo();
   const router = useRouter();
+
+  const openChat = () => {
+    if (!user) {
+      alert('Please log in to chat with suppliers');
+      return;
+    }
+    if (user.user_type !== 'buyer') {
+      alert('Only buyers can chat with suppliers');
+      return;
+    }
+    setIsChatOpen(true);
+  };
+
+  const closeChat = () => {
+    setIsChatOpen(false);
+  };
 
   // For underline animation
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
@@ -358,6 +380,7 @@ const ProductDetailClient: React.FC<ProductDetailClientProps> = ({
                     productId={product._id}
                     uom={product.uom || "Metric Ton"}
                     variant="compact"
+                    onChatOpen={openChat}
                   />
                   <Button
                     variant="outline"
@@ -1020,6 +1043,13 @@ const ProductDetailClient: React.FC<ProductDetailClientProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Chat Modal */}
+      <ProductChatModal 
+        isOpen={isChatOpen}
+        onClose={closeChat}
+        productId={product._id}
+      />
     </div>
   );
 };
