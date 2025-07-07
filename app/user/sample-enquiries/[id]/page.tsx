@@ -33,15 +33,13 @@ import {
   AlertCircle,
   ArrowLeft,
   Download,
-  Globe,
   Target,
-  Truck,
   Settings,
   Edit3,
   Send,
-  X,
   FlaskConical
 } from "lucide-react";
+import Image from 'next/image';
 
 // Type definitions
 interface StatusOption {
@@ -66,7 +64,7 @@ const supplierAllowedStatuses: StatusOption[] = [
   { value: 'cancelled', label: 'Cancel Enquiry', description: 'Cancel this sample enquiry' }
 ];
 
-const SampleEnquiriesDetail = React.memo(() => {
+const SampleEnquiriesDetail = React.memo(function SampleEnquiriesDetail() {
   const router = useRouter();
   const params = useParams();
   const { 
@@ -143,7 +141,7 @@ const SampleEnquiriesDetail = React.memo(() => {
         fetchEnquiryDetail(params.id);
       }
     }
-  }, [params.id, enquiryDetail?._id, fetchEnquiryDetail]);
+  }, [params.id, enquiryDetail, fetchEnquiryDetail]);
 
   // Cleanup effect - separate from fetch effect
   useEffect(() => {
@@ -385,12 +383,16 @@ const SampleEnquiriesDetail = React.memo(() => {
                         Product Images
                       </h4>
                       <div className="grid grid-cols-2 gap-3">
-                        {enquiryDetail.product.productImages.slice(0, 4).map((image: ProductImage, index: number) => (
+                        {enquiryDetail.product.productImages.slice(0, 4).map((image: ProductImage) => (
                           <div key={image.id} className="relative group">
-                            <img
+                            <Image
                               src={image.fileUrl}
                               alt={image.name}
+                              width={160}
+                              height={80}
                               className="w-full h-20 object-cover rounded-lg border border-blue-200"
+                              style={{ objectFit: 'cover' }}
+                              priority={false}
                             />
                             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors rounded-lg"></div>
                           </div>
@@ -655,7 +657,7 @@ const SampleEnquiriesDetail = React.memo(() => {
 
               {/* Timeline Progress */}
               <div className="relative">
-                {getStatusTimeline().map((timelineItem, index) => (
+                {getStatusTimeline().map((timelineItem) => (
                   <div key={timelineItem.status} className="flex items-center mb-4 last:mb-0">
                     <div className="flex items-center gap-4 flex-1">
                       <div className={`relative flex items-center justify-center w-10 h-10 rounded-full border-2 ${
@@ -700,10 +702,10 @@ const SampleEnquiriesDetail = React.memo(() => {
                       </div>
                     </div>
                     
-                    {index < getStatusTimeline().length - 1 && (
+                    {timelineItem.completed && (
                       <div className={`absolute left-5 mt-10 w-0.5 h-6 ${
                         timelineItem.completed ? 'bg-green-500' : 'bg-gray-300'
-                      }`} style={{ top: `${index * 64 + 40}px` }}></div>
+                      }`} style={{ top: `${getStatusTimeline().findIndex(item => item.status === timelineItem.status) * 64 + 40}px` }}></div>
                     )}
                   </div>
                 ))}
