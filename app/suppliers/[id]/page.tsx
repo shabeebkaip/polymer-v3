@@ -19,18 +19,13 @@ import { getSellerDetail } from "@/apiServices/shared";
 import { useUserInfo } from "@/lib/useUserInfo";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Supplier } from "@/types/seller";
+import Image from "next/image";
 
 const SupplierDetail = () => {
   const params = useParams();
   const { user } = useUserInfo();
   const [supplier, setSupplier] = useState<Supplier | null>(null);
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (params.id) {
-      fetchSupplierDetails();
-    }
-  }, [params.id]);
 
   const fetchSupplierDetails = async () => {
     try {
@@ -42,6 +37,11 @@ const SupplierDetail = () => {
       setLoading(false);
     }
   };
+  useEffect(() => {
+    if (params.id) {
+      fetchSupplierDetails();
+    }
+  }, [params.id, fetchSupplierDetails]);
 
   if (loading) {
     return (
@@ -89,10 +89,13 @@ const SupplierDetail = () => {
       <div className="bg-gradient-to-r from-green-50 to-green-100 rounded-2xl p-8 mb-8">
         <div className="flex flex-col md:flex-row gap-8 items-start">
           <div className="flex-shrink-0">
-            <img
+            <Image
               src={supplier.company_logo}
               alt={supplier.company}
+              width={128}
+              height={128}
               className="w-32 h-32 object-contain rounded-xl border-2 border-white shadow-lg"
+              priority
             />
           </div>
           <div className="flex-1">
