@@ -11,7 +11,7 @@ const SuppliersPage: React.FC = () => {
 
   useEffect(() => {
     fetchSellers();
-  }, []);
+  }, [fetchSellers]);
   return (
     <section className="mt-10 container mx-auto px-4 ">
       <h1 className="text-3xl font-bold text-gray-900 mb-4">
