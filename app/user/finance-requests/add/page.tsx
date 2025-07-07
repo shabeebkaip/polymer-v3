@@ -1,8 +1,23 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, CreditCard, CheckCircle, AlertCircle, Calendar as CalendarIcon, MapPin, Package, FileText, DollarSign, Clock, Banknote, Calculator, Shield, TrendingUp, Truck } from "lucide-react";
+import {
+  ArrowLeft,
+  CreditCard,
+  CheckCircle,
+  AlertCircle,
+  Calendar as CalendarIcon,
+  MapPin,
+  Package,
+  FileText,
+  DollarSign,
+  Banknote,
+  Calculator,
+  Shield,
+  TrendingUp,
+  Truck,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -24,33 +39,7 @@ import { getProductList } from "@/apiServices/products";
 import { createFinanceRequest } from "@/apiServices/user";
 import { getCountryList } from "@/lib/useCountries";
 import { format } from "date-fns";
-
-interface Product {
-  _id: string;
-  productName: string;
-  grade?: { name: string };
-  uom?: string;
-  pricePerUnit?: number;
-  createdBy?: {
-    company?: string;
-  };
-}
-
-interface FinanceFormData {
-  productId: string;
-  emiMonths: number;
-  quantity: number;
-  estimatedPrice: number;
-  notes: string;
-  productGrade: string;
-  desiredDeliveryDate: Date | undefined;
-  destination: string;
-  paymentTerms: string;
-  requireLogisticsSupport: string;
-  previousPurchaseHistory: string;
-  additionalNotes: string;
-  country: string;
-}
+import { FinanceFormData, Product } from "@/types/finance";
 
 const CreateFinanceRequest = () => {
   const router = useRouter();
@@ -59,7 +48,7 @@ const CreateFinanceRequest = () => {
   const [loadingProducts, setLoadingProducts] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
-  
+
   const [formData, setFormData] = useState<FinanceFormData>({
     productId: "",
     emiMonths: 12,
@@ -111,55 +100,70 @@ const CreateFinanceRequest = () => {
     if (selectedProduct?.pricePerUnit && formData.quantity) {
       const totalPrice = selectedProduct.pricePerUnit * formData.quantity;
       const priceString = totalPrice.toString();
-      setFormData(prev => ({ ...prev, estimatedPrice: totalPrice }));
-      setInputValues(prev => ({ ...prev, estimatedPrice: priceString }));
+      setFormData((prev) => ({ ...prev, estimatedPrice: totalPrice }));
+      setInputValues((prev) => ({ ...prev, estimatedPrice: priceString }));
     }
   }, [selectedProduct, formData.quantity]);
 
   // Memoized handlers to prevent re-creation on every render
-  const handleProductChange = useCallback((productId: string) => {
-    const product = products.find(p => p._id === productId);
-    setSelectedProduct(product || null);
-    setFormData(prev => ({
-      ...prev,
-      productId,
-      productGrade: product?.grade?.name || "",
-    }));
-    setInputValues(prev => ({
-      ...prev,
-      productGrade: product?.grade?.name || "",
-    }));
-  }, [products]);
+  const handleProductChange = useCallback(
+    (productId: string) => {
+      const product = products.find((p) => p._id === productId);
+      setSelectedProduct(product || null);
+      setFormData((prev) => ({
+        ...prev,
+        productId,
+        productGrade: product?.grade?.name || "",
+      }));
+      setInputValues((prev) => ({
+        ...prev,
+        productGrade: product?.grade?.name || "",
+      }));
+    },
+    [products]
+  );
 
-  const handleInputChange = useCallback((field: keyof FinanceFormData, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  }, []);
+  const handleInputChange = useCallback(
+    (field: keyof FinanceFormData, value: any) => {
+      setFormData((prev) => ({ ...prev, [field]: value }));
+    },
+    []
+  );
 
   // Optimized price input handler
-  const handlePriceInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    
-    // Update input value immediately for responsiveness
-    setInputValues(prev => ({ ...prev, estimatedPrice: value }));
-    
-    // Clean and validate the value
-    const cleanValue = value.replace(/[^0-9.]/g, '');
-    const parts = cleanValue.split('.');
-    const formattedValue = parts.length > 2 ? parts[0] + '.' + parts.slice(1).join('') : cleanValue;
-    const numericValue = formattedValue === '' ? 0 : parseFloat(formattedValue) || 0;
-    
-    // Update form data
-    setFormData(prev => ({ ...prev, estimatedPrice: numericValue }));
-  }, []);
+  const handlePriceInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+
+      // Update input value immediately for responsiveness
+      setInputValues((prev) => ({ ...prev, estimatedPrice: value }));
+
+      // Clean and validate the value
+      const cleanValue = value.replace(/[^0-9.]/g, "");
+      const parts = cleanValue.split(".");
+      const formattedValue =
+        parts.length > 2
+          ? parts[0] + "." + parts.slice(1).join("")
+          : cleanValue;
+      const numericValue =
+        formattedValue === "" ? 0 : parseFloat(formattedValue) || 0;
+
+      // Update form data
+      setFormData((prev) => ({ ...prev, estimatedPrice: numericValue }));
+    },
+    []
+  );
 
   // Optimized text input handlers
-  const handleTextInputChange = useCallback((field: keyof typeof inputValues) => (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const value = e.target.value;
-    setInputValues(prev => ({ ...prev, [field]: value }));
-    setFormData(prev => ({ ...prev, [field]: value }));
-  }, []);
+  const handleTextInputChange = useCallback(
+    (field: keyof typeof inputValues) =>
+      (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const value = e.target.value;
+        setInputValues((prev) => ({ ...prev, [field]: value }));
+        setFormData((prev) => ({ ...prev, [field]: value }));
+      },
+    []
+  );
 
   const calculateMonthlyEMI = useMemo(() => {
     if (formData.estimatedPrice && formData.emiMonths) {
@@ -170,7 +174,7 @@ const CreateFinanceRequest = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.productId) {
       toast.error("Please select a product");
       return;
@@ -192,9 +196,26 @@ const CreateFinanceRequest = () => {
       await createFinanceRequest(submitData);
       toast.success("Finance request submitted successfully!");
       router.push("/user/finance-requests");
-    } catch (error: any) {
+    } catch (error) {
+      // Type guard for error object
+      const errMsg =
+        typeof error === "object" &&
+        error !== null &&
+        "response" in error &&
+        error.response &&
+        typeof error.response === "object" &&
+        error.response !== null &&
+        "data" in error.response &&
+        error.response.data &&
+        typeof error.response.data === "object" &&
+        error.response.data !== null &&
+        "message" in error.response.data
+          ? (error.response.data.message as string)
+          : undefined;
       console.error("Error submitting finance request:", error);
-      toast.error(error?.response?.data?.message || "Failed to submit finance request");
+      toast.error(
+        errMsg || "Failed to submit finance request"
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -208,7 +229,7 @@ const CreateFinanceRequest = () => {
           {/* Background Pattern */}
           <div className="absolute inset-0 bg-gradient-to-r from-green-600/5 via-emerald-600/5 to-teal-600/5"></div>
           <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-green-200/20 to-emerald-200/20 rounded-full blur-3xl -translate-y-48 translate-x-48"></div>
-          
+
           <div className="relative z-10">
             {/* Back Button */}
             <Button
@@ -247,7 +268,8 @@ const CreateFinanceRequest = () => {
                   <h3 className="font-bold text-gray-900">Flexible EMI</h3>
                 </div>
                 <p className="text-gray-600 text-sm">
-                  Choose EMI terms from 3 to 60 months that suit your cash flow requirements.
+                  Choose EMI terms from 3 to 60 months that suit your cash flow
+                  requirements.
                 </p>
               </div>
 
@@ -259,7 +281,8 @@ const CreateFinanceRequest = () => {
                   <h3 className="font-bold text-gray-900">Competitive Rates</h3>
                 </div>
                 <p className="text-gray-600 text-sm">
-                  Get industry-leading interest rates starting from 8.5% per annum.
+                  Get industry-leading interest rates starting from 8.5% per
+                  annum.
                 </p>
               </div>
 
@@ -281,8 +304,12 @@ const CreateFinanceRequest = () => {
         {/* Form Section */}
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50 overflow-hidden">
           <div className="border-b border-gray-200/60 px-8 py-6 bg-gradient-to-r from-gray-50/80 to-green-50/30">
-            <h2 className="text-xl font-bold text-gray-900">Finance Request Details</h2>
-            <p className="text-gray-600 mt-1">Fill in the details below to submit your finance request</p>
+            <h2 className="text-xl font-bold text-gray-900">
+              Finance Request Details
+            </h2>
+            <p className="text-gray-600 mt-1">
+              Fill in the details below to submit your finance request
+            </p>
           </div>
 
           <form onSubmit={handleSubmit} className="p-8">
@@ -301,21 +328,28 @@ const CreateFinanceRequest = () => {
                     disabled={loadingProducts}
                   >
                     <SelectTrigger className="w-full py-3 px-4 border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500">
-                      <SelectValue placeholder={loadingProducts ? "Loading products..." : "Choose a product"} />
+                      <SelectValue
+                        placeholder={
+                          loadingProducts
+                            ? "Loading products..."
+                            : "Choose a product"
+                        }
+                      />
                     </SelectTrigger>
                     <SelectContent>
                       {products.map((product) => (
                         <SelectItem key={product._id} value={product._id}>
                           <div className="flex items-center justify-between w-full">
                             <div className="flex flex-col">
-                              <span className="font-medium text-gray-900">{product.productName}</span>
+                              <span className="font-medium text-gray-900">
+                                {product.productName}
+                              </span>
                               <div className="flex items-center gap-2 text-sm text-gray-500">
                                 {product.grade?.name && (
                                   <span>Grade: {product.grade.name}</span>
                                 )}
-                                {product.grade?.name && product.createdBy?.company && (
-                                  <span>•</span>
-                                )}
+                                {product.grade?.name &&
+                                  product.createdBy?.company && <span>•</span>}
                                 {product.createdBy?.company && (
                                   <span>By: {product.createdBy.company}</span>
                                 )}
@@ -339,12 +373,19 @@ const CreateFinanceRequest = () => {
                       type="number"
                       min="1"
                       value={formData.quantity}
-                      onChange={(e) => handleInputChange("quantity", parseInt(e.target.value) || 1)}
+                      onChange={(e) =>
+                        handleInputChange(
+                          "quantity",
+                          parseInt(e.target.value) || 1
+                        )
+                      }
                       className="py-3 px-4 border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500"
                       placeholder="Enter quantity"
                     />
                     {selectedProduct?.uom && (
-                      <p className="text-sm text-gray-500 mt-1">Unit: {selectedProduct.uom}</p>
+                      <p className="text-sm text-gray-500 mt-1">
+                        Unit: {selectedProduct.uom}
+                      </p>
                     )}
                   </div>
 
@@ -355,7 +396,9 @@ const CreateFinanceRequest = () => {
                     </label>
                     <Select
                       value={formData.emiMonths.toString()}
-                      onValueChange={(value) => handleInputChange("emiMonths", parseInt(value))}
+                      onValueChange={(value) =>
+                        handleInputChange("emiMonths", parseInt(value))
+                      }
                     >
                       <SelectTrigger className="py-3 px-4 border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500">
                         <SelectValue />
@@ -381,15 +424,28 @@ const CreateFinanceRequest = () => {
                       </label>
                       <Input
                         type="text"
-                        value={inputValues.estimatedPrice || (formData.estimatedPrice === 0 ? "" : formData.estimatedPrice.toString())}
+                        value={
+                          inputValues.estimatedPrice ||
+                          (formData.estimatedPrice === 0
+                            ? ""
+                            : formData.estimatedPrice.toString())
+                        }
                         onChange={handlePriceInputChange}
                         onBlur={(e) => {
                           // Format to 2 decimal places on blur if there's a value
                           if (formData.estimatedPrice > 0) {
-                            const formatted = parseFloat(formData.estimatedPrice.toString()).toFixed(2);
+                            const formatted = parseFloat(
+                              formData.estimatedPrice.toString()
+                            ).toFixed(2);
                             const formattedValue = parseFloat(formatted);
-                            setFormData(prev => ({ ...prev, estimatedPrice: formattedValue }));
-                            setInputValues(prev => ({ ...prev, estimatedPrice: formattedValue.toString() }));
+                            setFormData((prev) => ({
+                              ...prev,
+                              estimatedPrice: formattedValue,
+                            }));
+                            setInputValues((prev) => ({
+                              ...prev,
+                              estimatedPrice: formattedValue.toString(),
+                            }));
                           }
                         }}
                         className="py-3 px-4 border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white/70"
@@ -444,7 +500,10 @@ const CreateFinanceRequest = () => {
                     <CalendarIcon className="w-4 h-4 inline mr-2 text-green-600" />
                     Desired Delivery Date
                   </label>
-                  <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
+                  <Popover
+                    open={isCalendarOpen}
+                    onOpenChange={setIsCalendarOpen}
+                  >
                     <PopoverTrigger asChild>
                       <Button
                         variant="outline"
@@ -454,7 +513,9 @@ const CreateFinanceRequest = () => {
                         {formData.desiredDeliveryDate ? (
                           format(formData.desiredDeliveryDate, "PPP")
                         ) : (
-                          <span className="text-gray-500">Select delivery date</span>
+                          <span className="text-gray-500">
+                            Select delivery date
+                          </span>
                         )}
                       </Button>
                     </PopoverTrigger>
@@ -494,7 +555,9 @@ const CreateFinanceRequest = () => {
                   </label>
                   <Select
                     value={formData.country}
-                    onValueChange={(value) => handleInputChange("country", value)}
+                    onValueChange={(value) =>
+                      handleInputChange("country", value)
+                    }
                   >
                     <SelectTrigger className="py-3 px-4 border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500">
                       <SelectValue placeholder="Select country" />
@@ -516,7 +579,9 @@ const CreateFinanceRequest = () => {
                   </label>
                   <Select
                     value={formData.paymentTerms}
-                    onValueChange={(value) => handleInputChange("paymentTerms", value)}
+                    onValueChange={(value) =>
+                      handleInputChange("paymentTerms", value)
+                    }
                   >
                     <SelectTrigger className="py-3 px-4 border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500">
                       <SelectValue placeholder="Select payment terms" />
@@ -540,7 +605,9 @@ const CreateFinanceRequest = () => {
                   </label>
                   <Select
                     value={formData.requireLogisticsSupport}
-                    onValueChange={(value) => handleInputChange("requireLogisticsSupport", value)}
+                    onValueChange={(value) =>
+                      handleInputChange("requireLogisticsSupport", value)
+                    }
                   >
                     <SelectTrigger className="py-3 px-4 border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500">
                       <SelectValue />
@@ -587,11 +654,16 @@ const CreateFinanceRequest = () => {
               <div className="flex items-center justify-between">
                 <div className="text-sm text-gray-600">
                   <AlertCircle className="w-4 h-4 inline mr-2 text-amber-500" />
-                  All finance requests are subject to credit approval and terms may vary.
+                  All finance requests are subject to credit approval and terms
+                  may vary.
                 </div>
                 <Button
                   type="submit"
-                  disabled={isSubmitting || !formData.productId || !inputValues.notes.trim()}
+                  disabled={
+                    isSubmitting ||
+                    !formData.productId ||
+                    !inputValues.notes.trim()
+                  }
                   className="px-8 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50"
                 >
                   {isSubmitting ? (

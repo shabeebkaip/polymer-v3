@@ -57,3 +57,30 @@ export interface FinanceRequestDetailTypes {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface Product {
+  _id: string;
+  productName: string;
+  grade?: { name: string };
+  uom?: string;
+  pricePerUnit?: number;
+  createdBy?: {
+    company?: string;
+  };
+}
+
+export interface FinanceFormData {
+  productId: string;
+  emiMonths: number;
+  quantity: number;
+  estimatedPrice: number;
+  notes: string;
+  productGrade: string;
+  desiredDeliveryDate: Date | undefined;
+  destination: string;
+  paymentTerms: string;
+  requireLogisticsSupport: string;
+  previousPurchaseHistory: string;
+  additionalNotes: string;
+  country: string;
+}
