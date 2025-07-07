@@ -42,12 +42,12 @@ const Login: React.FC = () => {
           response.message || "Login failed. Please check your credentials."
         );
       }
-    } catch (error: any) {
+    } catch (error) {
       setIsLoading(false);
       toast.dismiss(toastId); // Also dismiss on error
       console.error("Login error:", error);
 
-      if (error?.response?.status === 401) {
+      if (typeof error === "object" && error && "response" in error && (error as any).response?.status === 401) {
         toast.error("Unauthorized: Incorrect email or password.");
       } else {
         toast.error("An unexpected error occurred during login.");
@@ -159,7 +159,7 @@ const Login: React.FC = () => {
       {/* Sign Up Link */}
       <div className="text-center">
         <p className="text-gray-600 text-sm">
-          Don't have an account?{" "}
+          Don&apos;t have an account?{" "}
           <Link 
             href="/auth/user-type" 
             className="font-medium text-green-600 hover:text-green-700 transition-colors hover:underline"
