@@ -108,9 +108,14 @@ const CreatePromotion = () => {
         router.push('/user/promotions');
       }, 2000);
 
-    } catch (err: any) {
+    } catch (err) {
+      // Type guard for error with response
+      if (typeof err === 'object' && err && 'response' in err && (err as any).response?.data?.message) {
+        setError((err as any).response.data.message);
+      } else {
+        setError("Failed to create promotion");
+      }
       console.error("Error creating promotion:", err);
-      setError(err.response?.data?.message || "Failed to create promotion");
     } finally {
       setLoading(false);
     }
@@ -126,7 +131,7 @@ const CreatePromotion = () => {
             </div>
             <h2 className="text-2xl font-bold text-gray-900 mb-2">Promotion Created!</h2>
             <p className="text-gray-600 mb-4">
-              Your promotional deal has been submitted for review. You'll be redirected to the promotions page.
+              Your promotional deal has been submitted for review. You&apos;ll be redirected to the promotions page.
             </p>
             <div className="animate-pulse text-sm text-gray-500">Redirecting...</div>
           </div>
