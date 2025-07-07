@@ -74,7 +74,9 @@ const SupplierDetail = () => {
             Supplier Not Found
           </h1>
           <p className="text-gray-600">
-            The supplier you're looking for doesn't exist or has been removed.
+            {
+              "The supplier you're looking for doesn't exist or has been removed."
+            }
           </p>
         </div>
       </section>
@@ -115,17 +117,6 @@ const SupplierDetail = () => {
                   </a>
                 </div>
               )}
-              {/* {supplier.email && (
-                <div className="flex items-center gap-2">
-                  <Mail className="w-5 h-5 text-green-600" />
-                  <a
-                    href={`mailto:${supplier.email}`}
-                    className="text-green-600 hover:text-green-800 hover:underline"
-                  >
-                    {supplier.email}
-                  </a>
-                </div>
-              )} */}
             </div>
             <div className="flex flex-wrap gap-2 mb-6">
               <Badge
@@ -203,22 +194,6 @@ const SupplierDetail = () => {
               </div>
             </div>
           </div>
-
-          {/* Specialties */}
-          {/* {supplier.specialties && supplier.specialties.length > 0 && (
-            <div className="bg-white rounded-xl shadow-sm border p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-4">
-                Specialties
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {supplier.specialties.map((specialty, index) => (
-                  <Badge key={index} variant="outline" className="text-sm">
-                    {specialty}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          )} */}
         </div>
 
         {/* Quick Info Sidebar */}
@@ -322,8 +297,8 @@ const SupplierDetail = () => {
       <div className="bg-gradient-to-r from-green-400 to-green-600  via-green-600 rounded-2xl p-8 mt-8 text-center text-white">
         <h2 className="text-3xl font-bold mb-4">Ready to Connect?</h2>
         <p className="text-green-100 mb-6 max-w-2xl mx-auto">
-          Get in touch with {supplier.company} to discuss your requirements,
-          request quotes, or learn more about their products and services.
+          {`Get in touch with ${supplier.company} to discuss your requirements,
+          request quotes, or learn more about their products and services.`}
         </p>
         <div className="flex flex-wrap justify-center gap-4">
           <Button
