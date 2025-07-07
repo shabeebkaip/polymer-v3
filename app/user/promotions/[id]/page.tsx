@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import Image from 'next/image';
 
 const PromotionDetail = () => {
   const params = useParams();
@@ -322,13 +323,16 @@ const PromotionDetail = () => {
                               <ImageIcon className="w-8 h-8 text-gray-400 animate-pulse" />
                             </div>
                           )}
-                          <img
+                          <Image
                             src={image.fileUrl}
                             alt={image.name || `Product image ${index + 1}`}
-                            className="w-full h-full object-cover"
-                            onLoadStart={() => handleImageLoadStart(image._id)}
+                            fill
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            className="object-cover"
                             onLoad={() => handleImageLoad(image._id)}
                             onError={() => handleImageError(image._id)}
+                            // onLoadStart is not supported by next/image, so we skip it
+                            priority={index === 0}
                           />
                         </div>
                       ))}
