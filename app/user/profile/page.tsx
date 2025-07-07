@@ -32,7 +32,7 @@ const Profile = () => {
         const userObj = data?.userInfo || data;
         setUser(userObj);
         setEditedUser(userObj);
-      } catch (err) {
+      } catch {
         toast.error("Failed to load user info");
       }
     };
@@ -83,7 +83,7 @@ const Profile = () => {
     setIsSaving(true);
     try {
       // Prepare the data for API call
-      const updateData: any = {
+      const updateData: Partial<UserType> = {
         firstName: editedUser.firstName?.trim(),
         lastName: editedUser.lastName?.trim(),
         company: editedUser.company?.trim(),
@@ -116,8 +116,8 @@ const Profile = () => {
 
       // Remove undefined or empty values
       Object.keys(updateData).forEach(key => {
-        if (updateData[key] === undefined || updateData[key] === "") {
-          delete updateData[key];
+        if ((updateData as Record<string, unknown>)[key] === undefined || (updateData as Record<string, unknown>)[key] === "") {
+          delete (updateData as Record<string, unknown>)[key];
         }
       });
 
@@ -137,9 +137,13 @@ const Profile = () => {
       } else {
         throw new Error(response.message || "Failed to update profile");
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error updating profile:", error);
-      toast.error(error.message || "Failed to update profile. Please try again.");
+      toast.error(
+        typeof error === "object" && error && "message" in error
+          ? (error as { message?: string }).message || "Failed to update profile. Please try again."
+          : "Failed to update profile. Please try again."
+      );
     } finally {
       setIsSaving(false);
     }
