@@ -124,7 +124,7 @@ const CreateFinanceRequest = () => {
   );
 
   const handleInputChange = useCallback(
-    (field: keyof FinanceFormData, value: any) => {
+    (field: keyof FinanceFormData, value: string | number | boolean | Date | undefined) => {
       setFormData((prev) => ({ ...prev, [field]: value }));
     },
     []
@@ -431,7 +431,7 @@ const CreateFinanceRequest = () => {
                             : formData.estimatedPrice.toString())
                         }
                         onChange={handlePriceInputChange}
-                        onBlur={(e) => {
+                        onBlur={() => {
                           // Format to 2 decimal places on blur if there's a value
                           if (formData.estimatedPrice > 0) {
                             const formatted = parseFloat(
