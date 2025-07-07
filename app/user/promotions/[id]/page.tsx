@@ -142,9 +142,6 @@ const PromotionDetail = () => {
     setImageLoading(prev => ({ ...prev, [imageId]: false }));
   };
 
-  const handleImageLoadStart = (imageId: string) => {
-    setImageLoading(prev => ({ ...prev, [imageId]: true }));
-  };
 
   // Loading state
   if (detailLoading) {
