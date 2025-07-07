@@ -1,26 +1,27 @@
 "use client";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { useUserInfo } from "@/lib/useUserInfo";
 import { getUserInfo } from "@/apiServices/user";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import React, { useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Edit2, Save, X, User, Mail, Phone, Building, MapPin, Globe, Camera, FileText, Loader2 } from "lucide-react";
+import { Edit2, Save, X, User, Mail, Phone,  MapPin, Globe, Camera, FileText, Loader2 } from "lucide-react";
 import { editUserProfile } from "@/apiServices/user";
 import { toast } from "sonner";
+import { UserType } from "@/types/user";
+
+
 
 
 const Profile = () => {
   const { setUser: setUserStore } = useUserInfo();
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<UserType | null>(null);
   const userLoading = !user;
   const [isEditing, setIsEditing] = useState(false);
-  const [editedUser, setEditedUser] = useState<any>({});
+  const [editedUser, setEditedUser] = useState<UserType>({});
   const [isSaving, setIsSaving] = useState(false);
 
   // Fetch user info from API on mount
@@ -204,8 +205,8 @@ const Profile = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Profile Card */}
         <div className="lg:col-span-1">
-          <Card className="shadow-lg border-0 bg-gradient-to-br from-white to-gray-50">
-            <CardHeader className="text-center pb-2">
+          <div className="shadow-lg border-0 bg-gradient-to-br from-white to-gray-50">
+            <div className="text-center pb-2">
               <div className="relative mx-auto mb-4">
                 <Avatar className="w-24 h-24 border-4 border-white shadow-lg">
                   <AvatarImage 
@@ -228,13 +229,13 @@ const Profile = () => {
                   </Button>
                 )}
               </div>
-              <CardTitle className="text-xl text-gray-900">
+              <h2 className="text-xl text-gray-900">
                 {userLoading ? (
                   <Skeleton className="h-6 w-32 mx-auto" />
                 ) : (
                   `${user?.firstName || ""} ${user?.lastName || ""}`.trim() || user?.company || "User"
                 )}
-              </CardTitle>
+              </h2>
               {userLoading ? (
                 <div className="text-gray-600 capitalize">
                   <Skeleton className="h-4 w-20 mx-auto mt-2" />
@@ -244,8 +245,8 @@ const Profile = () => {
                   {user?.user_type || "Member"}
                 </p>
               )}
-            </CardHeader>
-            <CardContent className="pt-4">
+            </div>
+            <div className="pt-4">
               <div className="space-y-4">
                 <div className="flex items-center gap-3 text-gray-600">
                   <Mail className="w-4 h-4 text-emerald-600" />
@@ -284,20 +285,20 @@ const Profile = () => {
                   </div>
                 )}
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
 
         {/* Form Section */}
         <div className="lg:col-span-2">
-          <Card className="shadow-lg border-0">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-xl text-gray-900">
+          <div className="shadow-lg border-0">
+            <div>
+              <div className="flex items-center gap-2 text-xl text-gray-900">
                 <User className="w-5 h-5 text-emerald-600" />
                 Personal Information
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+              </div>
+            </div>
+            <div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* First Name */}
                 <div className="space-y-2">
@@ -616,8 +617,8 @@ const Profile = () => {
                   )}
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
       </div>
     </div>
