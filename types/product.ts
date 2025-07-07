@@ -6,6 +6,97 @@ export interface UploadedFile {
   [key: string]: any; // fallback for dynamic keys
 }
 
+export interface ProductImage {
+  fileUrl: string;
+  [key: string]: unknown;
+  id: string;
+  name: string;
+  type: string;
+}
+
+export interface Company {
+  _id: string;
+  company: string;
+  company_logo: string;
+  countryOfOrigin: string;
+  website?: string;
+  name: string;
+  email: string;
+  phone: number;
+  address: string;
+  location: string;
+}
+export interface NamedObject {
+  _id: string;
+  name: string;
+  ar_name?: string;
+  ger_name?: string;
+  cn_name?: string;
+}
+
+export interface Product {
+  _id: string;
+  productName: string;
+  chemicalName?: string;
+  tradeName?: string;
+  description?: string;
+  productImages?: ProductImage[];
+  createdBy?: Company;
+  chemicalFamily?: NamedObject;
+  polymerType?: NamedObject;
+  physicalForm?: NamedObject;
+  industry?: NamedObject[];
+  grade?: NamedObject[];
+  productType?: string;
+  uom?: string;
+  minimum_order_quantity?: number;
+  minOrderQuantity?: number;
+  price?: number;
+  density?: number;
+  stock?: number;
+  manufacturingMethod?: string;
+  color?: string;
+  countryOfOrigin?: string;
+  packagingWeight?: string;
+  mfi?: number;
+  tensileStrength?: number;
+  elongationAtBreak?: number;
+  shoreHardness?: number;
+  waterAbsorption?: number;
+  storageConditions?: string;
+  shelfLife?: string;
+  recyclable?: boolean;
+  bioDegradable?: boolean;
+  fdaApproved?: boolean;
+  medicalGrade?: boolean;
+  leadTime?: string;
+  paymentTerms?: NamedObject;
+  priceTerms?: string;
+  packagingType?: NamedObject[];
+  incoterms?: NamedObject[];
+  product_family?: NamedObject[];
+  additionalInfo?: Array<{
+    title: string;
+    description: string;
+  }>;
+  safety_data_sheet?: {
+    fileUrl: string;
+    name: string;
+    type: string;
+  };
+  technical_data_sheet?: {
+    fileUrl: string;
+    name: string;
+    type: string;
+  };
+  certificate_of_analysis?: {
+    fileUrl: string;
+    name: string;
+    type: string;
+  };
+  [key: string]: any;
+}
+
 export interface ProductFormData {
   productName: string;
   chemicalName: string;

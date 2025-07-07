@@ -1,124 +1,24 @@
 import React, { useState, useRef, useLayoutEffect } from "react";
 import CompanyDetails from "@/components/product/CompanyDetails";
 import ImageContainers from "@/components/product/ImageContainers";
-import GeneralTabInformation from "./GeneralTabInformation";
-import TradeInformation from "./TradeInformation";
 import { useUserInfo } from "@/lib/useUserInfo";
-import { AnimatePresence, motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import SampleRequestModal from "@/components/shared/SampleRequestModal";
 import QuoteRequestModal from "@/components/shared/QuoteRequestModal";
 import ActionButtons from "@/components/shared/ActionButtons";
-import { FALLBACK_COMPANY_IMAGE } from "@/lib/fallbackImages";
 import {
-  Star,
   Share2,
   Heart,
   ShoppingCart,
   Package,
-  Truck,
-  Shield,
   Award,
-  Globe,
-  Factory,
   FileText,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { Product } from "@/types/product";
 
-// Interfaces (same as your original)
 
-interface ProductImage {
-  fileUrl: string;
-  [key: string]: unknown;
-  id: string;
-  name: string;
-  type: string;
-}
-
-interface Company {
-  _id: string;
-  company: string;
-  company_logo: string;
-  countryOfOrigin: string;
-  website?: string;
-  name: string;
-  email: string;
-  phone: number;
-  address: string;
-  location: string;
-}
-
-interface NamedObject {
-  _id: string;
-  name: string;
-  ar_name?: string;
-  ger_name?: string;
-  cn_name?: string;
-}
-
-interface Product {
-  _id: string;
-  productName: string;
-  chemicalName?: string;
-  tradeName?: string;
-  description?: string;
-  productImages?: ProductImage[];
-  createdBy?: Company;
-  chemicalFamily?: NamedObject;
-  polymerType?: NamedObject;
-  physicalForm?: NamedObject;
-  industry?: NamedObject[];
-  grade?: NamedObject[];
-  productType?: string;
-  uom?: string;
-  minimum_order_quantity?: number;
-  minOrderQuantity?: number;
-  price?: number;
-  density?: number;
-  stock?: number;
-  manufacturingMethod?: string;
-  color?: string;
-  countryOfOrigin?: string;
-  packagingWeight?: string;
-  mfi?: number;
-  tensileStrength?: number;
-  elongationAtBreak?: number;
-  shoreHardness?: number;
-  waterAbsorption?: number;
-  storageConditions?: string;
-  shelfLife?: string;
-  recyclable?: boolean;
-  bioDegradable?: boolean;
-  fdaApproved?: boolean;
-  medicalGrade?: boolean;
-  leadTime?: string;
-  paymentTerms?: NamedObject;
-  priceTerms?: string;
-  packagingType?: NamedObject[];
-  incoterms?: NamedObject[];
-  product_family?: NamedObject[];
-  additionalInfo?: Array<{
-    title: string;
-    description: string;
-  }>;
-  safety_data_sheet?: {
-    fileUrl: string;
-    name: string;
-    type: string;
-  };
-  technical_data_sheet?: {
-    fileUrl: string;
-    name: string;
-    type: string;
-  };
-  certificate_of_analysis?: {
-    fileUrl: string;
-    name: string;
-    type: string;
-  };
-  [key: string]: any;
-}
 
 interface ProductDetailClientProps {
   product: Product;
