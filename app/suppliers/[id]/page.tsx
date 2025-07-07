@@ -287,7 +287,7 @@ const SupplierDetail = () => {
               No Products Available
             </h3>
             <p className="text-gray-600">
-              This supplier hasn't added any products yet.
+              {"This supplier hasn't added any products yet."}
             </p>
           </div>
         )}
