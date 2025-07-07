@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
 import {
   Globe,
@@ -27,7 +27,7 @@ const SupplierDetail = () => {
   const [supplier, setSupplier] = useState<Supplier | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchSupplierDetails = async () => {
+  const fetchSupplierDetails = useCallback(async () => {
     try {
       const response = await getSellerDetail(params.id as string);
       setSupplier(response.data);
@@ -36,7 +36,8 @@ const SupplierDetail = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [params.id]);
+
   useEffect(() => {
     if (params.id) {
       fetchSupplierDetails();
