@@ -29,71 +29,15 @@ import {
   Truck,
   CalendarDays
 } from "lucide-react";
+import Image from 'next/image';
+import { FinanceRequestDetailTypes } from '@/types/finance';
 
-interface FinanceRequestDetail {
-  _id: string;
-  userId: {
-    _id: string;
-    firstName: string;
-    lastName: string;
-    company: string;
-    email: string;
-    address: string;
-    phone: number;
-  };
-  productId: {
-    _id: string;
-    productName: string;
-    chemicalName: string;
-    description: string;
-    productImages: Array<{
-      id: string;
-      name: string;
-      type: string;
-      fileUrl: string;
-      _id: string;
-    }>;
-    createdBy: {
-      _id: string;
-      firstName: string;
-      lastName: string;
-      company: string;
-      email: string;
-      address: string;
-      phone: number;
-    };
-    color: string;
-    countryOfOrigin: string;
-    density: number;
-    elongationAtBreak: number;
-    manufacturingMethod: string;
-    mfi: number;
-    shoreHardness: number;
-    tensileStrength: number;
-    tradeName: string;
-    waterAbsorption: number;
-  };
-  emiMonths: number;
-  quantity: number;
-  estimatedPrice: number;
-  notes: string;
-  status: string;
-  productGrade: string;
-  desiredDeliveryDate: string;
-  destination: string;
-  paymentTerms: string;
-  requireLogisticsSupport: string;
-  previousPurchaseHistory: string;
-  additionalNotes: string;
-  country: string;
-  createdAt: string;
-  updatedAt: string;
-}
+
 
 const FinanceRequestDetail = () => {
   const router = useRouter();
   const params = useParams();
-  const [financeRequest, setFinanceRequest] = useState<FinanceRequestDetail | null>(null);
+  const [financeRequest, setFinanceRequest] = useState<FinanceRequestDetailTypes | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -110,9 +54,13 @@ const FinanceRequestDetail = () => {
         } else {
           setError(response.message || 'Failed to fetch finance request details');
         }
-      } catch (error: any) {
+      } catch (error) {
         console.error('Error fetching finance request:', error);
-        setError(error?.response?.data?.message || 'Failed to fetch finance request details');
+        setError(
+          typeof error === 'object' && error && 'response' in error && typeof (error as { response?: { data?: { message?: string } } }).response === 'object'
+            ? (error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to fetch finance request details'
+            : 'Failed to fetch finance request details'
+        );
       } finally {
         setLoading(false);
       }
@@ -249,7 +197,7 @@ const FinanceRequestDetail = () => {
         <div className="text-center max-w-md">
           <CreditCard className="w-16 h-16 text-gray-400 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Request Not Found</h2>
-          <p className="text-gray-600 mb-6">The finance request you're looking for doesn't exist or has been removed.</p>
+          <p className="text-gray-600 mb-6">The finance request you&apos;re looking for doesn&apos;t exist or has been removed.</p>
           <Button onClick={() => router.push('/user/finance-requests')}>
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Finance Requests
@@ -380,9 +328,11 @@ const FinanceRequestDetail = () => {
               <div className="flex gap-6">
                 {financeRequest.productId.productImages && financeRequest.productId.productImages.length > 0 && (
                   <div className="flex-shrink-0">
-                    <img 
+                    <Image
                       src={financeRequest.productId.productImages[0].fileUrl}
                       alt={financeRequest.productId.productName}
+                      width={128}
+                      height={128}
                       className="w-32 h-32 object-cover rounded-xl border border-gray-200"
                     />
                   </div>
