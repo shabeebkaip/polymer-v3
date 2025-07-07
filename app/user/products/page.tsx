@@ -1,17 +1,17 @@
 "use client";
 import { getProductList } from "@/apiServices/products";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import UserProductCard from "@/components/user/UserProductCard";
 import { useUserInfo } from "@/lib/useUserInfo";
 import React, { useEffect, useState } from "react";
-import { Package, Plus, Search, TrendingUp, Eye, Edit, BarChart3 } from "lucide-react";
+import { Package, Plus, Search, TrendingUp, BarChart3 } from "lucide-react";
+import { Product } from "@/types/product";
 
 const ProductsPage: React.FC = () => {
   const { user } = useUserInfo();
-  const [products, setProducts] = useState<any[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [error, setError] = useState<string | null>(null);
