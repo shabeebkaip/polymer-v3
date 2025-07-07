@@ -30,7 +30,10 @@ import { useRouter } from "next/navigation";
 
 interface ProductImage {
   fileUrl: string;
-  [key: string]: any;
+  [key: string]: unknown;
+  id: string;
+  name: string;
+  type: string;
 }
 
 interface Company {
@@ -39,7 +42,11 @@ interface Company {
   company_logo: string;
   countryOfOrigin: string;
   website?: string;
-  [key: string]: any;
+  name: string;
+  email: string;
+  phone: number;
+  address: string;
+  location: string;
 }
 
 interface NamedObject {
@@ -201,20 +208,20 @@ const ProductDetailClient: React.FC<ProductDetailClientProps> = ({
                 <span className="text-gray-600">•</span>
                 <span className="text-gray-700">
                   {product.grade &&
-                    Array.isArray(product.grade) &&
-                    product.grade.length > 0 ? (
-                      <>
-                        Grade:{" "}
-                        <span className="font-medium">
-                          {product.grade.map((g, index) => (
-                            <span key={g._id || index}>
-                              {g.name}
-                              {index < product.grade!.length - 1 ? ", " : ""}
-                            </span>
-                          ))}
-                        </span>
-                      </>
-                    ) : null}
+                  Array.isArray(product.grade) &&
+                  product.grade.length > 0 ? (
+                    <>
+                      Grade:{" "}
+                      <span className="font-medium">
+                        {product.grade.map((g, index) => (
+                          <span key={g._id || index}>
+                            {g.name}
+                            {index < product.grade!.length - 1 ? ", " : ""}
+                          </span>
+                        ))}
+                      </span>
+                    </>
+                  ) : null}
                   {product.physicalForm && !product.grade ? (
                     <>
                       Form:{" "}
@@ -321,10 +328,9 @@ const ProductDetailClient: React.FC<ProductDetailClientProps> = ({
                       </span>
                     </div>
                   ) : null}
-                  {((product.minimum_order_quantity &&
+                  {(product.minimum_order_quantity &&
                     product.minimum_order_quantity > 0) ||
-                    (product.minOrderQuantity &&
-                      product.minOrderQuantity > 0)) ? (
+                  (product.minOrderQuantity && product.minOrderQuantity > 0) ? (
                     <div className="flex items-center gap-2">
                       <span className="text-sm text-gray-600">Min Order:</span>
                       <span className="font-medium text-gray-900">
@@ -398,7 +404,7 @@ const ProductDetailClient: React.FC<ProductDetailClientProps> = ({
                 Basic Information
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {(product.productType || product.polymerType) ? (
+                {product.productType || product.polymerType ? (
                   <div className="bg-gray-50 rounded-lg p-3">
                     <span className="text-sm font-medium text-gray-600">
                       Product Type
@@ -460,12 +466,12 @@ const ProductDetailClient: React.FC<ProductDetailClientProps> = ({
             </div>
 
             {/* Technical Properties */}
-            {(product.density ||
-              product.mfi ||
-              product.tensileStrength ||
-              product.elongationAtBreak ||
-              product.shoreHardness ||
-              product.waterAbsorption) ? (
+            {product.density ||
+            product.mfi ||
+            product.tensileStrength ||
+            product.elongationAtBreak ||
+            product.shoreHardness ||
+            product.waterAbsorption ? (
               <div className="mb-8">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">
                   Technical Properties
@@ -500,16 +506,16 @@ const ProductDetailClient: React.FC<ProductDetailClientProps> = ({
                     </div>
                   ) : null}
                   {product.elongationAtBreak &&
-                    product.elongationAtBreak > 0 ? (
-                      <div className="bg-gray-50 rounded-lg p-3">
-                        <span className="text-sm font-medium text-gray-600">
-                          Elongation at Break
-                        </span>
-                        <p className="text-gray-900 font-medium">
-                          {product.elongationAtBreak}%
-                        </p>
-                      </div>
-                    ) : null}
+                  product.elongationAtBreak > 0 ? (
+                    <div className="bg-gray-50 rounded-lg p-3">
+                      <span className="text-sm font-medium text-gray-600">
+                        Elongation at Break
+                      </span>
+                      <p className="text-gray-900 font-medium">
+                        {product.elongationAtBreak}%
+                      </p>
+                    </div>
+                  ) : null}
                   {product.shoreHardness ? (
                     <div className="bg-gray-50 rounded-lg p-3">
                       <span className="text-sm font-medium text-gray-600">
@@ -535,9 +541,9 @@ const ProductDetailClient: React.FC<ProductDetailClientProps> = ({
             ) : null}
 
             {/* Manufacturing & Origin */}
-            {(product.manufacturingMethod ||
-              product.countryOfOrigin ||
-              product.packagingWeight) ? (
+            {product.manufacturingMethod ||
+            product.countryOfOrigin ||
+            product.packagingWeight ? (
               <div className="mb-8">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">
                   Manufacturing & Origin
@@ -578,11 +584,11 @@ const ProductDetailClient: React.FC<ProductDetailClientProps> = ({
             ) : null}
 
             {/* Certifications & Features */}
-            {(product.recyclable ||
-              product.bioDegradable ||
-              product.fdaApproved ||
-              product.medicalGrade ||
-              product.shelfLife) ? (
+            {product.recyclable ||
+            product.bioDegradable ||
+            product.fdaApproved ||
+            product.medicalGrade ||
+            product.shelfLife ? (
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">
                   Certifications & Features
@@ -645,7 +651,7 @@ const ProductDetailClient: React.FC<ProductDetailClientProps> = ({
         </div>
 
         {/* Product Description & Applications */}
-        {(product.description || product.additionalInfo) ? (
+        {product.description || product.additionalInfo ? (
           <div className="bg-white rounded-2xl shadow-sm border overflow-hidden mb-8">
             <div className="p-6 lg:p-8">
               <h2 className="text-xl font-bold text-gray-900 mb-6">
@@ -718,10 +724,9 @@ const ProductDetailClient: React.FC<ProductDetailClientProps> = ({
                     </p>
                   </div>
                 ) : null}
-                {((product.minimum_order_quantity &&
+                {(product.minimum_order_quantity &&
                   product.minimum_order_quantity > 0) ||
-                  (product.minOrderQuantity &&
-                    product.minOrderQuantity > 0)) ? (
+                (product.minOrderQuantity && product.minOrderQuantity > 0) ? (
                   <div className="bg-gray-50 rounded-lg p-3">
                     <span className="text-sm font-medium text-gray-600">
                       Minimum Order Quantity
