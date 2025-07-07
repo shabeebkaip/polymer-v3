@@ -4,11 +4,12 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { getProductDetails } from "@/apiServices/products";
 import AddEditProduct from "@/components/user/AddEditProduct";
+import { ProductFormData } from "@/types/product";
 
 export default function ProductPage() {
   const { id } = useParams() as { id: string };
 
-  const [product, setProduct] = useState<any>(null);
+  const [product, setProduct] = useState<ProductFormData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -20,18 +21,49 @@ export default function ProductPage() {
 
         const data = {
           ...product,
-          chemicalFamily: product?.chemicalFamily?._id,
-          grade: product?.grade?.map((item: any) => item._id),
-          incoterms: product?.incoterms?.map((item: any) => item._id),
-          industry: product?.industry?.map((item: any) => item._id),
-          packagingType: product?.packagingType?.map((item: any) => item._id),
-          paymentTerms: product?.paymentTerms?._id,
-          physicalForm: product?.physicalForm?._id,
-          polymerType: product?.polymerType?._id,
-          product_family: product?.product_family?.map((item: any) => item._id),
+          productName: product?.productName || "",
+          chemicalName: product?.chemicalName || "",
+          description: product?.description || "",
+          tradeName: product?.tradeName || "",
+          chemicalFamily: product?.chemicalFamily?._id || "",
+          polymerType: product?.polymerType?._id || "",
+          industry: product?.industry?.map((item: { _id: string }) => item._id) || [],
+          grade: product?.grade?.map((item: { _id: string }) => item._id) || [],
+          manufacturingMethod: product?.manufacturingMethod || "",
+          physicalForm: product?.physicalForm?._id || "",
+          countryOfOrigin: product?.countryOfOrigin || "",
+          color: product?.color || "",
+          productImages: product?.productImages || [],
+          density: product?.density?.toString() || "",
+          mfi: product?.mfi ?? null,
+          tensileStrength: product?.tensileStrength ?? null,
+          elongationAtBreak: product?.elongationAtBreak ?? null,
+          shoreHardness: product?.shoreHardness ?? null,
+          waterAbsorption: product?.waterAbsorption ?? null,
+          minimum_order_quantity: product?.minimum_order_quantity ?? null,
+          stock: product?.stock ?? null,
+          uom: product?.uom || "",
+          price: product?.price ?? null,
+          priceTerms: product?.priceTerms || "fixed",
+          incoterms: product?.incoterms?.map((item: { _id: string }) => item._id) || [],
+          leadTime: product?.leadTime || "",
+          paymentTerms: product?.paymentTerms?._id || "",
+          packagingType: product?.packagingType?.map((item: { _id: string }) => item._id) || [],
+          packagingWeight: product?.packagingWeight || "",
+          storageConditions: product?.storageConditions || "",
+          technical_data_sheet: product?.technical_data_sheet || {},
+          certificate_of_analysis: product?.certificate_of_analysis || {},
+          safety_data_sheet: product?.safety_data_sheet || {},
+          shelfLife: product?.shelfLife || "",
+          recyclable: product?.recyclable ?? false,
+          bioDegradable: product?.bioDegradable ?? false,
+          fdaApproved: product?.fdaApproved ?? false,
+          medicalGrade: product?.medicalGrade ?? false,
+          product_family: product?.product_family?.map((item: { _id: string }) => item._id) || [],
+          _id: product?._id || null,
         };
 
-        setProduct(data);
+        setProduct(data as ProductFormData);
       } catch (err) {
         console.error("Failed to fetch product:", err);
         setError("Failed to load product.");
