@@ -47,7 +47,13 @@ const Login: React.FC = () => {
       toast.dismiss(toastId); // Also dismiss on error
       console.error("Login error:", error);
 
-      if (typeof error === "object" && error && "response" in error && (error as any).response?.status === 401) {
+      if (
+        typeof error === "object" &&
+        error !== null &&
+        "response" in error &&
+        typeof (error as { response?: { status?: number } }).response === "object" &&
+        (error as { response?: { status?: number } }).response?.status === 401
+      ) {
         toast.error("Unauthorized: Incorrect email or password.");
       } else {
         toast.error("An unexpected error occurred during login.");
@@ -159,9 +165,9 @@ const Login: React.FC = () => {
       {/* Sign Up Link */}
       <div className="text-center">
         <p className="text-gray-600 text-sm">
-          {"Don't have an account? "}
-          <Link 
-            href="/auth/user-type" 
+          Don&apos;t have an account?{' '}
+          <Link
+            href="/auth/user-type"
             className="font-medium text-green-600 hover:text-green-700 transition-colors hover:underline"
           >
             Sign up for free
