@@ -22,7 +22,6 @@ import { Label } from "@/components/ui/label";
 import {
   Package,
   Calendar,
-  Building2,
   CheckCircle,
   XCircle,
   Clock,
@@ -32,14 +31,8 @@ import {
   Mail,
   FileText,
   Factory,
-  Layers,
-  Beaker,
   AlertCircle,
   ArrowLeft,
-  Download,
-  Globe,
-  Target,
-  Truck,
   Settings,
   Edit3,
   Send,
@@ -47,8 +40,8 @@ import {
   DollarSign,
   ShoppingCart,
   Weight,
-  Ruler,
 } from "lucide-react";
+import Image from 'next/image';
 
 // Type definitions
 interface StatusOption {
@@ -66,7 +59,6 @@ const QuoteEnquiryDetails = () => {
 
   const {
     enquiryDetail,
-    loading,
     error,
     setEnquiryDetail,
     clearEnquiryDetail,
@@ -141,9 +133,13 @@ const QuoteEnquiryDetails = () => {
         setError(response.message || "Failed to fetch quote enquiry details");
         toast.error("Failed to load quote enquiry details");
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error fetching quote enquiry detail:", error);
-      setError(error.message || "Failed to fetch quote enquiry details");
+      if (typeof error === 'object' && error && 'message' in error) {
+        setError((error as { message?: string }).message || "Failed to fetch quote enquiry details");
+      } else {
+        setError("Failed to fetch quote enquiry details");
+      }
       toast.error("Error loading quote enquiry details");
     } finally {
       setLoadingDetail(false);
@@ -182,7 +178,7 @@ const QuoteEnquiryDetails = () => {
       } else {
         toast.error(response.message || "Failed to update status");
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error updating status:", error);
       toast.error("Failed to update status");
     } finally {
@@ -390,10 +386,14 @@ const QuoteEnquiryDetails = () => {
                         <p className="text-sm text-gray-600 mb-3">
                           Product Image
                         </p>
-                        <img
+                        <Image
                           src={enquiryDetail.product.productImages[0].fileUrl}
                           alt={enquiryDetail.product.productName}
+                          width={400}
+                          height={128}
                           className="w-full h-32 object-cover rounded-lg"
+                          style={{ objectFit: 'cover' }}
+                          priority
                         />
                       </div>
                     )}
@@ -496,7 +496,7 @@ const QuoteEnquiryDetails = () => {
                       {enquiryDetail.incoterm &&
                       typeof enquiryDetail.incoterm === "object" &&
                       "name" in enquiryDetail.incoterm
-                        ? (enquiryDetail.incoterm as any).name
+                        ? (enquiryDetail.incoterm as { name: string }).name
                         : enquiryDetail.incoterm || "N/A"}
                     </p>
                   </div>
