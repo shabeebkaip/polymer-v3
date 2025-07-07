@@ -90,9 +90,8 @@ const EditPromotion = () => {
         router.push('/user/promotions');
       }, 2000);
       
-    } catch (err: any) {
-      console.error('Error updating promotion:', err);
-      setError(err?.response?.data?.message || 'Failed to update promotion. Please try again.');
+    } catch {
+      setError('Failed to update promotion. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -201,7 +200,7 @@ const EditPromotion = () => {
                   Edit Promotion
                 </h1>
                 <p className="text-gray-600 text-lg mt-2 font-medium">
-                  Update your promotional offer for "{promotionDetail.product.productName}"
+                  Update your promotional offer for &quot;{promotionDetail.product.productName}&quot;
                 </p>
               </div>
             </div>
