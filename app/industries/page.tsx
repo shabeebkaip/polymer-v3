@@ -19,7 +19,7 @@ const Page: React.FC = () => {
   useEffect(() => {
     getIndustryList()
       .then((response) => {
-        const data = response?.data?.map((item: any) => ({
+        const data = response?.data?.map((item: IndustryItem) => ({
           _id: item._id,
           name: item.name,
           image: item.bg, // Normalizing bg to image
@@ -49,7 +49,10 @@ const Page: React.FC = () => {
             Industries We Serve
           </h1>
           <p className="text-xl text-gray-600 mb-6 leading-relaxed">
-            Discover the diverse range of industries that rely on our polymer materials and chemical solutions. From automotive to healthcare, we provide specialized products tailored to meet the unique demands of each sector.
+            Discover the diverse range of industries that rely on our polymer
+            materials and chemical solutions. From automotive to healthcare, we
+            provide specialized products tailored to meet the unique demands of
+            each sector.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
             <div className="bg-white rounded-xl p-6 shadow-sm border">
@@ -89,7 +92,8 @@ const Page: React.FC = () => {
           Explore Industries
         </h2>
         <p className="text-gray-600 mb-8">
-          Click on any industry to discover specific products, applications, and solutions designed for that sector.
+          Click on any industry to discover specific products, applications, and
+          solutions designed for that sector.
         </p>
       </div>
 
@@ -132,13 +136,15 @@ const Page: React.FC = () => {
       {/* Call to Action */}
       <div className="bg-gradient-to-r from-green-600 to-green-800 rounded-2xl p-8 mt-12 text-center text-white">
         <h2 className="text-3xl font-bold mb-4">
-          Don't See Your Industry?
+          {"Don't See Your Industry?"}
         </h2>
         <p className="text-green-100 mb-6 max-w-2xl mx-auto">
-          We work with many specialized industries and can develop custom solutions for your unique requirements. Contact us to discuss your specific needs.
+          {
+            "We work with many specialized industries and can develop custom solutions for your unique requirements. Contact us to discuss your specific needs."
+          }
         </p>
         <button className="bg-white border-2 border-[var(--green-main)] text-[var(--green-main)] px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
-          Contact Our Experts
+          {"Contact Our Experts"}
         </button>
       </div>
     </section>
