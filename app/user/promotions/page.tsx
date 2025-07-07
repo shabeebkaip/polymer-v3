@@ -9,22 +9,18 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { 
-  Search, 
-  Plus, 
+import {
+  Search,
+  Plus,
   Eye,
   Edit,
   ChevronDown,
   Package,
   TrendingUp,
-  DollarSign,
-  Calendar,
-  Activity,
   CheckCircle,
   XCircle,
   Clock,
   AlertTriangle,
-  Filter,
   ChevronLeft,
   ChevronRight
 } from 'lucide-react';
@@ -37,7 +33,6 @@ const Promotions = () => {
     meta,
     loading,
     error,
-    filters,
     currentPage,
     itemsPerPage,
     fetchPromotions,
@@ -135,14 +130,14 @@ const Promotions = () => {
     },
     {
       icon: CheckCircle,
-      value: meta?.summary?.active || promotions.filter((p: any) => p.status === 'approved').length,
+      value: meta?.summary?.active || promotions.filter((p: { status: string }) => p.status === 'approved').length,
       label: 'Active',
       bgColor: 'bg-emerald-100',
       color: 'text-emerald-600'
     },
     {
       icon: Clock,
-      value: meta?.summary?.pending || promotions.filter((p: any) => p.status === 'pending').length,
+      value: meta?.summary?.pending || promotions.filter((p: { status: string }) => p.status === 'pending').length,
       label: 'Pending',
       bgColor: 'bg-yellow-100',
       color: 'text-yellow-600'
@@ -268,9 +263,10 @@ const Promotions = () => {
             )}
 
             {/* Create Button */}
-            <button 
+            <button
               onClick={() => router.push('/user/promotions/add')}
-            className="px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all duration-200 font-medium flex items-center gap-2 shadow-lg">
+              className="px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all duration-200 font-medium flex items-center gap-2 shadow-lg"
+            >
               <Plus className="w-4 h-4" />
               Create Deal
             </button>
@@ -332,11 +328,19 @@ const Promotions = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {paginatedPromotions.map((promotion: any, index: number) => {
+                {paginatedPromotions.map((promotion: {
+                  id: string;
+                  productName?: string;
+                  productId?: string;
+                  offerPrice: number;
+                  status: string;
+                  createdAt: string;
+                  updatedAt: string;
+                }, index: number) => {
                   const statusConfig = getStatusConfig(promotion.status);
                   const StatusIcon = statusConfig.icon;
                   const serialNumber = ((currentPage - 1) * itemsPerPage) + index + 1;
-                  
+
                   return (
                     <TableRow key={promotion.id} className="hover:bg-gray-50/50 transition-colors">
                       <TableCell className="py-4 font-medium text-gray-900">
@@ -380,15 +384,15 @@ const Promotions = () => {
                       </TableCell>
                       <TableCell className="py-4 text-center">
                         <div className="flex items-center justify-center gap-2">
-                          <button 
+                          <button
                             onClick={() => router.push(`/user/promotions/${promotion.id}`)}
                             className="p-2 text-gray-600 hover:text-green-700 hover:bg-green-50 rounded-lg transition-colors"
                             title="View Details"
                           >
                             <Eye className="w-4 h-4" />
                           </button>
-                          <button 
-                            className="p-2 text-gray-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors" 
+                          <button
+                            className="p-2 text-gray-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors"
                             onClick={() => router.push(`/user/promotions/${promotion.id}/edit`)}
                             title="Edit Promotion"
                           >
@@ -411,7 +415,7 @@ const Promotions = () => {
                       Showing <span className="font-bold text-green-600">{((currentPage - 1) * itemsPerPage) + 1}</span> to <span className="font-bold text-green-600">{Math.min(currentPage * itemsPerPage, filteredPromotions.length)}</span> of <span className="font-bold text-green-600">{filteredPromotions.length}</span> results
                     </span>
                   </div>
-                  
+
                   <div className="flex items-center gap-3">
                     {/* Previous Button */}
                     <button
@@ -486,8 +490,8 @@ const Promotions = () => {
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">No Promotions Found</h3>
               <p className="text-gray-600 mb-6 max-w-md mx-auto">
-                {searchTerm || statusFilter 
-                  ? 'Try adjusting your search criteria or filters to find more results' 
+                {searchTerm || statusFilter
+                  ? 'Try adjusting your search criteria or filters to find more results'
                   : 'Create your first promotional deal to start attracting customers'
                 }
               </p>
