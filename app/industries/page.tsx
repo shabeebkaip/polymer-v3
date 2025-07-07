@@ -4,13 +4,9 @@ import CategoryCard from "@/components/home/CategoryCard";
 import { getIndustryList } from "@/apiServices/shared";
 import { Building2, Factory, Zap, Briefcase } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { IndustryItem } from "@/types/industries";
 
-interface IndustryItem {
-  _id: string;
-  name: string;
-  bg: string;
-  image: string;
-}
+
 
 const Page: React.FC = () => {
   const [industries, setIndustries] = useState<IndustryItem[]>([]);

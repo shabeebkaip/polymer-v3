@@ -8,6 +8,7 @@ import useIsMobile from "@/lib/useIsMobile";
 import { Skeleton } from "../ui/skeleton";
 import { useSharedState } from "@/stores/sharedStore";
 import { ProductFamily } from "@/types/productFamily";
+import { IndustryItem } from "@/types/industries";
 
 interface CategoryData {
   id: string;
@@ -15,12 +16,7 @@ interface CategoryData {
   icon: string;
 }
 
-interface IndustryItem {
-  _id: string;
-  name: string;
-  bg: string;
-  image: string;
-}
+
 
 
 
