@@ -110,8 +110,13 @@ const CreatePromotion = () => {
 
     } catch (err) {
       // Type guard for error with response
-      if (typeof err === 'object' && err && 'response' in err && (err as any).response?.data?.message) {
-        setError((err as any).response.data.message);
+      if (
+        typeof err === 'object' &&
+        err !== null &&
+        'response' in err &&
+        typeof (err as { response?: { data?: { message?: string } } }).response?.data?.message === 'string'
+      ) {
+        setError((err as { response: { data: { message: string } } }).response.data.message);
       } else {
         setError("Failed to create promotion");
       }
