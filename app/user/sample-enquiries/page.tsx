@@ -28,21 +28,12 @@ import { useRouter } from "next/navigation";
 import { getUserSampleEnquiries } from "@/apiServices/user";
 import { useSampleEnquiriesStore } from "@/stores/sampleEnquiriesStore";
 
-const statusOptions = [
-  { label: "All", value: "" },
-  { label: "Pending", value: "pending" },
-  { label: "Approved", value: "approved" },
-  { label: "Rejected", value: "rejected" },
-];
-
 const SampleEnquiries = () => {
   const router = useRouter();
 
   // Zustand store
-  const { enquiries, meta, setEnquiries, clearEnquiries } =
-    useSampleEnquiriesStore();
+  const { enquiries, meta, setEnquiries, clearEnquiries } = useSampleEnquiriesStore();
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   // Filter states
   const [searchTerm, setSearchTerm] = useState(meta?.filters?.search || "");
@@ -90,11 +81,9 @@ const SampleEnquiries = () => {
 
         const response = await getUserSampleEnquiries(params);
         setEnquiries(response.data || [], response.meta);
-        setError(null);
       } catch (err) {
-        setError("Failed to load sample enquiries");
-        clearEnquiries();
         console.error("Error fetching enquiries:", err);
+        clearEnquiries();
       } finally {
         setLoading(false);
       }
@@ -119,7 +108,6 @@ const SampleEnquiries = () => {
   // Pagination helpers
   const totalPages = meta?.pagination?.totalPages || 1;
   const totalRequests = meta?.pagination?.total || 0;
-  const count = meta?.pagination?.count || 0;
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -323,7 +311,7 @@ const SampleEnquiries = () => {
               </div>
               {debouncedSearchTerm && (
                 <p className="text-sm text-green-600 mt-2 font-medium">
-                  Searching for "{debouncedSearchTerm}"
+                  Searching for &quot;{debouncedSearchTerm}&quot;
                 </p>
               )}
             </div>
@@ -383,7 +371,7 @@ const SampleEnquiries = () => {
                 {debouncedSearchTerm && (
                   <span className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-100 to-emerald-100 text-green-700 rounded-full text-sm font-medium border border-green-200/50 group">
                     <Search className="w-4 h-4" />
-                    <span>Search: "{debouncedSearchTerm}"</span>
+                    <span>Search: &quot;{debouncedSearchTerm}&quot;</span>
                     <button
                       onClick={() => setSearchTerm("")}
                       className="ml-1 hover:bg-green-200/50 rounded-full p-1 transition-colors"
@@ -490,8 +478,8 @@ const SampleEnquiries = () => {
                     <div className="font-medium mb-2">Current filters:</div>
                     {debouncedSearchTerm && (
                       <div className="flex items-center gap-2">
-                        <Search className="w-4 h-4" /> Search: "
-                        {debouncedSearchTerm}"
+                        <Search className="w-4 h-4" /> Search: &quot;
+                        {debouncedSearchTerm}&quot;
                       </div>
                     )}
                     {statusFilter !== "all" && (
