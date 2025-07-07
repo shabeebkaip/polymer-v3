@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Package, CheckCircle, AlertCircle, Calendar as CalendarIcon, MapPin, FileText, Clock, Truck, Scale, Globe, MessageSquare, Upload } from "lucide-react";
+import { ArrowLeft, Package, CheckCircle, Calendar as CalendarIcon, MapPin, FileText, Clock, Truck, Scale, Globe, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -123,7 +123,7 @@ const CreateProductRequest = () => {
     }));
   }, [products]);
 
-  const handleInputChange = useCallback((field: keyof ProductRequestFormData, value: any) => {
+  const handleInputChange = useCallback((field: keyof ProductRequestFormData, value: string | number | Date | undefined) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   }, []);
 
@@ -200,9 +200,24 @@ const CreateProductRequest = () => {
       } else {
         toast.error(response.message || "Failed to create product request");
       }
-    } catch (error: any) {
+    } catch (error) {
+      // Type guard for error object
+      const errMsg =
+        typeof error === "object" &&
+        error !== null &&
+        "response" in error &&
+        error.response &&
+        typeof error.response === "object" &&
+        error.response !== null &&
+        "data" in error.response &&
+        error.response.data &&
+        typeof error.response.data === "object" &&
+        error.response.data !== null &&
+        "message" in error.response.data
+          ? (error.response.data.message as string)
+          : undefined;
       console.error("Error creating product request:", error);
-      toast.error(error?.response?.data?.message || "Failed to create product request");
+      toast.error(errMsg || "Failed to create product request");
     } finally {
       setIsSubmitting(false);
     }
