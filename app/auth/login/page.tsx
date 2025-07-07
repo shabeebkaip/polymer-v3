@@ -72,10 +72,10 @@ const Login: React.FC = () => {
       {/* Header Section */}
       <div className="text-center space-y-1 max-w-md">
         <h1 className="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
-          Welcome Back
+          {"Welcome Back"}
         </h1>
         <p className="text-gray-600 text-sm">
-          Sign in to your account
+          {"Sign in to your account"}
         </p>
       </div>
 
@@ -159,7 +159,7 @@ const Login: React.FC = () => {
       {/* Sign Up Link */}
       <div className="text-center">
         <p className="text-gray-600 text-sm">
-          Don&apos;t have an account?{" "}
+          {"Don't have an account? "}
           <Link 
             href="/auth/user-type" 
             className="font-medium text-green-600 hover:text-green-700 transition-colors hover:underline"
@@ -168,22 +168,6 @@ const Login: React.FC = () => {
           </Link>
         </p>
       </div>
-
-      {/* Additional Links */}
-      {/* <div className="text-center space-y-2">
-        <Link 
-          href="/forgot-password" 
-          className="text-sm text-gray-500 hover:text-gray-700 transition-colors hover:underline block"
-        >
-          Forgot your password?
-        </Link>
-        <Link 
-          href="/help" 
-          className="text-sm text-gray-500 hover:text-gray-700 transition-colors hover:underline block"
-        >
-          Need help? Contact support
-        </Link>
-      </div> */}
     </div>
   );
 };
