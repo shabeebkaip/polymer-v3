@@ -10,33 +10,24 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { 
-  Package, 
-  Calendar, 
-  Building2, 
-  CheckCircle, 
-  XCircle, 
-  Clock, 
-  Search, 
-  Filter, 
-  ChevronDown, 
-  Eye, 
-  AlertCircle, 
+import {
+  Package,
+  Calendar,
+  CheckCircle,
+  XCircle,
+  Clock,
+  Search,
+  ChevronDown,
+  Eye,
+  AlertCircle,
   FileText,
-  TrendingUp,
-  Users,
-  Target,
   Activity,
   Loader2,
-  ChevronLeft,
-  ChevronRight,
   MapPin,
   Truck,
-  Globe,
-  Hash
+  Globe
 } from "lucide-react";
 import { useProductRequestsListStore } from "@/stores/user";
-import { toast } from "sonner";
 
 const ProductRequests = () => {
   const router = useRouter();
@@ -48,7 +39,6 @@ const ProductRequests = () => {
     error,
     searchTerm,
     statusFilter,
-    currentPage,
     totalPages,
     totalRequests,
     setSearchTerm,
@@ -73,11 +63,6 @@ const ProductRequests = () => {
     setStatusFilter(status);
     setCurrentPage(1); // Reset to first page when filtering
   }, [setStatusFilter, setCurrentPage]);
-
-  // Handle page change
-  const handlePageChange = useCallback((page: number) => {
-    setCurrentPage(page);
-  }, [setCurrentPage]);
 
   // Filter requests based on search term and status (client-side filtering)
   const filteredRequests = useMemo(() => {
