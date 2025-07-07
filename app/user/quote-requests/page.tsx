@@ -23,11 +23,7 @@ import {
   Eye, 
   AlertCircle, 
   FileText,
-  TrendingUp,
-  Users,
-  Target,
   Activity,
-  Loader2,
   ChevronLeft,
   ChevronRight,
   Gift
@@ -52,7 +48,7 @@ interface QuoteRequest {
   status: QuoteStatus;
   createdAt: string;
   updatedAt: string;
-  statusMessage: any[];
+  statusMessage: unknown[];
   productName: string;
   productId: string;
   company: string;
@@ -136,8 +132,7 @@ const QuoteRequests = () => {
     setStatusFilter,
     setCurrentPage,
     fetchQuoteRequests,
-    clearFilters,
-    reset
+    clearFilters
   } = useQuoteRequestsListStore();
 
   // Cast the requests to the new unified structure and apply client-side filtering
@@ -364,7 +359,7 @@ const QuoteRequests = () => {
             </div>
             {debouncedSearchTerm && (
               <p className="text-sm text-green-600 mt-2 font-medium">
-                Searching for "{debouncedSearchTerm}"
+                Searching for &quot;{debouncedSearchTerm}&quot;
               </p>
             )}
 
@@ -479,14 +474,14 @@ const QuoteRequests = () => {
               </h3>
               <p className="text-gray-600 mb-6 max-w-md mx-auto leading-relaxed">
                 {debouncedSearchTerm || statusFilter || quoteTypeFilter !== "all"
-                  ? `No quote requests match your current filters. Try adjusting your search term, status filter, or quote type filter to find what you're looking for.`
-                  : "You haven't made any quote requests yet. Start by exploring our marketplace and requesting quotes from suppliers or grabbing special deals."}
+                  ? `No quote requests match your current filters. Try adjusting your search term, status filter, or quote type filter to find what you&apos;re looking for.`
+                  : "You haven&apos;t made any quote requests yet. Start by exploring our marketplace and requesting quotes from suppliers or grabbing special deals."}
               </p>
               {(debouncedSearchTerm || statusFilter || quoteTypeFilter !== "all") && (
                 <div className="space-y-4">
                   <div className="text-sm text-gray-500 bg-gray-50 rounded-xl p-4 inline-block">
                     <div className="font-medium mb-2">Current filters:</div>
-                    {debouncedSearchTerm && <div className="flex items-center gap-2"><Search className="w-4 h-4" /> Search: "{debouncedSearchTerm}"</div>}
+                    {debouncedSearchTerm && <div className="flex items-center gap-2"><Search className="w-4 h-4" /> Search: &quot;{debouncedSearchTerm}&quot;</div>}
                     {statusFilter && <div className="flex items-center gap-2"><Filter className="w-4 h-4" /> Status: {getStatusText(statusFilter as QuoteStatus)}</div>}
                     {quoteTypeFilter !== "all" && <div className="flex items-center gap-2"><Package className="w-4 h-4" /> Type: {quoteTypeFilter === 'product_quote' ? 'Product Quotes' : 'Deal Quotes'}</div>}
                   </div>

@@ -25,12 +25,6 @@ import {
 } from "lucide-react";
 import Image from 'next/image';
 
-// Define types for the unified quote request structure
-type QuoteRequestType = "product_quote" | "deal_quote";
-
-type QuoteStatus = "pending" | "responded" | "negotiation" | "accepted" | "in_progress" | 
-  "shipped" | "delivered" | "completed" | "rejected" | "cancelled";
-
 const QuoteRequestDetail = () => {
   const router = useRouter();
   const params = useParams();
