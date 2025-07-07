@@ -18,9 +18,6 @@ import {
   FileText, 
   AlertCircle,
   ArrowLeft,
-  Globe,
-  Target,
-  TrendingUp,
   Truck,
   Activity,
   CalendarDays,
@@ -33,6 +30,7 @@ import {
   ChevronRight,
   Loader2
 } from "lucide-react";
+import Image from 'next/image';
 
 const ProductRequestDetail = () => {
   const params = useParams();
@@ -44,7 +42,6 @@ const ProductRequestDetail = () => {
     supplierOffers,
     loading,
     error,
-    updating,
     fetchProductRequestDetail,
     clearProductRequestDetail
   } = useProductRequestDetailStore();
@@ -267,10 +264,13 @@ const ProductRequestDetail = () => {
                 <div>
                   {productRequestDetail.product.productImages?.length > 0 && (
                     <div className="relative">
-                      <img
+                      <Image
                         src={productRequestDetail.product.productImages[0].fileUrl}
                         alt={productRequestDetail.product.productName}
+                        width={600}
+                        height={256}
                         className="w-full h-64 object-cover rounded-xl border border-gray-200"
+                        priority
                       />
                       <div className="absolute top-4 right-4 bg-black/50 backdrop-blur-sm text-white px-3 py-1 rounded-lg text-sm">
                         {productRequestDetail.product.productImages.length} image{productRequestDetail.product.productImages.length > 1 ? 's' : ''}
@@ -447,7 +447,7 @@ const ProductRequestDetail = () => {
                 </div>
                 
                 <div className="space-y-6">
-                  {supplierOffers.map((offer, index) => {
+                  {supplierOffers.map((offer) => {
                     const offerStatus = getStatusBadge(offer.status);
                     const totalCost = offer.pricePerUnit * productRequestDetail.quantity;
                     
@@ -526,7 +526,7 @@ const ProductRequestDetail = () => {
                           <div className="mt-4 pt-4 border-t border-gray-200">
                             <p className="text-sm font-medium text-gray-700 mb-2">Status History</p>
                             <div className="space-y-2">
-                              {offer.statusMessage.slice(-3).map((statusMsg, msgIndex) => (
+                              {offer.statusMessage.slice(-3).map((statusMsg) => (
                                 <div key={statusMsg._id} className="bg-gray-50 p-2 rounded text-xs">
                                   <div className="flex justify-between items-center">
                                     <span className="font-medium capitalize">{statusMsg.status}</span>
@@ -574,7 +574,7 @@ const ProductRequestDetail = () => {
                   <Building2 className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                   <h3 className="text-xl font-semibold text-gray-700 mb-2">No Supplier Offers Yet</h3>
                   <p className="text-gray-500 mb-4">
-                    Your request is being reviewed by suppliers. You'll see offers here once they respond.
+                    Your request is being reviewed by suppliers. You&apos;ll see offers here once they respond.
                   </p>
                   <div className="inline-flex items-center gap-2 text-sm text-green-600">
                     <Clock className="w-4 h-4" />
