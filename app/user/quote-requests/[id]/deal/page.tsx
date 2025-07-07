@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useQuoteRequestStore } from '@/stores/user';
 import { 
@@ -17,7 +17,6 @@ import {
   FileText, 
   Factory, 
   Layers, 
-  Beaker, 
   AlertCircle,
   ArrowLeft,
   Target,
@@ -26,12 +25,9 @@ import {
   DollarSign,
   Tags
 } from "lucide-react";
+import Image from 'next/image';
 
 // Define types for the unified quote request structure
-type QuoteRequestType = "product_quote" | "deal_quote";
-
-type QuoteStatus = "pending" | "responded" | "negotiation" | "accepted" | "in_progress" | 
-  "shipped" | "delivered" | "completed" | "rejected" | "cancelled";
 
 const DealQuoteDetail = () => {
   const router = useRouter();
@@ -383,12 +379,16 @@ const DealQuoteDetail = () => {
                           Product Images
                         </h4>
                         <div className="grid grid-cols-2 gap-3">
-                          {images.slice(0, 4).map((image: any, index: number) => (
+                          {images.slice(0, 4).map((image: { id: string; fileUrl: string; name: string }) => (
                             <div key={image.id} className="relative group">
-                              <img
+                              <Image
                                 src={image.fileUrl}
                                 alt={image.name}
+                                width={160}
+                                height={80}
                                 className="w-full h-20 object-cover rounded-lg border border-blue-200"
+                                style={{ objectFit: 'cover' }}
+                                priority={false}
                               />
                               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors rounded-lg"></div>
                             </div>
@@ -538,7 +538,7 @@ const DealQuoteDetail = () => {
                     </div>
                     {quoteRequestDetail.metadata.canEdit && (
                       <p className="text-blue-600 text-sm mt-2">
-                        You can edit or cancel this request while it's pending.
+                        You can edit or cancel this request while it&apos;s pending.
                       </p>
                     )}
                   </div>
