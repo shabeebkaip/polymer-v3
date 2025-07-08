@@ -2,11 +2,10 @@
 import React from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { UserRound, ClipboardList, BookCopy, Package } from "lucide-react";
-import Cookies from "js-cookie";
 import { useUserInfo } from "@/lib/useUserInfo";
 
 // Icon mapping for dynamic icons
-const iconMap: Record<string, React.ComponentType<any>> = {
+const iconMap: Record<string, React.ComponentType<React.SVGProps<SVGSVGElement>>> = {
   UserRound,
   ClipboardList,
   BookCopy,
@@ -102,13 +101,6 @@ const MobileSettingsMenu = () => {
         }`}
       />
     );
-  };
-
-  const handleLogout = () => {
-    Cookies.remove("token");
-    Cookies.remove("userInfo");
-    router.refresh();
-    router.push("/");
   };
 
   return (

@@ -50,7 +50,7 @@ const BuyerOpportunities: React.FC = () => {
     
     // Check for new API structure with data property
     if (typeof buyerOpportunities === 'object' && 'data' in buyerOpportunities) {
-      return Array.isArray((buyerOpportunities as any).data) && (buyerOpportunities as any).data.length > 0;
+      return Array.isArray((buyerOpportunities as { data: unknown[] }).data) && (buyerOpportunities as { data: unknown[] }).data.length > 0;
     }
     
     // Fallback to old structure where buyerOpportunities is directly an array
@@ -64,22 +64,22 @@ const BuyerOpportunities: React.FC = () => {
   const displayRequests = React.useMemo(() => {
     try {
       // Check if buyerOpportunities has a data array (new API structure) or is array itself (old structure)
-      let dataArray: any[] = [];
+      let dataArray: { priority?: string; deadline: string; [key: string]: unknown }[] = [];
       
       if (buyerOpportunities && typeof buyerOpportunities === 'object') {
         // Check for new API structure with data property
-        if ('data' in buyerOpportunities && Array.isArray((buyerOpportunities as any).data)) {
-          dataArray = (buyerOpportunities as any).data;
+        if ('data' in buyerOpportunities && Array.isArray((buyerOpportunities as { data: unknown[] }).data)) {
+          dataArray = (buyerOpportunities as { data: { priority?: string; deadline: string; [key: string]: unknown }[] }).data;
         } 
         // Fallback to old structure where buyerOpportunities is directly an array
         else if (Array.isArray(buyerOpportunities)) {
-          dataArray = buyerOpportunities;
+          dataArray = buyerOpportunities as { priority?: string; deadline: string; [key: string]: unknown }[];
         }
       }
       
       if (dataArray.length > 0) {
         // Transform API data to match our Request interface
-        return dataArray.map((item: any) => {
+        return dataArray.map((item) => {
           // Determine urgency based on priority field or delivery date
           const priority = item.priority?.toLowerCase() || 'normal';
           const deliveryDate = new Date(item.deadline);

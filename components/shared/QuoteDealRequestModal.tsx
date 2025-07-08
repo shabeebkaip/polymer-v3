@@ -6,8 +6,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-  DialogDescription,
-  DialogClose,
+  DialogDescription
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -21,9 +20,8 @@ import {
 } from "@/components/ui/select";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
-import { Calendar as CalendarIcon, MapPin, Package, Truck, Clock, Gift, X } from "lucide-react";
+import { Calendar as CalendarIcon, MapPin, Package, Truck, Clock, Gift } from "lucide-react";
 import { createDealQuoteRequest } from "@/apiServices/user";
-import { useUserInfo } from "@/lib/useUserInfo";
 import { useRouter } from "next/navigation";
 import { DealQuoteRequest } from "@/types/quote";
 import { getCountryList } from "@/lib/useCountries";
@@ -32,7 +30,6 @@ import Cookies from "js-cookie";
 interface QuoteDealRequestModalProps {
   className?: string;
   dealId: string;
-  dealTitle: string;
   dealProduct: string;
   dealSupplier: string;
   dealMinQuantity: string;
@@ -56,55 +53,68 @@ const PAYMENT_TERMS = [
 ];
 
 // Memoized input components
-const MemoizedInput = React.memo(({ 
-  placeholder, 
-  className, 
-  type = "text", 
-  onChange, 
-  value, 
-  min,
-  ...props 
-}: any) => (
+const MemoizedInput = React.memo(({
+  placeholder,
+  value,
+  onChange,
+  type = "text",
+  ...props
+}: {
+  placeholder: string;
+  value: string | number;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  type?: string;
+  [key: string]: unknown;
+}) => (
   <Input
     placeholder={placeholder}
-    className={className}
-    type={type}
-    onChange={onChange}
     value={value}
-    min={min}
+    onChange={onChange}
+    type={type}
     {...props}
   />
 ));
 
-const MemoizedTextarea = React.memo(({ 
-  placeholder, 
-  className, 
-  onChange, 
+const MemoizedTextarea = React.memo(({
+  placeholder,
   value,
-  ...props 
-}: any) => (
+  onChange,
+  ...props
+}: {
+  placeholder: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  [key: string]: unknown;
+}) => (
   <Textarea
     placeholder={placeholder}
-    className={className}
-    onChange={onChange}
     value={value}
+    onChange={onChange}
     {...props}
   />
 ));
 
-const MemoizedSelect = React.memo(({ 
-  value, 
-  onValueChange, 
-  placeholder, 
-  className, 
-  children 
-}: any) => (
-  <Select value={value} onValueChange={onValueChange}>
-    <SelectTrigger className={className}>
-      <SelectValue placeholder={placeholder} />
+const MemoizedSelect = React.memo(({
+  value,
+  onValueChange,
+  options,
+  ...props
+}: {
+  value: string;
+  onValueChange: (value: string) => void;
+  options: string[];
+  [key: string]: unknown;
+}) => (
+  <Select value={value} onValueChange={onValueChange} {...props}>
+    <SelectTrigger>
+      <SelectValue placeholder="Select" />
     </SelectTrigger>
     <SelectContent>
-      {children}
+      {options.map((option) => (
+        <SelectItem key={option} value={option}>
+          {option}
+        </SelectItem>
+      ))}
     </SelectContent>
   </Select>
 ));
@@ -116,7 +126,6 @@ MemoizedSelect.displayName = 'MemoizedSelect';
 const QuoteDealRequestModal = ({
   className,
   dealId,
-  dealTitle,
   dealProduct,
   dealSupplier,
   dealMinQuantity,
@@ -127,7 +136,6 @@ const QuoteDealRequestModal = ({
   const token = Cookies.get("token");
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [calendarOpen, setCalendarOpen] = useState(false);
   
@@ -156,7 +164,7 @@ const QuoteDealRequestModal = ({
   const validationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Update helper with debounced validation
-  const updateField = useCallback((field: keyof typeof data, value: any) => {
+  const updateField = useCallback(<T extends object>(field: keyof T, value: T[keyof T]) => {
     dataRef.current = { ...dataRef.current, [field]: value };
     setData(prev => ({ ...prev, [field]: value }));
     
@@ -276,11 +284,6 @@ const QuoteDealRequestModal = ({
   }, [open, data]);
 
   // Close calendar when clicking outside
-  const handleCalendarClose = useCallback(() => {
-    setCalendarOpen(false);
-  }, []);
-
-  // Handle click outside calendar
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (calendarOpen) {
@@ -378,15 +381,9 @@ const QuoteDealRequestModal = ({
               <MemoizedSelect
                 value={data.shippingCountry}
                 onValueChange={(value: string) => updateField("shippingCountry", value)}
-                placeholder="Select shipping country"
+                options={countries.map(country => country.name)}
                 className="w-full"
-              >
-                {countries.map((country) => (
-                  <SelectItem key={country.code} value={country.name}>
-                    {country.name}
-                  </SelectItem>
-                ))}
-              </MemoizedSelect>
+              />
             </div>
 
             {/* Payment Terms */}
@@ -398,15 +395,9 @@ const QuoteDealRequestModal = ({
               <MemoizedSelect
                 value={data.paymentTerms}
                 onValueChange={(value: string) => updateField("paymentTerms", value)}
-                placeholder="Select payment terms"
+                options={PAYMENT_TERMS}
                 className="w-full"
-              >
-                {PAYMENT_TERMS.map((term) => (
-                  <SelectItem key={term} value={term}>
-                    {term}
-                  </SelectItem>
-                ))}
-              </MemoizedSelect>
+              />
             </div>
 
             {/* Delivery Deadline */}

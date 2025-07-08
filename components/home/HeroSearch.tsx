@@ -6,12 +6,12 @@ import { createPortal } from 'react-dom';
 import { FALLBACK_COMPANY_IMAGE } from '@/lib/fallbackImages';
 
 // Custom debounce hook
-function useDebounce(callback: (...args: any[]) => void, delay: number) {
+function useDebounce(callback: (...args: { name: string; id: string; [key: string]: unknown }[]) => void, delay: number) {
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
     const cancel = () => {
         if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
-    const debounced = useCallback((...args: any[]) => {
+    const debounced = useCallback((...args: { name: string; id: string; [key: string]: unknown }[]) => {
         cancel();
         timeoutRef.current = setTimeout(() => callback(...args), delay);
     }, [callback, delay]);
@@ -22,9 +22,8 @@ function useDebounce(callback: (...args: any[]) => void, delay: number) {
 const HeroSearch = () => {
     const router = useRouter();
     const [searchQuery, setSearchQuery] = useState<string>('');
-    const [products, setProducts] = useState<any[]>([]);
+    const [products, setProducts] = useState<{ name: string; id: string; [key: string]: unknown }[]>([]);
     const [loading, setLoading] = useState(false);
-    const [showDropdown, setShowDropdown] = useState(false);
     const [highlighted, setHighlighted] = useState(-1);
     const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 300 });
     const inputRef = useRef<HTMLInputElement>(null);
@@ -212,7 +211,7 @@ const HeroSearch = () => {
                         </div>
                     ) : (
                         <div className="p-3 sm:p-4 text-center text-gray-500 text-sm sm:text-base">
-                            No products found for "{searchQuery}"
+                            No products found for &quot;{searchQuery}&quot;
                         </div>
                     )}
                 </div>,

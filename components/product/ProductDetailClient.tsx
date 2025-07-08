@@ -1,4 +1,4 @@
-import React, { useState, useRef, useLayoutEffect } from "react";
+import React, { useState } from "react";
 import CompanyDetails from "@/components/product/CompanyDetails";
 import ImageContainers from "@/components/product/ImageContainers";
 import { useUserInfo } from "@/lib/useUserInfo";
@@ -18,41 +18,16 @@ import {
 import { useRouter } from "next/navigation";
 import { Product } from "@/types/product";
 
-
-
 interface ProductDetailClientProps {
   product: Product;
 }
 
-const tabs = [
-  { key: "general", label: "General Product Information" },
-  { key: "trade", label: "Trade Information" },
-] as const;
-
 const ProductDetailClient: React.FC<ProductDetailClientProps> = ({
   product,
 }) => {
-  const [activeTab, setActiveTab] = useState<"general" | "trade">("general");
   const [isFavorite, setIsFavorite] = useState(false);
   const { user } = useUserInfo();
   const router = useRouter();
-
-  // For underline animation
-  const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
-  const [underline, setUnderline] = useState({ left: 0, width: 0 });
-
-  const setTabRef = (el: HTMLButtonElement | null, idx: number) => {
-    tabRefs.current[idx] = el;
-  };
-
-  useLayoutEffect(() => {
-    const index = tabs.findIndex((tab) => tab.key === activeTab);
-    const currentRef = tabRefs.current[index];
-    if (currentRef) {
-      const { offsetLeft, offsetWidth } = currentRef;
-      setUnderline({ left: offsetLeft, width: offsetWidth });
-    }
-  }, [activeTab]);
 
   const handleShare = () => {
     if (navigator.share) {

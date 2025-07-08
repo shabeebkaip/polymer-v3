@@ -25,6 +25,7 @@ export interface Company {
   phone: number;
   address: string;
   location: string;
+  [key: string]: unknown; // Add index signature for compatibility
 }
 export interface NamedObject {
   _id: string;

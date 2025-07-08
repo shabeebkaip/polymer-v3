@@ -23,7 +23,7 @@ const ProductsList: React.FC<ProductsListProps> = ({
         ? Array.from({ length: 6 }).map((_, index) => (
           <ProductCardSkeleton key={index} />
         ))
-        : products.map((product, index) => (
+        : products.map((product) => (
           <ProductCard key={product._id } product={product} userType={userType} />
         ))}
     </div>

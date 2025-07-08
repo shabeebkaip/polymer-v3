@@ -4,8 +4,6 @@ import {
   FileText, 
   DollarSign, 
   Package, 
-  Truck, 
-  Clock, 
   Leaf, 
   Shield, 
   CheckCircle,
@@ -14,7 +12,6 @@ import {
 } from "lucide-react";
 import FileViewer from "../shared/FileViewer";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 
 interface NamedItem {
   name: string;
@@ -36,7 +33,7 @@ interface Product {
   bioDegradable?: boolean;
   fdaApproved?: boolean;
   medicalGrade?: boolean;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 interface GeneralTabInformationProps {
@@ -46,20 +43,6 @@ interface GeneralTabInformationProps {
 const TradeInformation: React.FC<GeneralTabInformationProps> = ({
   product,
 }) => {
-  const renderIfExists = (label: string, value?: string | number | null) =>
-    value !== undefined && value !== null && value !== "" ? (
-      <LabelValue label={label} value={value} />
-    ) : null;
-
-  const renderArray = (label: string, data?: NamedItem[]) =>
-    data && data.length > 0 ? (
-      <LabelValue
-        label={label}
-        value={data.map((item) => item.name).join(", ")}
-      />
-    ) : null;
-
-  console.log("product", product);
   // Available quantity logic with enhanced styling
   const renderAvailableQuantity = () => {
     if (product?.stock && product.stock > 0) {
@@ -231,11 +214,11 @@ const TradeInformation: React.FC<GeneralTabInformationProps> = ({
             <h3 className="text-lg font-bold text-gray-900">Documents</h3>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            {product?.technical_data_sheet && (
+            {product?.technical_data_sheet && typeof product.technical_data_sheet === 'object' && 'fileUrl' in product.technical_data_sheet && (
               <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg border">
                 <FileText className="w-4 h-4 text-red-500" />
                 <FileViewer
-                  previewFile={product.technical_data_sheet}
+                  previewFile={product.technical_data_sheet as { fileUrl: string; name: string; type: string; }}
                   triggerComp={
                     <span className="text-sm text-gray-700 hover:text-gray-900 cursor-pointer">
                       Technical Data Sheet
@@ -245,11 +228,11 @@ const TradeInformation: React.FC<GeneralTabInformationProps> = ({
                 <Download className="w-4 h-4 text-gray-400 ml-auto" />
               </div>
             )}
-            {product?.safety_data_sheet && (
+            {product?.safety_data_sheet && typeof product.safety_data_sheet === 'object' && 'fileUrl' in product.safety_data_sheet && (
               <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg border">
                 <FileText className="w-4 h-4 text-red-500" />
                 <FileViewer
-                  previewFile={product.safety_data_sheet}
+                  previewFile={product.safety_data_sheet as { fileUrl: string; name: string; type: string; }}
                   triggerComp={
                     <span className="text-sm text-gray-700 hover:text-gray-900 cursor-pointer">
                       Safety Data Sheet
@@ -259,11 +242,11 @@ const TradeInformation: React.FC<GeneralTabInformationProps> = ({
                 <Download className="w-4 h-4 text-gray-400 ml-auto" />
               </div>
             )}
-            {product?.certificate_of_analysis && (
+            {product?.certificate_of_analysis && typeof product.certificate_of_analysis === 'object' && 'fileUrl' in product.certificate_of_analysis && (
               <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg border">
                 <FileText className="w-4 h-4 text-red-500" />
                 <FileViewer
-                  previewFile={product.certificate_of_analysis}
+                  previewFile={product.certificate_of_analysis as { fileUrl: string; name: string; type: string; }}
                   triggerComp={
                     <span className="text-sm text-gray-700 hover:text-gray-900 cursor-pointer">
                       Certificate of Analysis

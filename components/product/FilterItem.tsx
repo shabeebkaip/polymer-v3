@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import React, { useState } from "react";
 
 interface Data {
@@ -19,7 +18,7 @@ interface FilterItemProps {
     searchable?: boolean;
     data: Data[];
   };
-  query: Record<string, any>;
+  query: Record<string, unknown>;
   onFilterChange: (name: string, id: string, isChecked: boolean) => void;
 }
 
@@ -86,7 +85,7 @@ const FilterItem: React.FC<FilterItemProps> = ({
       >
         <div className="px-4 pb-4">
           <div className="space-y-2 max-h-64 overflow-y-auto">
-            {filter?.data?.map((option: any, index: number) => {
+            {filter?.data?.map((option: Data, index: number) => {
               const id =
                 typeof option === "object"
                   ? String(option._id || option.name)

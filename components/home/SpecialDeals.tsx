@@ -65,7 +65,7 @@ const SpecialDeals: React.FC = () => {
         suppliersSpecialDeals.length > 0
       ) {
         // Transform API data to match our Deal interface
-        return suppliersSpecialDeals.map((item: any, index: number) => {
+        return suppliersSpecialDeals.map((item: { productId?: { price: string; [key: string]: unknown }; offerPrice?: string; [key: string]: unknown }) => {
           // Use the actual API structure based on the provided response
           const originalPrice = parseFloat(item.productId?.price) || 100;
           const discountedPrice =
@@ -153,7 +153,7 @@ const SpecialDeals: React.FC = () => {
         },
       ];
 
-      return mockApiData.map((item: any, index: number) => {
+      return mockApiData.map((item: { productId?: { price: string }; offerPrice?: string; [key: string]: unknown }) => {
         const originalPrice = parseFloat(item.productId?.price) || 100;
         const discountedPrice =
           parseFloat(item.offerPrice) || originalPrice * 0.85;

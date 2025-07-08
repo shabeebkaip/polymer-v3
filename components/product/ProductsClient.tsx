@@ -59,18 +59,17 @@ const ProductsClient: React.FC = () => {
   const initialCreatedBy = searchParams.get("createdBy");
 
   // --- Construct initial query object ---
-  const initialQuery: Record<string, any> = {};
+  const initialQuery: Record<string, string[]> = {};
   if (initialCreatedBy) initialQuery.createdBy = [initialCreatedBy];
   if (initialIndustry) initialQuery.industry = [initialIndustry];
   if (initialProductFamily) initialQuery.productFamily = [initialProductFamily];
 
-  const [query, setQuery] = useState<Record<string, any>>(initialQuery);
+  const [query, setQuery] = useState<Record<string, string[]>>(initialQuery);
   const [products, setProducts] = useState<ProductCardTypes[]>([]);
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
   const [pagination, setPagination] = useState<Pagination | null>(null);
   const [filters, setFilters] = useState<ProductFilter>();
   const [loader, setLoader] = useState(true);
-  const [filterLoader, setFilterLoader] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
 
@@ -393,7 +392,7 @@ const ProductsClient: React.FC = () => {
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
-                      <span className="font-medium">You've seen all {pagination?.totalItems || products.length} products!</span>
+                      <span className="font-medium">You&apos;ve seen all {pagination?.totalItems || products.length} products!</span>
                     </div>
                   </div>
                 )}
@@ -408,7 +407,7 @@ const ProductsClient: React.FC = () => {
                     </div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">No products found</h3>
                     <p className="text-gray-600 mb-6 max-w-sm mx-auto">
-                      We couldn't find any products matching your criteria. Try adjusting your filters or search terms.
+                      We couldn&apos;t find any products matching your criteria. Try adjusting your filters or search terms.
                     </p>
                     <button
                       onClick={() => {

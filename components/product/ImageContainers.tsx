@@ -1,24 +1,23 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useKeenSlider } from "keen-slider/react";
 import "keen-slider/keen-slider.min.css";
-import { ChevronLeft, ChevronRight, ZoomIn, Package } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 interface Image {
   fileUrl: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 interface ImageContainersProps {
   productImages: Image[];
+  [key: string]: unknown;
   isCompact?: boolean;
 }
 
 // Autoplay plugin
 const autoplay = (interval = 3000) => {
-  return (slider: any) => {
+  return (slider: { on: (event: string, callback: () => void) => void; next: () => void }) => {
     let timeout: ReturnType<typeof setTimeout>;
     let mouseOver = false;
 
@@ -53,18 +52,16 @@ const autoplay = (interval = 3000) => {
   };
 };
 
-const ImageContainers: React.FC<ImageContainersProps> = ({ productImages, isCompact = false }) => {
-  const [loaded, setLoaded] = useState(false);
+const ImageContainers: React.FC<ImageContainersProps> = ({ productImages }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>(
+  const [sliderRef] = useKeenSlider<HTMLDivElement>(
     {
       loop: true,
       initial: 0,
       slideChanged(slider) {
         setCurrentSlide(slider.track.details.rel);
       },
-      created: () => setLoaded(true),
     },
     [autoplay(4000)]
   );
@@ -72,10 +69,6 @@ const ImageContainers: React.FC<ImageContainersProps> = ({ productImages, isComp
   if (!productImages || productImages.length === 0) {
     return null;
   }
-
-  const goToSlide = (index: number) => {
-    instanceRef.current?.moveToIdx(index);
-  };
 
   // Always very compact - slightly bigger size
   const containerHeight = "h-32 w-32"; // Fixed small square size

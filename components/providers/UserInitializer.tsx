@@ -38,7 +38,7 @@ const UserInitializer = () => {
         loadUserFromCookies();
       }
     }
-  }, []); // Empty dependency array for mount-only effect
+  }, [isInitialized, loadUserFromCookies, router, user]); // Add all dependencies
 
   // This component doesn't render anything, it just initializes user data
   return null;

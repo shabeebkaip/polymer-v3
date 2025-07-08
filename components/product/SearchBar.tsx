@@ -1,11 +1,9 @@
 "use client";
-import { on } from "events";
-import Image from "next/image";
-import React, { useState } from "react";
+import React from "react";
 
 interface SearchBarProps {
   onSearch?: (query: string) => void;
-  query: Record<string, any>;
+  query: Record<string, string[]>;
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({ onSearch, query }) => {

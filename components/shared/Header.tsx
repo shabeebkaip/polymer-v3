@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
@@ -11,33 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { FALLBACK_USER_AVATAR } from "@/lib/fallbackImages";
 
 // --- TypeScript Types ---
-type NavbarLinkProps = {
-  href: string;
-  label: string;
-  isActive: boolean;
-  onClick: (href: string) => void;
-};
-
 type Language = "en" | "ar" | "de" | "zh";
-
-const NavbarLink: React.FC<NavbarLinkProps> = ({
-  href,
-  label,
-  isActive,
-  onClick,
-}) => (
-  <span
-    onClick={() => onClick(href)}
-    className={`inline-flex items-center px-1 pt-1 xl:text-[18px] text-[15px] font-[300] cursor-pointer relative
-            ${
-              isActive
-                ? "text-[var(--green-main)] hover:text-[var(--green-main)] after:absolute after:bottom-[-8px] after:left-0 after:w-full after:h-[2px] after:bg-[var(--green-main)]"
-                : "text-[var(--green-main)] hover:text-[var(--green-main)]"
-            }`}
-  >
-    {label}
-  </span>
-);
 
 const Header: React.FC = () => {
   const pathname = usePathname(); // ✅ must be at top
@@ -45,10 +19,8 @@ const Header: React.FC = () => {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
-  const [isLanguagePopupOpen, setIsLanguagePopupOpen] = useState(false);
   const [isUserPopoverOpen, setIsUserPopoverOpen] = useState(false);
   const [language, setLanguage] = useState<Language>("en");
-  const languagePopupRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     loadUserFromCookies(); // hydrate on mount
@@ -77,7 +49,6 @@ const Header: React.FC = () => {
   };
 
   const toggleVisibility = () => setIsVisible(!isVisible);
-  const toggleLanguagePopup = () => setIsLanguagePopupOpen((prev) => !prev);
 
   const links = [
     { href: "/", label: "Home" },
@@ -157,7 +128,7 @@ const Header: React.FC = () => {
                   >
                     <path
                       fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.73 6.974 6 7.5 6A1.5 1.5 0 019 7.5V8a2 2 0 004 0 2 2 0 011.523-1.943A5.977 5.977 0 0116 10c0 .34-.028.675-.083 1H15a2 2 0 00-2 2v2.197A5.973 5.973 0 0110 16v-2a2 2 0 00-2-2 2 2 0 01-2-2 2 2 0 00-1.668-1.973z"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.73 6.974 6 7.5 6A1.5 1.5 0 009 7.5V8a2 2 0 004 0 2 2 0 011.523-1.943A5.977 5.977 0 0116 10c0 .34-.028.675-.083 1H15a2 2 0 00-2 2v2.197A5.973 5.973 0 0110 16v-2a2 2 0 00-2-2 2 2 0 01-2-2 2 2 0 00-1.668-1.973z"
                       clipRule="evenodd"
                     />
                   </svg>

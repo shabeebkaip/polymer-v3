@@ -4,9 +4,15 @@ import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { getSocialLinks } from "@/apiServices/cms";
 
+interface SocialLink {
+  label: string;
+  icon: string;
+  link: string;
+}
+
 const Footer: React.FC = () => {
   const router = useRouter();
-  const [socialLinks, setSocialLinks] = React.useState<any[]>([]);
+  const [socialLinks, setSocialLinks] = React.useState<SocialLink[]>([]);
 
   const socials = [
     {

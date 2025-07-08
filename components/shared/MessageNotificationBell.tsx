@@ -22,8 +22,7 @@ const MessageNotificationBell: React.FC = () => {
   } = useMessageNotifications();
 
   const {
-    unreadCount: offlineUnreadCount,
-    isPolling
+    unreadCount: offlineUnreadCount
   } = useOfflineNotifications();
 
   // Use real-time count if WebSocket is connected, otherwise use polling count
@@ -44,7 +43,7 @@ const MessageNotificationBell: React.FC = () => {
     return date.toLocaleDateString();
   };
 
-  const handleNotificationClick = (notification: any) => {
+  const handleNotificationClick = (notification: import('@/hooks/useMessageNotifications').MessageNotification) => {
     markNotificationAsRead(notification.id);
     setIsOpen(false);
     router.push('/user/messages');

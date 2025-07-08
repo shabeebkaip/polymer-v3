@@ -46,8 +46,6 @@ export default function HomeDataProvider({ children, initialData }: HomeDataProv
   } = useSharedState();
   
   const { 
-    buyersBenefits, 
-    suppliersBenefits,
     setBuyersBenefits,
     setSuppliersBenefits 
   } = useCmsStore();
