@@ -2,7 +2,6 @@ import React from "react";
 import { 
   Globe, 
   MapPin, 
-  Building2, 
   Star, 
   Shield, 
   Award, 
@@ -10,11 +9,9 @@ import {
   ExternalLink
 } from "lucide-react";
 import VisitShopButton from "@/components/suppliers/VisitShopButton";
-import RequestFinanceModal from "../shared/RequestFinanceModal";
 import QuoteRequestModal from "../shared/QuoteRequestModal";
 import SampleRequestModal from "../shared/SampleRequestModal";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { FALLBACK_COMPANY_IMAGE } from "@/lib/fallbackImages";
 
 interface CompanyDetailsProps {
@@ -24,7 +21,7 @@ interface CompanyDetailsProps {
     company_logo: string;
     location?: string;
     website?: string;
-    [key: string]: any;
+    [key: string]: unknown;
   };
   productId: string;
   uom: string;

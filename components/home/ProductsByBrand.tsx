@@ -12,10 +12,6 @@ import { FALLBACK_COMPANY_IMAGE } from "@/lib/fallbackImages";
 
 const ProductCard = dynamic(() => import("@/components/product/ProductCard"));
 
-interface ProductImage {
-  fileUrl: string;
-}
-
 interface Seller {
   _id: string;
   company: string;

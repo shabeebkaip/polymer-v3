@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import Image from 'next/image';
 import { X, Send, MessageCircle, Building2, Package, AlertCircle, Loader2 } from 'lucide-react';
 import { 
   getSellerInfoForProduct, 
@@ -257,7 +258,7 @@ const ProductChatModal: React.FC<ProductChatModalProps> = ({
         clearTimeout(typingTimeoutRef.current);
       }
     };
-  }, [isOpen, productId, user]);
+  }, [isOpen, productId, user, connectionRetries]);
 
   // Check supplier online status when seller info is loaded
   useEffect(() => {
@@ -333,9 +334,11 @@ const ProductChatModal: React.FC<ProductChatModalProps> = ({
               {sellerInfo && (
                 <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
                   {sellerInfo.profile_image ? (
-                    <img 
+                    <Image 
                       src={sellerInfo.profile_image} 
                       alt={sellerInfo.name}
+                      width={40}
+                      height={40}
                       className="w-10 h-10 rounded-full object-cover"
                     />
                   ) : (

@@ -1,17 +1,11 @@
 import React from "react";
 import LabelValue from "../shared/LabelValue";
-import Image from "next/image";
 import { 
-  FileImage, 
-  FileText, 
   Package, 
   Beaker, 
   Settings, 
-  BarChart3,
-  Globe,
-  Palette
+  BarChart3
 } from "lucide-react";
-import FileViewer from "../shared/FileViewer";
 import { Badge } from "@/components/ui/badge";
 
 interface NamedItem {
@@ -37,7 +31,7 @@ interface Product {
   elongationAtBreak?: string | number;
   shoreHardness?: string | number;
   waterAbsorption?: string | number;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 interface GeneralTabInformationProps {
@@ -47,19 +41,6 @@ interface GeneralTabInformationProps {
 const GeneralTabInformation: React.FC<GeneralTabInformationProps> = ({
   product,
 }) => {
-  const renderIfExists = (label: string, value?: string | number | null) =>
-    value !== undefined && value !== null && value !== "" ? (
-      <LabelValue label={label} value={value} />
-    ) : null;
-
-  const renderArray = (label: string, data?: NamedItem[]) =>
-    data && data.length > 0 ? (
-      <LabelValue
-        label={label}
-        value={data.map((item) => item.name).join(", ")}
-      />
-    ) : null;
-
   return (
     <div className="space-y-6">
       {/* Overview Section */}

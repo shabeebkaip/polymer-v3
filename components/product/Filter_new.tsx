@@ -20,7 +20,7 @@ interface FilterSection {
 
 interface FilterProps {
   filters: FilterSection[];
-  query: Record<string, any>;
+  query: Record<string, unknown>;
   onFilterChange: (name: string, id: string, isChecked: boolean) => void;
   loader?: boolean;
 }

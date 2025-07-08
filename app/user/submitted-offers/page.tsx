@@ -50,7 +50,6 @@ const SubmittedOffers = () => {
   // Zustand store
   const { offers, meta, loading, error, fetchOffers } =
     useSubmittedOffersStore();
-  console.log("Offers:", offers);
   // Filter states
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");

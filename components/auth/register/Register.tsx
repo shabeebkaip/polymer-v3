@@ -18,7 +18,6 @@ import { getIndustryList, imageUpload } from "@/apiServices/shared";
 import { register } from "@/apiServices/auth";
 import { getCountryList } from "@/lib/useCountries";
 import { useUserInfo } from "@/lib/useUserInfo";
-import { set } from "nprogress";
 
 interface Industry {
   _id: string;
@@ -86,7 +85,7 @@ const Register: React.FC = () => {
 
   useEffect(() => {
     getIndustryList().then((response) => {
-      const industries = response?.data?.map((item: any) => ({
+      const industries = response?.data?.map((item: { _id: string; name: string; bg: string }) => ({
         _id: item._id,
         name: item.name,
         image: item.bg,
@@ -231,9 +230,11 @@ const Register: React.FC = () => {
                 className="w-10 h-10 border border-green-100 shadow cursor-pointer hover:scale-105 transition-transform rounded-full bg-gradient-to-br from-green-100 to-emerald-100 flex items-center justify-center"
                 onClick={handleAvatarClick}
               >
-                <img
+                <Image
                   src={data.company_logo}
                   alt="Company Logo"
+                  width={40}
+                  height={40}
                   className="w-full h-full object-cover rounded-full"
                 />
               </div>

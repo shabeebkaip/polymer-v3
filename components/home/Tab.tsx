@@ -15,8 +15,6 @@ const Tab: React.FC<TabProps> = ({
   isSelected,
   icon,
   onClick,
-  fontSize,
-  iconWidth = "w-10",
 }) => {
   return (
     <button

@@ -60,7 +60,7 @@ const DealsAndRequests: React.FC = () => {
                 <div>
                   <h5 className="font-semibold text-gray-900 mb-2">Request Any Product</h5>
                   <p className="text-gray-700 text-sm leading-relaxed">
-                    Can't find what you're looking for? Simply request any polymer product and our network of verified suppliers will respond with competitive quotes and samples.
+                    Can&apos;t find what you&apos;re looking for? Simply request any polymer product and our network of verified suppliers will respond with competitive quotes and samples.
                   </p>
                 </div>
               </div>

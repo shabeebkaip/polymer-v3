@@ -22,7 +22,7 @@ const Benefits: React.FC = () => {
               </span>
             </h1>
             <p className="text-[var(--text-gray-tertiary)] font-normal text-sm sm:text-base lg:text-lg text-center max-w-xs sm:max-w-lg md:max-w-2xl lg:max-w-3xl leading-relaxed">
-              Experience the future of polymer trading with our comprehensive platform. Whether you're sourcing 
+              Experience the future of polymer trading with our comprehensive platform. Whether you&apos;re sourcing 
               quality materials or expanding your market reach, we provide the tools and network to accelerate your success.
             </p>
           </div>
