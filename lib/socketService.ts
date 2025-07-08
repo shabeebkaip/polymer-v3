@@ -1,4 +1,5 @@
-import { io, Socket } from 'socket.io-client';
+import { io } from "socket.io-client";
+import type { Socket as SocketType } from 'socket.io-client';
 import { ProductChatMessage } from '@/apiServices/chat';
 
 export interface TypingData {
@@ -7,7 +8,7 @@ export interface TypingData {
 }
 
 class SocketService {
-  private socket: Socket | null = null;
+  private socket: SocketType | null = null;
   private userId: string | null = null;
   private connected: boolean = false;
   private onlineUsers: Set<string> = new Set();
