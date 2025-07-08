@@ -15,7 +15,8 @@ interface Product {
   };
   chemicalName?: string;
   productFormName?: string;
-  [key: string]: unknown;
+  polymerType?: { name?: string };
+  countryOfOrigin?: string;
 }
 
 interface UserProductCardProps {
@@ -79,7 +80,9 @@ const UserProductCard: React.FC<UserProductCardProps> = ({ product }) => {
             <div className="border-t border-gray-200/60 pt-2">
               <span className="text-gray-600 font-medium text-xs uppercase tracking-wide">Polymer Type</span>
               <div className="text-gray-900 text-sm font-medium leading-snug break-words mt-1">
-                {(product.polymerType as any)?.name || 'Not specified'}
+                {typeof product.polymerType === 'object' && product.polymerType && 'name' in product.polymerType 
+                  ? (product.polymerType as { name: string }).name 
+                  : 'Not specified'}
               </div>
             </div>
           </div>

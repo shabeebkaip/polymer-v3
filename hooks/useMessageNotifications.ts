@@ -111,7 +111,7 @@ export const useMessageNotifications = () => {
         // Only try to connect if socket is not permanently disabled
         if (!socketService.isSocketDisabled()) {
           // Connect to socket
-          socketService.connect(user._id);
+          socketService.connect(String(user._id));
         }
         
         // Request notification permission on first load

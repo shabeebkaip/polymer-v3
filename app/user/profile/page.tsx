@@ -159,13 +159,15 @@ const Profile = () => {
   console.log(user, "user");
 
   return (
-    <div className="container mx-auto px-4 py-6 ">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 max-w-7xl">
       {/* Header Section */}
-      <div className="mb-8">
+      <div className="mb-10">
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Profile Settings</h1>
-            <p className="text-gray-600">Manage your account information and preferences</p>
+          <div className="relative">
+            {/* Blue highlight behind heading */}
+            <span className="absolute left-0 top-2 h-8 w-[260px] bg-blue-200 rounded-md -z-10" />
+            <h1 className="text-3xl font-bold text-gray-900 mb-2 relative z-10 pl-2 pr-4">Profile Settings</h1>
+            <p className="text-gray-600 mt-1">Manage your account information and preferences</p>
           </div>
           {!userLoading && (
             <div className="flex items-center gap-3">
@@ -209,15 +211,15 @@ const Profile = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Profile Card */}
         <div className="lg:col-span-1">
-          <div className="shadow-lg border-0 bg-gradient-to-br from-white to-gray-50">
-            <div className="text-center pb-2">
-              <div className="relative mx-auto mb-4">
-                <Avatar className="w-24 h-24 border-4 border-white shadow-lg">
+          <div className="shadow-xl border-0 bg-gradient-to-br from-white to-gray-50 p-8 rounded-2xl">
+            <div className="text-center pb-4">
+              <div className="relative mx-auto mb-6 w-fit">
+                <Avatar className="w-28 h-28 border-4 border-white shadow-xl mx-auto">
                   <AvatarImage 
                     src={user?.user_type === "seller" ? user?.company_logo : user?.avatar} 
                     alt="Profile" 
                   />
-                  <AvatarFallback className="bg-emerald-100 text-emerald-700 text-xl font-semibold">
+                  <AvatarFallback className="bg-emerald-100 text-emerald-700 text-2xl font-semibold">
                     {user?.user_type === "seller" 
                       ? user?.company?.charAt(0) || "C"
                       : `${user?.firstName?.charAt(0) || ""}${user?.lastName?.charAt(0) || ""}`
@@ -227,13 +229,13 @@ const Profile = () => {
                 {isEditing && (
                   <Button
                     size="sm"
-                    className="absolute -bottom-2 -right-2 w-8 h-8 rounded-full bg-emerald-600 hover:bg-emerald-700 p-0"
+                    className="absolute right-0 bottom-2 translate-x-1/2 w-10 h-10 rounded-full bg-emerald-600 hover:bg-emerald-700 p-0 shadow-lg flex items-center justify-center"
                   >
-                    <Camera className="w-4 h-4" />
+                    <Camera className="w-5 h-5" />
                   </Button>
                 )}
               </div>
-              <h2 className="text-xl text-gray-900">
+              <h2 className="text-2xl text-gray-900 font-semibold">
                 {userLoading ? (
                   <Skeleton className="h-6 w-32 mx-auto" />
                 ) : (
@@ -245,13 +247,13 @@ const Profile = () => {
                   <Skeleton className="h-4 w-20 mx-auto mt-2" />
                 </div>
               ) : (
-                <p className="text-gray-600 capitalize">
+                <p className="text-gray-600 capitalize mt-1">
                   {user?.user_type || "Member"}
                 </p>
               )}
             </div>
             <div className="pt-4">
-              <div className="space-y-4">
+              <div className="space-y-5">
                 <div className="flex items-center gap-3 text-gray-600">
                   <Mail className="w-4 h-4 text-emerald-600" />
                   {userLoading ? (
@@ -295,15 +297,15 @@ const Profile = () => {
 
         {/* Form Section */}
         <div className="lg:col-span-2">
-          <div className="shadow-lg border-0">
-            <div>
-              <div className="flex items-center gap-2 text-xl text-gray-900">
-                <User className="w-5 h-5 text-emerald-600" />
+          <div className="shadow-xl border-0 p-8 rounded-2xl bg-white">
+            <div className="mb-8">
+              <div className="flex items-center gap-2 text-2xl text-gray-900 font-semibold">
+                <User className="w-6 h-6 text-emerald-600" />
                 Personal Information
               </div>
             </div>
             <div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* First Name */}
                 <div className="space-y-2">
                   <Label htmlFor="firstName" className="text-sm font-medium text-gray-700">
