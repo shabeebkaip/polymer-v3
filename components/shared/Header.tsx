@@ -216,7 +216,7 @@ const Header: React.FC = () => {
                   <div className="flex items-center gap-3">
                     <Avatar className="w-12 h-12 border-2 border-white/20">
                       <AvatarImage
-                        src={user?.company_logo || FALLBACK_USER_AVATAR}
+                        src={typeof user?.company_logo === 'string' ? user.company_logo : FALLBACK_USER_AVATAR}
                         alt="User Avatar"
                       />
                       <AvatarFallback className="bg-white/20 text-white font-semibold">
