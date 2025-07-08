@@ -5,7 +5,7 @@ import { ProductFormData, UploadedFile } from "@/types/product";
 
 interface ProductImagesProps {
   data: ProductFormData;
-  onFieldChange: (field: keyof ProductFormData, value: any) => void;
+  onFieldChange: (field: keyof ProductFormData, value: Array<{ id: string; fileUrl: string }>) => void;
 }
 
 const ProductImages: React.FC<ProductImagesProps> = ({

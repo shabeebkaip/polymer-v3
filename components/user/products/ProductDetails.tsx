@@ -19,7 +19,7 @@ interface DropdownItem {
 
 interface ProductDetailsProps {
   data: ProductFormData;
-  onFieldChange: (field: keyof ProductFormData, value: any) => void;
+  onFieldChange: (field: keyof ProductFormData, value: string | string[]) => void;
   chemicalFamilies: DropdownItem[];
   polymersTypes: DropdownItem[];
   industry: DropdownItem[];

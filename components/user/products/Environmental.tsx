@@ -3,7 +3,7 @@ import { Checkbox } from "../../ui/checkbox";
 import { Label } from "../../ui/label";
 import { Card, CardContent } from "../../ui/card";
 import { Badge } from "../../ui/badge";
-import { Leaf, Recycle, TreePine, Earth, Award, CheckCircle2 } from "lucide-react";
+import { Recycle, TreePine, Earth, Award, CheckCircle2 } from "lucide-react";
 import { ProductFormData } from "@/types/product";
 
 interface EnvironmentalProps {
@@ -55,7 +55,7 @@ const Environmental: React.FC<EnvironmentalProps> = ({
                 <Badge variant="outline" className="bg-green-100 text-green-700 border-green-300">
                   {getSelectedCount()} / {ENVIRONMENTAL_FEATURES.length} Selected
                 </Badge>
-                <p className="text-xs text-green-600 mt-1">Boost your product's appeal</p>
+                <p className="text-xs text-green-600 mt-1">Boost your product&apos;s appeal</p>
               </div>
             </div>
           </CardContent>

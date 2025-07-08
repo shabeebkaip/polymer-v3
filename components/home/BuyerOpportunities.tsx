@@ -95,30 +95,30 @@ const BuyerOpportunities: React.FC = () => {
           }
 
           const transformedRequest = {
-            id: item.id,
+            id: String(item.id || item._id || Math.random()),
             type: "buyer-request" as const,
             title: `${item.productName || 'Product Request'} - Buyer Opportunity`,
             buyer: {
-              company: item.buyer?.company || "Anonymous Company",
-              location: item.buyer?.location || (item.city && item.country ? `${item.city}, ${item.country}` : "Location not specified"),
-              verified: item.buyer?.isVerified || false,
-              name: item.buyer?.name
+              company: (item.buyer as { company?: string })?.company || "Anonymous Company",
+              location: (item.buyer as { location?: string })?.location || (item.city && item.country ? `${item.city}, ${item.country}` : "Location not specified"),
+              verified: (item.buyer as { isVerified?: boolean })?.isVerified || false,
+              name: (item.buyer as { name?: string })?.name
             },
-            product: item.productName || "Product",
+            product: String(item.productName || "Product"),
             quantity: item.uom ? `${item.quantity} ${item.uom}` : `${item.quantity || 'N/A'}`,
             budget: "Contact for quote", // This field is not in the API response
             deadline: item.deadline,
-            description: item.description || `Buyer opportunity for ${item.productName || 'product'}${item.destination ? '. Delivery to ' + item.destination : ''}.`,
+            description: String(item.description || `Buyer opportunity for ${item.productName || 'product'}${item.destination ? '. Delivery to ' + item.destination : ''}.`),
             urgency: urgency,
-            responses: item.responses?.count || 0,
+            responses: (item.responses as { count?: number })?.count || 0,
             // Additional fields from API
-            destination: item.destination,
-            sellerStatus: item.sellerStatus,
-            requestDocument: item.request_document,
-            createdAt: item.createdAt,
-            priority: item.priority,
-            tradeName: item.tradeName,
-            chemicalName: item.chemicalName,
+            destination: item.destination as string | undefined,
+            sellerStatus: item.sellerStatus as string | undefined,
+            requestDocument: item.request_document as string | undefined,
+            createdAt: item.createdAt as string | undefined,
+            priority: item.priority as string | undefined,
+            tradeName: item.tradeName as string | undefined,
+            chemicalName: item.chemicalName as string | undefined,
             daysLeft: daysUntilDelivery
           };
           
@@ -239,7 +239,7 @@ const BuyerOpportunities: React.FC = () => {
               <div className="md:hidden">
                 <div className="flex gap-4 px-4 overflow-x-auto scrollbar-hide pb-2">
                   {displayRequests.map((request) => (
-                    <div key={request.id} className="flex-shrink-0 w-[calc(90.91%-0.5rem)]">
+                    <div key={request.id as string} className="flex-shrink-0 w-[calc(90.91%-0.5rem)]">
                       <RequestCard request={request} getUrgencyColor={getUrgencyColor} isGuest={isGuest} isSeller={isSeller} />
                     </div>
                   ))}
@@ -248,7 +248,7 @@ const BuyerOpportunities: React.FC = () => {
               {/* Desktop Layout - Grid with Pagination */}
               <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {getCurrentRequests().map((request) => (
-                  <div key={request.id} className="group">
+                  <div key={request.id as string} className="group">
                     <RequestCard request={request} getUrgencyColor={getUrgencyColor} isGuest={isGuest} isSeller={isSeller} />
                   </div>
                 ))}

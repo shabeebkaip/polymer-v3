@@ -1,6 +1,6 @@
 import React from "react";
-import { Button } from "../ui/button";
 import VisitShopButton from "./VisitShopButton";
+import Image from "next/image";
 
 interface SupplierCardProps {
   name: string;
@@ -20,10 +20,12 @@ const SupplierCard: React.FC<SupplierCardProps> = ({
   return (
     <div className="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-4 flex items-center justify-center  hover:bg-green-50 hover:scale-105 duration-300 ease-in-out">
       <div className="rounded-xl p-4 w-full flex items-center border border-gray-200">
-        <img
+        <Image
           src={logo}
           alt={name}
-          className="w-18 h-18 md:w-25 md:h-25 mr-4" // fixed typo `sh-25` → `h-25`
+          width={100}
+          height={100}
+          className="w-18 h-18 md:w-25 md:h-25 mr-4"
         />
         <div>
           <h2 className="md:text-2xl font-normal text-[var(--dark-main)]">

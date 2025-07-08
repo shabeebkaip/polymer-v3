@@ -5,6 +5,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
+import Image from "next/image";
 
 interface PreviewFile {
     fileUrl: string;
@@ -49,9 +50,11 @@ const FileViewer: React.FC<FileViewerProps> = ({
                             className="w-full"
                         />
                     ) : (
-                        <img
+                        <Image
                             src={previewFile.fileUrl}
                             alt="Preview"
+                            width={600}
+                            height={400}
                             className="max-w-full max-h-full object-contain"
                         />
                     )}

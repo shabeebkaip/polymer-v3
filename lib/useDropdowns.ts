@@ -13,52 +13,58 @@ import {
 } from "@/apiServices/shared";
 import { useState, useEffect } from "react";
 
+interface DropdownItem {
+  _id: string;
+  name: string;
+  [key: string]: unknown;
+}
+
 export function useDropdowns() {
-  const [chemicalFamilies, setChemicalFamilies] = useState<any[]>([]);
-  const [productFamilies, setProductFamilies] = useState<any[]>([]);
-  const [polymersTypes, setPolymersTypes] = useState<any[]>([]);
-  const [industry, setIndustry] = useState<any[]>([]);
-  const [physicalForms, setPhysicalForms] = useState<any[]>([]);
-  const [grades, setGrades] = useState<any[]>([]);
-  const [incoterms, setIncoterms] = useState<any[]>([]);
-  const [paymentTerms, setPaymentTerms] = useState<any[]>([]);
-  const [packagingTypes, setPackagingTypes] = useState<any[]>([]);
+  const [chemicalFamilies, setChemicalFamilies] = useState<DropdownItem[]>([]);
+  const [productFamilies, setProductFamilies] = useState<DropdownItem[]>([]);
+  const [polymersTypes, setPolymersTypes] = useState<DropdownItem[]>([]);
+  const [industry, setIndustry] = useState<DropdownItem[]>([]);
+  const [physicalForms, setPhysicalForms] = useState<DropdownItem[]>([]);
+  const [grades, setGrades] = useState<DropdownItem[]>([]);
+  const [incoterms, setIncoterms] = useState<DropdownItem[]>([]);
+  const [paymentTerms, setPaymentTerms] = useState<DropdownItem[]>([]);
+  const [packagingTypes, setPackagingTypes] = useState<DropdownItem[]>([]);
 
   useEffect(() => {
     getChemicalFamilies().then((response) => {
-      const chemicalFamilyData: any[] = response.data;
+      const chemicalFamilyData: DropdownItem[] = response.data;
       setChemicalFamilies(chemicalFamilyData);
     });
     getProductFamilies().then((response) => {
-      const productFamilyData: any[] = response.data;
+      const productFamilyData: DropdownItem[] = response.data;
       setProductFamilies(productFamilyData);
     });
     getPolymersType().then((response) => {
-      const polymersTypeData: any[] = response.data;
+      const polymersTypeData: DropdownItem[] = response.data;
       setPolymersTypes(polymersTypeData);
     });
     getIndustryList().then((response) => {
-      const industryData: any[] = response.data;
+      const industryData: DropdownItem[] = response.data;
       setIndustry(industryData);
     });
     getPhysicalForms().then((response) => {
-      const physicalFormData: any[] = response.data;
+      const physicalFormData: DropdownItem[] = response.data;
       setPhysicalForms(physicalFormData);
     });
     getGrades().then((response) => {
-      const gradesData: any[] = response.data;
+      const gradesData: DropdownItem[] = response.data;
       setGrades(gradesData);
     });
     getIncoterms().then((response) => {
-      const incotermsData: any[] = response.data;
+      const incotermsData: DropdownItem[] = response.data;
       setIncoterms(incotermsData);
     });
     getPaymentTerms().then((response) => {
-      const paymentTermsData: any[] = response.data;
+      const paymentTermsData: DropdownItem[] = response.data;
       setPaymentTerms(paymentTermsData);
     });
     getPackagingTypes().then((response) => {
-      const packagingTypesData: any[] = response.data;
+      const packagingTypesData: DropdownItem[] = response.data;
       setPackagingTypes(packagingTypesData);
     });
   }, []);

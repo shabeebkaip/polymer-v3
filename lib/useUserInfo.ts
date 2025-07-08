@@ -6,7 +6,7 @@ export interface UserInfo {
   lastName?: string;
   email?: string;
   user_type?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 interface UserStore {
@@ -17,7 +17,7 @@ interface UserStore {
   logout: () => void;
 }
 
-export const useUserInfo = create<UserStore>((set, get) => ({
+export const useUserInfo = create<UserStore>((set) => ({
   user: null,
   isInitialized: false,
   setUser: (user) => {

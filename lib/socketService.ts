@@ -107,7 +107,7 @@ class SocketService {
         if (callback) callback(false);
       });
 
-      this.socket.on('connect_error', (error: Error) => {
+      this.socket.on('connect_error', () => {
         console.log('⚠️ Chat server not available, switching to offline mode');
         this.connected = false;
         this.isConnecting = false;

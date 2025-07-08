@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Label } from "../../ui/label";
 import { Input } from "../../ui/input";
 import {
@@ -9,8 +9,6 @@ import {
   SelectValue,
 } from "../../ui/select";
 import { Card, CardContent } from "../../ui/card";
-import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
-import { Calendar } from "../../ui/calendar";
 import { uomDropdown } from "@/lib/utils";
 import { ProductFormData } from "@/types/product";
 import MultiSelect from "@/components/shared/MultiSelect";
@@ -22,7 +20,7 @@ interface DropdownItem {
 
 interface TradeInformationProps {
   data: ProductFormData;
-  onFieldChange: (field: keyof ProductFormData, value: any) => void;
+  onFieldChange: (field: keyof ProductFormData, value: string | string[]) => void;
   incoterms?: DropdownItem[];
   paymentTerms?: DropdownItem[];
   error: Partial<Record<keyof ProductFormData, string>>;
@@ -37,7 +35,6 @@ const TradeInformation: React.FC<TradeInformationProps> = ({
   error,
   onFieldError,
 }) => {
-  const [calendarOpen, setCalendarOpen] = useState(false);
 
   return (
     <>

@@ -6,7 +6,7 @@ export type FetchOptions = RequestInit & {
   auth?: boolean; // Optional flag to include token
 };
 
-const fetchInstance = async <T = any>(
+const fetchInstance = async <T = unknown>(
   endpoint: string,
   options: FetchOptions = {}
 ): Promise<T> => {
@@ -36,24 +36,24 @@ const fetchInstance = async <T = any>(
 };
 
 // Helper wrappers
-export const fetchGet = <T = any>(url: string, auth = true) =>
+export const fetchGet = <T = unknown>(url: string, auth = true) =>
   fetchInstance<T>(url, { method: "GET", auth });
 
-export const fetchPost = <T = any>(url: string, body: any, auth = true) =>
+export const fetchPost = <T = unknown>(url: string, body: unknown, auth = true) =>
   fetchInstance<T>(url, {
     method: "POST",
     body: JSON.stringify(body),
     auth,
   });
 
-export const fetchPut = <T = any>(url: string, body: any, auth = true) =>
+export const fetchPut = <T = unknown>(url: string, body: unknown, auth = true) =>
   fetchInstance<T>(url, {
     method: "PUT",
     body: JSON.stringify(body),
     auth,
   });
 
-export const fetchDelete = <T = any>(url: string, auth = true) =>
+export const fetchDelete = <T = unknown>(url: string, auth = true) =>
   fetchInstance<T>(url, {
     method: "DELETE",
     auth,

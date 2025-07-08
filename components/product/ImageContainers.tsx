@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { useKeenSlider } from "keen-slider/react";
+import { useKeenSlider, KeenSliderPlugin } from "keen-slider/react";
 import "keen-slider/keen-slider.min.css";
+import Image from "next/image";
 
 interface Image {
   fileUrl: string;
@@ -16,40 +17,42 @@ interface ImageContainersProps {
 }
 
 // Autoplay plugin
-const autoplay = (interval = 3000) => {
-  return (slider: { on: (event: string, callback: () => void) => void; next: () => void }) => {
-    let timeout: ReturnType<typeof setTimeout>;
-    let mouseOver = false;
+const autoplay: KeenSliderPlugin = (slider) => {
+  let timeout: ReturnType<typeof setTimeout>;
+  let mouseOver = false;
 
-    function clearNextTimeout() {
-      clearTimeout(timeout);
+  function clearNextTimeout() {
+    clearTimeout(timeout);
+  }
+
+  function nextTimeout() {
+    clearTimeout(timeout);
+    // Type assertion is safe here - we know this is a web slider with next() method
+    const webSlider = slider as typeof slider & { next(): void };
+    if (!mouseOver && webSlider.next) {
+      timeout = setTimeout(() => {
+        webSlider.next();
+      }, 3000);
     }
+  }
 
-    function nextTimeout() {
-      clearTimeout(timeout);
-      if (!mouseOver && slider?.next) {
-        timeout = setTimeout(() => {
-          slider.next();
-        }, interval);
-      }
-    }
-
-    slider.on("created", () => {
-      slider.container.addEventListener("mouseover", () => {
-        mouseOver = true;
-        clearNextTimeout();
-      });
-      slider.container.addEventListener("mouseout", () => {
-        mouseOver = false;
-        nextTimeout();
-      });
+  slider.on("created", () => {
+    // Type assertion is safe here - we know this is a web slider with container property
+    const webSlider = slider as typeof slider & { container: HTMLElement };
+    webSlider.container.addEventListener("mouseover", () => {
+      mouseOver = true;
+      clearNextTimeout();
+    });
+    webSlider.container.addEventListener("mouseout", () => {
+      mouseOver = false;
       nextTimeout();
     });
+    nextTimeout();
+  });
 
-    slider.on("dragStarted", clearNextTimeout);
-    slider.on("animationEnded", nextTimeout);
-    slider.on("updated", nextTimeout);
-  };
+  slider.on("dragStarted", clearNextTimeout);
+  slider.on("animationEnded", nextTimeout);
+  slider.on("updated", nextTimeout);
 };
 
 const ImageContainers: React.FC<ImageContainersProps> = ({ productImages }) => {
@@ -63,7 +66,7 @@ const ImageContainers: React.FC<ImageContainersProps> = ({ productImages }) => {
         setCurrentSlide(slider.track.details.rel);
       },
     },
-    [autoplay(4000)]
+    [autoplay]
   );
 
   if (!productImages || productImages.length === 0) {
@@ -86,9 +89,11 @@ const ImageContainers: React.FC<ImageContainersProps> = ({ productImages }) => {
               className="keen-slider__slide flex justify-center items-center"
               key={index}
             >
-              <img
+              <Image
                 src={image.fileUrl}
                 alt={`Product Image ${index + 1}`}
+                width={128}
+                height={128}
                 className="w-full h-full object-cover rounded-lg"
               />
             </div>

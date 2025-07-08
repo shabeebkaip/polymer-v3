@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 interface UploadedFile {
   id: string;
@@ -164,9 +165,11 @@ const FileUpload: React.FC<FileUploadProps> = ({
             ) : previewFile.type?.includes("audio") ? (
               <audio src={previewFile.fileUrl} controls className="w-full" />
             ) : (
-              <img
+              <Image
                 src={previewFile.fileUrl}
                 alt="Preview"
+                width={600}
+                height={400}
                 className="max-w-full max-h-full object-contain"
               />
             )}

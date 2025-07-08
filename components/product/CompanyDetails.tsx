@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 import { 
   Globe, 
   MapPin, 
@@ -48,18 +49,22 @@ const CompanyDetails: React.FC<CompanyDetailsProps> = ({
           <div className="flex-shrink-0">
             <div className="w-24 h-24 bg-white rounded-2xl shadow-lg p-3 border">
               {companyDetails?.company_logo ? (
-                <img
+                <Image
                   src={companyDetails.company_logo}
                   alt={companyDetails.company}
+                  width={96}
+                  height={96}
                   className="w-full h-full object-contain"
                   onError={(e) => {
                     (e.target as HTMLImageElement).src = FALLBACK_COMPANY_IMAGE;
                   }}
                 />
               ) : (
-                <img
+                <Image
                   src={FALLBACK_COMPANY_IMAGE}
                   alt={companyDetails.company}
+                  width={96}
+                  height={96}
                   className="w-full h-full object-contain"
                 />
               )}

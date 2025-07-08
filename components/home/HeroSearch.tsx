@@ -1,4 +1,5 @@
 import { getProductList } from '@/apiServices/products';
+import { Product } from '@/types/product';
 import Image from 'next/image';
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
@@ -6,14 +7,14 @@ import { createPortal } from 'react-dom';
 import { FALLBACK_COMPANY_IMAGE } from '@/lib/fallbackImages';
 
 // Custom debounce hook
-function useDebounce(callback: (...args: { name: string; id: string; [key: string]: unknown }[]) => void, delay: number) {
+function useDebounce(callback: (query: string) => void, delay: number) {
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
     const cancel = () => {
         if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
-    const debounced = useCallback((...args: { name: string; id: string; [key: string]: unknown }[]) => {
+    const debounced = useCallback((query: string) => {
         cancel();
-        timeoutRef.current = setTimeout(() => callback(...args), delay);
+        timeoutRef.current = setTimeout(() => callback(query), delay);
     }, [callback, delay]);
     useEffect(() => cancel, []);
     return debounced;
@@ -22,7 +23,7 @@ function useDebounce(callback: (...args: { name: string; id: string; [key: strin
 const HeroSearch = () => {
     const router = useRouter();
     const [searchQuery, setSearchQuery] = useState<string>('');
-    const [products, setProducts] = useState<{ name: string; id: string; [key: string]: unknown }[]>([]);
+    const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(false);
     const [highlighted, setHighlighted] = useState(-1);
     const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 300 });

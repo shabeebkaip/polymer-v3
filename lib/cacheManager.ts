@@ -86,7 +86,7 @@ export class CacheManager {
     const status: Record<string, { valid: boolean; lastFetch?: number }> = {};
     
     cacheKeys.forEach(key => {
-      const cacheData = store[`${key}Cache` as keyof typeof store] as any;
+      const cacheData = store[`${key}Cache` as keyof typeof store] as { lastFetch?: number } | undefined;
       status[key] = {
         valid: store.isCacheValid(key),
         lastFetch: cacheData?.lastFetch

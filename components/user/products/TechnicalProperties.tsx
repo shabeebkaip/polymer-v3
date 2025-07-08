@@ -2,15 +2,8 @@ import React from "react";
 import { Label } from "../../ui/label";
 import { Input } from "../../ui/input";
 import { Card, CardContent } from "../../ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../../ui/select";
 import { Badge } from "../../ui/badge";
-import { Beaker, Thermometer, Zap, Gauge, FileText } from "lucide-react";
+import { Gauge, FileText } from "lucide-react";
 import { ProductFormData } from "@/types/product";
 import MultiSelect from "@/components/shared/MultiSelect";
 
@@ -21,7 +14,7 @@ interface DropdownItem {
 
 interface TechnicalPropertiesProps {
   data: ProductFormData;
-  onFieldChange: (field: keyof ProductFormData, value: any) => void;
+  onFieldChange: (field: keyof ProductFormData, value: string | string[]) => void;
   grades?: DropdownItem[];
 }
 
@@ -105,7 +98,7 @@ const TechnicalProperties: React.FC<TechnicalPropertiesProps> = ({
                           type="number"
                           step="0.01"
                           placeholder={field.placeholder}
-                          value={(data as any)?.[field.key] || ""}
+                          value={(data as Record<string, unknown>)?.[field.key] as string || ""}
                           onChange={(e) => onFieldChange(field.key as keyof ProductFormData, e.target.value)}
                           className="pr-16 border-gray-300 focus:border-indigo-500 focus:ring-indigo-200 transition-all duration-200"
                         />

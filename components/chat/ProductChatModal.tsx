@@ -111,11 +111,11 @@ const ProductChatModal: React.FC<ProductChatModalProps> = ({
           const tempMessage: ProductChatMessage = {
             _id: Date.now().toString(),
             message: messageText,
-            senderId: user._id,
+            senderId: user._id as string,
             receiverId: sellerInfo._id,
-            senderName: `${user.firstName} ${user.lastName}`.trim(),
-            senderCompany: user.company || '',
-            senderImage: user.profile_image || '',
+            senderName: `${user.firstName || ''} ${user.lastName || ''}`.trim(),
+            senderCompany: (user.company as string) || '',
+            senderImage: (user.profile_image as string) || '',
             productId,
             messageType: 'text',
             isRead: false,
@@ -199,7 +199,7 @@ const ProductChatModal: React.FC<ProductChatModalProps> = ({
     if (!isOpen || !user) return;
 
     setConnectionStatus('connecting');
-    socketService.connect(user._id);
+    socketService.connect(user._id as string);
     
     // Check connection status
     const checkConnection = () => {
@@ -395,7 +395,7 @@ const ProductChatModal: React.FC<ProductChatModalProps> = ({
                         setConnectionRetries(0);
                         setConnectionStatus('connecting');
                         socketService.resetConnection();
-                        socketService.connect(user._id);
+                        socketService.connect(user._id as string);
                       }}
                       className="ml-2 text-xs text-emerald-200 hover:text-white underline"
                     >

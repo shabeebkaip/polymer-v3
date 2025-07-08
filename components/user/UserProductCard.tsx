@@ -2,10 +2,20 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
 import { Delete, Pencil } from "lucide-react";
+import Image from "next/image";
 import { FALLBACK_PRODUCT_IMAGE, FALLBACK_COMPANY_IMAGE } from "@/lib/fallbackImages";
 
 interface Product {
-  [key: string]: any;
+  _id?: string;
+  productName?: string;
+  productImages?: Array<{ fileUrl: string }>;
+  createdBy?: {
+    company_logo?: string;
+    company?: string;
+  };
+  chemicalName?: string;
+  productFormName?: string;
+  [key: string]: unknown;
 }
 
 interface UserProductCardProps {
@@ -18,9 +28,11 @@ const UserProductCard: React.FC<UserProductCardProps> = ({ product }) => {
     <div className="group bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200/50 hover:border-green-300/50 h-full flex flex-col">
       <div className="p-6 flex flex-col gap-4 flex-1">
         <div className="relative overflow-hidden rounded-xl">
-          <img
+          <Image
             src={product?.productImages?.[0]?.fileUrl || FALLBACK_PRODUCT_IMAGE}
             alt="Product"
+            width={320}
+            height={160}
             className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300"
             onError={(e) => {
               (e.target as HTMLImageElement).src = FALLBACK_PRODUCT_IMAGE;
@@ -31,8 +43,11 @@ const UserProductCard: React.FC<UserProductCardProps> = ({ product }) => {
         
         <div className="flex items-center gap-2">
           <div className="flex-shrink-0">
-            <img
+            <Image
               src={product?.createdBy?.company_logo || FALLBACK_COMPANY_IMAGE}
+              alt={product?.createdBy?.company || "Company"}
+              width={40}
+              height={40}
               className="w-10 h-10 object-contain rounded-lg bg-gray-50 p-1"
               onError={(e) => {
                 (e.target as HTMLImageElement).src = FALLBACK_COMPANY_IMAGE;

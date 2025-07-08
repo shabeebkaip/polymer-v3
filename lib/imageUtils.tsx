@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import { FALLBACK_PRODUCT_IMAGE, FALLBACK_COMPANY_IMAGE, FALLBACK_USER_AVATAR } from './fallbackImages';
 
 /**
@@ -42,7 +43,9 @@ export interface ImageWithFallbackProps {
   alt: string;
   className?: string;
   fallbackType?: 'product' | 'company' | 'user';
-  [key: string]: any;
+  width?: number;
+  height?: number;
+  [key: string]: unknown;
 }
 
 /**
@@ -56,9 +59,11 @@ export const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
   ...props
 }) => {
   return (
-    <img
+    <Image
       src={getImageWithFallback(src, fallbackType)}
       alt={alt}
+      width={100}
+      height={100}
       className={className}
       onError={(e) => handleImageError(e, fallbackType)}
       {...props}

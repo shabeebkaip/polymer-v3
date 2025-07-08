@@ -17,9 +17,9 @@ interface PackageInformationProps {
     packagingWeight?: string;
     storageConditions?: string;
     shelfLife?: string;
-    [key: string]: any;
+    [key: string]: unknown;
   };
-  onFieldChange: (field: string, value: any) => void;
+  onFieldChange: (field: string, value: string | string[]) => void;
   packagingTypes?: PackagingType[];
 }
 

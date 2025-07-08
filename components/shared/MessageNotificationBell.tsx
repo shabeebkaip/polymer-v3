@@ -6,6 +6,7 @@ import { useMessageNotifications } from '@/hooks/useMessageNotifications';
 import { useOfflineNotifications } from '@/hooks/useOfflineNotifications';
 import { useRouter } from 'next/navigation';
 import { socketService } from '@/lib/socketService';
+import Image from "next/image";
 
 const MessageNotificationBell: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -138,9 +139,11 @@ const MessageNotificationBell: React.FC = () => {
                         {/* Avatar */}
                         <div className="flex-shrink-0">
                           {notification.message.senderImage ? (
-                            <img
+                            <Image
                               src={notification.message.senderImage}
                               alt={notification.message.senderName}
+                              width={40}
+                              height={40}
                               className="w-10 h-10 rounded-full object-cover"
                             />
                           ) : (

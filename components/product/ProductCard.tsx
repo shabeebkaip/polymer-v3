@@ -1,5 +1,6 @@
 import React from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import QuoteRequestModal from "../shared/QuoteRequestModal";
 import SampleRequestModal from "../shared/SampleRequestModal";
 import { ProductCardTypes } from "@/types/product";
@@ -19,9 +20,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, userType }) => {
       <div className="relative overflow-hidden">
         {/* Product image */}
         <div className="aspect-w-16 aspect-h-10 bg-gray-100 relative">
-          <img
+          <Image
             src={product?.productImages?.[0]?.fileUrl || FALLBACK_PRODUCT_IMAGE}
             alt={product?.productName || 'Product'}
+            width={320}
+            height={160}
             className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300"
             onError={(e) => {
               (e.target as HTMLImageElement).src = FALLBACK_PRODUCT_IMAGE;
@@ -32,9 +35,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, userType }) => {
         
         {/* Hover overlay with company logo */}
         <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm rounded-lg p-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <img
+          <Image
             src={product?.createdBy?.company_logo || FALLBACK_COMPANY_IMAGE}
             alt="Company"
+            width={24}
+            height={24}
             className="w-6 h-6 object-contain"
             onError={(e) => {
               (e.target as HTMLImageElement).src = FALLBACK_COMPANY_IMAGE;
@@ -47,9 +52,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, userType }) => {
         {/* Company Info Header */}
         <div className="flex items-center gap-2 mb-3">
           <div className="flex-shrink-0">
-            <img
+            <Image
               src={product?.createdBy?.company_logo || FALLBACK_COMPANY_IMAGE}
               alt="Company"
+              width={40}
+              height={40}
               className="w-10 h-10 object-contain rounded-lg bg-gray-50 p-1"
               onError={(e) => {
                 (e.target as HTMLImageElement).src = FALLBACK_COMPANY_IMAGE;

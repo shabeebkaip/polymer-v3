@@ -45,7 +45,7 @@ const CreatePromotion = () => {
       try {
         setLoadingProducts(true);
         const response = await getProductList({
-          createdBy: [user._id],
+          createdBy: [user._id as string],
         });
         setProducts(response.data || []);
         console.log("Products data:", response.data); // Debug log

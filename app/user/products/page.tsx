@@ -23,7 +23,7 @@ const ProductsPage: React.FC = () => {
       try {
         setLoading(true);
         const response = await getProductList({
-          createdBy: [user._id],
+          createdBy: [user._id as string],
         });
         setProducts(response.data || []);
         setError(null);

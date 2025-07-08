@@ -7,7 +7,7 @@ import { ProductFormData } from "@/types/product";
 
 interface GeneralInformationProps {
   data: ProductFormData;
-  onFieldChange: (field: keyof ProductFormData, value: any) => void;
+  onFieldChange: (field: keyof ProductFormData, value: string | number | boolean) => void;
   onFieldError: (field: keyof ProductFormData) => void;
   error: Partial<Record<keyof ProductFormData, string>>;
 }

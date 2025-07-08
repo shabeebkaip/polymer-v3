@@ -48,7 +48,7 @@ interface SidebarItem {
 }
 
 // Icon mapping for dynamic icons - using exact Lucide icon names
-const iconMap: Record<string, React.ComponentType<any>> = {
+const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   User: User,
   Settings: Settings,
   ShieldCheck: ShieldCheck,
@@ -115,7 +115,7 @@ const Sidebar = () => {
 
   // Comprehensive fallback data based on API structure
   const getFallbackSidebarList = (userType?: string): SidebarItem[] => {
-    let sidebarItems: SidebarItem[] = [
+    const sidebarItems: SidebarItem[] = [
       {
         displayName: "Profile",
         route: "/user/profile",

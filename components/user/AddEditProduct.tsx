@@ -11,10 +11,11 @@ import Environmental from "./products/Environmental";
 import Certification from "./products/Certifications";
 import Documents from "./products/Documents";
 import { ProductFormData } from "@/types/product";
+import type { UploadedFile } from "@/types/product";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Badge } from "../ui/badge";
-import { ChevronLeft, ChevronRight, Save, RotateCcw, CheckCircle, Circle, Package, Settings, Image, FileText, Truck, Box, Leaf, Shield, Upload } from "lucide-react";
+import { ChevronLeft, ChevronRight, Save, RotateCcw, CheckCircle, Package, Settings, Image, FileText, Truck, Box, Leaf, Shield, Upload } from "lucide-react";
 import { createProduct, updateProduct } from "@/apiServices/products";
 import { initialFormData } from "@/apiServices/constants/userProductCrud";
 import { toast } from "sonner";
@@ -121,7 +122,7 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
 
-  const onFieldChange = (key: keyof ProductFormData, value: any) => {
+  const onFieldChange = (key: keyof ProductFormData, value: string | number | boolean | UploadedFile[] | undefined) => {
     setData((prev) => ({
       ...prev,
       [key]: value,
@@ -150,23 +151,6 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
 
   const goToStep = (step: number) => {
     setCurrentStep(step);
-  };
-
-  // Check if current step is valid (has no errors)
-  const isCurrentStepValid = () => {
-    const currentComponent = FORM_STEPS[currentStep - 1].component;
-    
-    // Define validation rules for each step
-    switch (currentComponent) {
-      case 'general':
-        return data.productName && data.chemicalName && data.tradeName;
-      case 'details':
-        return data.chemicalFamily && data.product_family && data.polymerType && data.physicalForm;
-      case 'trade':
-        return data.minimum_order_quantity && data.stock && data.uom && data.price;
-      default:
-        return true; // Optional steps
-    }
   };
 
   const resetForm = () => {
@@ -199,27 +183,6 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
         return ['safety_data_sheet', 'technical_data_sheet', 'certificate_of_analysis'];
       default:
         return [];
-    }
-  };
-
-  // Helper function to check if a field is required
-  const isFieldRequired = (fieldName: keyof ProductFormData): boolean => {
-    if (!isEditMode) {
-      // All core fields required for new products
-      const allRequiredFields: (keyof ProductFormData)[] = [
-        "productName", "chemicalName", "tradeName", "chemicalFamily", 
-        "product_family", "polymerType", "physicalForm", 
-        "minimum_order_quantity", "stock", "uom", "price"
-      ];
-      return allRequiredFields.includes(fieldName) || 
-             fieldName === "industry" || fieldName === "incoterms" || fieldName === "productImages";
-    } else {
-      // Only core business fields required for edits
-      const coreRequiredFields: (keyof ProductFormData)[] = [
-        "productName", "chemicalName", "tradeName", "chemicalFamily", 
-        "polymerType", "physicalForm", "price", "uom", "industry"
-      ];
-      return coreRequiredFields.includes(fieldName);
     }
   };
 
@@ -326,7 +289,7 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
 
     // Format data according to backend schema requirements
     const formatDataForAPI = (formData: ProductFormData) => {
-      const formatted = { ...formData } as any;
+      const formatted = { ...formData } as Record<string, unknown>;
 
       // Convert price from string to number (required in schema)
       if (formatted.price) {
@@ -743,7 +706,7 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
               </Badge>
               {isEditMode && (
                 <Badge variant="secondary" className="text-xs bg-emerald-100 text-emerald-700">
-                  ✨ <span className="hidden sm:inline">Use "Save Changes" button to save edits at any step</span>
+                  ✨ <span className="hidden sm:inline">Use &quot;Save Changes&quot; button to save edits at any step</span>
                   <span className="sm:hidden">Save anytime</span>
                 </Badge>
               )}
@@ -765,6 +728,11 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
             </Button>
           </div>
         )}
+
+        {/* Note about product name restrictions */}
+        <div className="mt-4 text-center">
+          <p className="text-gray-500 text-xs mt-2">Please avoid using &quot;test&quot; or &quot;sample&quot; in product names for production listings.</p>
+        </div>
       </div>
     </div>
   );
