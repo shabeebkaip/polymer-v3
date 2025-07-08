@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
+import Image from 'next/image';
 import {
   ArrowLeft,
   Send,
@@ -16,15 +16,12 @@ import {
   Clock,
   DollarSign,
   MapPin,
-  User,
   Truck,
   FileText,
   Mail,
   Phone,
-  Globe,
   RefreshCcw,
   Copy,
-  ExternalLink,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
@@ -37,16 +34,10 @@ const SubmittedOfferDetail = () => {
   const offerId = params.id as string;
 
   const { 
-    offers, 
     detailedOffer, 
     loading, 
-    error, 
-    fetchOffers, 
     fetchOfferDetail,
-    setDetailedOffer, 
-    clearOfferDetail,
-    setLoading,
-    setError
+    clearOfferDetail
   } = useSubmittedOffersStore();
 
   const [imageLoading, setImageLoading] = useState<Record<string, boolean>>({});
@@ -59,18 +50,6 @@ const SubmittedOfferDetail = () => {
       clearOfferDetail();
     };
   }, [offerId, fetchOfferDetail, clearOfferDetail]);
-
-  // Remove the old useEffect that checked local store
-  // useEffect(() => {
-  //   if (offers.length > 0 && !detailedOffer) {
-  //     const foundOffer = offers.find(offer => offer._id === offerId);
-  //     if (foundOffer) {
-  //       setDetailedOffer(foundOffer);
-  //     } else {
-  //       setError("Offer not found");
-  //     }
-  //   }
-  // }, [offers, offerId, detailedOffer, setDetailedOffer, setError]);
 
   // Get status info
   const getStatusInfo = (status: string) => {
@@ -189,7 +168,7 @@ const SubmittedOfferDetail = () => {
     );
   }
 
-  if (error || !detailedOffer) {
+  if (!detailedOffer) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-green-50/20 to-emerald-50/30">
         <div className="w-full px-2 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
@@ -197,7 +176,7 @@ const SubmittedOfferDetail = () => {
             <div className="flex flex-col items-center justify-center min-h-[400px] text-center p-8">
               <AlertCircle className="h-12 w-12 text-red-500 mb-4" />
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                {error || "Offer not found"}
+                Offer not found
               </h3>
               <p className="text-gray-600 mb-6 max-w-md">
                 The requested offer could not be found or loaded. Please try again or go back to the offers list.
@@ -342,11 +321,13 @@ const SubmittedOfferDetail = () => {
                   <div>
                     <label className="text-sm font-medium text-gray-600 mb-2 block">Product Images</label>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                      {detailedOffer.bulkOrderId.product.productImages.map((image, index) => (
+                      {detailedOffer.bulkOrderId.product.productImages.map((image) => (
                         <div key={image._id} className="relative group">
-                          <img
+                          <Image
                             src={image.fileUrl}
-                            alt={`Product ${index + 1}`}
+                            alt={`Product image`}
+                            width={96}
+                            height={96}
                             className="w-full h-24 object-cover rounded-lg border border-gray-200"
                             onError={() => handleImageError(image._id)}
                             onLoad={() => handleImageLoad(image._id)}
@@ -547,7 +528,7 @@ const SubmittedOfferDetail = () => {
               </div>
               
               {/* Status Timeline from API */}
-              {detailedOffer.statusTimeline && detailedOffer.statusTimeline.map((timeline, index) => (
+              {detailedOffer.statusTimeline && detailedOffer.statusTimeline.map((timeline) => (
                 <div key={timeline._id} className="flex items-start gap-3">
                   <div className={`w-2 h-2 rounded-full mt-2 ${
                     timeline.status === 'approved' ? 'bg-green-600' : 

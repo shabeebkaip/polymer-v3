@@ -12,16 +12,11 @@ import {
   Package,
   DollarSign,
   Clock,
-  Truck,
-  FileText,
   Upload,
   X,
-  Building2,
   MapPin,
-  Calendar,
   Loader2,
   CheckCircle,
-  AlertCircle,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -37,7 +32,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
 
 import { useUserInfo } from "@/lib/useUserInfo";
 import { sellerSubmitOffer } from "@/apiServices/user";
@@ -136,7 +130,7 @@ const SubmitOffer = () => {
         if (bulkOrdersResponse.data) {
           // Handle both new and old API structures
           const dataArray = bulkOrdersResponse.data || bulkOrdersResponse;
-          const foundOrder = dataArray.find((order: any) => 
+          const foundOrder = dataArray.find((order: { id: string; _id: string }) => 
             order.id === bulkOrderId || order._id === bulkOrderId
           );
           if (foundOrder) {
@@ -203,9 +197,10 @@ const SubmitOffer = () => {
       } else {
         toast.error(response.message || "Failed to submit offer");
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error("Submission error:", error);
-      toast.error(error.message || "Failed to submit offer");
+      const errorMessage = error instanceof Error ? error.message : "Failed to submit offer";
+      toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }

@@ -27,8 +27,6 @@ import {
   ChevronRight,
   Eye,
   DollarSign,
-  MapPin,
-  User,
   Truck,
   FileText,
   X,
@@ -50,7 +48,7 @@ const SubmittedOffers = () => {
   const router = useRouter();
 
   // Zustand store
-  const { offers, meta, loading, error, fetchOffers, clearOffers } =
+  const { offers, meta, loading, error, fetchOffers } =
     useSubmittedOffersStore();
   console.log("Offers:", offers);
   // Filter states
