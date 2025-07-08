@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useSampleRequestStore } from '@/stores/user';
+import Image from 'next/image';
 import {
   Dialog,
   DialogContent,
@@ -32,13 +33,10 @@ import {
   AlertCircle,
   ArrowLeft,
   Download,
-  Globe,
   Target,
-  Truck,
   Settings,
   Edit3,
-  Send,
-  X
+  Send
 } from "lucide-react";
 
 const SampleRequestDetail = () => {
@@ -308,12 +306,14 @@ const SampleRequestDetail = () => {
                         Product Images
                       </h4>
                       <div className="grid grid-cols-2 gap-3">
-                        {sampleRequestDetail.product.productImages.slice(0, 4).map((image, index) => (
+                        {sampleRequestDetail.product.productImages.slice(0, 4).map((image) => (
                           <div key={image.id} className="relative group">
-                            <img
+                            <Image
                               src={image.fileUrl}
                               alt={image.name}
                               className="w-full h-20 object-cover rounded-lg border border-blue-200"
+                              width={80}
+                              height={80}
                             />
                             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors rounded-lg"></div>
                           </div>
