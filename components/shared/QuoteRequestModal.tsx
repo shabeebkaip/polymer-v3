@@ -19,21 +19,11 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  getGrades,
-  getIncoterms,
-  getPackagingTypes,
-} from "@/apiServices/shared";
+import { getGrades, getIncoterms, getPackagingTypes } from "@/apiServices/shared";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
 import { Calendar as CalendarIcon, MapPin, Package, Truck, Clock } from "lucide-react";
 import { createQuoteRequest } from "@/apiServices/user";
-import { useUserInfo } from "@/lib/useUserInfo";
 import { useRouter } from "next/navigation";
 import { ProductQuoteRequest } from "@/types/quote";
 import Cookies from "js-cookie";
@@ -59,15 +49,23 @@ interface QuoteRequestModalProps {
 }
 
 // Memoized input components to prevent unnecessary re-renders
-const MemoizedInput = React.memo(({ 
-  placeholder, 
-  className, 
-  type = "text", 
-  onChange, 
-  value, 
+const MemoizedInput = React.memo(({
+  placeholder,
+  className,
+  type = "text",
+  onChange,
+  value,
   min,
-  ...props 
-}: any) => (
+  ...props
+}: {
+  placeholder: string;
+  className?: string;
+  type?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  value: string | number;
+  min?: number | string;
+  [key: string]: unknown;
+}) => (
   <Input
     placeholder={placeholder}
     className={className}
@@ -79,13 +77,19 @@ const MemoizedInput = React.memo(({
   />
 ));
 
-const MemoizedTextarea = React.memo(({ 
-  placeholder, 
-  className, 
-  onChange, 
+const MemoizedTextarea = React.memo(({
+  placeholder,
+  className,
+  onChange,
   value,
-  ...props 
-}: any) => (
+  ...props
+}: {
+  placeholder: string;
+  className?: string;
+  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  value: string;
+  [key: string]: unknown;
+}) => (
   <Textarea
     placeholder={placeholder}
     className={className}
@@ -95,13 +99,20 @@ const MemoizedTextarea = React.memo(({
   />
 ));
 
-const MemoizedSelect = React.memo(({ 
-  value, 
-  onValueChange, 
-  placeholder, 
-  className, 
-  children 
-}: any) => (
+const MemoizedSelect = React.memo(({
+  value,
+  onValueChange,
+  placeholder,
+  className,
+  children
+}: {
+  value: string;
+  onValueChange: (value: string) => void;
+  placeholder?: string;
+  className?: string;
+  children: React.ReactNode;
+  [key: string]: unknown;
+}) => (
   <Select value={value} onValueChange={onValueChange}>
     <SelectTrigger className={className}>
       <SelectValue placeholder={placeholder} />
@@ -245,7 +256,7 @@ const QuoteRequestModal = ({
 
   // Optimized field change handler with immediate UI updates
   const onFieldChange = useCallback((field: string, value: string | number | Date | undefined) => {
-    let processedValue: any = value;
+    let processedValue: string | number | Date | undefined = value;
     
     // Handle numeric fields
     if (field === "quantity" || field === "expected_annual_volume") {
@@ -343,11 +354,6 @@ const QuoteRequestModal = ({
     }
   }, [open, data]);
 
-  // Close calendar when clicking outside
-  const handleCalendarClose = useCallback(() => {
-    setCalendarOpen(false);
-  }, []);
-
   return (
     <>
       <button 
@@ -401,7 +407,7 @@ const QuoteRequestModal = ({
                           className="pr-20 bg-white border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 transition-all duration-200"
                           type="number"
                           min="1"
-                          onChange={(e: any) => onFieldChange("quantity", e.target.value)}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => onFieldChange("quantity", e.target.value)}
                           value={data?.quantity || ""}
                         />
                         <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-medium text-emerald-600 border-l border-gray-200 pl-3">
@@ -459,7 +465,7 @@ const QuoteRequestModal = ({
                           placeholder="Enter destination country"
                           className="pl-10 bg-white border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 transition-all duration-200"
                           type="text"
-                          onChange={(e: any) => onFieldChange("country", e.target.value)}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => onFieldChange("country", e.target.value)}
                           value={data?.country}
                         />
                       </div>
@@ -471,7 +477,7 @@ const QuoteRequestModal = ({
                     <MemoizedTextarea
                       placeholder="Enter complete shipping address including city, postal code, and any specific delivery instructions"
                       className="bg-white border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 transition-all duration-200 min-h-[80px]"
-                      onChange={(e: any) => onFieldChange("destination", e.target.value)}
+                      onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => onFieldChange("destination", e.target.value)}
                       value={data?.destination}
                     />
                   </div>
@@ -506,7 +512,7 @@ const QuoteRequestModal = ({
                         placeholder="e.g., 25kg bags, 1000kg big bags"
                         className="bg-white border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 transition-all duration-200"
                         type="text"
-                        onChange={(e: any) => onFieldChange("packaging_size", e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => onFieldChange("packaging_size", e.target.value)}
                         value={data?.packaging_size}
                       />
                     </div>
@@ -526,7 +532,7 @@ const QuoteRequestModal = ({
                         placeholder="Annual quantity requirement"
                         className="bg-white border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 transition-all duration-200"
                         type="number"
-                        onChange={(e: any) => onFieldChange("expected_annual_volume", e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => onFieldChange("expected_annual_volume", e.target.value)}
                         value={data?.expected_annual_volume || ""}
                       />
                     </div>
@@ -579,7 +585,7 @@ const QuoteRequestModal = ({
                       <MemoizedTextarea
                         placeholder="What will this product be used for? (e.g., automotive parts, packaging, construction)"
                         className="bg-white border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 transition-all duration-200 min-h-[80px]"
-                        onChange={(e: any) => onFieldChange("application", e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => onFieldChange("application", e.target.value)}
                         value={data?.application}
                       />
                     </div>
@@ -589,7 +595,7 @@ const QuoteRequestModal = ({
                       <MemoizedTextarea
                         placeholder="Any special requirements, certifications needed, or additional information for the supplier"
                         className="bg-white border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 transition-all duration-200 min-h-[100px]"
-                        onChange={(e: any) => onFieldChange("message", e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => onFieldChange("message", e.target.value)}
                         value={data?.message}
                       />
                     </div>
