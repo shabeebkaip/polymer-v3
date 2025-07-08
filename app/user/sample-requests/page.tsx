@@ -9,7 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Package, Calendar, Building2, AlertCircle, CheckCircle, XCircle, Clock, Search, Filter, ChevronLeft, ChevronRight, Eye } from "lucide-react";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSampleRequestsListStore } from "@/stores/user";
 
@@ -22,7 +22,6 @@ const SampleRequest = () => {
   const {
     requests,
     loading,
-    error,
     currentPage,
     totalPages,
     totalRequests,
@@ -33,8 +32,7 @@ const SampleRequest = () => {
     setStatusFilter,
     setCurrentPage,
     fetchSampleRequests,
-    clearFilters,
-    reset
+    clearFilters
   } = useSampleRequestsListStore();
 
   // Local state for debounced search
@@ -265,7 +263,7 @@ const SampleRequest = () => {
               </div>
               {debouncedSearchTerm && (
                 <p className="text-sm text-green-600 mt-2 font-medium">
-                  Searching for "{debouncedSearchTerm}"
+                  Searching for &quot;{debouncedSearchTerm}&quot;
                 </p>
               )}
             </div>
@@ -316,7 +314,7 @@ const SampleRequest = () => {
                 {debouncedSearchTerm && (
                   <span className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-100 to-emerald-100 text-green-700 rounded-full text-sm font-medium border border-green-200/50 group">
                     <Search className="w-4 h-4" />
-                    <span>Search: "{debouncedSearchTerm}"</span>
+                    <span>Search: &quot;{debouncedSearchTerm}&quot;</span>
                     <button
                       onClick={() => setSearchTerm("")}
                       className="ml-1 hover:bg-green-200/50 rounded-full p-1 transition-colors"
@@ -412,7 +410,7 @@ const SampleRequest = () => {
                 <div className="space-y-4">
                   <div className="text-sm text-gray-500 bg-gray-50 rounded-xl p-4 inline-block">
                     <div className="font-medium mb-2">Current filters:</div>
-                    {debouncedSearchTerm && <div className="flex items-center gap-2"><Search className="w-4 h-4" /> Search: "{debouncedSearchTerm}"</div>}
+                    {debouncedSearchTerm && <div className="flex items-center gap-2"><Search className="w-4 h-4" /> Search: &quot;{debouncedSearchTerm}&quot;</div>}
                     {statusFilter !== "all" && <div className="flex items-center gap-2"><Filter className="w-4 h-4" /> Status: {getStatusText(statusFilter)}</div>}
                   </div>
                   <button
