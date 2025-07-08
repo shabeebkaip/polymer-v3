@@ -11,11 +11,6 @@ import { createSampleRequest } from "@/apiServices/user";
 import { Calendar as CalendarIcon, Package, MapPin, Clock, FileText } from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -33,17 +28,27 @@ import {
 } from "@/components/ui/select";
 
 // Memoized input components to prevent unnecessary re-renders
-const MemoizedInput = React.memo(({ 
-  placeholder, 
-  className, 
-  type = "text", 
-  onChange, 
-  value, 
+const MemoizedInput = React.memo(({
+  placeholder,
+  className,
+  type = "text",
+  onChange,
+  value,
   min,
   readOnly,
   onFocus,
-  ...props 
-}: any) => (
+  ...props
+}: {
+  placeholder: string;
+  className?: string;
+  type?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  value: string | number;
+  min?: number | string;
+  readOnly?: boolean;
+  onFocus?: () => void;
+  [key: string]: unknown;
+}) => (
   <Input
     placeholder={placeholder}
     className={className}
@@ -57,31 +62,42 @@ const MemoizedInput = React.memo(({
   />
 ));
 
-const MemoizedTextarea = React.memo(({ 
-  placeholder, 
-  className, 
-  onChange, 
+const MemoizedTextarea = React.memo(({
+  placeholder,
+  className,
+  onChange,
   value,
-  rows,
-  ...props 
-}: any) => (
+  ...props
+}: {
+  placeholder: string;
+  className?: string;
+  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  value: string;
+  [key: string]: unknown;
+}) => (
   <Textarea
     placeholder={placeholder}
     className={className}
     onChange={onChange}
     value={value}
-    rows={rows}
     {...props}
   />
 ));
 
-const MemoizedSelect = React.memo(({ 
-  value, 
-  onValueChange, 
-  placeholder, 
-  className, 
-  children 
-}: any) => (
+const MemoizedSelect = React.memo(({
+  value,
+  onValueChange,
+  placeholder,
+  className,
+  children
+}: {
+  value: string;
+  onValueChange: (value: string) => void;
+  placeholder?: string;
+  className?: string;
+  children: React.ReactNode;
+  [key: string]: unknown;
+}) => (
   <Select value={value} onValueChange={onValueChange}>
     <SelectTrigger className={className}>
       <SelectValue placeholder={placeholder} />
@@ -352,7 +368,7 @@ const SampleRequestModal = ({
                           className="pr-20 bg-white border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 transition-all duration-200"
                           type="number"
                           min="1"
-                          onChange={(e: any) => onFieldChange("quantity", e.target.value)}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => onFieldChange("quantity", e.target.value)}
                           value={data?.quantity}
                         />
                         <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-medium text-emerald-600 border-l border-gray-200 pl-3">
@@ -383,7 +399,7 @@ const SampleRequestModal = ({
                         placeholder="Annual quantity requirement"
                         className="bg-white border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 transition-all duration-200"
                         type="number"
-                        onChange={(e: any) => onFieldChange("expected_annual_volume", e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => onFieldChange("expected_annual_volume", e.target.value)}
                         value={data?.expected_annual_volume}
                       />
                     </div>
@@ -392,8 +408,8 @@ const SampleRequestModal = ({
                       <label className="text-sm font-medium text-gray-700">Application/Use Case</label>
                       <MemoizedTextarea
                         placeholder="What will this product be used for?"
-                        className="bg-white border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 transition-all duration-200 min-h-[60px]"
-                        onChange={(e: any) => onFieldChange("application", e.target.value)}
+                        className="bg-white border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 transition-all duration-200 min-h-[80px]"
+                        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => onFieldChange("application", e.target.value)}
                         value={data?.application}
                       />
                     </div>
@@ -496,7 +512,7 @@ const SampleRequestModal = ({
                         placeholder="Enter city"
                         className="bg-white border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 transition-all duration-200"
                         type="text"
-                        onChange={(e: any) => onFieldChange("city", e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => onFieldChange("city", e.target.value)}
                         value={data?.city}
                       />
                     </div>
@@ -509,7 +525,7 @@ const SampleRequestModal = ({
                           placeholder="Enter country"
                           className="pl-10 bg-white border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 transition-all duration-200"
                           type="text"
-                          onChange={(e: any) => onFieldChange("country", e.target.value)}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => onFieldChange("country", e.target.value)}
                           value={data?.country}
                         />
                       </div>
@@ -521,7 +537,7 @@ const SampleRequestModal = ({
                     <MemoizedTextarea
                       placeholder="Enter complete shipping address including street, postal code, and any specific delivery instructions"
                       className="bg-white border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 transition-all duration-200 min-h-[80px]"
-                      onChange={(e: any) => onFieldChange("address", e.target.value)}
+                      onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => onFieldChange("address", e.target.value)}
                       value={data?.address}
                     />
                   </div>
@@ -539,7 +555,7 @@ const SampleRequestModal = ({
                       placeholder="Any special requirements, handling instructions, or additional information for the supplier"
                       className="bg-white border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 transition-all duration-200 min-h-[100px]"
                       rows={3}
-                      onChange={(e: any) => onFieldChange("message", e.target.value)}
+                      onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => onFieldChange("message", e.target.value)}
                       value={data?.message}
                     />
                   </div>
