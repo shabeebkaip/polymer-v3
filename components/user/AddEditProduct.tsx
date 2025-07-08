@@ -467,7 +467,7 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
         return (
           <ProductDetails
             data={data}
-            onFieldChange={onFieldChange}
+            onFieldChange={(field, value) => onFieldChange(field, value as string | number | boolean | UploadedFile[] | undefined)}
             chemicalFamilies={chemicalFamilies}
             polymersTypes={polymersTypes}
             industry={industry}
@@ -483,7 +483,7 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
         return (
           <TechnicalProperties
             data={data}
-            onFieldChange={onFieldChange}
+            onFieldChange={(field, value) => onFieldChange(field, value as string | number | boolean | UploadedFile[] | undefined)}
             grades={grades}
           />
         );
@@ -491,7 +491,7 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
         return (
           <TradeInformation
             data={data}
-            onFieldChange={onFieldChange}
+            onFieldChange={(field, value) => onFieldChange(field, value as string | number | boolean | UploadedFile[] | undefined)}
             incoterms={incoterms}
             paymentTerms={paymentTerms}
             error={error}
@@ -502,7 +502,7 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
         return (
           <PackageInformation
             data={data}
-            onFieldChange={onFieldChange}
+            onFieldChange={(field, value) => onFieldChange(field, value as string | number | boolean | UploadedFile[] | undefined)}
             packagingTypes={packagingTypes}
           />
         );

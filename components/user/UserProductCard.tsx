@@ -63,7 +63,7 @@ const UserProductCard: React.FC<UserProductCardProps> = ({ product }) => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
-              {product?.countryOfOrigin || 'Unknown'}
+              {String(product?.countryOfOrigin || 'Unknown')}
             </p>
           </div>
         </div>
@@ -79,7 +79,7 @@ const UserProductCard: React.FC<UserProductCardProps> = ({ product }) => {
             <div className="border-t border-gray-200/60 pt-2">
               <span className="text-gray-600 font-medium text-xs uppercase tracking-wide">Polymer Type</span>
               <div className="text-gray-900 text-sm font-medium leading-snug break-words mt-1">
-                {product.polymerType?.name || 'Not specified'}
+                {(product.polymerType as any)?.name || 'Not specified'}
               </div>
             </div>
           </div>

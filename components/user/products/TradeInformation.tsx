@@ -58,7 +58,7 @@ const TradeInformation: React.FC<TradeInformationProps> = ({
           placeholder="Enter minimum order quantity"
           value={data.minimum_order_quantity ?? ""}
           onChange={(e) => {
-            onFieldChange("minimum_order_quantity", Number(e.target.value));
+            onFieldChange("minimum_order_quantity", e.target.value);
             onFieldError("minimum_order_quantity");
           }}
           error={error?.minimum_order_quantity ? true : false}
@@ -82,7 +82,7 @@ const TradeInformation: React.FC<TradeInformationProps> = ({
           placeholder="Enter stock quantity"
           value={data.stock ?? ""}
           onChange={(e) => {
-            onFieldChange("stock", Number(e.target.value));
+            onFieldChange("stock", e.target.value);
             onFieldError("stock");
           }}
           error={error?.stock ? true : false}
