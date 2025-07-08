@@ -1,9 +1,12 @@
 "use client";
 
-import React from "react";
-import { ShoppingCart, FileText } from "lucide-react";
+import React, { useState } from "react";
+import { ShoppingCart, FileText, MessageCircle } from "lucide-react";
 import QuoteRequestModal from "./QuoteRequestModal";
 import SampleRequestModal from "./SampleRequestModal";
+import dynamic from "next/dynamic";
+
+const ProductChatModal = dynamic(() => import("@/components/chat/ProductChatModal"), { ssr: false });
 
 interface ActionButtonsProps {
   productId: string;
@@ -18,12 +21,15 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
   className = "",
   variant = "default"
 }) => {
+  const [isChatOpen, setIsChatOpen] = useState(false);
+
   // Define button styles based on variant
-  const getButtonStyles = (type: "quote" | "sample") => {
+  const getButtonStyles = (type: "quote" | "sample" | "chat") => {
     const baseStyles = "transition-all font-medium rounded-lg flex items-center justify-center gap-2";
     
     switch (variant) {
       case "compact":
+        if (type === "chat") return `${baseStyles} px-4 py-2 text-sm border-2 border-emerald-600 text-emerald-600 hover:bg-emerald-50`;
         return `${baseStyles} px-4 py-2 text-sm ${
           type === "quote" 
             ? "bg-blue-600 hover:bg-blue-700 text-white" 
@@ -31,6 +37,7 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
         }`;
         
       case "large":
+        if (type === "chat") return `${baseStyles} px-8 py-4 text-lg border-2 border-emerald-600 text-emerald-600 hover:bg-emerald-50`;
         return `${baseStyles} px-8 py-4 text-lg ${
           type === "quote" 
             ? "bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white" 
@@ -41,6 +48,7 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
         return className;
         
       default: // "default"
+        if (type === "chat") return `${baseStyles} px-6 py-3 border-2 border-emerald-600 text-emerald-600 hover:bg-emerald-50`;
         return `${baseStyles} px-6 py-3 ${
           type === "quote" 
             ? "bg-blue-600 hover:bg-blue-700 text-white" 
@@ -70,6 +78,24 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
         <FileText className="w-5 h-5" />
         Request Sample
       </SampleRequestModal>
+
+      {/* Chat with Supplier Button */}
+      <button
+        type="button"
+        className={getButtonStyles("chat")}
+        onClick={() => setIsChatOpen(true)}
+        aria-label="Chat with Supplier"
+      >
+        <MessageCircle className="w-5 h-5" />
+        Chat with Supplier
+      </button>
+      {isChatOpen && (
+        <ProductChatModal
+          isOpen={isChatOpen}
+          onClose={() => setIsChatOpen(false)}
+          productId={productId}
+        />
+      )}
     </div>
   );
 };
