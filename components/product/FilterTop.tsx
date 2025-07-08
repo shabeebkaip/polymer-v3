@@ -68,7 +68,7 @@ const FilterTop: React.FC<FilterTopProps> = ({ filters, onFilterChange, query })
 
   const isOptionSelected = (filter: FilterSection, optionId: string | boolean) => {
     const selectedValues = query[filter.name] || [];
-    return selectedValues.includes(String(optionId));
+    return Array.isArray(selectedValues) ? (selectedValues as string[]).includes(String(optionId)) : false;
   };
 
   const getFilteredData = (filter: FilterSection) => {
@@ -159,10 +159,12 @@ const FilterTop: React.FC<FilterTopProps> = ({ filters, onFilterChange, query })
                   {getSelectedCount(filter) > 0 && (
                     <button
                       onClick={() => {
-                        const selectedValues = query[filter.name] || [];
-                        selectedValues.forEach((value: string) => {
-                          onFilterChange(filter.name, value, false);
-                        });
+                        const selectedValues = query[filter.name];
+                        if (Array.isArray(selectedValues)) {
+                          selectedValues.forEach((value: string) => {
+                            onFilterChange(filter.name, value, false);
+                          });
+                        }
                         // Close dropdown after clearing all for better UX
                         setOpenDropdown(null);
                       }}
@@ -264,10 +266,12 @@ const FilterTop: React.FC<FilterTopProps> = ({ filters, onFilterChange, query })
           type="button"
           onClick={() => {
             filters.forEach(filter => {
-              const selectedValues = query[filter.name] || [];
-              selectedValues.forEach((value: string) => {
-                onFilterChange(filter.name, value, false);
-              });
+              const selectedValues = query[filter.name];
+              if (Array.isArray(selectedValues)) {
+                selectedValues.forEach((value: string) => {
+                  onFilterChange(filter.name, value, false);
+                });
+              }
             });
           }}
           className="flex items-center gap-2 px-4 py-3 text-sm text-red-600 hover:text-red-800 hover:bg-red-50 border border-red-300 rounded-xl transition-all duration-200 whitespace-nowrap shadow-sm hover:shadow-md transform hover:scale-[1.02] bg-red-50/50"

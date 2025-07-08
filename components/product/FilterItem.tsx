@@ -54,10 +54,12 @@ const FilterItem: React.FC<FilterItemProps> = ({
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                const selectedValues = query[filter.name] || [];
-                selectedValues.forEach((value: string) => {
-                  onFilterChange(filter.name, value, false);
-                });
+                const selectedValues = query[filter.name];
+                if (Array.isArray(selectedValues)) {
+                  selectedValues.forEach((value: string) => {
+                    onFilterChange(filter.name, value, false);
+                  });
+                }
               }}
               className="text-xs text-red-600 hover:text-red-800 px-2 py-1 rounded hover:bg-red-50 transition-colors duration-200"
             >
@@ -105,7 +107,7 @@ const FilterItem: React.FC<FilterItemProps> = ({
                     id={`${filter.name}-${id}`}
                     name={label}
                     value={id}
-                    checked={query[filter.name]?.includes(id) || false}
+                    checked={Array.isArray(query[filter.name]) ? (query[filter.name] as string[]).includes(id) : false}
                     onChange={(e) =>
                       onFilterChange(filter.name, id, e.target.checked)
                     }

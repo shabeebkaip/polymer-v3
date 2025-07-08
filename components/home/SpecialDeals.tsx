@@ -65,11 +65,39 @@ const SpecialDeals: React.FC = () => {
         suppliersSpecialDeals.length > 0
       ) {
         // Transform API data to match our Deal interface
-        return suppliersSpecialDeals.map((item: { productId?: { price: string; [key: string]: unknown }; offerPrice?: string; [key: string]: unknown }) => {
+        return suppliersSpecialDeals.map((item: { 
+          _id?: string;
+          productId?: { 
+            price?: string | number; 
+            productName?: string; 
+            description?: string;
+            [key: string]: unknown 
+          }; 
+          offerPrice?: string | number; 
+          sellerId?: { 
+            company?: string; 
+            companyName?: string; 
+            email?: string; 
+            company_logo?: string;
+            location?: string;
+            address?: string;
+            [key: string]: unknown 
+          }; 
+          status?: string;
+          dealType?: string;
+          validUntil?: string;
+          createdAt?: string;
+          adminNote?: string;
+          minimumQuantity?: string;
+          [key: string]: unknown 
+        }) => {
           // Use the actual API structure based on the provided response
-          const originalPrice = parseFloat(item.productId?.price || '0') || 100;
-          const discountedPrice =
-            parseFloat(item.offerPrice || '0') || originalPrice * 0.85;
+          const originalPrice = typeof item.productId?.price === 'number' 
+            ? item.productId.price 
+            : parseFloat(String(item.productId?.price || '0')) || 100;
+          const discountedPrice = typeof item.offerPrice === 'number'
+            ? item.offerPrice
+            : parseFloat(String(item.offerPrice || '0')) || originalPrice * 0.85;
           const discount =
             originalPrice > 0
               ? Math.round(
@@ -87,7 +115,7 @@ const SpecialDeals: React.FC = () => {
               : "Supplier Company");
 
           const transformedDeal = {
-            id: item._id,
+            id: item._id || `deal-${Date.now()}-${Math.random()}`,
             type: "special-deal" as const,
             title: `${
               item.productId?.productName || "Special Product"
@@ -153,10 +181,32 @@ const SpecialDeals: React.FC = () => {
         },
       ];
 
-      return mockApiData.map((item: { productId?: { price: string }; offerPrice?: string; [key: string]: unknown }) => {
-        const originalPrice = parseFloat(item.productId?.price) || 100;
-        const discountedPrice =
-          parseFloat(item.offerPrice) || originalPrice * 0.85;
+      return mockApiData.map((item: { 
+        _id?: string;
+        productId?: { 
+          price?: string | number; 
+          productName?: string; 
+          description?: string;
+          [key: string]: unknown 
+        }; 
+        offerPrice?: string | number; 
+        sellerId?: { 
+          company?: string; 
+          companyName?: string; 
+          email?: string; 
+          [key: string]: unknown 
+        }; 
+        status?: string;
+        adminNote?: string;
+        minimumQuantity?: string;
+        [key: string]: unknown 
+      }) => {
+        const originalPrice = typeof item.productId?.price === 'number' 
+          ? item.productId.price 
+          : parseFloat(String(item.productId?.price || '0')) || 100;
+        const discountedPrice = typeof item.offerPrice === 'number'
+          ? item.offerPrice
+          : parseFloat(String(item.offerPrice || '0')) || originalPrice * 0.85;
         const discount =
           originalPrice > 0
             ? Math.round(
@@ -173,7 +223,7 @@ const SpecialDeals: React.FC = () => {
             : "Supplier Company");
 
         return {
-          id: item._id,
+          id: item._id || `mock-deal-${Date.now()}-${Math.random()}`,
           type: "special-deal" as const,
           title: `${
             item.productId?.productName || "Special Product"
@@ -441,7 +491,6 @@ const DealCard: React.FC<{
       return (
         <QuoteDealRequestModal
           dealId={deal.id}
-          dealTitle={deal.title}
           dealProduct={deal.product}
           dealSupplier={deal.supplier.name}
           dealMinQuantity={deal.minQuantity}

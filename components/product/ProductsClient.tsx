@@ -59,12 +59,12 @@ const ProductsClient: React.FC = () => {
   const initialCreatedBy = searchParams.get("createdBy");
 
   // --- Construct initial query object ---
-  const initialQuery: Record<string, string[]> = {};
+  const initialQuery: Record<string, string[] | string> = {};
   if (initialCreatedBy) initialQuery.createdBy = [initialCreatedBy];
   if (initialIndustry) initialQuery.industry = [initialIndustry];
   if (initialProductFamily) initialQuery.productFamily = [initialProductFamily];
 
-  const [query, setQuery] = useState<Record<string, string[]>>(initialQuery);
+  const [query, setQuery] = useState<Record<string, string[] | string>>(initialQuery);
   const [products, setProducts] = useState<ProductCardTypes[]>([]);
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
   const [pagination, setPagination] = useState<Pagination | null>(null);
@@ -75,10 +75,10 @@ const ProductsClient: React.FC = () => {
 
   // --- Fetch filters only once ---
   useEffect(() => {
-    setFilterLoader(true); // Start loading state for filters
+    setLoader(true); // Start loading state for filters
     getProductFilters().then((response) => {
       setFilters(response);
-      setFilterLoader(false); // End loading state for filters
+      // Don't set loader to false here since products still need to load
     });
   }, []);
 
@@ -130,17 +130,18 @@ const ProductsClient: React.FC = () => {
 
   const handleFilter = (name: string, id: string, isChecked: boolean) => {
     setQuery((prev) => {
-      const existing = prev[name] || [];
+      const existing = prev[name];
+      const existingArray = Array.isArray(existing) ? existing : [];
 
       if (isChecked) {
         // Add the ID if not already present
         return {
           ...prev,
-          [name]: existing.includes(id) ? existing : [...existing, id],
+          [name]: existingArray.includes(id) ? existingArray : [...existingArray, id],
         };
       } else {
         // Remove the ID; delete the key if the array becomes empty
-        const updated = existing.filter((val: string) => val !== id);
+        const updated = existingArray.filter((val: string) => val !== id);
         const newQuery = { ...prev, [name]: updated };
 
         if (updated.length === 0) {
