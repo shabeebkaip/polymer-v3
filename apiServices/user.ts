@@ -100,7 +100,6 @@ export const updateQuoteRequestStatus = async (
   }
 ) => {
   try {
-    console.log("🔍 Updating quote request status:", { id, data });
     const response = await axiosInstance.patch(
       `/quote-request/status/${id}`,
       data
