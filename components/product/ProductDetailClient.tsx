@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Product } from "@/types/product";
+import { useChatUserStore } from "@/stores/chatUser";
 
 interface ProductDetailClientProps {
   product: Product;
@@ -28,6 +29,7 @@ const ProductDetailClient: React.FC<ProductDetailClientProps> = ({
   const [isFavorite, setIsFavorite] = useState(false);
   const { user } = useUserInfo();
   const router = useRouter();
+  const setChatUser = useChatUserStore((s) => s.setChatUser);
 
   const handleShare = () => {
     if (navigator.share) {
@@ -38,6 +40,17 @@ const ProductDetailClient: React.FC<ProductDetailClientProps> = ({
     } else {
       navigator.clipboard.writeText(window.location.href);
     }
+  };
+
+  // Handler for chat button
+  const handleChatClick = () => {
+    if (!user || !user._id || !product.createdBy?._id) return;
+    setChatUser({
+      userId: user._id as string,
+      receiverId: product.createdBy._id,
+      receiverName: product.createdBy.name,
+    });
+    router.push(`/chat/${product._id}`);
   };
 
   return (
@@ -239,6 +252,7 @@ const ProductDetailClient: React.FC<ProductDetailClientProps> = ({
                     productId={product._id}
                     uom={product.uom || "Metric Ton"}
                     variant="compact"
+                    onChatClick={handleChatClick}
                   />
                   <Button
                     variant="outline"

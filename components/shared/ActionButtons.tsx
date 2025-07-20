@@ -2,26 +2,28 @@
 
 import React, { useState } from "react";
 import { ShoppingCart, FileText, MessageCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
 import QuoteRequestModal from "./QuoteRequestModal";
 import SampleRequestModal from "./SampleRequestModal";
-import dynamic from "next/dynamic";
 
-const ProductChatModal = dynamic(() => import("@/components/chat/ProductChatModal"), { ssr: false });
 
 interface ActionButtonsProps {
   productId: string;
   uom: string;
   className?: string;
   variant?: "default" | "compact" | "large" | "custom";
+  onChatClick?: () => void;
 }
 
 const ActionButtons: React.FC<ActionButtonsProps> = ({
   productId,
   uom,
   className = "",
-  variant = "default"
+  variant = "default",
+  onChatClick
 }) => {
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const router = useRouter();
 
   // Define button styles based on variant
   const getButtonStyles = (type: "quote" | "sample" | "chat") => {
@@ -81,21 +83,13 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
 
       {/* Chat with Supplier Button */}
       <button
-        type="button"
         className={getButtonStyles("chat")}
-        onClick={() => setIsChatOpen(true)}
-        aria-label="Chat with Supplier"
+        onClick={onChatClick ? onChatClick : () => router.push(`/chat/${productId}`)}
+        type="button"
       >
         <MessageCircle className="w-5 h-5" />
         Chat with Supplier
       </button>
-      {isChatOpen && (
-        <ProductChatModal
-          isOpen={isChatOpen}
-          onClose={() => setIsChatOpen(false)}
-          productId={productId}
-        />
-      )}
     </div>
   );
 };

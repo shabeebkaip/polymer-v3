@@ -38,7 +38,6 @@ import { toast } from "sonner";
 import { getProductList } from "@/apiServices/products";
 import { createFinanceRequest } from "@/apiServices/user";
 import { getCountryList } from "@/lib/useCountries";
-import { format } from "date-fns";
 import { FinanceFormData, Product } from "@/types/finance";
 
 const CreateFinanceRequest = () => {
@@ -124,7 +123,10 @@ const CreateFinanceRequest = () => {
   );
 
   const handleInputChange = useCallback(
-    (field: keyof FinanceFormData, value: string | number | boolean | Date | undefined) => {
+    (
+      field: keyof FinanceFormData,
+      value: string | number | boolean | Date | undefined
+    ) => {
       setFormData((prev) => ({ ...prev, [field]: value }));
     },
     []
@@ -213,9 +215,7 @@ const CreateFinanceRequest = () => {
           ? (error.response.data.message as string)
           : undefined;
       console.error("Error submitting finance request:", error);
-      toast.error(
-        errMsg || "Failed to submit finance request"
-      );
+      toast.error(errMsg || "Failed to submit finance request");
     } finally {
       setIsSubmitting(false);
     }
@@ -511,7 +511,16 @@ const CreateFinanceRequest = () => {
                       >
                         <CalendarIcon className="mr-2 h-4 w-4 text-green-600" />
                         {formData.desiredDeliveryDate ? (
-                          format(formData.desiredDeliveryDate, "PPP")
+                          <span className="text-gray-500">
+                            {new Date(
+                              formData.desiredDeliveryDate
+                            ).toLocaleDateString("en-US", {
+                              weekday: "long", // e.g., "Thursday"
+                              year: "numeric", // e.g., "2025"
+                              month: "long", // e.g., "July"
+                              day: "numeric", // e.g., "17"
+                            })}
+                          </span>
                         ) : (
                           <span className="text-gray-500">
                             Select delivery date

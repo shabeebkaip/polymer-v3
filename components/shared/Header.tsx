@@ -9,6 +9,7 @@ import { useUserInfo } from "@/lib/useUserInfo";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { FALLBACK_USER_AVATAR } from "@/lib/fallbackImages";
+import { useChatInvites } from "@/hooks/useChatInvites";
 
 // --- TypeScript Types ---
 type Language = "en" | "ar" | "de" | "zh";
@@ -17,6 +18,7 @@ const Header: React.FC = () => {
   const pathname = usePathname(); // ✅ must be at top
   const { user, logout, loadUserFromCookies } = useUserInfo(); // ✅ must be at top
   const router = useRouter();
+  const { invites, acceptInvite } = useChatInvites();
   const [isOpen, setIsOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [isUserPopoverOpen, setIsUserPopoverOpen] = useState(false);
@@ -58,24 +60,74 @@ const Header: React.FC = () => {
   const navOptions =
     user?.user_type === "buyer"
       ? [
-          { href: "/user/profile", label: "Profile", icon: "👤", id: "profile" },
+          {
+            href: "/user/profile",
+            label: "Profile",
+            icon: "👤",
+            id: "profile",
+          },
           {
             href: "/user/sample-requests",
             label: "Sample Requests",
             icon: "📋",
-            id: "sample-requests"
+            id: "sample-requests",
           },
-          { href: "/user/quote-requests", label: "Quote Requests", icon: "💼", id: "quote-requests" },
-          { href: "/user/finance", label: "Request Finance", icon: "💰", id: "finance" },
-          { href: "/user/open-requests", label: "Post Open Requests", icon: "📝", id: "open-requests" },
+          {
+            href: "/user/quote-requests",
+            label: "Quote Requests",
+            icon: "💼",
+            id: "quote-requests",
+          },
+          {
+            href: "/user/finance",
+            label: "Request Finance",
+            icon: "💰",
+            id: "finance",
+          },
+          {
+            href: "/user/open-requests",
+            label: "Post Open Requests",
+            icon: "📝",
+            id: "open-requests",
+          },
         ]
       : [
-          { href: "/user/profile", label: "Profile", icon: "👤", id: "profile" },
-          { href: "/user/products", label: "My Products", icon: "📦", id: "products" },
-          { href: "/user/sample-requests", label: "Sample Request", icon: "📋", id: "sample-request" },
-          { href: "/user/sample-enquiries", label: "Sample Enquiries", icon: "💼", id: "sample-enquiries" },
-          { href: "/user/offers", label: "Post Offers", icon: "📝", id: "offers" },
-          { href: "/user/finance", label: "Request Finance", icon: "💰", id: "finance" },
+          {
+            href: "/user/profile",
+            label: "Profile",
+            icon: "👤",
+            id: "profile",
+          },
+          {
+            href: "/user/products",
+            label: "My Products",
+            icon: "📦",
+            id: "products",
+          },
+          {
+            href: "/user/sample-requests",
+            label: "Sample Request",
+            icon: "📋",
+            id: "sample-request",
+          },
+          {
+            href: "/user/sample-enquiries",
+            label: "Sample Enquiries",
+            icon: "💼",
+            id: "sample-enquiries",
+          },
+          {
+            href: "/user/offers",
+            label: "Post Offers",
+            icon: "📝",
+            id: "offers",
+          },
+          {
+            href: "/user/finance",
+            label: "Request Finance",
+            icon: "💰",
+            id: "finance",
+          },
         ];
   return (
     <header className="bg-white/95 backdrop-blur-sm shadow-lg shadow-green-600/5 sticky top-0 z-20 border-b border-green-100/50">
@@ -184,9 +236,77 @@ const Header: React.FC = () => {
             </div> */}
           </nav>
 
+          {/* Notification Bell for Chat Invites (Supplier only) */}
+          {user?.user_type === "supplier" && invites.length > 0 && (
+            <div className="relative mr-4">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button
+                    className="relative p-2 text-gray-600 hover:text-gray-800"
+                    title="Chat Invites"
+                  >
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
+                      {invites.length}
+                    </span>
+                    <svg
+                      className="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V4a2 2 0 10-4 0v1.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                      />
+                    </svg>
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80 p-0 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+                  <div className="p-4 border-b border-gray-100">
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      Chat Invites
+                    </h3>
+                  </div>
+                  <div className="max-h-96 overflow-y-auto">
+                    {invites.map((invite, idx) => (
+                      <div
+                        key={invite.productId + invite.buyerId}
+                        className="p-4 border-b border-gray-50 flex flex-col gap-2"
+                      >
+                        <div className="font-medium text-gray-900">
+                          {invite.buyerName} wants to chat about{" "}
+                          <span className="font-semibold">
+                            {invite.productName || "a product"}
+                          </span>
+                        </div>
+                        <button
+                          className="bg-emerald-600 text-white px-3 py-1 rounded hover:bg-emerald-700 text-sm font-medium w-fit"
+                          onClick={() =>
+                            acceptInvite(
+                              invite,
+                              String(user._id),
+                              user.firstName || ""
+                            )
+                          }
+                        >
+                          Join Chat
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </PopoverContent>
+              </Popover>
+            </div>
+          )}
+
           {/* Enhanced User Menu */}
           {user && (
-            <Popover open={isUserPopoverOpen} onOpenChange={setIsUserPopoverOpen}>
+            <Popover
+              open={isUserPopoverOpen}
+              onOpenChange={setIsUserPopoverOpen}
+            >
               <PopoverTrigger asChild>
                 <button
                   type="button"
@@ -216,7 +336,11 @@ const Header: React.FC = () => {
                   <div className="flex items-center gap-3">
                     <Avatar className="w-12 h-12 border-2 border-white/20">
                       <AvatarImage
-                        src={typeof user?.company_logo === 'string' ? user.company_logo : FALLBACK_USER_AVATAR}
+                        src={
+                          typeof user?.company_logo === "string"
+                            ? user.company_logo
+                            : FALLBACK_USER_AVATAR
+                        }
                         alt="User Avatar"
                       />
                       <AvatarFallback className="bg-white/20 text-white font-semibold">

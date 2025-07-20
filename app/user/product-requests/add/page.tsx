@@ -2,7 +2,19 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Package, CheckCircle, Calendar as CalendarIcon, MapPin, FileText, Clock, Truck, Scale, Globe, MessageSquare } from "lucide-react";
+import {
+  ArrowLeft,
+  Package,
+  CheckCircle,
+  Calendar as CalendarIcon,
+  MapPin,
+  FileText,
+  Clock,
+  Truck,
+  Scale,
+  Globe,
+  MessageSquare,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -23,7 +35,6 @@ import { toast } from "sonner";
 import { getProductList } from "@/apiServices/products";
 import { createBuyerProductRequest } from "@/apiServices/user";
 import { getCountryList } from "@/lib/useCountries";
-import { format } from "date-fns";
 
 interface Product {
   _id: string;
@@ -50,7 +61,7 @@ interface ProductRequestFormData {
 
 const UOM_OPTIONS = [
   "Kilogram",
-  "Gram", 
+  "Gram",
   "Milligram",
   "Metric Ton",
   "Pound",
@@ -71,7 +82,7 @@ const CreateProductRequest = () => {
   const [loadingProducts, setLoadingProducts] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
-  
+
   const [formData, setFormData] = useState<ProductRequestFormData>({
     productId: "",
     quantity: 1,
@@ -113,53 +124,65 @@ const CreateProductRequest = () => {
   }, []);
 
   // Memoized handlers to prevent re-creation on every render
-  const handleProductChange = useCallback((productId: string) => {
-    const product = products.find(p => p._id === productId);
-    setSelectedProduct(product || null);
-    setFormData(prev => ({
-      ...prev,
-      productId,
-      uom: product?.uom || "Kilogram",
-    }));
-  }, [products]);
+  const handleProductChange = useCallback(
+    (productId: string) => {
+      const product = products.find((p) => p._id === productId);
+      setSelectedProduct(product || null);
+      setFormData((prev) => ({
+        ...prev,
+        productId,
+        uom: product?.uom || "Kilogram",
+      }));
+    },
+    [products]
+  );
 
-  const handleInputChange = useCallback((field: keyof ProductRequestFormData, value: string | number | Date | undefined) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  }, []);
+  const handleInputChange = useCallback(
+    (
+      field: keyof ProductRequestFormData,
+      value: string | number | Date | undefined
+    ) => {
+      setFormData((prev) => ({ ...prev, [field]: value }));
+    },
+    []
+  );
 
   // Optimized quantity input handler
-  const handleQuantityInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    
-    // Update input value immediately for responsiveness
-    setInputValues(prev => ({ ...prev, quantity: value }));
-    
-    // Clean and validate the value
-    const cleanValue = value.replace(/[^0-9]/g, '');
-    const numericValue = cleanValue === '' ? 1 : parseInt(cleanValue) || 1;
-    
-    // Update form data
-    setFormData(prev => ({ ...prev, quantity: numericValue }));
-  }, []);
+  const handleQuantityInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+
+      // Update input value immediately for responsiveness
+      setInputValues((prev) => ({ ...prev, quantity: value }));
+
+      // Clean and validate the value
+      const cleanValue = value.replace(/[^0-9]/g, "");
+      const numericValue = cleanValue === "" ? 1 : parseInt(cleanValue) || 1;
+
+      // Update form data
+      setFormData((prev) => ({ ...prev, quantity: numericValue }));
+    },
+    []
+  );
 
   // Debounced text input handlers
   const handleTextInputChange = useCallback((field: string) => {
     return (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const value = e.target.value;
-      setInputValues(prev => ({ ...prev, [field]: value }));
-      
+      setInputValues((prev) => ({ ...prev, [field]: value }));
+
       // Use a timeout to debounce the form data update
       const timeoutId = setTimeout(() => {
-        setFormData(prev => ({ ...prev, [field]: value }));
+        setFormData((prev) => ({ ...prev, [field]: value }));
       }, 300);
-      
+
       return () => clearTimeout(timeoutId);
     };
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.productId) {
       toast.error("Please select a product");
       return;
@@ -191,9 +214,9 @@ const CreateProductRequest = () => {
       };
 
       console.log("Submitting product request:", requestData);
-      
+
       const response = await createBuyerProductRequest(requestData);
-      
+
       if (response.success) {
         toast.success("Product request created successfully!");
         router.push("/user/product-requests");
@@ -240,7 +263,9 @@ const CreateProductRequest = () => {
             <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 via-green-800 to-emerald-800 bg-clip-text text-transparent">
               Create Product Request
             </h1>
-            <p className="text-gray-600 mt-1">Request products from our verified suppliers</p>
+            <p className="text-gray-600 mt-1">
+              Request products from our verified suppliers
+            </p>
           </div>
         </div>
 
@@ -254,7 +279,8 @@ const CreateProductRequest = () => {
               <h3 className="font-bold text-gray-900">Quality Products</h3>
             </div>
             <p className="text-gray-600 text-sm">
-              Request from thousands of verified polymer products with quality assurance.
+              Request from thousands of verified polymer products with quality
+              assurance.
             </p>
           </div>
 
@@ -278,7 +304,8 @@ const CreateProductRequest = () => {
               <h3 className="font-bold text-gray-900">Verified Suppliers</h3>
             </div>
             <p className="text-gray-600 text-sm">
-              All suppliers are thoroughly vetted and verified for quality and reliability.
+              All suppliers are thoroughly vetted and verified for quality and
+              reliability.
             </p>
           </div>
         </div>
@@ -286,8 +313,12 @@ const CreateProductRequest = () => {
         {/* Form Section */}
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50 overflow-hidden">
           <div className="border-b border-gray-200/60 px-8 py-6 bg-gradient-to-r from-gray-50/80 to-green-50/30">
-            <h2 className="text-xl font-bold text-gray-900">Product Request Details</h2>
-            <p className="text-gray-600 mt-1">Fill in the details below to submit your product request</p>
+            <h2 className="text-xl font-bold text-gray-900">
+              Product Request Details
+            </h2>
+            <p className="text-gray-600 mt-1">
+              Fill in the details below to submit your product request
+            </p>
           </div>
 
           <form onSubmit={handleSubmit} className="p-8">
@@ -306,26 +337,36 @@ const CreateProductRequest = () => {
                     disabled={loadingProducts || products.length === 0}
                   >
                     <SelectTrigger className="border-gray-300 focus:border-green-500 focus:ring-green-500 h-12">
-                      <SelectValue placeholder={
-                        loadingProducts 
-                          ? "Loading products..." 
-                          : products.length === 0 
-                            ? "No products available" 
+                      <SelectValue
+                        placeholder={
+                          loadingProducts
+                            ? "Loading products..."
+                            : products.length === 0
+                            ? "No products available"
                             : "Choose a product"
-                      } />
+                        }
+                      />
                     </SelectTrigger>
                     <SelectContent className="max-h-60">
                       {loadingProducts ? (
-                        <div className="p-2 text-center text-gray-500">Loading products...</div>
+                        <div className="p-2 text-center text-gray-500">
+                          Loading products...
+                        </div>
                       ) : products.length === 0 ? (
-                        <div className="p-2 text-center text-gray-500">No products available</div>
+                        <div className="p-2 text-center text-gray-500">
+                          No products available
+                        </div>
                       ) : (
                         products.map((product) => (
                           <SelectItem key={product._id} value={product._id}>
                             <div className="flex flex-col">
-                              <span className="font-medium">{product.productName}</span>
+                              <span className="font-medium">
+                                {product.productName}
+                              </span>
                               {product.createdBy?.company && (
-                                <span className="text-xs text-gray-500">by {product.createdBy.company}</span>
+                                <span className="text-xs text-gray-500">
+                                  by {product.createdBy.company}
+                                </span>
                               )}
                             </div>
                           </SelectItem>
@@ -336,9 +377,14 @@ const CreateProductRequest = () => {
                   {selectedProduct && (
                     <div className="mt-2 p-3 bg-green-50 rounded-lg border border-green-200">
                       <p className="text-sm text-green-700">
-                        Selected: <span className="font-semibold">{selectedProduct.productName}</span>
+                        Selected:{" "}
+                        <span className="font-semibold">
+                          {selectedProduct.productName}
+                        </span>
                         {selectedProduct.grade?.name && (
-                          <span className="ml-2 text-green-600">({selectedProduct.grade.name})</span>
+                          <span className="ml-2 text-green-600">
+                            ({selectedProduct.grade.name})
+                          </span>
                         )}
                       </p>
                     </div>
@@ -389,7 +435,10 @@ const CreateProductRequest = () => {
                     <CalendarIcon className="w-4 h-4 inline mr-2 text-green-600" />
                     Required Delivery Date *
                   </label>
-                  <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
+                  <Popover
+                    open={isCalendarOpen}
+                    onOpenChange={setIsCalendarOpen}
+                  >
                     <PopoverTrigger asChild>
                       <Button
                         variant="outline"
@@ -397,9 +446,16 @@ const CreateProductRequest = () => {
                       >
                         <CalendarIcon className="mr-2 h-4 w-4 text-green-600" />
                         {formData.delivery_date ? (
-                          format(formData.delivery_date, "PPP")
+                          formData.delivery_date.toLocaleDateString("en-US", {
+                            weekday: "long", // like "Thursday"
+                            year: "numeric", // like "2025"
+                            month: "long", // like "July"
+                            day: "numeric", // like "17"
+                          })
                         ) : (
-                          <span className="text-gray-500">Select delivery date</span>
+                          <span className="text-gray-500">
+                            Select delivery date
+                          </span>
                         )}
                       </Button>
                     </PopoverTrigger>
@@ -426,14 +482,20 @@ const CreateProductRequest = () => {
                   </label>
                   <Select
                     value={formData.request_document}
-                    onValueChange={(value) => handleInputChange("request_document", value)}
+                    onValueChange={(value) =>
+                      handleInputChange("request_document", value)
+                    }
                   >
                     <SelectTrigger className="border-gray-300 focus:border-green-500 focus:ring-green-500 h-12">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="yes">Yes - Send product documentation</SelectItem>
-                      <SelectItem value="no">No - Documentation not required</SelectItem>
+                      <SelectItem value="yes">
+                        Yes - Send product documentation
+                      </SelectItem>
+                      <SelectItem value="no">
+                        No - Documentation not required
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -449,7 +511,9 @@ const CreateProductRequest = () => {
                   </label>
                   <Select
                     value={formData.country}
-                    onValueChange={(value) => handleInputChange("country", value)}
+                    onValueChange={(value) =>
+                      handleInputChange("country", value)
+                    }
                   >
                     <SelectTrigger className="border-gray-300 focus:border-green-500 focus:ring-green-500 h-12">
                       <SelectValue placeholder="Select your country" />
@@ -507,7 +571,8 @@ const CreateProductRequest = () => {
                     placeholder="Add any special requirements or notes for the supplier..."
                   />
                   <p className="text-xs text-gray-500 mt-1">
-                    Include any specific requirements, quality standards, or delivery instructions
+                    Include any specific requirements, quality standards, or
+                    delivery instructions
                   </p>
                 </div>
               </div>
@@ -521,7 +586,11 @@ const CreateProductRequest = () => {
                 </div>
                 <Button
                   type="submit"
-                  disabled={isSubmitting || !formData.productId || !formData.delivery_date}
+                  disabled={
+                    isSubmitting ||
+                    !formData.productId ||
+                    !formData.delivery_date
+                  }
                   className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-8 py-3 h-auto font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
                 >
                   {isSubmitting ? (
