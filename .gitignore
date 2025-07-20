@@ -20,6 +20,9 @@
 # production
 /build
 
+# vs code
+.vscode/
+
 # misc
 .DS_Store
 *.pem
