@@ -272,7 +272,7 @@ const Header: React.FC = () => {
                   <div className="max-h-96 overflow-y-auto">
                     {invites.map((invite, idx) => (
                       <div
-                        key={invite.productId + invite.buyerId}
+                        key={invite.productId + invite.buyerId || idx}
                         className="p-4 border-b border-gray-50 flex flex-col gap-2"
                       >
                         <div className="font-medium text-gray-900">
