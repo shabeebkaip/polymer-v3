@@ -77,7 +77,6 @@ export const ChatContainer: React.FC<ChatContainerProps> = ({
           <h3 className="text-lg font-semibold">Chat with {receiverName}</h3>
           <div className="flex items-center space-x-4">
             <OnlineStatus
-              userId={receiverId}
               isOnline={onlineUsers.has(receiverId)}
             />
             <div className={`w-3 h-3 rounded-full ${
