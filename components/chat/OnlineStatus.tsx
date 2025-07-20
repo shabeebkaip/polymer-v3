@@ -1,13 +1,11 @@
 import React from 'react';
 
 interface OnlineStatusProps {
-  userId: string;
   isOnline: boolean;
   className?: string;
 }
 
 export const OnlineStatus: React.FC<OnlineStatusProps> = ({
-  userId,
   isOnline,
   className = '',
 }) => {
