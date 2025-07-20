@@ -1,11 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { ShoppingCart, FileText, MessageCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import QuoteRequestModal from "./QuoteRequestModal";
 import SampleRequestModal from "./SampleRequestModal";
-
 
 interface ActionButtonsProps {
   productId: string;
@@ -20,40 +19,43 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
   uom,
   className = "",
   variant = "default",
-  onChatClick
+  onChatClick,
 }) => {
-  const [isChatOpen, setIsChatOpen] = useState(false);
   const router = useRouter();
 
   // Define button styles based on variant
   const getButtonStyles = (type: "quote" | "sample" | "chat") => {
-    const baseStyles = "transition-all font-medium rounded-lg flex items-center justify-center gap-2";
-    
+    const baseStyles =
+      "transition-all font-medium rounded-lg flex items-center justify-center gap-2";
+
     switch (variant) {
       case "compact":
-        if (type === "chat") return `${baseStyles} px-4 py-2 text-sm border-2 border-emerald-600 text-emerald-600 hover:bg-emerald-50`;
+        if (type === "chat")
+          return `${baseStyles} px-4 py-2 text-sm border-2 border-emerald-600 text-emerald-600 hover:bg-emerald-50`;
         return `${baseStyles} px-4 py-2 text-sm ${
-          type === "quote" 
-            ? "bg-blue-600 hover:bg-blue-700 text-white" 
+          type === "quote"
+            ? "bg-blue-600 hover:bg-blue-700 text-white"
             : "border-2 border-blue-600 text-blue-600 hover:bg-blue-50"
         }`;
-        
+
       case "large":
-        if (type === "chat") return `${baseStyles} px-8 py-4 text-lg border-2 border-emerald-600 text-emerald-600 hover:bg-emerald-50`;
+        if (type === "chat")
+          return `${baseStyles} px-8 py-4 text-lg border-2 border-emerald-600 text-emerald-600 hover:bg-emerald-50`;
         return `${baseStyles} px-8 py-4 text-lg ${
-          type === "quote" 
-            ? "bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white" 
+          type === "quote"
+            ? "bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white"
             : "border-2 border-blue-600 text-blue-600 hover:bg-blue-50"
         }`;
-        
+
       case "custom":
         return className;
-        
+
       default: // "default"
-        if (type === "chat") return `${baseStyles} px-6 py-3 border-2 border-emerald-600 text-emerald-600 hover:bg-emerald-50`;
+        if (type === "chat")
+          return `${baseStyles} px-6 py-3 border-2 border-emerald-600 text-emerald-600 hover:bg-emerald-50`;
         return `${baseStyles} px-6 py-3 ${
-          type === "quote" 
-            ? "bg-blue-600 hover:bg-blue-700 text-white" 
+          type === "quote"
+            ? "bg-blue-600 hover:bg-blue-700 text-white"
             : "border-2 border-blue-600 text-blue-600 hover:bg-blue-50"
         }`;
     }
@@ -84,7 +86,9 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
       {/* Chat with Supplier Button */}
       <button
         className={getButtonStyles("chat")}
-        onClick={onChatClick ? onChatClick : () => router.push(`/chat/${productId}`)}
+        onClick={
+          onChatClick ? onChatClick : () => router.push(`/chat/${productId}`)
+        }
         type="button"
       >
         <MessageCircle className="w-5 h-5" />
