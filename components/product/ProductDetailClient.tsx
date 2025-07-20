@@ -1,16 +1,10 @@
 import React from "react";
 import CompanyDetails from "@/components/product/CompanyDetails";
-import {useUserInfo} from "@/lib/useUserInfo";
-import {Badge} from "@/components/ui/badge";
-import {Button} from "@/components/ui/button";
+import { useUserInfo } from "@/lib/useUserInfo";
 import SampleRequestModal from "@/components/shared/SampleRequestModal";
 import QuoteRequestModal from "@/components/shared/QuoteRequestModal";
-import {
-    ShoppingCart,
-    Award,
-    FileText,
-} from "lucide-react";
-import {Product} from "@/types/product";
+import { ShoppingCart, FileText } from "lucide-react";
+import { Product } from "@/types/product";
 import ProductDetailBreadCrumb from "@/components/product/product-detail/ProductDetailBreadCrumb";
 import ProductSummaryBar from "@/components/product/product-detail/ProductSummaryBar";
 import ProductHeroSection from "@/components/product/product-detail/ProductHeroSection";
@@ -23,124 +17,118 @@ import ProductTradeInformation from "@/components/product/product-detail/Product
 import ProductDocumentDetails from "@/components/product/product-detail/ProductDocumentDetails";
 
 interface ProductDetailClientProps {
-    product: Product;
+  product: Product;
 }
 
-const ProductDetailClient: React.FC<ProductDetailClientProps> = ({
-                                                                     product,
-                                                                 }) => {
-    const {user} = useUserInfo();
+const ProductDetailClient: React.FC<ProductDetailClientProps> = ({ product }) => {
+  const { user } = useUserInfo();
 
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Breadcrumb */}
+      <ProductDetailBreadCrumb product={product} />
 
-    // Handler for chat button
+      {/* Quick Product Summary Bar */}
+      <ProductSummaryBar product={product} />
 
+      <div className="container mx-auto px-4 py-8">
+        {/* Hero Section - Simplified */}
+        <ProductHeroSection product={product} user={user ?? {}} />
 
-    return (
-        <div className="min-h-screen bg-gray-50">
-            {/* Breadcrumb */}
-            <ProductDetailBreadCrumb product={product}/>
+        {/* Product Specifications - Organized */}
+        <div className="bg-white rounded-2xl shadow-sm border overflow-hidden mb-8">
+          <div className="p-6 lg:p-8">
+            <h2 className="text-xl font-bold text-gray-900 mb-6">
+              Product Specifications
+            </h2>
 
-            {/* Quick Product Summary Bar */}
-            <ProductSummaryBar product={product}/>
+            {/* Basic Information */}
+            <ProductBasicInformation product={product} />
 
-            <div className="container mx-auto px-4 py-8">
-                {/* Hero Section - Simplified */}
-                <ProductHeroSection product={product} user={user ?? {}}/>
+            {/* Technical Properties */}
+            {product.density ||
+            product.mfi ||
+            product.tensileStrength ||
+            product.elongationAtBreak ||
+            product.shoreHardness ||
+            product.waterAbsorption ? (
+              <ProductTechnicalProperties product={product} />
+            ) : null}
 
-                {/* Product Specifications - Organized */}
-                <div className="bg-white rounded-2xl shadow-sm border overflow-hidden mb-8">
-                    <div className="p-6 lg:p-8">
-                        <h2 className="text-xl font-bold text-gray-900 mb-6">
-                            Product Specifications
-                        </h2>
+            {/* Manufacturing & Origin */}
+            {product.manufacturingMethod ||
+            product.countryOfOrigin ||
+            product.packagingWeight ? (
+              <ProductManufactureDetails product={product} />
+            ) : null}
 
-                        {/* Basic Information */}
-                        <ProductBasicInformation product={product}/>
-
-                        {/* Technical Properties */}
-                        {product.density ||
-                        product.mfi ||
-                        product.tensileStrength ||
-                        product.elongationAtBreak ||
-                        product.shoreHardness ||
-                        product.waterAbsorption ? (
-                            <ProductTechnicalProperties product={product}/>
-                        ) : null}
-
-                        {/* Manufacturing & Origin */}
-                        {product.manufacturingMethod ||
-                        product.countryOfOrigin ||
-                        product.packagingWeight ? (
-                            <ProductManufactureDetails product={product}/>
-                        ) : null}
-
-                        {/* Certifications & Features */}
-                        {product.recyclable ||
-                        product.bioDegradable ||
-                        product.fdaApproved ||
-                        product.medicalGrade ||
-                        product.shelfLife ? (
-                            <ProductCertifications product={product}/>
-                        ) : null}
-                    </div>
-                </div>
-
-                {/* Product Description & Applications */}
-                {product.description || product.additionalInfo ? (
-                    <ProductOverview product={product}/>
-                ) : null}
-
-                {/* Trade Information */}
-                <ProductTradeInformation product={product}/>
-
-                {/* Documents & Certificates */}
-                {(product.safety_data_sheet ||
-                    product.technical_data_sheet ||
-                    product.certificate_of_analysis) && (
-    <ProductDocumentDetails product={product}/>
-                )}
-
-                {/* Company Details Card - Moved down */}
-                {product.createdBy && (
-                    <div className="bg-white rounded-2xl shadow-sm border p-6 lg:p-8 mb-8">
-                        <CompanyDetails
-                            companyDetails={product.createdBy}
-                            productId={product?._id}
-                            uom={product.uom || "kg"}
-                            userType={user?.user_type}
-                        />
-                    </div>
-                )}
-
-                {/* Call to Action - Simplified */}
-                <div className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-2xl p-6 mt-8 text-center text-white">
-                    <h2 className="text-2xl font-bold mb-3">Need More Information?</h2>
-                    <p className="text-blue-100 mb-4 max-w-xl mx-auto">
-                        Contact {product.createdBy?.company || "the supplier"} for detailed
-                        specifications, custom quotes, or bulk pricing.
-                    </p>
-                    <div className="flex flex-wrap justify-center gap-3">
-                        <QuoteRequestModal
-                            productId={product._id}
-                            uom={product.uom || "kg"}
-                            className="px-6 py-3 bg-white text-blue-600 hover:bg-gray-100 rounded-lg font-medium transition-all flex items-center gap-2"
-                        >
-                            <ShoppingCart className="w-5 h-5"/>
-                            Request Quote
-                        </QuoteRequestModal>
-                        <SampleRequestModal
-                            productId={product._id}
-                            uom={product.uom || "kg"}
-                            className="px-6 py-3 border-2 border-white text-white hover:bg-white hover:text-blue-600 rounded-lg font-medium transition-all flex items-center gap-2"
-                        >
-                            <FileText className="w-5 h-5"/>
-                            Request Sample
-                        </SampleRequestModal>
-                    </div>
-                </div>
-            </div>
+            {/* Certifications & Features */}
+            {product.recyclable ||
+            product.bioDegradable ||
+            product.fdaApproved ||
+            product.medicalGrade ||
+            product.shelfLife ? (
+              <ProductCertifications product={product} />
+            ) : null}
+          </div>
         </div>
-    );
+
+        {/* Product Description & Applications */}
+        {product.description || product.additionalInfo ? (
+          <ProductOverview product={product} />
+        ) : null}
+
+        {/* Trade Information */}
+        <ProductTradeInformation product={product} />
+
+        {/* Documents & Certificates */}
+        {(product.safety_data_sheet ||
+          product.technical_data_sheet ||
+          product.certificate_of_analysis) && (
+          <ProductDocumentDetails product={product} />
+        )}
+
+        {/* Company Details Card - Moved down */}
+        {product.createdBy && (
+          <div className="bg-white rounded-2xl shadow-sm border p-6 lg:p-8 mb-8">
+            <CompanyDetails
+              companyDetails={product.createdBy}
+              productId={product?._id}
+              uom={product.uom || "kg"}
+              userType={user?.user_type}
+            />
+          </div>
+        )}
+
+        {/* Call to Action - Simplified */}
+        <div className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-2xl p-6 mt-8 text-center text-white">
+          <h2 className="text-2xl font-bold mb-3">Need More Information?</h2>
+          <p className="text-blue-100 mb-4 max-w-xl mx-auto">
+            Contact {product.createdBy?.company || "the supplier"} for detailed
+            specifications, custom quotes, or bulk pricing.
+          </p>
+          <div className="flex flex-wrap justify-center gap-3">
+            <QuoteRequestModal
+              productId={product._id}
+              uom={product.uom || "kg"}
+              className="px-6 py-3 bg-white text-blue-600 hover:bg-gray-100 rounded-lg font-medium transition-all flex items-center gap-2"
+            >
+              <ShoppingCart className="w-5 h-5" />
+              Request Quote
+            </QuoteRequestModal>
+            <SampleRequestModal
+              productId={product._id}
+              uom={product.uom || "kg"}
+              className="px-6 py-3 border-2 border-white text-white hover:bg-white hover:text-blue-600 rounded-lg font-medium transition-all flex items-center gap-2"
+            >
+              <FileText className="w-5 h-5" />
+              Request Sample
+            </SampleRequestModal>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default ProductDetailClient;
