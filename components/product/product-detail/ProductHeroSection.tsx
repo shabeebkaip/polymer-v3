@@ -6,8 +6,10 @@ import {Button} from "@/components/ui/button";
 import React from "react";
 import { Product } from '@/types/product';
 import { UserType } from '@/types/user';
+import {useChatUserStore} from "@/stores/chatUser";
 
 const ProductHeroSection = ({product, user} : {product: Product, user: UserType} ) => {
+    const setChatUser = useChatUserStore((s) => s.setChatUser);
     const handleShare = () => {
         if (navigator.share) {
                 navigator.share({
