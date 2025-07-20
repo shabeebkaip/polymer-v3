@@ -361,7 +361,7 @@ const PromotionDetail = () => {
                     )}
                     {promotionDetail.product.specifications?.mfi && (
                       <div className="bg-gray-50 rounded-lg p-3">
-                        <span className="text-sm font-medium text-gray-600">MFI</span>
+                        <span className="text-sm font-medium text-gray-600">MFI (g/10 min)</span>
                         <p className="text-gray-900 font-medium">{promotionDetail.product.specifications.mfi}</p>
                       </div>
                     )}

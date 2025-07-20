@@ -321,7 +321,7 @@ const ProductRequestDetail = () => {
                     <p className="font-semibold text-gray-900">{productRequestDetail.product.density}</p>
                   </div>
                   <div className="bg-gray-50 p-4 rounded-xl">
-                    <p className="text-xs text-gray-600 mb-1">MFI</p>
+                    <p className="text-xs text-gray-600 mb-1">MFI (g/10 min)</p>
                     <p className="font-semibold text-gray-900">{productRequestDetail.product.mfi}</p>
                   </div>
                   <div className="bg-gray-50 p-4 rounded-xl">

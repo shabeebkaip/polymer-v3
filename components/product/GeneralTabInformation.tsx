@@ -159,7 +159,7 @@ const GeneralTabInformation: React.FC<GeneralTabInformationProps> = ({
             <LabelValue label="Density" value={`${product.density} g/cm³`} compact />
           )}
           {product.mfi && (
-            <LabelValue label="Melt Flow Index" value={product.mfi} compact />
+            <LabelValue label="Melt Flow Index (g/10 min)" value={product.mfi} compact />
           )}
           {product.tensileStrength && (
             <LabelValue label="Tensile Strength" value={product.tensileStrength} compact />

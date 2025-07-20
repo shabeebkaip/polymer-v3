@@ -379,7 +379,7 @@ const ProductDetailClient: React.FC<ProductDetailClientProps> = ({
                   {product.mfi && product.mfi > 0 ? (
                     <div className="bg-gray-50 rounded-lg p-3">
                       <span className="text-sm font-medium text-gray-600">
-                        MFI
+                        MFI (g/10 min)MFI
                       </span>
                       <p className="text-gray-900 font-medium">{product.mfi}</p>
                     </div>

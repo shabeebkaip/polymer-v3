@@ -509,7 +509,7 @@ const SampleEnquiriesDetail = React.memo(function SampleEnquiriesDetail() {
                   {enquiryDetail.product.mfi && (
                     <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-xl p-4 border border-purple-200/50">
                       <p className="text-sm text-purple-600 mb-1">Melt Flow Index (MFI)</p>
-                      <p className="font-semibold text-purple-900">{enquiryDetail.product.mfi} g/10min</p>
+                      <p className="font-semibold text-purple-900">{enquiryDetail.product.mfi} g/10 min</p>
                     </div>
                   )}
                   {enquiryDetail.product.tensileStrength && (

@@ -27,7 +27,7 @@ const PROPERTY_CATEGORIES = [
     bgColor: "bg-blue-50",
     fields: [
       { key: "density", label: "Density", unit: "g/cm³", placeholder: "Enter density value" },
-      { key: "mfi", label: "Melt Flow Index (MFI)", unit: "g/10min", placeholder: "Enter MFI value" },
+      { key: "mfi", label: "Melt Flow Index (MFI)", unit: "g/10 min", placeholder: "Enter MFI value" },
       { key: "tensileStrength", label: "Tensile Strength", unit: "MPa", placeholder: "Enter tensile strength" },
       { key: "elongationAtBreak", label: "Elongation at Break", unit: "%", placeholder: "Enter elongation at break" },
       { key: "flexuralModulus", label: "Flexural Modulus", unit: "%", placeholder: "Enter Flexural Modulus" },

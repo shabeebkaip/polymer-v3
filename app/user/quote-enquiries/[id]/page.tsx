@@ -407,7 +407,7 @@ const QuoteEnquiryDetails = () => {
                       </p>
                     </div>
                     <div className="bg-gray-50 rounded-xl p-4">
-                      <p className="text-sm text-gray-600 mb-1">MFI</p>
+                      <p className="text-sm text-gray-600 mb-1">MFI (g/10 min)</p>
                       <p className="font-semibold text-gray-900">
                         {enquiryDetail.product?.mfi || "N/A"}
                       </p>
