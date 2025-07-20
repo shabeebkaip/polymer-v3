@@ -136,11 +136,11 @@ export const useChat = ({
     socketManager.current.onUserOnlineStatus(handleUserOnlineStatus);
 
     return () => {
-      socketManager.current?.off('receiveProductMessage', handleReceiveMessage);
-      socketManager.current?.off('messageSent', handleMessageSent);
-      socketManager.current?.off('messageError', handleMessageError);
-      socketManager.current?.off('userTyping', handleTyping);
-      socketManager.current?.off('userOnlineStatus', handleUserOnlineStatus);
+      socketManager.current?.off('receiveProductMessage', handleReceiveMessage as (...args: unknown[]) => void);
+      socketManager.current?.off('messageSent', handleMessageSent as (...args: unknown[]) => void);
+      socketManager.current?.off('messageError', handleMessageError as (...args: unknown[]) => void);
+      socketManager.current?.off('userTyping', handleTyping as (...args: unknown[]) => void);
+      socketManager.current?.off('userOnlineStatus', handleUserOnlineStatus as (...args: unknown[]) => void);
     };
   }, []);
 
