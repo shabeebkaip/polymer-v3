@@ -28,15 +28,23 @@ const ChatPage = () => {
     return <div className="flex items-center justify-center h-screen text-red-500 text-lg">Invalid user or product for chat. Please access chat from a product page and ensure you are logged in.</div>;
   }
 
+  // Extra debug logging for props (outside JSX)
+  console.log('Rendering ChatContainer with:', { userId, productId, receiverId, receiverName, serverUrl: process.env.NEXT_PUBLIC_SOCKET_URL });
+
+  // Only render the chat container, let it handle header/status
   return (
-    <div className="h-screen">
-      <ChatContainer
-        userId={userId}
-        productId={productId as string}
-        receiverId={receiverId}
-        receiverName={receiverName}
-        serverUrl={process.env.NEXT_PUBLIC_SOCKET_URL!}
-      />
+    <div className="flex items-center justify-center h-screen bg-gray-50">
+      <div className="w-full max-w-3xl h-[80vh] bg-white rounded-xl shadow-lg flex flex-col border border-gray-200">
+        <div className="flex-1 overflow-y-auto">
+          <ChatContainer
+            userId={userId}
+            productId={productId as string}
+            receiverId={receiverId}
+            receiverName={receiverName}
+            serverUrl={process.env.NEXT_PUBLIC_SOCKET_URL!}
+          />
+        </div>
+      </div>
     </div>
   );
 };
