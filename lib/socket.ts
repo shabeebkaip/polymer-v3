@@ -127,7 +127,7 @@ class SocketManager {
   }
 
   // Cleanup listeners
-  off(event: string, callback?: (...args: any[]) => void): void {
+  off(event: string, callback?: (...args: unknown[]) => void): void {
     this.socket?.off(event, callback);
   }
 }
