@@ -22,7 +22,6 @@ interface ProductDetailClientProps {
 
 const ProductDetailClient: React.FC<ProductDetailClientProps> = ({ product }) => {
   const { user } = useUserInfo();
-
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Breadcrumb */}
@@ -94,7 +93,7 @@ const ProductDetailClient: React.FC<ProductDetailClientProps> = ({ product }) =>
             <CompanyDetails
               companyDetails={product.createdBy}
               productId={product?._id}
-              uom={product.uom || "kg"}
+              uom={product.uom || "kilogram"}
               userType={user?.user_type}
             />
           </div>

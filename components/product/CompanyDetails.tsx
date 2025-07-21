@@ -1,14 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import { 
-  Globe, 
-  MapPin, 
-  Star, 
-  Shield, 
-  Award, 
-  Users,
-  ExternalLink
-} from "lucide-react";
+import { Globe, MapPin, Shield, Award, Users, ExternalLink } from "lucide-react";
 import VisitShopButton from "@/components/suppliers/VisitShopButton";
 import QuoteRequestModal from "../shared/QuoteRequestModal";
 import SampleRequestModal from "../shared/SampleRequestModal";
@@ -22,11 +14,15 @@ interface CompanyDetailsProps {
     company_logo: string;
     location?: string;
     website?: string;
+    name?: string;
+    email?: string;
+    phone?: number;
+    address?: string;
     [key: string]: unknown;
   };
   productId: string;
   uom: string;
-  userType?: string; // Optional prop for user type
+  userType?: string;
 }
 
 const CompanyDetails: React.FC<CompanyDetailsProps> = ({
@@ -39,7 +35,9 @@ const CompanyDetails: React.FC<CompanyDetailsProps> = ({
     <div className="space-y-6">
       {/* Company Header */}
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">Supplier Information</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">
+          Supplier Information
+        </h2>
       </div>
 
       {/* Company Card */}
@@ -75,19 +73,17 @@ const CompanyDetails: React.FC<CompanyDetailsProps> = ({
           <div className="flex-1 text-center md:text-left">
             <div className="flex flex-wrap justify-center md:justify-start gap-2 mb-3">
               <Badge variant="secondary" className="bg-green-100 text-green-800">
-                <Shield className="w-3 h-3 mr-1" />
-                Verified Supplier
+                <Shield className="w-3 h-3 mr-1" /> Verified Supplier
               </Badge>
               <Badge variant="secondary" className="bg-green-100 text-green-800">
-                <Award className="w-3 h-3 mr-1" />
-                Premium Partner
+                <Award className="w-3 h-3 mr-1" /> Premium Partner
               </Badge>
             </div>
-            
+
             <h3 className="text-2xl font-bold text-gray-900 mb-2">
               {companyDetails?.company}
             </h3>
-            
+
             <div className="flex flex-wrap justify-center md:justify-start gap-4 text-gray-600 mb-4">
               {companyDetails?.location && (
                 <div className="flex items-center gap-1">
@@ -95,10 +91,17 @@ const CompanyDetails: React.FC<CompanyDetailsProps> = ({
                   <span className="text-sm">{companyDetails.location}</span>
                 </div>
               )}
-              <div className="flex items-center gap-1">
-                <Users className="w-4 h-4 text-green-600" />
-                <span className="text-sm">500+ Products</span>
-              </div>
+              {companyDetails?.address && (
+                <div className="flex items-center gap-1">
+                  <Users className="w-4 h-4 text-green-600" />
+                  <span className="text-sm">{companyDetails.address}</span>
+                </div>
+              )}
+              {companyDetails?.phone && (
+                <div className="flex items-center gap-1">
+                  <span className="text-sm">📞 {companyDetails.phone}</span>
+                </div>
+              )}
             </div>
 
             {companyDetails?.website && (
@@ -113,41 +116,12 @@ const CompanyDetails: React.FC<CompanyDetailsProps> = ({
                 <ExternalLink className="w-3 h-3" />
               </a>
             )}
-            
-            {/* Rating */}
-            <div className="flex justify-center md:justify-start items-center gap-2 mt-3">
-              <div className="flex items-center">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                ))}
-              </div>
-              <span className="text-sm text-gray-600">(4.9 out of 5)</span>
-            </div>
           </div>
         </div>
 
         {/* Visit Shop Button */}
         <div className="mt-6 text-center">
           <VisitShopButton supplierId={companyDetails?._id} />
-        </div>
-      </div>
-
-      {/* Trust Indicators */}
-      <div className="grid grid-cols-3 gap-4">
-        <div className="text-center p-4 bg-white rounded-xl border">
-          <Shield className="w-8 h-8 text-green-600 mx-auto mb-2" />
-          <h4 className="font-semibold text-gray-900 text-sm">Quality Assured</h4>
-          <p className="text-xs text-gray-600">ISO Certified</p>
-        </div>
-        <div className="text-center p-4 bg-white rounded-xl border">
-          <Award className="w-8 h-8 text-green-600 mx-auto mb-2" />
-          <h4 className="font-semibold text-gray-900 text-sm">Industry Leader</h4>
-          <p className="text-xs text-gray-600">10+ Years</p>
-        </div>
-        <div className="text-center p-4 bg-white rounded-xl border">
-          <Users className="w-8 h-8 text-green-600 mx-auto mb-2" />
-          <h4 className="font-semibold text-gray-900 text-sm">Trusted Partner</h4>
-          <p className="text-xs text-gray-600">1000+ Clients</p>
         </div>
       </div>
 
