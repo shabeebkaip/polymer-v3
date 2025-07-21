@@ -110,12 +110,24 @@ const ProductHeroSection = ({ product, user }: { product: Product; user: UserTyp
                   </span>
                 </div>
               ) : null}
-              {product.stock && product.stock > 0 ? (
+              {typeof product.stock === "number" ? (
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-gray-600">Stock:</span>
-                  <span className="font-medium text-gray-900">
-                    {product.stock} {product.uom}
-                  </span>
+
+                  {product.stock > 0 && (
+                    <span className="font-medium text-gray-900">
+                      {product.stock} {product.uom}
+                    </span>
+                  )}
+                  {product.stock > 0 ? (
+                      <span className="font-medium text-green-700 bg-green-100 px-2 py-1 rounded">
+                      In Stock
+                    </span>
+                  ) : (
+                      <span className="font-medium text-red-700 bg-red-100 px-2 py-1 rounded">
+                      Out of Stock
+                    </span>
+                  )}
                 </div>
               ) : null}
               {product.leadTime ? (
