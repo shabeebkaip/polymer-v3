@@ -94,7 +94,7 @@ const ProductHeroSection = ({ product, user }: { product: Product; user: UserTyp
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-gray-600">Price:</span>
                   <span className="font-semibold text-lg text-gray-900">
-                    ${product.price}/{product.uom}
+                    {product.price}  USD/{product.uom}
                   </span>
                 </div>
               ) : null}

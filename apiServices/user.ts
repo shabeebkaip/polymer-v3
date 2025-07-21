@@ -293,7 +293,7 @@ export const getRecievedSampleEnquiryDetail = async (id: string) => {
 
 export const updateSampleEnquiryStatus = async (id: string, status: string, message?: string) => {
   try {
-    const response = await axiosInstance.put(`/sample-request/received/${id}/status`, {
+    const response = await axiosInstance.patch(`/sample-request/status/${id}`, {
       status,
       message
     });

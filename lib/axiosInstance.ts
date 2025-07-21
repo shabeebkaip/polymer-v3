@@ -2,7 +2,8 @@ import axios from "axios";
 import Cookies from "js-cookie";
 
 // const BASE_URL = "https://polymer-backend.code-ox.com/api";
-const BASE_URL = "https://polymer-nodejs.vercel.app/api"; // 🛠️ Update with your backend URL
+// const BASE_URL = "https://polymer-nodejs.vercel.app/api"; // 🛠️ Update with your backend URL
+const BASE_URL = "http://localhost:5050/api"; // 🛠️ Update with your backend URL
 
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
