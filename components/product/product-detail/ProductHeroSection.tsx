@@ -134,7 +134,7 @@ const ProductHeroSection = ({ product, user }: { product: Product; user: UserTyp
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-gray-600">Lead Time:</span>
                   <span className="font-medium text-gray-900">
-                    {product.leadTime}
+                    {product.leadTime} Days
                   </span>
                 </div>
               ) : null}
