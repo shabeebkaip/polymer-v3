@@ -146,7 +146,6 @@ const SampleRequestModal = ({
     streetName: "",
     address: "",
     postCode: "",
-    city: "",
     country: "",
     grade: "",
     application: "",
@@ -167,7 +166,6 @@ const SampleRequestModal = ({
     streetName: "",
     address: "",
     postCode: "",
-    city: "",
     country: "",
     grade: "",
     application: "",
@@ -195,7 +193,6 @@ const SampleRequestModal = ({
     const errors: string[] = [];
     
     if (!currentData.quantity) errors.push("Please enter the quantity");
-    if (!currentData.city) errors.push("Please enter the city");
     if (!currentData.address) errors.push("Please enter the address");
     if (!currentData.country) errors.push("Please enter the country");
     
@@ -259,7 +256,7 @@ const SampleRequestModal = ({
     }));
     
     // Only trigger validation for critical fields or after delay
-    if (['quantity', 'city', 'address', 'country'].includes(field)) {
+    if (['quantity', 'address', 'country'].includes(field)) {
       triggerValidation();
     }
   }, [triggerValidation]);
@@ -506,16 +503,6 @@ const SampleRequestModal = ({
                     Shipping Address
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium text-gray-700">City *</label>
-                      <MemoizedInput
-                        placeholder="Enter city"
-                        className="bg-white border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 transition-all duration-200"
-                        type="text"
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => onFieldChange("city", e.target.value)}
-                        value={data?.city}
-                      />
-                    </div>
 
                     <div className="space-y-2">
                       <label className="text-sm font-medium text-gray-700">Country *</label>
