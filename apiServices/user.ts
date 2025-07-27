@@ -565,3 +565,13 @@ export const testApiConnectivity = async () => {
     return { success: false, error };
   }
 };
+
+export const getUserNotifications = async () => {
+    try {
+        const response = await axiosInstance.get("/notifications");
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching user notifications:", error);
+        throw error;
+    }
+}

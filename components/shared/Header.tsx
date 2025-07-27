@@ -10,9 +10,32 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { FALLBACK_USER_AVATAR } from "@/lib/fallbackImages";
 import { useChatInvites } from "@/hooks/useChatInvites";
+import { Bell } from "lucide-react";
+import { getUserNotifications } from "@/apiServices/user";
 
 // --- TypeScript Types ---
 type Language = "en" | "ar" | "de" | "zh";
+
+// Notification type based on API response
+interface NotificationMeta {
+  buyerId?: string;
+  dealId?: string;
+  buyerName?: string;
+}
+
+interface UserNotification {
+  _id: string;
+  userId: string;
+  type: string;
+  message: string;
+  redirectUrl?: string;
+  isRead: boolean;
+  relatedId?: string;
+  meta?: NotificationMeta;
+  createdAt: string;
+  updatedAt: string;
+  __v?: number;
+}
 
 const Header: React.FC = () => {
   const pathname = usePathname(); // ✅ must be at top
@@ -22,10 +45,18 @@ const Header: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [isUserPopoverOpen, setIsUserPopoverOpen] = useState(false);
+  const [isNotificationPopoverOpen, setIsNotificationPopoverOpen] = useState(false);
   const [language, setLanguage] = useState<Language>("en");
+  const [notifications, setNotifications] = useState<UserNotification[]>([]);
 
   useEffect(() => {
     loadUserFromCookies(); // hydrate on mount
+    // Fetch notifications (no need to pass user id, token is used)
+    getUserNotifications().then((res) => {
+      if (res.success && Array.isArray(res.data)) {
+        setNotifications(res.data);
+      }
+    });
   }, [loadUserFromCookies]);
 
   // ✅ Safe early return AFTER hooks
@@ -130,111 +161,153 @@ const Header: React.FC = () => {
           },
         ];
   return (
-    <header className="bg-white/95 backdrop-blur-sm shadow-lg shadow-green-600/5 sticky top-0 z-20 border-b border-green-100/50">
-      <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center h-18">
-          {/* Enhanced Logo */}
-          <Link href="/" className="flex items-center group">
-            <div className="relative overflow-hidden rounded-lg p-1 group-hover:bg-green-50 transition-all duration-200">
-              <Image
-                src="/typography.svg"
-                alt="Polymers Hub Logo"
-                width={120}
-                height={50}
-                className="md:h-12 h-8 w-auto transition-transform duration-200 group-hover:scale-105"
-              />
-            </div>
-          </Link>
+    <header className="w-full bg-white shadow-sm border-b border-gray-100/50 z-30 sticky top-0">
+      <div className="container mx-auto px-4 py-2 flex items-center justify-between">
+        {/* Enhanced Logo */}
+        <Link href="/" className="flex items-center group">
+          <div className="relative overflow-hidden rounded-lg p-1 group-hover:bg-green-50 transition-all duration-200">
+            <Image
+              src="/typography.svg"
+              alt="Polymers Hub Logo"
+              width={120}
+              height={50}
+              className="md:h-12 h-8 w-auto transition-transform duration-200 group-hover:scale-105"
+            />
+          </div>
+        </Link>
 
-          {/* Enhanced Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-8">
-            {links.map((link) => (
-              <div key={link.href} className="relative group">
-                <p
-                  onClick={() => router.push(link.href)}
-                  className={`cursor-pointer font-medium transition-all duration-200 px-3 py-2 rounded-lg hover:bg-green-50 ${
-                    pathname === link.href
-                      ? "text-[var(--green-main)] bg-green-50"
-                      : "text-gray-700 hover:text-[var(--green-main)]"
-                  }`}
-                >
-                  {link.label}
-                </p>
-                {pathname === link.href && (
-                  <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-[var(--green-main)] rounded-full"></div>
-                )}
-              </div>
-            ))}
-
-            {/* Enhanced Language Selector */}
-            {/* <div className="relative" ref={languagePopupRef}>
-              <div
-                className="flex items-center gap-2 cursor-pointer px-3 py-2 rounded-lg hover:bg-gray-50 transition-all duration-200 border border-gray-200 hover:border-green-300"
-                onClick={toggleLanguagePopup}
+        {/* Enhanced Desktop Navigation */}
+        <nav className="hidden lg:flex items-center space-x-8">
+          {links.map((link) => (
+            <div key={link.href} className="relative group">
+              <p
+                onClick={() => router.push(link.href)}
+                className={`cursor-pointer font-medium transition-all duration-200 px-3 py-2 rounded-lg hover:bg-green-50 ${
+                  pathname === link.href
+                    ? "text-[var(--green-main)] bg-green-50"
+                    : "text-gray-700 hover:text-[var(--green-main)]"
+                }`}
               >
-                <div className="w-4 h-4 bg-gradient-to-br from-blue-500 to-green-500 rounded-full flex items-center justify-center">
-                  <svg
-                    className="w-2.5 h-2.5 text-white"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.73 6.974 6 7.5 6A1.5 1.5 0 009 7.5V8a2 2 0 004 0 2 2 0 011.523-1.943A5.977 5.977 0 0116 10c0 .34-.028.675-.083 1H15a2 2 0 00-2 2v2.197A5.973 5.973 0 0110 16v-2a2 2 0 00-2-2 2 2 0 01-2-2 2 2 0 00-1.668-1.973z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </div>
-                <span className="text-sm font-medium text-gray-700">
-                  {language === "en"
-                    ? "English"
-                    : language === "ar"
-                    ? "العربية"
-                    : language === "de"
-                    ? "Deutsch"
-                    : "中文"}
-                </span>
+                {link.label}
+              </p>
+              {pathname === link.href && (
+                <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-[var(--green-main)] rounded-full"></div>
+              )}
+            </div>
+          ))}
+
+          {/* Enhanced Language Selector */}
+          {/* <div className="relative" ref={languagePopupRef}>
+            <div
+              className="flex items-center gap-2 cursor-pointer px-3 py-2 rounded-lg hover:bg-gray-50 transition-all duration-200 border border-gray-200 hover:border-green-300"
+              onClick={toggleLanguagePopup}
+            >
+              <div className="w-4 h-4 bg-gradient-to-br from-blue-500 to-green-500 rounded-full flex items-center justify-center">
                 <svg
-                  className="w-4 h-4 text-gray-500 transition-transform duration-200"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+                  className="w-2.5 h-2.5 text-white"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
                 >
                   <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.73 6.974 6 7.5 6A1.5 1.5 0 009 7.5V8a2 2 0 004 0 2 2 0 011.523-1.943A5.977 5.977 0 0116 10c0 .34-.028.675-.083 1H15a2 2 0 00-2 2v2.197A5.973 5.973 0 0110 16v-2a2 2 0 00-2-2 2 2 0 01-2-2 2 2 0 00-1.668-1.973z"
+                    clipRule="evenodd"
                   />
                 </svg>
               </div>
-              {isLanguagePopupOpen && (
-                <div className="absolute right-0 mt-2 w-40 bg-white shadow-xl rounded-xl border border-gray-200 z-10 overflow-hidden">
-                  <div className="py-2">
-                    {[
-                      { code: "ar", name: "العربية", flag: "🇸🇦" },
-                      { code: "en", name: "English", flag: "🇺🇸" },
-                      { code: "de", name: "Deutsch", flag: "🇩🇪" },
-                      { code: "zh", name: "中文", flag: "🇨🇳" }
-                    ].map((lang) => (
-                      <button
-                        key={lang.code}
-                        onClick={() => changeLanguage(lang.code as Language)}
-                        className={`w-full px-4 py-3 text-sm text-left flex items-center gap-3 transition-all duration-200 ${
-                          language === lang.code 
-                            ? "bg-green-50 text-[var(--green-main)] font-medium" 
-                            : "text-gray-700 hover:bg-gray-50"
-                        }`}
-                      >
-                        <span className="text-lg">{lang.flag}</span>
-                        <span>{lang.name}</span>
-                      </button>
-                    ))}
-                  </div>
+              <span className="text-sm font-medium text-gray-700">
+                {language === "en"
+                  ? "English"
+                  : language === "ar"
+                  ? "العربية"
+                  : language === "de"
+                  ? "Deutsch"
+                  : "中文"}
+              </span>
+              <svg
+                className="w-4 h-4 text-gray-500 transition-transform duration-200"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
+              </div>
+            </div>
+            {isLanguagePopupOpen && (
+              <div className="absolute right-0 mt-2 w-40 bg-white shadow-xl rounded-xl border border-gray-200 z-10 overflow-hidden">
+                <div className="py-2">
+                  {[
+                    { code: "ar", name: "العربية", flag: "🇸🇦" },
+                    { code: "en", name: "English", flag: "🇺🇸" },
+                    { code: "de", name: "Deutsch", flag: "🇩🇪" },
+                    { code: "zh", name: "中文", flag: "🇨🇳" }
+                  ].map((lang) => (
+                    <button
+                      key={lang.code}
+                      onClick={() => changeLanguage(lang.code as Language)}
+                      className={`w-full px-4 py-3 text-sm text-left flex items-center gap-3 transition-all duration-200 ${
+                        language === lang.code
+                          ? "bg-green-50 text-[var(--green-main)] font-medium"
+                          : "text-gray-700 hover:bg-gray-50"
+                      }`}
+                    >
+                      <span className="text-lg">{lang.flag}</span>
+                      <span>{lang.name}</span>
+                    </button>
+                  ))}
                 </div>
-              )}
-            </div> */}
-          </nav>
+              </div>
+            )}
+          </div> */}
+        </nav>
+
+        <div className="flex items-center gap-4">
+          {/* Notification Bell */}
+          <Popover open={isNotificationPopoverOpen} onOpenChange={setIsNotificationPopoverOpen}>
+            <PopoverTrigger asChild>
+              <button
+                type="button"
+                className="relative p-2 rounded-full hover:bg-emerald-50 transition-colors"
+                aria-label="Notifications"
+              >
+                <Bell className="w-6 h-6 text-emerald-700" />
+                {notifications.filter(n => !n.isRead).length > 0 && (
+                  <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white" />
+                )}
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80 p-0 z-50">
+              <div className="p-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-emerald-50/30">
+                <span className="font-semibold text-gray-900 text-base flex items-center gap-2">
+                  <Bell className="w-5 h-5 text-emerald-700" /> Notifications
+                </span>
+              </div>
+              <div className="max-h-80 overflow-y-auto divide-y divide-gray-100">
+                {notifications.length === 0 ? (
+                  <div className="p-6 text-center text-gray-500 text-sm">No notifications</div>
+                ) : (
+                  notifications.map((notif) => (
+                    <button
+                      key={notif._id}
+                      className={`w-full text-left px-4 py-3 hover:bg-emerald-50 transition-colors flex flex-col gap-1 ${notif.isRead ? 'opacity-70' : ''}`}
+                      onClick={() => {
+                        setIsNotificationPopoverOpen(false);
+                        router.push(notif.redirectUrl || "/");
+                      }}
+                    >
+                      <span className="text-sm text-gray-900 font-medium">{notif.message}</span>
+                      <span className="text-xs text-gray-500">{new Date(notif.createdAt).toLocaleString()}</span>
+                    </button>
+                  ))
+                )}
+              </div>
+            </PopoverContent>
+          </Popover>
 
           {/* Notification Bell for Chat Invites (Supplier only) */}
           {user?.user_type === "supplier" && invites.length > 0 && (
