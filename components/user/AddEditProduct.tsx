@@ -397,20 +397,6 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
     };
 
     const formattedData = formatDataForAPI(data);
-    
-    // Enhanced debugging to verify all transformations
-    console.log('=== API DATA TRANSFORMATION DEBUG ===');
-    console.log('Original form data:', JSON.stringify(data, null, 2));
-    console.log('Formatted data for API:', JSON.stringify(formattedData, null, 2));
-    console.log('=== FIELD CHECKS ===');
-    console.log('Price type:', typeof formattedData.price, 'Value:', formattedData.price);
-    console.log('PaymentTerms type:', typeof formattedData.paymentTerms, 'Is Array:', Array.isArray(formattedData.paymentTerms), 'Value:', formattedData.paymentTerms);
-    console.log('LeadTime type:', typeof formattedData.leadTime, 'Value:', formattedData.leadTime);
-    console.log('Documents - SDS:', typeof formattedData.safety_data_sheet, 'Is Array:', Array.isArray(formattedData.safety_data_sheet));
-    console.log('Documents - TDS:', typeof formattedData.technical_data_sheet, 'Is Array:', Array.isArray(formattedData.technical_data_sheet));
-    console.log('Documents - COA:', typeof formattedData.certificate_of_analysis, 'Is Array:', Array.isArray(formattedData.certificate_of_analysis));
-    console.log('Grade field present:', 'grade' in formattedData, 'Grades field present:', 'grades' in formattedData);
-    console.log('======================================');
 
     const apiCall = () =>
       isEditMode ? updateProduct(id as string, formattedData) : createProduct(formattedData);

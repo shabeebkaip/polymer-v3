@@ -78,8 +78,17 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
                 {family.name}
               </SelectItem>
             ))}
+            <SelectItem key="other" value="other">Other</SelectItem>
           </SelectContent>
         </Select>
+        {data.chemicalFamily === "other" && (
+          <Input
+            placeholder="Please specify other chemical family"
+            value={data.chemicalFamilyOther || ""}
+            onChange={e => onFieldChange("chemicalFamilyOther", e.target.value)}
+            className="mt-2 border-gray-300 focus:border-emerald-500 focus:ring-emerald-200"
+          />
+        )}
         {error.chemicalFamily && (
           <p className="text-xs text-red-600 mt-1">{error.chemicalFamily}</p>
         )}
@@ -132,8 +141,17 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
                 {polymer.name}
               </SelectItem>
             ))}
+            <SelectItem key="other" value="other">Other</SelectItem>
           </SelectContent>
         </Select>
+        {data.polymerType === "other" && (
+          <Input
+            placeholder="Please specify other polymer type"
+            value={data.polymerTypeOther || ""}
+            onChange={e => onFieldChange("polymerTypeOther", e.target.value)}
+            className="mt-2 border-gray-300 focus:border-emerald-500 focus:ring-emerald-200"
+          />
+        )}
         {error.polymerType && (
           <p className="text-xs text-red-600 mt-1">{error.polymerType}</p>
         )}
@@ -186,8 +204,17 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
                 {form.name}
               </SelectItem>
             ))}
+            <SelectItem key="other" value="other">Other</SelectItem>
           </SelectContent>
         </Select>
+        {data.physicalForm === "other" && (
+          <Input
+            placeholder="Please specify other physical form"
+            value={data.physicalFormOther || ""}
+            onChange={e => onFieldChange("physicalFormOther", e.target.value)}
+            className="mt-2 border-gray-300 focus:border-emerald-500 focus:ring-emerald-200"
+          />
+        )}
         {error.physicalForm && (
           <p className="text-xs text-red-600 mt-1">{error.physicalForm}</p>
         )}
