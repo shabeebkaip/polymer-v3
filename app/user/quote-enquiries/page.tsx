@@ -91,7 +91,7 @@ const statusOptions = [
   { label: "All", value: "all" },
   { label: "Pending", value: "pending" },
   { label: "Approved", value: "approved" },
-  { label: "Rejected", value: "rejected" },
+  { label: "Rejected", value: "rejected" }, 
   { label: "Completed", value: "completed" },
 ];
 
