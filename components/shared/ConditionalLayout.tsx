@@ -19,7 +19,7 @@ const ConditionalLayout: React.FC<ConditionalLayoutProps> = ({ children }) => {
   const showHeader = !isAuthRoute && !isUserRoute;
   
   // Footer visibility: Hide for auth routes only
-  const showFooter = !isAuthRoute;
+  const showFooter = !isAuthRoute && !isUserRoute;
 
   return (
     <>
