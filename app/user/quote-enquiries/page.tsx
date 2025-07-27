@@ -32,7 +32,6 @@ import {
   ChevronLeft,
   ChevronRight,
   Eye,
-  Truck,
   X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -101,11 +100,11 @@ const QuoteEnquiries = () => {
   const pageSize = 10;
 
   // Helper function to safely extract incoterm value
-  const getIncotermValue = (incoterm: string | { name?: string; [key: string]: unknown } | undefined): string => {
-    if (!incoterm) return '';
-    if (typeof incoterm === 'string') return incoterm;
-    return incoterm.name || String(incoterm);
-  };
+  // const getIncotermValue = (incoterm: string | { name?: string; [key: string]: unknown } | undefined): string => {
+  //   if (!incoterm) return '';
+  //   if (typeof incoterm === 'string') return incoterm;
+  //   return incoterm.name || String(incoterm);
+  // };
 
   // Local state for debounced search
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState<string>(searchTerm);
