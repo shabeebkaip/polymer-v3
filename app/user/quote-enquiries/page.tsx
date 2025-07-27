@@ -545,9 +545,7 @@ const QuoteEnquiries = () => {
                     <TableHead className="w-20 sm:w-24 font-semibold text-gray-700">
                       Quantity
                     </TableHead>
-                    <TableHead className="min-w-[100px] sm:min-w-[120px] font-semibold text-gray-700">
-                      Details
-                    </TableHead>
+
                     <TableHead className="w-28 sm:w-32 font-semibold text-gray-700">
                       Date
                     </TableHead>
@@ -599,8 +597,8 @@ const QuoteEnquiries = () => {
                               <Package className="w-5 h-5 text-green-600" />
                             </div>
                             <div className="min-w-0 flex-1">
-                              <p className="font-medium text-gray-900 truncate" title={item.product?.productName || "Unknown Product"}>
-                                {item.product?.productName || "Unknown Product"}
+                              <p className="font-medium text-gray-900 truncate" title={item.unified?.title || "Unknown Product"}>
+                                {item.unified?.title || "Unknown Product"}
                               </p>
                               {item.product?.sku && (
                                 <p className="text-xs text-gray-500 truncate" title={`SKU: ${item.product.sku}`}>
@@ -613,43 +611,12 @@ const QuoteEnquiries = () => {
                         <TableCell>
                           <div className="flex items-center gap-1">
                             <span className="font-medium text-gray-900">
-                              {item.quantity || "--"}
+                              {item.unified?.quantity || "--"}
                             </span>
                             {item.uom && (
                               <span className="text-sm text-gray-500">
                                 {item.uom}
                               </span>
-                            )}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="space-y-2">
-                            {item.incoterm && (
-                              <div className="flex items-center gap-2">
-                                <Truck className="w-3 h-3 text-gray-400 flex-shrink-0" />
-                                <span className="text-xs text-gray-600 font-medium truncate">
-                                  {getIncotermValue(item.incoterm)}
-                                </span>
-                              </div>
-                            )}
-                            {item.packaging && (
-                              <div className="flex items-center gap-2">
-                                <Package className="w-3 h-3 text-gray-400 flex-shrink-0" />
-                                <span className="text-xs text-gray-600 truncate">
-                                  {item.packaging}
-                                </span>
-                              </div>
-                            )}
-                            {item.grade && (
-                              <div className="flex items-center gap-2">
-                                <Building2 className="w-3 h-3 text-gray-400 flex-shrink-0" />
-                                <span className="text-xs text-gray-600 truncate">
-                                  {item.grade.name || ""}
-                                </span>
-                              </div>
-                            )}
-                            {!item.incoterm && !item.packaging && !item.grade && (
-                              <span className="text-xs text-gray-400 italic">No details available</span>
                             )}
                           </div>
                         </TableCell>
@@ -692,12 +659,12 @@ const QuoteEnquiries = () => {
                               <Building2 className="w-4 h-4 text-gray-500" />
                             </div>
                             <div className="min-w-0 flex-1">
-                              <p className="text-sm font-medium text-gray-900 truncate" title={item.user?.email || "Unknown User"}>
-                                {item.user?.email || "Unknown User"}
+                              <p className="text-sm font-medium text-gray-900 truncate" title={item.buyer?.email || "Unknown User"}>
+                                {item.buyer?.email || "Unknown User"}
                               </p>
-                              {item.user?.name && (
-                                <p className="text-xs text-gray-500 truncate" title={item.user.name}>
-                                  {item.user.name}
+                              {item.buyer?.name && (
+                                <p className="text-xs text-gray-500 truncate" title={item.buyer.name}>
+                                  {item.buyer.name}
                                 </p>
                               )}
                             </div>
