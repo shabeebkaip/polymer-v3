@@ -27,7 +27,8 @@ const FilterItem: React.FC<FilterItemProps> = ({
   onFilterChange,
   query,
 }) => {
-  const [open, setOpen] = useState(true);
+  console.log(filter, "filter");
+  const [open, setOpen] = useState(filter?.collapsible);
 
   const getSelectedCount = () => {
     const selectedValues = query[filter.name] || [];

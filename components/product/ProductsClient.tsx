@@ -266,6 +266,48 @@ const ProductsClient: React.FC = () => {
                   onFilterChange={handleFilter}
                   query={query}
                 />
+                {/* Filter Summary & Clear Button */}
+                <div className="mt-4 flex flex-wrap gap-2 items-center">
+                  {Object.entries(query)
+                    .filter(([key, value]) => value && (Array.isArray(value) ? value.length > 0 : value !== ""))
+                    .map(([key, value]) => {
+                      const filterSection = filters.filterTop.find(f => f.name === key) || filters.filterSide.find(f => f.name === key);
+                      // If filterSection found, map value(s) to displayName
+                      if (filterSection) {
+                        const getDisplayName = (id: string | boolean) => {
+                          const item = filterSection.data.find(d => d._id === id);
+                          return item ? item.name : id;
+                        };
+                        if (Array.isArray(value)) {
+                          return (
+                            <span key={key} className="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-medium">
+                              {filterSection.displayName || key}: {value.map(v => getDisplayName(v)).join(", ")}
+                            </span>
+                          );
+                        } else {
+                          return (
+                            <span key={key} className="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-medium">
+                              {filterSection.displayName || key}: {getDisplayName(value)}
+                            </span>
+                          );
+                        }
+                      }
+                      // fallback: just show raw value
+                      return (
+                        <span key={key} className="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-medium">
+                          {key}: {Array.isArray(value) ? value.join(", ") : value}
+                        </span>
+                      );
+                    })}
+                  {Object.keys(query).length > 0 && (
+                    <button
+                      onClick={() => setQuery({})}
+                      className="ml-2 px-3 py-1 bg-gradient-to-r from-emerald-500 to-green-600 text-white rounded-full text-xs font-semibold shadow hover:from-emerald-600 hover:to-green-700 transition-all duration-200"
+                    >
+                      Clear Filters
+                    </button>
+                  )}
+                </div>
               </div>
             )}
 
@@ -276,7 +318,7 @@ const ProductsClient: React.FC = () => {
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-blue-100 rounded-lg">
                       <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4v-6.586a1 1 0 00-.293-.707L4 11m16 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                       </svg>
                     </div>
                     <div>
