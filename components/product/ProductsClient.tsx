@@ -269,7 +269,7 @@ const ProductsClient: React.FC = () => {
                 {/* Filter Summary & Clear Button */}
                 <div className="mt-4 flex flex-wrap gap-2 items-center">
                   {Object.entries(query)
-                    .filter(([key, value]) => value && (Array.isArray(value) ? value.length > 0 : value !== ""))
+                    .filter(([, value]) => value && (Array.isArray(value) ? value.length > 0 : value !== ""))
                     .map(([key, value]) => {
                       const filterSection = filters.filterTop.find(f => f.name === key) || filters.filterSide.find(f => f.name === key);
                       // If filterSection found, map value(s) to displayName
@@ -280,13 +280,13 @@ const ProductsClient: React.FC = () => {
                         };
                         if (Array.isArray(value)) {
                           return (
-                            <span key={key} className="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-medium">
+                            <span key={`${key}-${value.join(',')}`} className="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-medium">
                               {filterSection.displayName || key}: {value.map(v => getDisplayName(v)).join(", ")}
                             </span>
                           );
                         } else {
                           return (
-                            <span key={key} className="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-medium">
+                            <span key={`${key}-${value}`} className="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-medium">
                               {filterSection.displayName || key}: {getDisplayName(value)}
                             </span>
                           );
@@ -294,7 +294,7 @@ const ProductsClient: React.FC = () => {
                       }
                       // fallback: just show raw value
                       return (
-                        <span key={key} className="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-medium">
+                        <span key={`${key}-raw`} className="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-medium">
                           {key}: {Array.isArray(value) ? value.join(", ") : value}
                         </span>
                       );
