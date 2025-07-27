@@ -1,9 +1,7 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 
-// const BASE_URL = "https://polymer-backend.code-ox.com/api";
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL; // 🛠️ Update with your backend URL
-// const BASE_URL = "http://localhost:5050/api"; // 🛠️ Update with your backend URL
+const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL; // 🛠️ Update with your backend URL/ 🛠️ Update with your backend URL
 
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
