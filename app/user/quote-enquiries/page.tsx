@@ -43,35 +43,48 @@ import { useQuoteEnquiriesStore } from "@/stores/quoteEnquiriesStore";
 interface QuoteEnquiryProduct {
   productName?: string;
   sku?: string;
-  [key: string]: unknown;
 }
 
 interface QuoteEnquiryUser {
   email?: string;
   name?: string;
-  [key: string]: unknown;
 }
 
 interface QuoteEnquiryGrade {
   name?: string;
-  [key: string]: unknown;
+}
+
+interface QuoteEnquiryUnified {
+  title?: string;
+  quantity?: number;
+}
+
+interface QuoteEnquiryBuyer {
+  email?: string;
+  name?: string;
 }
 
 interface QuoteEnquiry {
   _id?: string;
   id?: string;
   user?: QuoteEnquiryUser;
+  buyer?: QuoteEnquiryBuyer;
   product?: QuoteEnquiryProduct;
+  unified?: QuoteEnquiryUnified;
   quantity?: number;
   uom?: string;
-  incoterm?: string | { name?: string; [key: string]: unknown };
+  incoterm?: string | { name?: string };
   grade?: QuoteEnquiryGrade;
   packaging?: string;
   message?: string;
   status: string;
   createdAt: string;
   updatedAt?: string;
-  [key: string]: unknown;
+  orderDetails?: {
+    quantity: number;
+    uom: string;
+    incoterm: string | { name?: string };
+  };
 }
 
 const statusOptions = [
