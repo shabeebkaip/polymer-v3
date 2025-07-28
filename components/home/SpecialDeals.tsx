@@ -320,9 +320,19 @@ const SpecialDeals: React.FC = () => {
             </p>
           </div>
         </div>
-        <span className="bg-gray-100 text-green-700 px-3 py-1 rounded text-xs font-semibold border border-green-200">
-          {displayDeals.length} Available
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="bg-gray-100 text-green-700 px-3 py-1 rounded text-xs font-semibold border border-green-200">
+            {displayDeals.length} Available
+          </span>
+          <button
+            className="ml-2 px-3 py-1 rounded text-xs font-semibold bg-white border border-emerald-200 text-emerald-600 hover:bg-emerald-50 transition"
+            onClick={() => {
+              // TODO: Implement navigation to all deals page
+            }}
+          >
+            View All
+          </button>
+        </div>
       </div>
 
       <div className="relative">

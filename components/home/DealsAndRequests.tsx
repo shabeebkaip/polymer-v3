@@ -53,7 +53,7 @@ const DealsAndRequests: React.FC = () => {
         <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-2xl mx-auto">
           {/* Show Special Deals button for buyers and guests */}
           {(isBuyer || isGuest) && (
-            <button className="bg-green-600 hover:bg-green-700 text-white px-8 py-3.5 rounded-xl font-semibold border border-green-700 hover:border-green-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:scale-[1.02] group">
+            <button className="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3.5 rounded-xl font-semibold border border-emerald-700 hover:border-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition-all duration-200 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:scale-[1.02] group">
               <Zap className="w-5 h-5 transition-transform duration-200 group-hover:scale-110" />
               <span className="tracking-tight">View All Special Deals</span>
               <ArrowRight className="w-5 h-5 transition-transform duration-200 group-hover:translate-x-1" />
@@ -62,7 +62,7 @@ const DealsAndRequests: React.FC = () => {
 
           {/* Show Bulk Orders button for sellers and guests */}
           {(isSeller || isGuest) && (
-            <button className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3.5 rounded-xl font-semibold border border-purple-700 hover:border-purple-800 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-200 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:scale-[1.02] group">
+            <button className="bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-3.5 rounded-xl font-semibold border border-emerald-600 hover:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2 transition-all duration-200 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:scale-[1.02] group">
               <TrendingUp className="w-5 h-5 transition-transform duration-200 group-hover:scale-110" />
               <span className="tracking-tight">Browse All Bulk Orders</span>
               <ArrowRight className="w-5 h-5 transition-transform duration-200 group-hover:translate-x-1" />
