@@ -3,6 +3,7 @@ import React from "react";
 import SellerLogoContainer from "./SellerLogoContainer";
 import { useSharedState } from "@/stores/sharedStore";
 import { useRouter } from "next/navigation";
+import { Truck, Globe, ShieldCheck } from "lucide-react";
 
 const FeaturedSuppliers: React.FC = () => {
   const router = useRouter();
@@ -30,21 +31,21 @@ const FeaturedSuppliers: React.FC = () => {
 
           {/* Enhanced Suppliers Grid */}
           <div className="w-full max-w-6xl">
-            {/* Stats Row */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-              <div className="text-center p-4 bg-white/50 rounded-xl border border-green-100">
+            {/* Stats Row - Fully Responsive */}
+            <div className="flex gap-4 mb-8 overflow-x-auto scrollbar-hide md:grid md:grid-cols-4 md:gap-4 md:overflow-visible">
+              <div className="text-center p-4 bg-white/50 rounded-xl border border-green-100 min-w-[140px] flex-shrink-0">
                 <div className="text-2xl font-bold text-green-600 mb-1">500+</div>
                 <div className="text-sm text-gray-600">Verified Suppliers</div>
               </div>
-              <div className="text-center p-4 bg-white/50 rounded-xl border border-green-100">
+              <div className="text-center p-4 bg-white/50 rounded-xl border border-green-100 min-w-[140px] flex-shrink-0">
                 <div className="text-2xl font-bold text-green-600 mb-1">50+</div>
                 <div className="text-sm text-gray-600">Countries</div>
               </div>
-              <div className="text-center p-4 bg-white/50 rounded-xl border border-green-100">
+              <div className="text-center p-4 bg-white/50 rounded-xl border border-green-100 min-w-[140px] flex-shrink-0">
                 <div className="text-2xl font-bold text-green-600 mb-1">24/7</div>
                 <div className="text-sm text-gray-600">Support</div>
               </div>
-              <div className="text-center p-4 bg-white/50 rounded-xl border border-green-100">
+              <div className="text-center p-4 bg-white/50 rounded-xl border border-green-100 min-w-[140px] flex-shrink-0">
                 <div className="text-2xl font-bold text-green-600 mb-1">99%</div>
                 <div className="text-sm text-gray-600">Satisfaction</div>
               </div>
@@ -53,17 +54,17 @@ const FeaturedSuppliers: React.FC = () => {
             {/* Suppliers Showcase */}
             <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-white via-gray-50/50 to-green-50/30 border border-gray-200 shadow-xl">
               <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
-              <div className="relative p-6 md:p-8">
+              <div className="relative p-4 sm:p-6 md:p-8">
                 {/* Mobile Layout - Horizontal Scroll */}
                 <div className="md:hidden">
-                  <div className="flex gap-6 overflow-x-auto scrollbar-hide pb-4">
+                  <div className="flex gap-5 overflow-x-auto scrollbar-hide pb-4 pr-4">
                     {sellers?.map((seller, index) => (
                       <div
                         key={index}
-                        className="flex-shrink-0 w-32 group"
+                        className="flex-shrink-0 min-w-[120px] sm:min-w-[140px] group"
                         style={{ animationDelay: `${index * 0.1}s` }}
                       >
-                        <div className="bg-white rounded-2xl p-6 shadow-md hover:shadow-xl transition-all duration-300 transform hover:scale-105 border border-gray-100">
+                        <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-md hover:shadow-xl transition-all duration-300 transform hover:scale-105 border border-gray-100 flex items-center justify-center">
                           <SellerLogoContainer seller={seller} />
                         </div>
                       </div>
@@ -91,10 +92,10 @@ const FeaturedSuppliers: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Call to Action */}
+                {/* Call to Action - Responsive */}
                 <div className="mt-8 text-center">
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                    <button className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-full hover:from-green-600 hover:to-emerald-600 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 font-semibold">
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center items-center w-full">
+                    <button className="w-full sm:w-auto inline-flex items-center gap-3 px-6 py-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-full hover:from-green-600 hover:to-emerald-600 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 font-semibold justify-center">
                       <span>View All Suppliers</span>
                       <svg
                         className="w-5 h-5"
@@ -112,7 +113,7 @@ const FeaturedSuppliers: React.FC = () => {
                     </button>
                     <button
                       onClick={() => router.push("/auth/register?role=seller")}
-                      className="inline-flex items-center gap-3 px-8 py-4 bg-white border-2 border-green-500 text-green-600 rounded-full hover:bg-green-50 transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105 font-semibold"
+                      className="w-full sm:w-auto inline-flex items-center gap-3 px-6 py-4 bg-white border-2 border-green-500 text-green-600 rounded-full hover:bg-green-50 transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105 font-semibold justify-center"
                     >
                       <svg
                         className="w-5 h-5"
@@ -135,40 +136,44 @@ const FeaturedSuppliers: React.FC = () => {
             </div>
           </div>
 
-          {/* Enhanced Trust Indicators */}
-          <div className="w-full max-w-5xl">
-            <div className="bg-gradient-to-r from-white via-green-50/30 to-white rounded-2xl p-6 border border-green-100 shadow-sm">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="text-center group">
-                  <div className="relative inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl mb-4 group-hover:scale-110 transition-transform duration-300"></div>
-                  <h3 className="font-bold text-gray-900 text-lg mb-2">
-                    Verified Quality
-                  </h3>
-                  <p className="text-sm text-gray-600 leading-relaxed">
-                    All suppliers undergo rigorous quality verification and
-                    compliance checks
-                  </p>
+          {/* Enhanced Trust Indicators - Fully Responsive */}
+          <div className="w-full max-w-5xl mt-8">
+            <div className="flex flex-col md:flex-row gap-4 bg-gradient-to-r from-white via-green-50/30 to-white rounded-2xl p-4 sm:p-6 border border-green-100 shadow-sm">
+              <div className="text-center group min-w-[200px] flex-1">
+                <div className="relative inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <ShieldCheck className="w-8 h-8 text-green-600" />
                 </div>
-                <div className="text-center group">
-                  <div className="relative inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl mb-4 group-hover:scale-110 transition-transform duration-300"></div>
-                  <h3 className="font-bold text-gray-900 text-lg mb-2">
-                    Fast Delivery
-                  </h3>
-                  <p className="text-sm text-gray-600 leading-relaxed">
-                    Quick turnaround times with express shipping options for
-                    urgent requirements
-                  </p>
+                <h3 className="font-bold text-gray-900 text-lg mb-2">
+                  Verified Quality
+                </h3>
+                <p className="text-sm text-gray-600 leading-relaxed">
+                  All suppliers undergo rigorous quality verification and
+                  compliance checks
+                </p>
+              </div>
+              <div className="text-center group min-w-[200px] flex-1">
+                <div className="relative inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <Truck className="w-8 h-8 text-green-600" />
                 </div>
-                <div className="text-center group">
-                  <div className="relative inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl mb-4 group-hover:scale-110 transition-transform duration-300"></div>
-                  <h3 className="font-bold text-gray-900 text-lg mb-2">
-                    Global Network
-                  </h3>
-                  <p className="text-sm text-gray-600 leading-relaxed">
-                    Worldwide shipping network with local support and
-                    multilingual assistance
-                  </p>
+                <h3 className="font-bold text-gray-900 text-lg mb-2">
+                  Fast Delivery
+                </h3>
+                <p className="text-sm text-gray-600 leading-relaxed">
+                  Quick turnaround times with express shipping options for
+                  urgent requirements
+                </p>
+              </div>
+              <div className="text-center group min-w-[200px] flex-1">
+                <div className="relative inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <Globe className="w-8 h-8 text-green-600" />
                 </div>
+                <h3 className="font-bold text-gray-900 text-lg mb-2">
+                  Global Network
+                </h3>
+                <p className="text-sm text-gray-600 leading-relaxed">
+                  Worldwide shipping network with local support and
+                  multilingual assistance
+                </p>
               </div>
             </div>
           </div>
