@@ -1,30 +1,17 @@
-"use client";
-import React from "react";
-import {
-  TrendingUp,
-  ArrowRight,
-  Zap,
-  ShoppingCart,
-  Plus,
-  Users,
-  Target,
-  Handshake,
-  CheckCircle,
-  Star,
-  MessageCircle,
-} from "lucide-react";
-import SpecialDeals from "./SpecialDeals";
-import BuyerOpportunities from "./BuyerOpportunities";
-import { useUserInfo } from "@/lib/useUserInfo";
-import HowPolymersConnect from "@/components/home/HowPolymersConnect";
+'use client';
+import React from 'react';
+import { TrendingUp, ArrowRight, Zap } from 'lucide-react';
+import SpecialDeals from './SpecialDeals';
+import BuyerOpportunities from './BuyerOpportunities';
+import { useUserInfo } from '@/lib/useUserInfo';
+import HowPolymersConnect from '@/components/home/HowPolymersConnect';
 
 const DealsAndRequests: React.FC = () => {
   const { user } = useUserInfo();
   const userType = user?.user_type;
   const isGuest = !user; // User is not logged in
-  const isBuyer = Boolean(user && userType === "buyer");
-  const isSeller = Boolean(user && userType === "seller");
-
+  const isBuyer = Boolean(user && userType === 'buyer');
+  const isSeller = Boolean(user && userType === 'seller');
   return (
     <section className="container mx-auto px-4 py-8 md:py-12">
       <div className="text-center mb-8 md:mb-10">
@@ -34,8 +21,8 @@ const DealsAndRequests: React.FC = () => {
           <span className="text-green-700">and Demand Synergy</span>
         </h2>
         <p className="text-gray-700 text-base md:text-lg max-w-2xl mx-auto font-medium">
-          Discover exclusive deals from trusted suppliers and connect with
-          buyers seeking quality products
+          Discover exclusive deals from trusted suppliers and connect with buyers seeking quality
+          products
         </p>
       </div>
 
