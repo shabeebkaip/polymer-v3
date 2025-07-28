@@ -16,5 +16,9 @@ export type userPopoverType = {
     navOptions: NavLink[],
     handleNavigate: (href: string) => void;
     handleLogout: () => void;
+}
 
+export type mobileMenuType = {
+    toggleMenu : () => void;
+    isOpen: boolean;
 }
