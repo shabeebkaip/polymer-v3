@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { Check } from "lucide-react";
 
 interface BenefitCardProps {
   benefits: string[];
@@ -14,33 +14,46 @@ const BenefitCard: React.FC<BenefitCardProps> = ({
   registerLink,
 }) => {
   return (
-    <div className="flex flex-col items-center justify-center gap-5 p-10 rounded-lg shadow-[0_25px_50px_-12px_rgba(5,150,105,0.4)] bg-white hover:shadow-2xl focus:shadow-2xl focus:ring-2 focus:ring-green-300 transition-all duration-300 group">
-      <div className="flex flex-col items-center justify-center text-center gap-1">
-        <h3 className="text-xs font-normal text-[var(--green-main)] ">{subtitle}</h3>
-        <h2 className="md:text-[27px] ">{title}</h2>
+    <div className="flex flex-col items-start justify-between gap-6 p-8 md:p-10 rounded-2xl border border-gray-100  shadow-lg hover:shadow-xl transition-all duration-300 group min-h-[340px] w-full">
+      <div className="w-full">
+        <h3 className="text-xs font-semibold text-green-700 uppercase tracking-wide mb-1">
+          {subtitle}
+        </h3>
+        <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-4 leading-snug">
+          {title}
+        </h2>
+        <ul className="space-y-3">
+          {benefits.map((item, index) => (
+            <li
+              key={index}
+              className="flex items-center gap-3 text-gray-700 text-sm md:text-base "
+            >
+              <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-green-50">
+                <Check className="w-10 h-10 text-green-600" />
+              </span>
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
       </div>
-      <ul className="space-y-2">
-        {benefits.map((item, index) => (
-          <li
-            key={index}
-            className="flex items-baseline gap-2 text-[var(--text-gray-tertiary)] text-xs md:text-lg"
-          >
-            <Image
-              src="/icons/Check icon.png"
-              alt="Check Icon"
-              width={20}
-              height={20}
-              className="w-8 h-8 transition-transform duration-200 group-hover:scale-110"
-            />
-            <span>{item}</span>
-          </li>
-        ))}
-      </ul>
       <a
         href={registerLink}
-        className="text-xs md:text-lg px-4 py-2 bg-gradient-to-r from-[var(--green-gradient-from)] via-[var(--green-gradient-via)] to-[var(--green-gradient-to)] text-white rounded-lg shadow hover:shadow-lg focus:ring-2 focus:ring-green-300 transition-all duration-200 font-medium"
+        className="inline-flex items-center gap-2 text-sm md:text-base px-5 py-2.5 rounded-lg bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold shadow hover:from-green-700 hover:to-emerald-700 transition-all duration-200 focus:ring-2 focus:ring-green-300"
       >
         Register Now
+        <svg
+          className="w-4 h-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M17 8l4 4m0 0l-4 4m4-4H3"
+          />
+        </svg>
       </a>
     </div>
   );

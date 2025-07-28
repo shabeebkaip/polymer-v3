@@ -142,7 +142,7 @@ const Header: React.FC = () => {
                                 </button>
                             </PopoverTrigger>
                             <PopoverContent className="w-64 p-0 bg-white border-0 shadow-xl rounded-xl overflow-hidden">
-                                <div className="p-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white">
+                                <div className="p-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white">
                                     <div className="flex items-center gap-3">
                                         <Avatar className="w-12 h-12 border-2 border-white/20">
                                             <AvatarImage
@@ -222,7 +222,7 @@ const Header: React.FC = () => {
                             </button>
                             <button
                                 onClick={() => router.push("/auth/user-type")}
-                                className="px-6 py-2.5 bg-gradient-to-r from-[var(--green-gradient-from)] via-[var(--green-gradient-via)] to-[var(--green-gradient-to)] text-white rounded-xl hover:opacity-90 transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:scale-105"
+                                className="px-6 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600  text-white rounded-xl hover:opacity-90 transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:scale-105"
                             >
                                 Sign Up for Free
                             </button>

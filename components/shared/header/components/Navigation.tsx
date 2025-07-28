@@ -18,7 +18,7 @@ const Navigation: React.FC<NavigationProps> = ({ links }) => {
                         onClick={() => router.push(link.href)}
                         className={`cursor-pointer font-medium transition-all duration-200 px-3 py-2 rounded-lg hover:bg-green-50 ${
                             pathname === link.href
-                                ? "text-[var(--green-main)] bg-green-50"
+                                ? "text-emerald-600 bg-green-50"
                                 : "text-gray-700 hover:text-[var(--green-main)]"
                         }`}
                     >

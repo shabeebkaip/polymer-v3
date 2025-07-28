@@ -13,9 +13,8 @@ const stats = [
 ];
 const gradientTextClass = `
   bg-gradient-to-r
-  from-[var(--green-gradient-from)]
-  via-[var(--green-gradient-via)]
-  to-[var(--green-gradient-to)]
+  from-green-600
+  to-emerald-600
   bg-clip-text
   text-transparent
 `;

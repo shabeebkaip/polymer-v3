@@ -219,7 +219,7 @@ const Profile = () => {
                     src={user?.user_type === "seller" ? user?.company_logo : user?.avatar} 
                     alt="Profile" 
                   />
-                  <AvatarFallback className="bg-emerald-100 text-emerald-700 text-2xl font-semibold">
+                  <AvatarFallback className="bg-emerald-100 text-emerald-600 text-2xl font-semibold">
                     {user?.user_type === "seller" 
                       ? user?.company?.charAt(0) || "C"
                       : `${user?.firstName?.charAt(0) || ""}${user?.lastName?.charAt(0) || ""}`

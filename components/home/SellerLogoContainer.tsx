@@ -16,7 +16,7 @@ const SellerLogoContainer: React.FC<SellerLogoContainerProps> = ({
   return (
     <div
       onClick={() => router.push(`/sellers/${seller._id}`)}
-      className="border border-[var(--green-light)] rounded-[10px] p-4 flex items-center justify-center w-32 h-32 hover:scale-105 hover:shadow-xl focus:scale-105 focus:shadow-xl focus:ring-2 focus:ring-green-300 duration-300 ease-in-out cursor-pointer group"
+      className="border border-emerald-600 rounded-[10px] p-4 flex items-center justify-center w-20 h-20 hover:scale-105 hover:shadow-xl focus:scale-105 focus:shadow-xl focus:ring-2 focus:ring-green-300 duration-300 ease-in-out cursor-pointer group"
       tabIndex={0}
       onKeyPress={(e) => {
         if (e.key === "Enter") router.push(`/sellers/${seller._id}`);
