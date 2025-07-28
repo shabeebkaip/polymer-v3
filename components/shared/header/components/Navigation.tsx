@@ -1,9 +1,9 @@
 import React from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { NavLink } from "@/types/header";
+import { linksType} from "@/types/header";
 
 type NavigationProps = {
-    links: NavLink[];
+    links: linksType[];
 };
 
 const Navigation: React.FC<NavigationProps> = ({ links }) => {
@@ -12,7 +12,7 @@ const Navigation: React.FC<NavigationProps> = ({ links }) => {
 
     return (
         <nav className="hidden lg:flex items-center space-x-8">
-            {links.map((link: NavLink) => (
+            {links.map((link: linksType) => (
                 <div key={link.href} className="relative group">
                     <p
                         onClick={() => router.push(link.href)}

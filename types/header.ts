@@ -5,10 +5,15 @@ export type NavLink = {
     id: string;
 };
 
+export type linksType = {
+    href: string;
+    label: string;
+}
+
 export type userPopoverType = {
     isUserPopoverOpen: boolean
     setIsUserPopoverOpen: (isOpen: boolean) => void;
-    navOptions : NavLink[],
+    navOptions: NavLink[],
     handleNavigate: (href: string) => void;
     handleLogout: () => void;
 
