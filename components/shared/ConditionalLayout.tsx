@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { usePathname } from "next/navigation";
-import Header from "./Header";
+import Header from "./header/Header";
 import Footer from "./Footer";
 
 interface ConditionalLayoutProps {

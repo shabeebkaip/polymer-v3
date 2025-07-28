@@ -34,8 +34,6 @@ export default async function HomePage() {
       getSuppliersSpecialDeals(),
     ]);
 
-    console.log("API Results - buyerOpportunities:", buyerOpportunitiesRes.status);
-    console.log("API Results - suppliersSpecialDeals:", suppliersSpecialDealsRes.status);
 
     // Extract data with error handling
     const homeData: HomePageData = {

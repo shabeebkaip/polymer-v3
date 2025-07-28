@@ -1,4 +1,4 @@
-export interface UserType {
+export type UserType =  {
   _id?: string;
   firstName?: string;
   lastName?: string;

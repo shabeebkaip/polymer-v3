@@ -33,25 +33,19 @@ const FeaturedSuppliers: React.FC = () => {
             {/* Stats Row */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
               <div className="text-center p-4 bg-white/50 rounded-xl border border-green-100">
-                <div className="text-2xl font-bold text-green-600 mb-1">
-                  500+
-                </div>
+                <div className="text-2xl font-bold text-green-600 mb-1">500+</div>
                 <div className="text-sm text-gray-600">Verified Suppliers</div>
               </div>
-              <div className="text-center p-4 bg-white/50 rounded-xl border border-blue-100">
-                <div className="text-2xl font-bold text-blue-600 mb-1">50+</div>
+              <div className="text-center p-4 bg-white/50 rounded-xl border border-green-100">
+                <div className="text-2xl font-bold text-green-600 mb-1">50+</div>
                 <div className="text-sm text-gray-600">Countries</div>
               </div>
-              <div className="text-center p-4 bg-white/50 rounded-xl border border-purple-100">
-                <div className="text-2xl font-bold text-purple-600 mb-1">
-                  24/7
-                </div>
+              <div className="text-center p-4 bg-white/50 rounded-xl border border-green-100">
+                <div className="text-2xl font-bold text-green-600 mb-1">24/7</div>
                 <div className="text-sm text-gray-600">Support</div>
               </div>
-              <div className="text-center p-4 bg-white/50 rounded-xl border border-orange-100">
-                <div className="text-2xl font-bold text-orange-600 mb-1">
-                  99%
-                </div>
+              <div className="text-center p-4 bg-white/50 rounded-xl border border-green-100">
+                <div className="text-2xl font-bold text-green-600 mb-1">99%</div>
                 <div className="text-sm text-gray-600">Satisfaction</div>
               </div>
             </div>
@@ -146,22 +140,7 @@ const FeaturedSuppliers: React.FC = () => {
             <div className="bg-gradient-to-r from-white via-green-50/30 to-white rounded-2xl p-6 border border-green-100 shadow-sm">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="text-center group">
-                  <div className="relative inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl mb-4 group-hover:scale-110 transition-transform duration-300">
-                    <svg
-                      className="w-8 h-8 text-green-600"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
-                    <div className="absolute -inset-2 bg-green-500/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-md"></div>
-                  </div>
+                  <div className="relative inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl mb-4 group-hover:scale-110 transition-transform duration-300"></div>
                   <h3 className="font-bold text-gray-900 text-lg mb-2">
                     Verified Quality
                   </h3>
@@ -171,22 +150,7 @@ const FeaturedSuppliers: React.FC = () => {
                   </p>
                 </div>
                 <div className="text-center group">
-                  <div className="relative inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl mb-4 group-hover:scale-110 transition-transform duration-300">
-                    <svg
-                      className="w-8 h-8 text-blue-600"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
-                    <div className="absolute -inset-2 bg-blue-500/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-md"></div>
-                  </div>
+                  <div className="relative inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl mb-4 group-hover:scale-110 transition-transform duration-300"></div>
                   <h3 className="font-bold text-gray-900 text-lg mb-2">
                     Fast Delivery
                   </h3>
@@ -196,22 +160,7 @@ const FeaturedSuppliers: React.FC = () => {
                   </p>
                 </div>
                 <div className="text-center group">
-                  <div className="relative inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-100 to-purple-200 rounded-2xl mb-4 group-hover:scale-110 transition-transform duration-300">
-                    <svg
-                      className="w-8 h-8 text-purple-600"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064"
-                      />
-                    </svg>
-                    <div className="absolute -inset-2 bg-purple-500/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-md"></div>
-                  </div>
+                  <div className="relative inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl mb-4 group-hover:scale-110 transition-transform duration-300"></div>
                   <h3 className="font-bold text-gray-900 text-lg mb-2">
                     Global Network
                   </h3>

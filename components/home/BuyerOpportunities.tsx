@@ -165,7 +165,7 @@ const BuyerOpportunities: React.FC = () => {
     <div className="mb-12">
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-3">
-          <div className="bg-purple-700 p-2 rounded-lg">
+          <div className="bg-green-700 p-2 rounded-lg">
             <Users className="w-5 h-5 text-white" />
           </div>
           <div>
@@ -173,7 +173,7 @@ const BuyerOpportunities: React.FC = () => {
             <p className="text-gray-700 text-sm">Active opportunities from verified buyers seeking suppliers</p>
           </div>
         </div>
-        <span className="bg-gray-100 text-purple-700 px-3 py-1 rounded text-xs font-semibold border border-purple-200">
+        <span className="bg-gray-100 text-green-700 px-3 py-1 rounded text-xs font-semibold border border-green-200">
           {displayRequests.length} Active
         </span>
       </div>
@@ -272,8 +272,8 @@ const BuyerOpportunities: React.FC = () => {
               <button
                 key={index}
                 onClick={() => setCurrentSlide(index)}
-                className={`w-3 h-3 rounded-full border border-purple-300 transition-all duration-200 ${currentSlide === index
-                    ? "bg-purple-700 w-6"
+                className={`w-3 h-3 rounded-full border border-green-300 transition-all duration-200 ${currentSlide === index
+                    ? "bg-green-700 w-6"
                     : "bg-gray-200 hover:bg-gray-300"
                   }`}
               />
@@ -340,7 +340,7 @@ const RequestCard: React.FC<{
   return (
     <div className="bg-white rounded-xl shadow border hover:shadow-xl transition-all duration-200 overflow-hidden group">
       {/* Header */}
-      <div className="bg-purple-700 text-white px-4 py-2 text-xs font-semibold flex items-center justify-between">
+      <div className="bg-green-700 text-white px-4 py-2 text-xs font-semibold flex items-center justify-between">
         <span className="flex items-center gap-2">
           <Users className="w-4 h-4" />
           BUYER OPPORTUNITY
@@ -356,9 +356,9 @@ const RequestCard: React.FC<{
         <p className="text-gray-700 text-xs mb-3 line-clamp-2">{request.description}</p>
 
         {/* Buyer Info */}
-        <div className="flex items-center gap-3 mb-3 p-2 bg-purple-50 rounded-lg">
-          <div className="w-8 h-8 bg-purple-100 rounded flex items-center justify-center">
-            <Users className="w-4 h-4 text-purple-600" />
+        <div className="flex items-center gap-3 mb-3 p-2 bg-green-50 rounded-lg">
+          <div className="w-8 h-8 bg-green-100 rounded flex items-center justify-center">
+            <Users className="w-4 h-4 text-green-600" />
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
@@ -383,15 +383,15 @@ const RequestCard: React.FC<{
               <Package className="w-3 h-3 text-gray-400" />
               <span className="text-xs text-gray-500 uppercase font-semibold">Quantity</span>
             </div>
-            <p className="font-bold text-purple-700 text-sm">{request.quantity}</p>
+            <p className="font-bold text-green-700 text-sm">{request.quantity}</p>
           </div>
 
-          <div className="bg-blue-50 p-3 rounded-lg">
+          <div className="bg-green-50 p-3 rounded-lg">
             <div className="flex items-center gap-2 mb-1">
-              <Clock className="w-3 h-3 text-blue-400" />
-              <span className="text-xs text-blue-500 uppercase font-semibold">Deadline</span>
+              <Clock className="w-3 h-3 text-green-400" />
+              <span className="text-xs text-green-500 uppercase font-semibold">Deadline</span>
             </div>
-            <p className="font-bold text-blue-700 text-sm">{formatDate(request.deadline)}</p>
+            <p className="font-bold text-green-700 text-sm">{formatDate(request.deadline)}</p>
           </div>
         </div>
 
@@ -413,7 +413,7 @@ const RequestCard: React.FC<{
             <span>{request.responses} responses</span>
           </div>
           {request.budget && request.budget !== "Contact for quote" && (
-            <div className="font-semibold text-purple-700">
+            <div className="font-semibold text-green-700">
               {request.budget}
             </div>
           )}
@@ -422,7 +422,7 @@ const RequestCard: React.FC<{
         {/* Action Button */}
         <button 
           onClick={handleButtonClick}
-          className="w-full bg-purple-700 text-white py-2 rounded font-medium border border-purple-800 hover:bg-purple-800 focus:outline-none focus:ring-2 focus:ring-purple-400 transition-all duration-200 flex items-center justify-center gap-2 shadow-sm focus:ring-offset-2 group"
+          className="w-full bg-green-700 text-white py-2 rounded font-medium border border-green-800 hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-400 transition-all duration-200 flex items-center justify-center gap-2 shadow-sm focus:ring-offset-2 group"
         >
           <ArrowRight className="w-5 h-5 transition-transform duration-200 group-hover:translate-x-1" />
           <span className="tracking-tight">{getButtonText()}</span>

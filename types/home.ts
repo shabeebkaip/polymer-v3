@@ -1,11 +1,17 @@
-import { BenefitsContent } from "./cms";
+import {BenefitsContent} from "./cms";
 
 export interface HomePageData {
-  industries: any[];
-  productFamilies: any[];
-  sellers: any[];
-  buyersBenefits: BenefitsContent;
-  suppliersBenefits: BenefitsContent;
-  buyerOpportunities: any[];
-  suppliersSpecialDeals: any[];
+    industries: any[];
+    productFamilies: any[];
+    sellers: any[];
+    buyersBenefits: BenefitsContent;
+    suppliersBenefits: BenefitsContent;
+    buyerOpportunities: any[];
+    suppliersSpecialDeals: any[];
+}
+
+
+export type howPolymersConnectType = {
+    isBuyer: boolean;
+    isSeller: boolean;
 }

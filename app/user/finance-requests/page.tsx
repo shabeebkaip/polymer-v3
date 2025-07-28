@@ -27,7 +27,6 @@ import { useFinanceRequestsListStore } from "@/stores/user";
 
 const FinanceRequests = () => {
   const router = useRouter();
-  // Zustand store
   const {
     requests: financeRequests,
     loading,
