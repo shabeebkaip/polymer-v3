@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
   ArrowLeft,
   CreditCard,
@@ -17,31 +17,29 @@ import {
   Shield,
   TrendingUp,
   Truck,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Calendar } from "@/components/ui/calendar";
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Calendar } from '@/components/ui/calendar';
 import {
   Select,
   SelectTrigger,
   SelectContent,
   SelectItem,
   SelectValue,
-} from "@/components/ui/select";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { toast } from "sonner";
-import { getProductList } from "@/apiServices/products";
-import { createFinanceRequest } from "@/apiServices/user";
-import { getCountryList } from "@/lib/useCountries";
-import { FinanceFormData, Product } from "@/types/finance";
+} from '@/components/ui/select';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { toast } from 'sonner';
+import { getProductList } from '@/apiServices/products';
+import { createFinanceRequest } from '@/apiServices/user';
+import { getCountryList } from '@/lib/useCountries';
+import { FinanceFormData, Product } from '@/types/finance';
 
 const CreateFinanceRequest = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const productId = searchParams.get('productId');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
   const [loadingProducts, setLoadingProducts] = useState(true);
@@ -49,31 +47,31 @@ const CreateFinanceRequest = () => {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
   const [formData, setFormData] = useState<FinanceFormData>({
-    productId: "",
+    productId: productId || '',
     emiMonths: 12,
     quantity: 1,
     estimatedPrice: 0,
-    notes: "",
-    productGrade: "",
+    notes: '',
+    productGrade: '',
     desiredDeliveryDate: undefined,
-    destination: "",
-    paymentTerms: "",
-    requireLogisticsSupport: "No",
-    previousPurchaseHistory: "",
-    additionalNotes: "",
-    country: "",
+    destination: '',
+    paymentTerms: '',
+    requireLogisticsSupport: 'No',
+    previousPurchaseHistory: '',
+    additionalNotes: '',
+    country: '',
   });
 
   const countries = useMemo(() => getCountryList(), []);
 
   // Debounced input values to prevent excessive re-renders
   const [inputValues, setInputValues] = useState({
-    estimatedPrice: "",
-    notes: "",
-    productGrade: "",
-    destination: "",
-    previousPurchaseHistory: "",
-    additionalNotes: "",
+    estimatedPrice: '',
+    notes: '',
+    productGrade: '',
+    destination: '',
+    previousPurchaseHistory: '',
+    additionalNotes: '',
   });
 
   // Fetch products on component mount
@@ -84,8 +82,8 @@ const CreateFinanceRequest = () => {
         const response = await getProductList({ page: 1, limit: 100 });
         setProducts(response.data || []);
       } catch (error) {
-        console.error("Error fetching products:", error);
-        toast.error("Failed to load products");
+        console.error('Error fetching products:', error);
+        toast.error('Failed to load products');
       } finally {
         setLoadingProducts(false);
       }
@@ -112,49 +110,39 @@ const CreateFinanceRequest = () => {
       setFormData((prev) => ({
         ...prev,
         productId,
-        productGrade: product?.grade?.name || "",
+        productGrade: product?.grade?.name || '',
       }));
       setInputValues((prev) => ({
         ...prev,
-        productGrade: product?.grade?.name || "",
+        productGrade: product?.grade?.name || '',
       }));
     },
     [products]
   );
 
   const handleInputChange = useCallback(
-    (
-      field: keyof FinanceFormData,
-      value: string | number | boolean | Date | undefined
-    ) => {
+    (field: keyof FinanceFormData, value: string | number | boolean | Date | undefined) => {
       setFormData((prev) => ({ ...prev, [field]: value }));
     },
     []
   );
 
   // Optimized price input handler
-  const handlePriceInputChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value;
+  const handlePriceInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
 
-      // Update input value immediately for responsiveness
-      setInputValues((prev) => ({ ...prev, estimatedPrice: value }));
+    // Update input value immediately for responsiveness
+    setInputValues((prev) => ({ ...prev, estimatedPrice: value }));
 
-      // Clean and validate the value
-      const cleanValue = value.replace(/[^0-9.]/g, "");
-      const parts = cleanValue.split(".");
-      const formattedValue =
-        parts.length > 2
-          ? parts[0] + "." + parts.slice(1).join("")
-          : cleanValue;
-      const numericValue =
-        formattedValue === "" ? 0 : parseFloat(formattedValue) || 0;
+    // Clean and validate the value
+    const cleanValue = value.replace(/[^0-9.]/g, '');
+    const parts = cleanValue.split('.');
+    const formattedValue = parts.length > 2 ? parts[0] + '.' + parts.slice(1).join('') : cleanValue;
+    const numericValue = formattedValue === '' ? 0 : parseFloat(formattedValue) || 0;
 
-      // Update form data
-      setFormData((prev) => ({ ...prev, estimatedPrice: numericValue }));
-    },
-    []
-  );
+    // Update form data
+    setFormData((prev) => ({ ...prev, estimatedPrice: numericValue }));
+  }, []);
 
   // Optimized text input handlers
   const handleTextInputChange = useCallback(
@@ -171,19 +159,19 @@ const CreateFinanceRequest = () => {
     if (formData.estimatedPrice && formData.emiMonths) {
       return (formData.estimatedPrice / formData.emiMonths).toFixed(2);
     }
-    return "0.00";
+    return '0.00';
   }, [formData.estimatedPrice, formData.emiMonths]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!formData.productId) {
-      toast.error("Please select a product");
+      toast.error('Please select a product');
       return;
     }
 
     if (!formData.notes.trim()) {
-      toast.error("Please provide notes about your finance request");
+      toast.error('Please provide notes about your finance request');
       return;
     }
 
@@ -196,26 +184,26 @@ const CreateFinanceRequest = () => {
       };
 
       await createFinanceRequest(submitData);
-      toast.success("Finance request submitted successfully!");
-      router.push("/user/finance-requests");
+      toast.success('Finance request submitted successfully!');
+      router.push('/user/finance-requests');
     } catch (error) {
       // Type guard for error object
       const errMsg =
-        typeof error === "object" &&
+        typeof error === 'object' &&
         error !== null &&
-        "response" in error &&
+        'response' in error &&
         error.response &&
-        typeof error.response === "object" &&
+        typeof error.response === 'object' &&
         error.response !== null &&
-        "data" in error.response &&
+        'data' in error.response &&
         error.response.data &&
-        typeof error.response.data === "object" &&
+        typeof error.response.data === 'object' &&
         error.response.data !== null &&
-        "message" in error.response.data
+        'message' in error.response.data
           ? (error.response.data.message as string)
           : undefined;
-      console.error("Error submitting finance request:", error);
-      toast.error(errMsg || "Failed to submit finance request");
+      console.error('Error submitting finance request:', error);
+      toast.error(errMsg || 'Failed to submit finance request');
     } finally {
       setIsSubmitting(false);
     }
@@ -268,8 +256,7 @@ const CreateFinanceRequest = () => {
                   <h3 className="font-bold text-gray-900">Flexible EMI</h3>
                 </div>
                 <p className="text-gray-600 text-sm">
-                  Choose EMI terms from 3 to 60 months that suit your cash flow
-                  requirements.
+                  Choose EMI terms from 3 to 60 months that suit your cash flow requirements.
                 </p>
               </div>
 
@@ -281,8 +268,7 @@ const CreateFinanceRequest = () => {
                   <h3 className="font-bold text-gray-900">Competitive Rates</h3>
                 </div>
                 <p className="text-gray-600 text-sm">
-                  Get industry-leading interest rates starting from 8.5% per
-                  annum.
+                  Get industry-leading interest rates starting from 8.5% per annum.
                 </p>
               </div>
 
@@ -304,9 +290,7 @@ const CreateFinanceRequest = () => {
         {/* Form Section */}
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50 overflow-hidden">
           <div className="border-b border-gray-200/60 px-8 py-6 bg-gradient-to-r from-gray-50/80 to-green-50/30">
-            <h2 className="text-xl font-bold text-gray-900">
-              Finance Request Details
-            </h2>
+            <h2 className="text-xl font-bold text-gray-900">Finance Request Details</h2>
             <p className="text-gray-600 mt-1">
               Fill in the details below to submit your finance request
             </p>
@@ -329,11 +313,7 @@ const CreateFinanceRequest = () => {
                   >
                     <SelectTrigger className="w-full py-3 px-4 border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500">
                       <SelectValue
-                        placeholder={
-                          loadingProducts
-                            ? "Loading products..."
-                            : "Choose a product"
-                        }
+                        placeholder={loadingProducts ? 'Loading products...' : 'Choose a product'}
                       />
                     </SelectTrigger>
                     <SelectContent>
@@ -345,11 +325,10 @@ const CreateFinanceRequest = () => {
                                 {product.productName}
                               </span>
                               <div className="flex items-center gap-2 text-sm text-gray-500">
-                                {product.grade?.name && (
-                                  <span>Grade: {product.grade.name}</span>
+                                {product.grade?.name && <span>Grade: {product.grade.name}</span>}
+                                {product.grade?.name && product.createdBy?.company && (
+                                  <span>•</span>
                                 )}
-                                {product.grade?.name &&
-                                  product.createdBy?.company && <span>•</span>}
                                 {product.createdBy?.company && (
                                   <span>By: {product.createdBy.company}</span>
                                 )}
@@ -373,19 +352,12 @@ const CreateFinanceRequest = () => {
                       type="number"
                       min="1"
                       value={formData.quantity}
-                      onChange={(e) =>
-                        handleInputChange(
-                          "quantity",
-                          parseInt(e.target.value) || 1
-                        )
-                      }
+                      onChange={(e) => handleInputChange('quantity', parseInt(e.target.value) || 1)}
                       className="py-3 px-4 border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500"
                       placeholder="Enter quantity"
                     />
                     {selectedProduct?.uom && (
-                      <p className="text-sm text-gray-500 mt-1">
-                        Unit: {selectedProduct.uom}
-                      </p>
+                      <p className="text-sm text-gray-500 mt-1">Unit: {selectedProduct.uom}</p>
                     )}
                   </div>
 
@@ -396,9 +368,7 @@ const CreateFinanceRequest = () => {
                     </label>
                     <Select
                       value={formData.emiMonths.toString()}
-                      onValueChange={(value) =>
-                        handleInputChange("emiMonths", parseInt(value))
-                      }
+                      onValueChange={(value) => handleInputChange('emiMonths', parseInt(value))}
                     >
                       <SelectTrigger className="py-3 px-4 border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500">
                         <SelectValue />
@@ -426,9 +396,7 @@ const CreateFinanceRequest = () => {
                         type="text"
                         value={
                           inputValues.estimatedPrice ||
-                          (formData.estimatedPrice === 0
-                            ? ""
-                            : formData.estimatedPrice.toString())
+                          (formData.estimatedPrice === 0 ? '' : formData.estimatedPrice.toString())
                         }
                         onChange={handlePriceInputChange}
                         onBlur={() => {
@@ -470,7 +438,7 @@ const CreateFinanceRequest = () => {
                   </label>
                   <Input
                     value={inputValues.productGrade}
-                    onChange={handleTextInputChange("productGrade")}
+                    onChange={handleTextInputChange('productGrade')}
                     className="py-3 px-4 border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500"
                     placeholder="Enter product grade"
                   />
@@ -484,7 +452,7 @@ const CreateFinanceRequest = () => {
                   </label>
                   <Textarea
                     value={inputValues.notes}
-                    onChange={handleTextInputChange("notes")}
+                    onChange={handleTextInputChange('notes')}
                     className="py-3 px-4 border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 min-h-[120px]"
                     placeholder="Describe your finance requirements, business use case, and any specific terms you need..."
                     required
@@ -500,10 +468,7 @@ const CreateFinanceRequest = () => {
                     <CalendarIcon className="w-4 h-4 inline mr-2 text-green-600" />
                     Desired Delivery Date
                   </label>
-                  <Popover
-                    open={isCalendarOpen}
-                    onOpenChange={setIsCalendarOpen}
-                  >
+                  <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
                     <PopoverTrigger asChild>
                       <Button
                         variant="outline"
@@ -512,19 +477,15 @@ const CreateFinanceRequest = () => {
                         <CalendarIcon className="mr-2 h-4 w-4 text-green-600" />
                         {formData.desiredDeliveryDate ? (
                           <span className="text-gray-500">
-                            {new Date(
-                              formData.desiredDeliveryDate
-                            ).toLocaleDateString("en-US", {
-                              weekday: "long", // e.g., "Thursday"
-                              year: "numeric", // e.g., "2025"
-                              month: "long", // e.g., "July"
-                              day: "numeric", // e.g., "17"
+                            {new Date(formData.desiredDeliveryDate).toLocaleDateString('en-US', {
+                              weekday: 'long', // e.g., "Thursday"
+                              year: 'numeric', // e.g., "2025"
+                              month: 'long', // e.g., "July"
+                              day: 'numeric', // e.g., "17"
                             })}
                           </span>
                         ) : (
-                          <span className="text-gray-500">
-                            Select delivery date
-                          </span>
+                          <span className="text-gray-500">Select delivery date</span>
                         )}
                       </Button>
                     </PopoverTrigger>
@@ -533,7 +494,7 @@ const CreateFinanceRequest = () => {
                         mode="single"
                         selected={formData.desiredDeliveryDate}
                         onSelect={(date) => {
-                          handleInputChange("desiredDeliveryDate", date);
+                          handleInputChange('desiredDeliveryDate', date);
                           setIsCalendarOpen(false);
                         }}
                         disabled={(date) => date < new Date()}
@@ -551,7 +512,7 @@ const CreateFinanceRequest = () => {
                   </label>
                   <Input
                     value={inputValues.destination}
-                    onChange={handleTextInputChange("destination")}
+                    onChange={handleTextInputChange('destination')}
                     className="py-3 px-4 border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500"
                     placeholder="Enter delivery destination"
                   />
@@ -559,14 +520,10 @@ const CreateFinanceRequest = () => {
 
                 {/* Country */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-900 mb-3">
-                    Country
-                  </label>
+                  <label className="block text-sm font-semibold text-gray-900 mb-3">Country</label>
                   <Select
                     value={formData.country}
-                    onValueChange={(value) =>
-                      handleInputChange("country", value)
-                    }
+                    onValueChange={(value) => handleInputChange('country', value)}
                   >
                     <SelectTrigger className="py-3 px-4 border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500">
                       <SelectValue placeholder="Select country" />
@@ -588,9 +545,7 @@ const CreateFinanceRequest = () => {
                   </label>
                   <Select
                     value={formData.paymentTerms}
-                    onValueChange={(value) =>
-                      handleInputChange("paymentTerms", value)
-                    }
+                    onValueChange={(value) => handleInputChange('paymentTerms', value)}
                   >
                     <SelectTrigger className="py-3 px-4 border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500">
                       <SelectValue placeholder="Select payment terms" />
@@ -614,9 +569,7 @@ const CreateFinanceRequest = () => {
                   </label>
                   <Select
                     value={formData.requireLogisticsSupport}
-                    onValueChange={(value) =>
-                      handleInputChange("requireLogisticsSupport", value)
-                    }
+                    onValueChange={(value) => handleInputChange('requireLogisticsSupport', value)}
                   >
                     <SelectTrigger className="py-3 px-4 border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500">
                       <SelectValue />
@@ -635,7 +588,7 @@ const CreateFinanceRequest = () => {
                   </label>
                   <Textarea
                     value={inputValues.previousPurchaseHistory}
-                    onChange={handleTextInputChange("previousPurchaseHistory")}
+                    onChange={handleTextInputChange('previousPurchaseHistory')}
                     className="py-3 px-4 border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500"
                     placeholder="Describe your previous purchasing experience with similar products..."
                     rows={3}
@@ -649,7 +602,7 @@ const CreateFinanceRequest = () => {
                   </label>
                   <Textarea
                     value={inputValues.additionalNotes}
-                    onChange={handleTextInputChange("additionalNotes")}
+                    onChange={handleTextInputChange('additionalNotes')}
                     className="py-3 px-4 border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500"
                     placeholder="Any additional information or special requirements..."
                     rows={3}
@@ -663,16 +616,11 @@ const CreateFinanceRequest = () => {
               <div className="flex items-center justify-between">
                 <div className="text-sm text-gray-600">
                   <AlertCircle className="w-4 h-4 inline mr-2 text-amber-500" />
-                  All finance requests are subject to credit approval and terms
-                  may vary.
+                  All finance requests are subject to credit approval and terms may vary.
                 </div>
                 <Button
                   type="submit"
-                  disabled={
-                    isSubmitting ||
-                    !formData.productId ||
-                    !inputValues.notes.trim()
-                  }
+                  disabled={isSubmitting || !formData.productId || !inputValues.notes.trim()}
                   className="px-8 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50"
                 >
                   {isSubmitting ? (

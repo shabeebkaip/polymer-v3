@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { ShoppingCart, FileText, MessageCircle } from 'lucide-react';
+import { ShoppingCart, FileText } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import QuoteRequestModal from './QuoteRequestModal';
 import SampleRequestModal from './SampleRequestModal';
@@ -21,22 +21,21 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
   uom,
   className = '',
   variant = 'default',
-  onChatClick,
   user,
 }) => {
   const router = useRouter();
 
   const getButtonStyles = (type: 'quote' | 'sample' | 'chat') => {
     const baseStyles =
-      'transition-all font-medium rounded-lg flex items-center justify-center gap-2';
+      'transition-all font-medium rounded-lg flex items-center justify-center gap-2 cursor-pointer ';
     switch (variant) {
       case 'compact':
         if (type === 'chat')
           return `${baseStyles} px-4 py-2 text-sm border-2 border-emerald-600 text-emerald-600 hover:bg-emerald-50`;
         return `${baseStyles} px-4 py-2 text-sm ${
           type === 'quote'
-            ? ' border border-green-600 text-emerald-600 '
-            : 'border-2 border-blue-600 text-blue-600 hover:bg-blue-50'
+            ? 'border border-green-600 text-emerald-600 cursor-pointer hover:bg-green-50'
+            : 'border-2 border-green-600 text-green-600 hover:bg-green-50'
         }`;
       case 'large':
         if (type === 'chat')
