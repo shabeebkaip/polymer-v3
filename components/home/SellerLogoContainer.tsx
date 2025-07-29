@@ -12,11 +12,10 @@ const SellerLogoContainer: React.FC<SellerLogoContainerProps> = ({
   seller,
 }) => {
   const router = useRouter();
-  console.log("Seller Logo Container Seller:", seller);
   return (
     <div
       onClick={() => router.push(`/sellers/${seller._id}`)}
-      className="border border-emerald-600 rounded-[10px] p-4 flex items-center justify-center w-20 h-20 hover:scale-105 hover:shadow-xl focus:scale-105 focus:shadow-xl focus:ring-2 focus:ring-green-300 duration-300 ease-in-out cursor-pointer group"
+      className="border border-emerald-500 rounded-xl flex items-center justify-center w-[70px] h-[70px] bg-white hover:shadow-lg hover:border-green-600 focus:shadow-lg focus:border-green-600 transition-all duration-200 cursor-pointer group outline-none"
       tabIndex={0}
       onKeyPress={(e) => {
         if (e.key === "Enter") router.push(`/sellers/${seller._id}`);
@@ -25,10 +24,11 @@ const SellerLogoContainer: React.FC<SellerLogoContainerProps> = ({
     >
       <Image
         src={seller.company_logo}
-        alt={"img"}
-        width={100}
-        height={100}
-        className="w-full transition-transform duration-300 group-hover:scale-105"
+        alt={seller.company_logo || "Supplier Logo"}
+        width={56}
+        height={56}
+        className="object-contain w-12 h-12 sm:w-14 sm:h-14 group-hover:scale-105 transition-transform duration-200"
+        draggable={false}
       />
     </div>
   );

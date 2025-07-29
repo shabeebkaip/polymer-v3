@@ -3,6 +3,7 @@ import React from "react";
 import SellerLogoContainer from "./SellerLogoContainer";
 import { useSharedState } from "@/stores/sharedStore";
 import { useRouter } from "next/navigation";
+import { BadgeCheck, Clock, Globe } from "lucide-react";
 
 const FeaturedSuppliers: React.FC = () => {
   const router = useRouter();
@@ -71,24 +72,19 @@ const FeaturedSuppliers: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Desktop Layout - Enhanced Grid */}
-                <div className="hidden md:block">
-                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 items-center justify-items-center">
-                    {sellers?.map((seller, index) => (
-                      <div
-                        key={index}
-                        className="group relative"
-                        style={{ animationDelay: `${index * 0.1}s` }}
-                      >
-                        <div className="bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:scale-110 hover:-translate-y-2 border border-gray-100 group-hover:border-green-200">
-                          <div className="relative">
-                            <SellerLogoContainer seller={seller} />
-                            <div className="absolute -inset-4 bg-gradient-to-r from-green-400/20 to-emerald-400/20 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl"></div>
-                          </div>
-                        </div>
+                {/* Desktop Layout - Enhanced Flex Row, Always Centered */}
+                <div className="hidden md:flex justify-center items-center gap-4 flex-wrap">
+                  {sellers?.map((seller, index) => (
+                    <div
+                      key={index}
+                      className="group relative flex items-center justify-center"
+                      style={{ animationDelay: `${index * 0.1}s` }}
+                    >
+                      <div className="bg-white rounded-xl p-3 shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 border border-green-200 flex items-center justify-center min-w-[70px] min-h-[70px] max-w-[90px] max-h-[90px]">
+                        <SellerLogoContainer seller={seller} />
                       </div>
-                    ))}
-                  </div>
+                    </div>
+                  )).slice(0, 8)}
                 </div>
 
                 {/* Call to Action - Responsive */}
@@ -137,9 +133,11 @@ const FeaturedSuppliers: React.FC = () => {
 
           {/* Enhanced Trust Indicators - Fully Responsive */}
           <div className="w-full max-w-5xl mt-8">
-            <div className="flex gap-4 overflow-x-auto scrollbar-hide bg-gradient-to-r from-white via-green-50/30 to-white rounded-2xl p-4 sm:p-6 border border-green-100 shadow-sm">
-              <div className="text-center group min-w-[200px] flex-shrink-0">
-                <div className="relative inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl mb-4 group-hover:scale-110 transition-transform duration-300"></div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 bg-gradient-to-r from-white via-green-50/30 to-white rounded-2xl p-4 sm:p-6 border border-green-100 shadow-sm">
+              <div className="text-center group flex flex-col items-center">
+                <div className="relative inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <BadgeCheck className="w-8 h-8 text-green-600" />
+                </div>
                 <h3 className="font-bold text-gray-900 text-lg mb-2">
                   Verified Quality
                 </h3>
@@ -148,8 +146,10 @@ const FeaturedSuppliers: React.FC = () => {
                   compliance checks
                 </p>
               </div>
-              <div className="text-center group min-w-[200px] flex-shrink-0">
-                <div className="relative inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl mb-4 group-hover:scale-110 transition-transform duration-300"></div>
+              <div className="text-center group flex flex-col items-center">
+                <div className="relative inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <Clock className="w-8 h-8 text-green-600" />
+                </div>
                 <h3 className="font-bold text-gray-900 text-lg mb-2">
                   Fast Delivery
                 </h3>
@@ -158,8 +158,10 @@ const FeaturedSuppliers: React.FC = () => {
                   urgent requirements
                 </p>
               </div>
-              <div className="text-center group min-w-[200px] flex-shrink-0">
-                <div className="relative inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl mb-4 group-hover:scale-110 transition-transform duration-300"></div>
+              <div className="text-center group flex flex-col items-center">
+                <div className="relative inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <Globe className="w-8 h-8 text-green-600" />
+                </div>
                 <h3 className="font-bold text-gray-900 text-lg mb-2">
                   Global Network
                 </h3>
