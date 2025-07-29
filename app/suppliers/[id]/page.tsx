@@ -1,6 +1,6 @@
-"use client";
-import React, { useEffect, useState, useCallback } from "react";
-import { useParams } from "next/navigation";
+'use client';
+import React, { useEffect, useState, useCallback } from 'react';
+import { useParams } from 'next/navigation';
 import {
   Globe,
   MapPin,
@@ -11,15 +11,15 @@ import {
   Award,
   Truck,
   Shield,
-} from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import ProductCard from "@/components/product/ProductCard";
-import { getSellerDetail } from "@/apiServices/shared";
-import { useUserInfo } from "@/lib/useUserInfo";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Supplier } from "@/types/seller";
-import Image from "next/image";
+} from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import ProductCard from '@/components/product/ProductCard';
+import { getSellerDetail } from '@/apiServices/shared';
+import { useUserInfo } from '@/lib/useUserInfo';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Supplier } from '@/types/seller';
+import Image from 'next/image';
 
 const SupplierDetail = () => {
   const params = useParams();
@@ -32,7 +32,7 @@ const SupplierDetail = () => {
       const response = await getSellerDetail(params.id as string);
       setSupplier(response.data);
     } catch (error) {
-      console.error("Error fetching supplier details:", error);
+      console.error('Error fetching supplier details:', error);
     } finally {
       setLoading(false);
     }
@@ -71,19 +71,15 @@ const SupplierDetail = () => {
     return (
       <section className="container mt-10 mx-auto px-4">
         <div className="text-center py-12">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">
-            Supplier Not Found
-          </h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Supplier Not Found</h1>
           <p className="text-gray-600">
-            {
-              "The supplier you're looking for doesn't exist or has been removed."
-            }
+            {"The supplier you're looking for doesn't exist or has been removed."}
           </p>
         </div>
       </section>
     );
   }
-  console.log("supplier", supplier);
+  console.log('supplier', supplier);
   return (
     <section className="container mt-10 mx-auto px-4 pb-12">
       {/* Hero Section */}
@@ -100,9 +96,7 @@ const SupplierDetail = () => {
             />
           </div>
           <div className="flex-1">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              {supplier.company}
-            </h1>
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">{supplier.company}</h1>
             <div className="flex flex-wrap gap-4 mb-6 text-gray-600">
               <div className="flex items-center gap-2">
                 <MapPin className="w-5 h-5 text-green-600" />
@@ -123,18 +117,12 @@ const SupplierDetail = () => {
               )}
             </div>
             <div className="flex flex-wrap gap-2 mb-6">
-              <Badge
-                variant="secondary"
-                className="bg-green-100 text-green-800"
-              >
+              <Badge variant="secondary" className="bg-green-100 text-green-800">
                 <Building2 className="w-4 h-4 mr-1" />
                 Verified Supplier
               </Badge>
               {supplier.yearsInBusiness && (
-                <Badge
-                  variant="secondary"
-                  className="bg-green-100 text-green-800"
-                >
+                <Badge variant="secondary" className="bg-green-100 text-green-800">
                   <Calendar className="w-4 h-4 mr-1" />
                   {supplier.yearsInBusiness}+ Years
                 </Badge>
@@ -143,9 +131,7 @@ const SupplierDetail = () => {
             <div className="flex flex-wrap gap-3">
               <Button
                 className="bg-gradient-to-r from-green-600 to-green-800 hover:from-green-700 hover:to-green-700"
-                onClick={() =>
-                  window.open(`mailto:${supplier.email}`, "_blank")
-                }
+                onClick={() => window.open(`mailto:${supplier.email}`, '_blank')}
               >
                 <Mail className="w-4 h-4 mr-2" />
                 Contact Supplier
@@ -154,7 +140,7 @@ const SupplierDetail = () => {
                 <Button
                   variant="outline"
                   className="border-green-600 text-green-600 hover:bg-green-50"
-                  onClick={() => window.open(supplier.website, "_blank")}
+                  onClick={() => window.open(supplier.website, '_blank')}
                 >
                   <Globe className="w-4 h-4 mr-2" />
                   Visit Website
@@ -170,30 +156,39 @@ const SupplierDetail = () => {
         {/* About Section */}
         <div className="lg:col-span-2">
           <div className="bg-white rounded-xl shadow-sm border p-6 mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              About {supplier.company}
-            </h2>
-            <p className="text-gray-600 leading-relaxed mb-4">
-              {supplier.description ||
-                `${supplier.company} is a trusted supplier in the polymer and chemical industry, committed to providing high-quality products and exceptional service to customers worldwide. With years of experience in the market, we specialize in delivering innovative solutions that meet the evolving needs of our clients.`}
-            </p>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">About {supplier.company}</h2>
+            <div
+              className="text-gray-600 leading-relaxed mb-4"
+              dangerouslySetInnerHTML={{
+                __html: `
+                  <style>
+                    .supplier-about strong { color: #166534; font-weight: bold; }
+                    .supplier-about em { color: #047857; font-style: italic; }
+                    .supplier-about ul { margin: 1em 0 1em 1.5em; list-style: disc; color: #166534; }
+                    .supplier-about li { margin-bottom: 0.5em; }
+                    .supplier-about h3, .supplier-about h2 { color: #166534; font-size: 1.25em; font-weight: bold; margin-top: 1em; margin-bottom: 0.5em; }
+                    .supplier-about a { color: #047857; text-decoration: underline; }
+                    .supplier-about blockquote { border-left: 4px solid #047857; padding-left: 1em; color: #166534; background: #f0fdf4; margin: 1em 0; }
+                  </style>
+                  <div class="supplier-about">
+                    ${supplier.about_us || `${supplier.company} is a <strong>trusted supplier</strong> in the polymer and chemical industry, committed to providing <em>high-quality products</em> and exceptional service to customers worldwide. With years of experience in the market, we specialize in delivering <strong>innovative solutions</strong> that meet the evolving needs of our clients.`}
+                  </div>
+                `,
+              }}
+            />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex items-center gap-3 p-3 bg-green-50 rounded-lg">
                 <Shield className="w-6 h-6 text-green-600" />
                 <div>
                   <p className="font-semibold text-gray-900">Quality Assured</p>
-                  <p className="text-sm text-gray-600">
-                    Certified products & processes
-                  </p>
+                  <p className="text-sm text-gray-600">Certified products & processes</p>
                 </div>
               </div>
               <div className="flex items-center gap-3 p-3 bg-green-50 rounded-lg">
                 <Truck className="w-6 h-6 text-green-600" />
                 <div>
                   <p className="font-semibold text-gray-900">Fast Delivery</p>
-                  <p className="text-sm text-gray-600">
-                    Reliable logistics network
-                  </p>
+                  <p className="text-sm text-gray-600">Reliable logistics network</p>
                 </div>
               </div>
             </div>
@@ -254,9 +249,7 @@ const SupplierDetail = () => {
       {/* Products Section */}
       <div className="bg-white rounded-xl shadow-sm border p-6">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-gray-900">
-            Products & Services
-          </h2>
+          <h2 className="text-2xl font-bold text-gray-900">Products & Services</h2>
           <Badge variant="outline" className="text-sm">
             {supplier?.products.length} Products
           </Badge>
@@ -275,11 +268,7 @@ const SupplierDetail = () => {
         ) : supplier?.products.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {supplier?.products.map((product) => (
-              <ProductCard
-                key={product._id}
-                product={product}
-                userType={user?.user_type}
-              />
+              <ProductCard key={product._id} product={product} userType={user?.user_type} />
             ))}
           </div>
         ) : (
@@ -287,12 +276,8 @@ const SupplierDetail = () => {
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <Building2 className="w-8 h-8 text-gray-400" />
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              No Products Available
-            </h3>
-            <p className="text-gray-600">
-              {"This supplier hasn't added any products yet."}
-            </p>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No Products Available</h3>
+            <p className="text-gray-600">{"This supplier hasn't added any products yet."}</p>
           </div>
         )}
       </div>
@@ -308,7 +293,7 @@ const SupplierDetail = () => {
           <Button
             size="lg"
             className="bg-white text-green-600 hover:bg-gray-100 cursor-pointer"
-            onClick={() => window.open(`mailto:${supplier.email}`, "_blank")}
+            onClick={() => window.open(`mailto:${supplier.email}`, '_blank')}
           >
             <Mail className="w-5 h-5 mr-2" />
             Send Message
@@ -318,7 +303,7 @@ const SupplierDetail = () => {
               size="lg"
               variant="outline"
               className="bg-white text-green-600 hover:bg-gray-100 cursor-pointer"
-              onClick={() => window.open(supplier.website, "_blank")}
+              onClick={() => window.open(supplier.website, '_blank')}
             >
               <Globe className="w-5 h-5 mr-2" />
               Visit Website
