@@ -1,8 +1,11 @@
 import { ProductCardTypes } from "./product";
 
-export interface sellerLogoContainerType {
+export type sellerLogoContainerType = {
   _id: string;
   company_logo: string;
+}
+export type SellerLogoContainerProps  = {  
+  seller: sellerLogoContainerType;
 }
 
 export interface Supplier {

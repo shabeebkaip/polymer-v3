@@ -2,11 +2,9 @@
 import Image from "next/image";
 import React from "react";
 import { useRouter } from "next/navigation";
-import { sellerLogoContainerType } from "@/types/seller";
+import { SellerLogoContainerProps } from "@/types/seller";
 
-interface SellerLogoContainerProps {
-  seller: sellerLogoContainerType;
-}
+
 
 const SellerLogoContainer: React.FC<SellerLogoContainerProps> = ({
   seller,

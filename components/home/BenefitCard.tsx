@@ -1,11 +1,5 @@
+import { BenefitCardProps } from "@/types/home";
 import { Check } from "lucide-react";
-
-interface BenefitCardProps {
-  benefits: string[];
-  subtitle: string;
-  title: string;
-  registerLink: string;
-}
 
 const BenefitCard: React.FC<BenefitCardProps> = ({
   benefits,

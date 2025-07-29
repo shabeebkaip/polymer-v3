@@ -1,22 +1,11 @@
 import React from "react";
 import Image from "next/image";
 import { FALLBACK_PRODUCT_IMAGE } from "@/lib/fallbackImages";
+import { ProductHome } from "@/types/home";
 
-interface ProductImage {
-  fileUrl: string;
-}
 
-interface Product {
-  _id: string;
-  productName: string;
-  tradeName: string;
-  description: string;
-  productImages: ProductImage[];
-  price: number;
-  uom: string;
-}
 
-const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
+const ProductCard: React.FC<{ product: ProductHome }> = ({ product }) => {
   return (
     <div className="bg-white rounded-xl shadow-md p-4 flex flex-col justify-between w-full min-h-[400px] max-w-full">
       <div className="w-full h-[200px] flex justify-center items-center mb-4">

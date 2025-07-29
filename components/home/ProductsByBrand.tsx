@@ -9,15 +9,11 @@ import { Skeleton } from "../ui/skeleton";
 import ProductCardSkeleton from "../shared/ProductCardSkeleton";
 import { ProductCardTypes } from "@/types/product";
 import { FALLBACK_COMPANY_IMAGE } from "@/lib/fallbackImages";
+import { Seller } from "@/types/home";
 
 const ProductCard = dynamic(() => import("@/components/product/ProductCard"));
 
-interface Seller {
-  _id: string;
-  company: string;
-  company_logo: string;
-  products?: ProductCardTypes[];
-}
+
 
 const ProductsByBrand: React.FC = () => {
   const { user } = useUserInfo();

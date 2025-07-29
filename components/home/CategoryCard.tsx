@@ -1,25 +1,14 @@
-import Image from "next/image";
-import React from "react";
-import { useRouter } from "next/navigation";
+import Image from 'next/image';
+import React from 'react';
+import { useRouter } from 'next/navigation';
+import { CategoryCardProps } from '@/types/category';
 
-interface CategoryCardProps {
-  name: string;
-  image: string;
-  selectedCategory?: string;
-  id: string;
-}
-
-const CategoryCard: React.FC<CategoryCardProps> = ({
-  name,
-  image,
-  selectedCategory,
-  id,
-}) => {
+const CategoryCard: React.FC<CategoryCardProps> = ({ name, image, selectedCategory, id }) => {
   const router = useRouter();
   const handleClick = () => {
-    if (selectedCategory === "industries") {
+    if (selectedCategory === 'industries') {
       router.push(`/products?industry=${id}`);
-    } else if (selectedCategory === "families") {
+    } else if (selectedCategory === 'families') {
       router.push(`/products?productFamily=${id}`);
     }
   };
@@ -29,13 +18,13 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
       tabIndex={0}
       onClick={handleClick}
       onKeyPress={(e) => {
-        if (e.key === "Enter") handleClick();
+        if (e.key === 'Enter') handleClick();
       }}
       aria-label={name}
     >
       <Image
         src={image}
-        alt={"category"}
+        alt={'category'}
         fill
         className="object-cover transition-transform duration-300 group-hover:scale-105"
       />
