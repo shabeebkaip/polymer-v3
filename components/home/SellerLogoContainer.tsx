@@ -15,7 +15,7 @@ const SellerLogoContainer: React.FC<SellerLogoContainerProps> = ({
       onClick={() => router.push(`/sellers/${seller._id}`)}
       className="border border-emerald-500 rounded-xl flex items-center justify-center w-[70px] h-[70px] bg-white hover:shadow-lg hover:border-green-600 focus:shadow-lg focus:border-green-600 transition-all duration-200 cursor-pointer group outline-none"
       tabIndex={0}
-      onKeyPress={(e) => {
+      onKeyDown={(e) => {
         if (e.key === "Enter") router.push(`/sellers/${seller._id}`);
       }}
       aria-label={seller.company_logo}

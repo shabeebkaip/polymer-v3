@@ -121,3 +121,12 @@ export type ApiDeal = {
   minimumQuantity?: string;
   [key: string]: unknown;
 };
+
+export type TabProps = {
+  name: string;
+  isSelected: boolean;
+  onClick: () => void;
+  icon: string;
+  iconWidth?: string;
+  fontSize?: string;  
+};

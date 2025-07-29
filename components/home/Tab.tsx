@@ -1,14 +1,8 @@
+import { TabProps } from "@/types/home";
 import Image from "next/image";
 import React from "react";
 
-interface TabProps {
-  name: string;
-  isSelected: boolean;
-  onClick: () => void;
-  icon: string;
-  iconWidth?: string;
-  fontSize?: string;
-}
+
 
 const Tab: React.FC<TabProps> = ({
   name,
