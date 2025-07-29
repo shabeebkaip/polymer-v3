@@ -89,7 +89,10 @@ const CreateFinanceRequest = () => {
       }
     };
 
-    fetchProducts();
+    // Await the promise to avoid ignoring it
+    (async () => {
+      await fetchProducts();
+    })();
   }, []);
 
   // Update estimated price when product, quantity, or EMI months change
@@ -187,18 +190,15 @@ const CreateFinanceRequest = () => {
       toast.success('Finance request submitted successfully!');
       router.push('/user/finance-requests');
     } catch (error) {
-      // Type guard for error object
       const errMsg =
         typeof error === 'object' &&
         error !== null &&
         'response' in error &&
         error.response &&
         typeof error.response === 'object' &&
-        error.response !== null &&
         'data' in error.response &&
         error.response.data &&
         typeof error.response.data === 'object' &&
-        error.response.data !== null &&
         'message' in error.response.data
           ? (error.response.data.message as string)
           : undefined;
