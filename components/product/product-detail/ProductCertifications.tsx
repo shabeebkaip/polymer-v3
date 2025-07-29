@@ -1,5 +1,6 @@
-import { Product } from "@/types/product";
-import ProductValueCard from "@/components/product/product-detail/ProductValueCard";
+import { Product } from '@/types/product';
+import React from 'react';
+import ProductValueCard from '@/components/product/product-detail/ProductValueCard';
 
 interface ProductCertificationsProps {
   product: Product;
@@ -23,7 +24,7 @@ const ProductCertifications: React.FC<ProductCertificationsProps> = ({ product }
           <ProductValueCard label="Medical Grade" value="Healthcare approved" />
         ) : null}
         {product.shelfLife ? (
-          <ProductValueCard label="Shelf Life" value={product.shelfLife || ""} />
+          <ProductValueCard label="Shelf Life" value={product.shelfLife || ''} />
         ) : null}
       </div>
     </div>

@@ -1,11 +1,13 @@
-import React from "react";
-import Image from "next/image";
-import { Globe, MapPin, Shield, Award, Users, ExternalLink } from "lucide-react";
-import VisitShopButton from "@/components/suppliers/VisitShopButton";
-import QuoteRequestModal from "../shared/QuoteRequestModal";
-import SampleRequestModal from "../shared/SampleRequestModal";
-import { Badge } from "@/components/ui/badge";
-import { FALLBACK_COMPANY_IMAGE } from "@/lib/fallbackImages";
+import React from 'react';
+import Image from 'next/image';
+import { Globe, MapPin, Shield, Award, Users, ExternalLink, MessageCircle } from 'lucide-react';
+import VisitShopButton from '@/components/suppliers/VisitShopButton';
+import { Badge } from '@/components/ui/badge';
+import { FALLBACK_COMPANY_IMAGE } from '@/lib/fallbackImages';
+import { useChatUserStore } from '@/stores/chatUser';
+import { Product } from '@/types/product';
+import { useRouter } from 'next/navigation';
+import { useUserInfo } from '@/lib/useUserInfo';
 
 interface CompanyDetailsProps {
   companyDetails: {
@@ -23,21 +25,28 @@ interface CompanyDetailsProps {
   productId: string;
   uom: string;
   userType?: string;
+  product: Product;
 }
 
-const CompanyDetails: React.FC<CompanyDetailsProps> = ({
-  companyDetails,
-  productId,
-  uom,
-  userType,
-}) => {
+const CompanyDetails: React.FC<CompanyDetailsProps> = ({ companyDetails, product, userType }) => {
+  const setChatUser = useChatUserStore((s) => s.setChatUser);
+  const { user } = useUserInfo();
+  const router = useRouter();
+  console.log('user', user);
+  const handleChatClick = () => {
+    if (!user || !user._id || !product.createdBy?._id) return;
+    setChatUser({
+      userId: user._id as string,
+      receiverId: product.createdBy._id,
+      receiverName: product.createdBy.name,
+    });
+    router.push(`/chat/${product._id}`);
+  };
   return (
     <div className="space-y-6">
       {/* Company Header */}
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">
-          Supplier Information
-        </h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">Supplier Information</h2>
       </div>
 
       {/* Company Card */}
@@ -80,9 +89,7 @@ const CompanyDetails: React.FC<CompanyDetailsProps> = ({
               </Badge>
             </div>
 
-            <h3 className="text-2xl font-bold text-gray-900 mb-2">
-              {companyDetails?.company}
-            </h3>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">{companyDetails?.company}</h3>
 
             <div className="flex flex-wrap justify-center md:justify-start gap-4 text-gray-600 mb-4">
               {companyDetails?.location && (
@@ -119,29 +126,21 @@ const CompanyDetails: React.FC<CompanyDetailsProps> = ({
           </div>
         </div>
 
-        {/* Visit Shop Button */}
-        <div className="mt-6 text-center">
+        {/* Visit Shop Button and Chat Button */}
+        <div className="mt-6 flex flex-col sm:flex-row items-center justify-start gap-3">
           <VisitShopButton supplierId={companyDetails?._id} />
+          {userType === 'buyer' && (
+            <button
+              className="px-5 py-2 border-2 border-emerald-600 text-emerald-700 bg-white rounded-lg font-semibold flex items-center gap-2 shadow-sm transition-all duration-150 cursor-pointer hover:bg-emerald-50 focus:outline-none focus:ring-2 focus:ring-emerald-200"
+              onClick={handleChatClick}
+              type="button"
+            >
+              <MessageCircle className="w-5 h-5" />
+              <span>Chat with Supplier</span>
+            </button>
+          )}
         </div>
       </div>
-
-      {/* Action Buttons */}
-      {userType === "buyer" && (
-        <div className="space-y-3">
-          <div className="grid grid-cols-1 gap-3">
-            <QuoteRequestModal
-              productId={productId}
-              uom={uom}
-              className="w-full px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-xl hover:from-green-700 hover:to-green-800 transition-all font-medium shadow-lg hover:shadow-xl"
-            />
-            <SampleRequestModal
-              productId={productId}
-              uom={uom}
-              className="w-full px-6 py-3 border-2 border-green-600 text-green-600 rounded-xl hover:bg-green-50 transition-all font-medium"
-            />
-          </div>
-        </div>
-      )}
     </div>
   );
 };

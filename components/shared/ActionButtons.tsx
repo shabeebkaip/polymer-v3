@@ -69,14 +69,7 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
         <FileText className="w-5 h-5" />
         Request Sample
       </SampleRequestModal>
-      <button
-        className={getButtonStyles('chat')}
-        onClick={onChatClick ? onChatClick : () => router.push(`/chat/${productId}`)}
-        type="button"
-      >
-        <MessageCircle className="w-5 h-5" />
-        Chat with Supplier
-      </button>
+
       {user?.user_type === 'buyer' && (
         <button
           className={getButtonStyles('sample')}

@@ -1,37 +1,26 @@
-import ImageContainers from "@/components/product/ImageContainers";
-import { Award, Package, Share2 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import ActionButtons from "@/components/shared/ActionButtons";
-import { Button } from "@/components/ui/button";
-import React from "react";
+import ImageContainers from '@/components/product/ImageContainers';
+import { Award, Package, Share2 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import ActionButtons from '@/components/shared/ActionButtons';
+import { Button } from '@/components/ui/button';
+import React from 'react';
 import { Product } from '@/types/product';
 import { UserType } from '@/types/user';
-import { useChatUserStore } from "@/stores/chatUser";
-import { useRouter } from 'next/navigation';
 
 const ProductHeroSection = ({ product, user }: { product: Product; user: UserType }) => {
-  const router = useRouter();
-  const setChatUser = useChatUserStore((s) => s.setChatUser);
-
-  const handleShare = () => {
-    if (navigator.share) {
-      navigator.share({
-        title: product.productName,
-        url: window.location.href,
-      });
-    } else {
-      navigator.clipboard.writeText(window.location.href);
+  const handleShare = async () => {
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: product.productName,
+          url: window.location.href,
+        });
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+      }
+    } catch (error) {
+      console.error('Share failed:', error);
     }
-  };
-
-  const handleChatClick = () => {
-    if (!user || !user._id || !product.createdBy?._id) return;
-    setChatUser({
-      userId: user._id as string,
-      receiverId: product.createdBy._id,
-      receiverName: product.createdBy.name,
-    });
-    router.push(`/chat/${product._id}`);
   };
 
   return (
@@ -41,10 +30,7 @@ const ProductHeroSection = ({ product, user }: { product: Product; user: UserTyp
           {/* Product Image */}
           <div className="flex-shrink-0">
             {product?.productImages && product?.productImages?.length ? (
-              <ImageContainers
-                productImages={product.productImages}
-                isCompact={true}
-              />
+              <ImageContainers productImages={product.productImages} isCompact={true} />
             ) : (
               <div className="w-32 h-32 bg-gray-100 rounded-xl flex items-center justify-center">
                 <Package className="w-8 h-8 text-gray-400" />
@@ -56,28 +42,19 @@ const ProductHeroSection = ({ product, user }: { product: Product; user: UserTyp
           <div className="flex-1">
             {/* Badge */}
             {product.fdaApproved ? (
-              <Badge
-                variant="secondary"
-                className="bg-blue-100 text-blue-800 mb-3"
-              >
+              <Badge variant="secondary" className="bg-blue-100 text-blue-800 mb-3">
                 <Award className="w-4 h-4 mr-1" />
                 FDA Approved
               </Badge>
             ) : null}
             {product.medicalGrade && !product.fdaApproved ? (
-              <Badge
-                variant="secondary"
-                className="bg-purple-100 text-purple-800 mb-3"
-              >
+              <Badge variant="secondary" className="bg-purple-100 text-purple-800 mb-3">
                 <Award className="w-4 h-4 mr-1" />
                 Medical Grade
               </Badge>
             ) : null}
             {!product.fdaApproved && !product.medicalGrade ? (
-              <Badge
-                variant="secondary"
-                className="bg-gray-100 text-gray-800 mb-3"
-              >
+              <Badge variant="secondary" className="bg-gray-100 text-gray-800 mb-3">
                 <Award className="w-4 h-4 mr-1" />
                 Industrial Grade
               </Badge>
@@ -94,23 +71,20 @@ const ProductHeroSection = ({ product, user }: { product: Product; user: UserTyp
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-gray-600">Price:</span>
                   <span className="font-semibold text-lg text-gray-900">
-                    {product.price}  USD/{product.uom}
+                    {product.price} USD/{product.uom}
                   </span>
                 </div>
               ) : null}
-              {(product.minimum_order_quantity &&
-                product.minimum_order_quantity > 0) ||
+              {(product.minimum_order_quantity && product.minimum_order_quantity > 0) ||
               (product.minOrderQuantity && product.minOrderQuantity > 0) ? (
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-gray-600">Min Order:</span>
                   <span className="font-medium text-gray-900">
-                    {product.minimum_order_quantity ||
-                      product.minOrderQuantity}{" "}
-                    {product.uom}
+                    {product.minimum_order_quantity || product.minOrderQuantity} {product.uom}
                   </span>
                 </div>
               ) : null}
-              {typeof product.stock === "number" ? (
+              {typeof product.stock === 'number' ? (
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-gray-600">Stock:</span>
 
@@ -120,11 +94,11 @@ const ProductHeroSection = ({ product, user }: { product: Product; user: UserTyp
                     </span>
                   )}
                   {product.stock > 0 ? (
-                      <span className="font-medium text-green-700 bg-green-100 px-2 py-1 rounded">
+                    <span className="font-medium text-green-700 bg-green-100 px-2 py-1 rounded">
                       In Stock
                     </span>
                   ) : (
-                      <span className="font-medium text-red-700 bg-red-100 px-2 py-1 rounded">
+                    <span className="font-medium text-red-700 bg-red-100 px-2 py-1 rounded">
                       Out of Stock
                     </span>
                   )}
@@ -133,9 +107,7 @@ const ProductHeroSection = ({ product, user }: { product: Product; user: UserTyp
               {product.leadTime ? (
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-gray-600">Lead Time:</span>
-                  <span className="font-medium text-gray-900">
-                    {product.leadTime} Days
-                  </span>
+                  <span className="font-medium text-gray-900">{product.leadTime} Days</span>
                 </div>
               ) : null}
             </div>
@@ -144,9 +116,8 @@ const ProductHeroSection = ({ product, user }: { product: Product; user: UserTyp
             <div className="flex flex-wrap gap-3">
               <ActionButtons
                 productId={product._id}
-                uom={product.uom || "Metric Ton"}
+                uom={product.uom || 'Metric Ton'}
                 variant="compact"
-                onChatClick={handleChatClick}
                 user={user}
               />
 
@@ -163,7 +134,7 @@ const ProductHeroSection = ({ product, user }: { product: Product; user: UserTyp
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default ProductHeroSection;
