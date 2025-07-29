@@ -150,7 +150,12 @@ const FileUpload: React.FC<FileUploadProps> = ({
           <DialogContent className="w-full max-w-4xl h-[80vh] flex flex-col items-center justify-center">
             <DialogTitle className="sr-only">File Preview</DialogTitle>
 
-            {previewFile.fileUrl?.endsWith(".pdf") ? (
+            {/* Enhanced PDF detection for Cloudinary/raw URLs */}
+            {(
+              (previewFile.type && previewFile.type.includes("pdf")) ||
+              (previewFile.fileUrl && previewFile.fileUrl.includes("/raw/")) ||
+              (previewFile.name && previewFile.name.endsWith(".pdf"))
+            ) ? (
               <iframe
                 src={previewFile.fileUrl}
                 title="PDF Preview"
