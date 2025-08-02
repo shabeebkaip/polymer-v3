@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
   ArrowLeft,
@@ -644,4 +644,16 @@ const CreateFinanceRequest = () => {
   );
 };
 
-export default CreateFinanceRequest;
+export default function FinanceRequestPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center text-gray-600">
+          Loading...
+        </div>
+      }
+    >
+      <CreateFinanceRequest />
+    </Suspense>
+  );
+}
