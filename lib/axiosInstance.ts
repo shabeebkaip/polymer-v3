@@ -1,7 +1,8 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL; // 🛠️ Update with your backend URL/ 🛠️ Update with your backend URL
+// Fallback to localhost if env not set to ensure dev OTP flow works locally
+const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL
 
 const axiosInstance = axios.create({
   baseURL: BASE_URL,

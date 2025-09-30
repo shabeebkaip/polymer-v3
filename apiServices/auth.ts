@@ -40,3 +40,68 @@ export const register = async (data: any) => {
     };
   }
 };
+
+// Verify registration OTP
+export const verifyRegistrationOtp = async (email: string, otp: string) => {
+  try {
+    const response = await axiosInstance.post("/auth/user/verify-registration-otp", { email, otp });
+    return response.data;
+  } catch (error: any) {
+    return {
+      status: false,
+      message: error.response?.data?.message || "Invalid or expired OTP.",
+    };
+  }
+};
+
+// Resend registration OTP
+export const resendRegistrationOtp = async (email: string) => {
+  try {
+    const response = await axiosInstance.post("/auth/user/resend-otp", { email });
+    return response.data;
+  } catch (error: any) {
+    return {
+      status: false,
+      message: error.response?.data?.message || "Unable to resend OTP.",
+    };
+  }
+};
+
+// Forgot password (request OTP)
+export const requestPasswordReset = async (email: string) => {
+  try {
+    const response = await axiosInstance.post("/auth/user/forgot-password", { email });
+    return response.data;
+  } catch (error: any) {
+    return {
+      status: false,
+      message: error.response?.data?.message || "Unable to send reset OTP.",
+    };
+  }
+};
+
+// Verify password reset OTP
+export const verifyPasswordResetOtp = async (email: string, otp: string) => {
+  try {
+    const response = await axiosInstance.post("/auth/user/verify-otp", { email, otp });
+    return response.data;
+  } catch (error: any) {
+    return {
+      status: false,
+      message: error.response?.data?.message || "Invalid or expired OTP.",
+    };
+  }
+};
+
+// Reset password after OTP verification
+export const resetPassword = async (email: string, newPassword: string) => {
+  try {
+    const response = await axiosInstance.post("/auth/user/reset-password", { email, newPassword });
+    return response.data;
+  } catch (error: any) {
+    return {
+      status: false,
+      message: error.response?.data?.message || "Unable to reset password.",
+    };
+  }
+};

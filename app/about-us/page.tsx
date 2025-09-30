@@ -1,6 +1,19 @@
 import React from 'react';
 import Image from 'next/image';
-import { Mail, Phone, MapPin, User, Users, ShieldCheck, Globe, Award, Leaf, Sparkles, Star, MessageCircle } from 'lucide-react';
+import {
+  Mail,
+  Phone,
+  MapPin,
+  User,
+  Users,
+  ShieldCheck,
+  Globe,
+  Award,
+  Leaf,
+  Sparkles,
+  Star,
+  MessageCircle,
+} from 'lucide-react';
 
 const AboutUsPage = () => {
   return (
@@ -79,9 +92,9 @@ const AboutUsPage = () => {
           </h2>
           <p className="text-gray-700 text-lg sm:text-xl leading-relaxed">
             To revolutionize the polymer industry by providing a transparent, secure, and efficient
-            platform that connects buyers and suppliers worldwide. Headquartered in Riyadh, Saudi Arabia, we empower our users with
-            technology, expertise, and a global network to accelerate their business and drive
-            industry progress.
+            platform that connects buyers and suppliers worldwide. Headquartered in Riyadh, Saudi
+            Arabia, we empower our users with technology, expertise, and a global network to
+            accelerate their business and drive industry progress.
           </p>
         </div>
         <div className="flex flex-col items-center gap-6 animate-fade-in-up-delayed-2 w-full max-w-4xl">
@@ -203,7 +216,7 @@ const AboutUsPage = () => {
               height={80}
               className="rounded-full border-2 border-green-200 group-hover:scale-105 transition-transform duration-200"
             />
-            <h3 className="text-lg font-semibold text-green-700">Faisal Al Saud</h3>
+            <h3 className="text-lg font-semibold text-green-700">Ahmed Al Johani</h3>
             <span className="text-gray-600 text-sm">Founder & CEO</span>
             <div className="flex gap-2 mt-2">
               <a href="#" className="text-green-600 hover:text-emerald-600">
@@ -222,7 +235,7 @@ const AboutUsPage = () => {
               height={80}
               className="rounded-full border-2 border-green-200 group-hover:scale-105 transition-transform duration-200"
             />
-            <h3 className="text-lg font-semibold text-green-700">Layla Al Rashid</h3>
+            <h3 className="text-lg font-semibold text-green-700">Fasal</h3>
             <span className="text-gray-600 text-sm">Chief Technology Officer</span>
             <div className="flex gap-2 mt-2">
               <a href="#" className="text-green-600 hover:text-emerald-600">
@@ -241,7 +254,7 @@ const AboutUsPage = () => {
               height={80}
               className="rounded-full border-2 border-green-200 group-hover:scale-105 transition-transform duration-200"
             />
-            <h3 className="text-lg font-semibold text-green-700">Omar Al Harbi</h3>
+            <h3 className="text-lg font-semibold text-green-700">Shabeeb</h3>
             <span className="text-gray-600 text-sm">Head of Operations</span>
             <div className="flex gap-2 mt-2">
               <a href="#" className="text-green-600 hover:text-emerald-600">
@@ -262,21 +275,24 @@ const AboutUsPage = () => {
           <div className="bg-white/80 border border-green-100 rounded-2xl p-6 shadow-lg flex flex-col items-center gap-3 backdrop-blur-md">
             <User className="w-8 h-8 text-green-600 mb-1" />
             <p className="text-gray-700 text-base italic">
-              “Polymers Hub made sourcing raw materials so much easier and more reliable. The support team is fantastic!”
+              “Polymers Hub made sourcing raw materials so much easier and more reliable. The
+              support team is fantastic!”
             </p>
             <span className="text-green-700 font-semibold mt-2">- S. Kumar, Buyer</span>
           </div>
           <div className="bg-white/80 border border-green-100 rounded-2xl p-6 shadow-lg flex flex-col items-center gap-3 backdrop-blur-md">
             <User className="w-8 h-8 text-green-600 mb-1" />
             <p className="text-gray-700 text-base italic">
-              “We expanded our business to new countries thanks to the global reach of this platform.”
+              “We expanded our business to new countries thanks to the global reach of this
+              platform.”
             </p>
             <span className="text-green-700 font-semibold mt-2">- L. Chen, Supplier</span>
           </div>
           <div className="bg-white/80 border border-green-100 rounded-2xl p-6 shadow-lg flex flex-col items-center gap-3 backdrop-blur-md">
             <User className="w-8 h-8 text-green-600 mb-1" />
             <p className="text-gray-700 text-base italic">
-              “The transaction process is secure and transparent. Highly recommended for anyone in the polymer industry.”
+              “The transaction process is secure and transparent. Highly recommended for anyone in
+              the polymer industry.”
             </p>
             <span className="text-green-700 font-semibold mt-2">- M. Singh, Distributor</span>
           </div>
@@ -289,7 +305,9 @@ const AboutUsPage = () => {
         <div className="flex flex-col items-center gap-3 bg-white/80 border border-green-100 rounded-2xl p-6 shadow-lg w-full max-w-xl mx-auto">
           <div className="flex items-center gap-2 justify-center mb-2">
             <MapPin className="w-6 h-6 text-green-600" />
-            <span className="text-gray-700 text-base font-medium">Riyadh, Kingdom of Saudi Arabia</span>
+            <span className="text-gray-700 text-base font-medium">
+              Riyadh, Kingdom of Saudi Arabia
+            </span>
           </div>
           <div className="flex items-center gap-2 justify-center mb-2">
             <Mail className="w-6 h-6 text-green-600" />

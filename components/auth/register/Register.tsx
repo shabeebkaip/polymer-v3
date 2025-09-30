@@ -9,7 +9,7 @@ import { Eye, EyeOff } from 'lucide-react';
 
 import Input from '@/components/shared/Input';
 import { getIndustryList, imageUpload } from '@/apiServices/shared';
-import { register } from '@/apiServices/auth';
+import { register, verifyRegistrationOtp, resendRegistrationOtp } from '@/apiServices/auth';
 import { getCountryList } from '@/lib/useCountries';
 import { useUserInfo } from '@/lib/useUserInfo';
 
@@ -55,6 +55,10 @@ const Register: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [otpStep, setOtpStep] = useState(false);
+  const [otp, setOtp] = useState('');
+  const [verifyingOtp, setVerifyingOtp] = useState(false);
+  const [resendTimer, setResendTimer] = useState(0);
   const [data, setData] = useState<RegisterData>({
     firstName: '',
     lastName: '',
@@ -143,6 +147,45 @@ const Register: React.FC = () => {
     return null;
   };
 
+  // Start countdown for resend button
+  useEffect(() => {
+    if (!otpStep) return;
+    if (resendTimer <= 0) return;
+    const interval = setInterval(() => setResendTimer((t) => t - 1), 1000);
+    return () => clearInterval(interval);
+  }, [resendTimer, otpStep]);
+
+  const handleResend = async () => {
+    if (!data.email) return;
+    const resp = await resendRegistrationOtp(data.email);
+    if (resp?.status) {
+      toast.success('Verification code resent');
+      setResendTimer(60); // 60 second cooldown
+    } else {
+      toast.error(resp?.message || 'Unable to resend code');
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    if (!otp || otp.length !== 6) {
+      toast.error('Enter 6-digit code');
+      return;
+    }
+    setVerifyingOtp(true);
+    const resp = await verifyRegistrationOtp(data.email, otp);
+    setVerifyingOtp(false);
+    if (resp?.status) {
+      toast.success('Email verified successfully');
+      // Save token & user
+      Cookies.set('token', resp.token);
+      Cookies.set('userInfo', JSON.stringify(resp.userInfo));
+      setUser(resp.userInfo);
+      router.push('/');
+    } else {
+      toast.error(resp?.message || 'Invalid code');
+    }
+  };
+
   const handleSubmit = async () => {
     const validationError = validateForm();
     if (validationError) {
@@ -159,11 +202,10 @@ const Register: React.FC = () => {
       toast.dismiss(toastId);
 
       if (response?.status) {
-        toast.success('Registration successful');
-        Cookies.set('token', response.token);
-        Cookies.set('userInfo', JSON.stringify(response.userInfo));
-        setUser(response.userInfo);
-        router.push('/');
+        // API doc indicates requiresVerification true and no token until OTP verify
+        toast.success('Registration successful. Check your email for the code.');
+        setOtpStep(true);
+        setResendTimer(60); // start countdown
       } else {
         toast.error(response?.message || 'Registration failed.');
         setIsLoading(false);
@@ -217,10 +259,20 @@ const Register: React.FC = () => {
             onClick={() => router.push('/')}
           />
         </div>
-        <div className="text-center space-y-1 max-w-xl  mx-auto">
-          <h1 className="text-2xl font-bold text-gray-900">Create your account</h1>
-          <p className="text-gray-500 text-sm">Join the Polymer Marketplace</p>
-        </div>
+        {!otpStep && (
+          <div className="text-center space-y-1 max-w-xl  mx-auto">
+            <h1 className="text-2xl font-bold text-gray-900">Create your account</h1>
+            <p className="text-gray-500 text-sm">Join the Polymer Marketplace</p>
+          </div>
+        )}
+        {otpStep && (
+          <div className="text-center space-y-2 max-w-xl mx-auto">
+            <h1 className="text-2xl font-bold text-gray-900">Verify your email</h1>
+            <p className="text-gray-500 text-sm">We've sent a 6-digit code to {data.email}</p>
+            <p className="text-xs text-gray-400">Enter the code below to activate your account.</p>
+          </div>
+        )}
+        {!otpStep && (
         <div className="flex flex-col items-center gap-2 mb-2">
           <p className="text-xs font-medium text-gray-700 mb-1">
             Company Logo{' '}
@@ -289,8 +341,10 @@ const Register: React.FC = () => {
             </button>
           )}
         </div>
+        )}
 
-        {/* Form Fields */}
+        {/* Registration Form Fields */}
+        {!otpStep && (
         <div className="flex flex-col gap-4">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
@@ -476,33 +530,93 @@ const Register: React.FC = () => {
             </div>
           </div>
         </div>
+        )}
 
-        {/* Register Button */}
-        <div className="pt-2">
-          <button
-            onClick={handleSubmit}
-            disabled={!isFormValid()}
-            className="w-full px-4 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold rounded-lg text-base
-                       hover:from-green-700 hover:to-emerald-700 focus:outline-none focus:ring-4 focus:ring-green-300
-                       disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02]
-                       transition-all duration-200 shadow-lg hover:shadow-xl cursor-pointer"
-          >
-            {isLoading ? 'Creating Account...' : 'Create Account'}
-          </button>
-        </div>
-
-        {/* Sign In Link */}
-        <div className="text-center pt-1">
-          <p className="text-gray-500 text-xs">
-            Already have an account?{' '}
+        {/* OTP STEP UI */}
+        {otpStep && (
+          <div className="flex flex-col gap-6">
+            <div className="flex justify-center gap-2">
+              {[0,1,2,3,4,5].map((i) => (
+                <input
+                  key={i}
+                  inputMode="numeric"
+                  maxLength={1}
+                  value={otp[i] || ''}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/[^0-9]/g,'');
+                    if (!val) {
+                      const newOtp = otp.split('');
+                      newOtp[i] = '';
+                      setOtp(newOtp.join(''));
+                      return;
+                    }
+                    const newOtp = otp.padEnd(6,' ').split('');
+                    newOtp[i] = val;
+                    const joined = newOtp.join('').replace(/\s/g,'');
+                    setOtp(joined);
+                    // focus next
+                    const next = document.getElementById(`otp-${i+1}`) as HTMLInputElement | null;
+                    if (next) next.focus();
+                  }}
+                  id={`otp-${i}`}
+                  className="w-12 h-14 text-center text-xl font-semibold border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 tracking-widest"
+                />
+              ))}
+            </div>
+            <div className="text-center text-sm text-gray-500 flex flex-col gap-2">
+              <p>Didn't receive the code?</p>
+              <button
+                disabled={resendTimer>0}
+                onClick={handleResend}
+                className="text-green-600 disabled:text-gray-400 font-medium hover:underline"
+              >
+                {resendTimer>0 ? `Resend in ${resendTimer}s` : 'Resend Code'}
+              </button>
+            </div>
             <button
-              onClick={() => router.push('/auth/login')}
-              className="font-medium text-green-600 hover:text-green-700 transition-colors hover:underline"
+              onClick={handleVerifyOtp}
+              disabled={otp.length !== 6 || verifyingOtp}
+              className="w-full px-4 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold rounded-lg text-base disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Sign in here
+              {verifyingOtp ? 'Verifying...' : 'Verify & Continue'}
             </button>
-          </p>
-        </div>
+            <button
+              onClick={() => { setOtpStep(false); setIsLoading(false); }}
+              className="text-xs text-gray-400 hover:text-gray-500 underline"
+            >
+              Edit registration details
+            </button>
+          </div>
+        )}
+
+        {/* Primary Action Buttons */}
+        {!otpStep && (
+          <>
+            <div className="pt-2">
+              <button
+                onClick={handleSubmit}
+                disabled={!isFormValid()}
+                className="w-full px-4 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold rounded-lg text-base
+                          hover:from-green-700 hover:to-emerald-700 focus:outline-none focus:ring-4 focus:ring-green-300
+                          disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02]
+                          transition-all duration-200 shadow-lg hover:shadow-xl cursor-pointer"
+              >
+                {isLoading ? 'Creating Account...' : 'Create Account'}
+              </button>
+            </div>
+            <div className="text-center pt-1">
+              <p className="text-gray-500 text-xs">
+                Already have an account?{' '}
+                <button
+                  onClick={() => router.push('/auth/login')}
+                  className="font-medium text-green-600 hover:text-green-700 transition-colors hover:underline"
+                >
+                  Sign in here
+                </button>
+              </p>
+            </div>
+          </>
+        )}
       </div>
     </>
   );
