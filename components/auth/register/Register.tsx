@@ -268,294 +268,296 @@ const Register: React.FC = () => {
         {otpStep && (
           <div className="text-center space-y-2 max-w-xl mx-auto">
             <h1 className="text-2xl font-bold text-gray-900">Verify your email</h1>
-            <p className="text-gray-500 text-sm">We've sent a 6-digit code to {data.email}</p>
+            <p className="text-gray-500 text-sm">{`We've sent a 6-digit code to ${data.email}`}</p>
             <p className="text-xs text-gray-400">Enter the code below to activate your account.</p>
           </div>
         )}
         {!otpStep && (
-        <div className="flex flex-col items-center gap-2 mb-2">
-          <p className="text-xs font-medium text-gray-700 mb-1">
-            Company Logo{' '}
-            {data.user_type === 'seller' ? (
-              <span className="text-red-500">*</span>
-            ) : (
-              <span className="text-gray-400">(optional)</span>
-            )}
-          </p>
-          {data?.company_logo ? (
-            <div className="flex flex-col items-center gap-1">
-              <div
-                className="w-20 h-20 border-2 border-green-200 shadow cursor-pointer hover:scale-105 transition-transform rounded-full bg-gradient-to-br from-green-100 to-emerald-100 flex items-center justify-center overflow-hidden"
-                onClick={handleAvatarClick}
-              >
-                <Image
-                  src={data.company_logo}
-                  alt="Company Logo"
-                  width={64}
-                  height={64}
-                  className="w-full h-full object-cover rounded-full"
+          <div className="flex flex-col items-center gap-2 mb-2">
+            <p className="text-xs font-medium text-gray-700 mb-1">
+              Company Logo{' '}
+              {data.user_type === 'seller' ? (
+                <span className="text-red-500">*</span>
+              ) : (
+                <span className="text-gray-400">(optional)</span>
+              )}
+            </p>
+            {data?.company_logo ? (
+              <div className="flex flex-col items-center gap-1">
+                <div
+                  className="w-20 h-20 border-2 border-green-200 shadow cursor-pointer hover:scale-105 transition-transform rounded-full bg-gradient-to-br from-green-100 to-emerald-100 flex items-center justify-center overflow-hidden"
+                  onClick={handleAvatarClick}
+                >
+                  <Image
+                    src={data.company_logo}
+                    alt="Company Logo"
+                    width={64}
+                    height={64}
+                    className="w-full h-full object-cover rounded-full"
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={handleAvatarClick}
+                  className="text-xs text-green-600 hover:text-green-700 font-medium"
+                >
+                  Change Logo
+                </button>
+                <input
+                  type="file"
+                  accept="image/*"
+                  ref={fileInputRef}
+                  onChange={onFileChange}
+                  className="hidden"
                 />
               </div>
+            ) : (
               <button
                 type="button"
-                onClick={handleAvatarClick}
-                className="text-xs text-green-600 hover:text-green-700 font-medium"
+                className="flex flex-col items-center justify-center w-20 h-20 border-2 border-dashed border-green-300 rounded-full bg-green-50 hover:border-green-400 hover:bg-green-100 transition-colors focus:outline-none"
+                onClick={() => fileInputRef.current?.click()}
               >
-                Change Logo
-              </button>
-              <input
-                type="file"
-                accept="image/*"
-                ref={fileInputRef}
-                onChange={onFileChange}
-                className="hidden"
-              />
-            </div>
-          ) : (
-            <button
-              type="button"
-              className="flex flex-col items-center justify-center w-20 h-20 border-2 border-dashed border-green-300 rounded-full bg-green-50 hover:border-green-400 hover:bg-green-100 transition-colors focus:outline-none"
-              onClick={() => fileInputRef.current?.click()}
-            >
-              <svg
-                className="w-6 h-6 text-green-500 mb-1"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                <svg
+                  className="w-6 h-6 text-green-500 mb-1"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                  />
+                </svg>
+                <span className="text-xs text-green-700 font-medium">Upload Logo</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  ref={fileInputRef}
+                  onChange={onFileChange}
+                  className="hidden"
                 />
-              </svg>
-              <span className="text-xs text-green-700 font-medium">Upload Logo</span>
-              <input
-                type="file"
-                accept="image/*"
-                ref={fileInputRef}
-                onChange={onFileChange}
-                className="hidden"
-              />
-            </button>
-          )}
-        </div>
+              </button>
+            )}
+          </div>
         )}
 
         {/* Registration Form Fields */}
         {!otpStep && (
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="flex-1">
-              <label className="text-xs font-medium text-gray-700 mb-1 block">First Name</label>
-              <Input
-                id="firstName"
-                placeholder="First name"
-                value={data.firstName}
-                onChange={onFieldChange}
-                className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
-              />
-            </div>
-            <div className="flex-1">
-              <label className="text-xs font-medium text-gray-700 mb-1 block">Last Name</label>
-              <Input
-                id="lastName"
-                placeholder="Last name"
-                value={data.lastName}
-                onChange={onFieldChange}
-                className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
-              />
-            </div>
-            <div className="flex-1">
-              <label className="text-xs font-medium text-gray-700 mb-1 block">Email Address</label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="Email address"
-                value={data.email}
-                onChange={onFieldChange}
-                className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
-              />
-            </div>
-          </div>
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="flex-1 flex flex-col">
-              <label className="text-xs font-medium text-gray-700 mb-1 block">Phone Number</label>
-              <div className="flex w-full rounded-lg border border-gray-200 focus-within:ring-2 focus-within:ring-green-500 focus-within:border-transparent transition-all duration-200">
-                <select
-                  id="country_code"
-                  value={data.country_code}
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex-1">
+                <label className="text-xs font-medium text-gray-700 mb-1 block">First Name</label>
+                <Input
+                  id="firstName"
+                  placeholder="First name"
+                  value={data.firstName}
                   onChange={onFieldChange}
-                  className="px-2 py-2 bg-gray-50 text-xs border-r border-gray-200 rounded-l-lg focus:outline-none focus:bg-white w-28 min-w-[80px]"
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                />
+              </div>
+              <div className="flex-1">
+                <label className="text-xs font-medium text-gray-700 mb-1 block">Last Name</label>
+                <Input
+                  id="lastName"
+                  placeholder="Last name"
+                  value={data.lastName}
+                  onChange={onFieldChange}
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                />
+              </div>
+              <div className="flex-1">
+                <label className="text-xs font-medium text-gray-700 mb-1 block">
+                  Email Address
+                </label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="Email address"
+                  value={data.email}
+                  onChange={onFieldChange}
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                />
+              </div>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex-1 flex flex-col">
+                <label className="text-xs font-medium text-gray-700 mb-1 block">Phone Number</label>
+                <div className="flex w-full rounded-lg border border-gray-200 focus-within:ring-2 focus-within:ring-green-500 focus-within:border-transparent transition-all duration-200">
+                  <select
+                    id="country_code"
+                    value={data.country_code}
+                    onChange={onFieldChange}
+                    className="px-2 py-2 bg-gray-50 text-xs border-r border-gray-200 rounded-l-lg focus:outline-none focus:bg-white w-28 min-w-[80px]"
+                  >
+                    {countries?.map((c, idx) => (
+                      <option key={idx} value={c.dialCode}>
+                        {c.code} {c.dialCode}
+                      </option>
+                    ))}
+                  </select>
+                  <Input
+                    type="text"
+                    id="phone"
+                    placeholder="Phone number"
+                    value={data.phone}
+                    onChange={onFieldChange}
+                    className="flex-1 px-3 py-2 text-sm rounded-r-lg border-0 focus:outline-none w-full"
+                  />
+                </div>
+              </div>
+              <div className="flex-1">
+                <label className="text-xs font-medium text-gray-700 mb-1 block">Company Name</label>
+                <Input
+                  id="company"
+                  placeholder="Company name"
+                  value={data.company}
+                  onChange={onFieldChange}
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                />
+              </div>
+              <div className="flex-1">
+                <label className="text-xs font-medium text-gray-700 mb-1 block">Website</label>
+                <Input
+                  id="website"
+                  placeholder="https://company.com"
+                  value={data.website}
+                  onChange={onFieldChange}
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex-1">
+                <label className="text-xs font-medium text-gray-700 mb-1 block">
+                  VAT Number{' '}
+                  {data.user_type === 'seller' ? <span className="text-red-500">*</span> : null}
+                </label>
+                <Input
+                  id="vat_number"
+                  placeholder="VAT number"
+                  value={data.vat_number || ''}
+                  onChange={onFieldChange}
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                />
+              </div>
+              <div className="flex-1">
+                <label className="text-xs font-medium text-gray-700 mb-1 block">Industry</label>
+                <select
+                  id="industry"
+                  value={data.industry}
+                  onChange={onFieldChange}
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 bg-white"
                 >
-                  {countries?.map((c, idx) => (
-                    <option key={idx} value={c.dialCode}>
-                      {c.code} {c.dialCode}
+                  <option value="">Select Industry</option>
+                  {industryList.map((item) => (
+                    <option key={item._id} value={item._id}>
+                      {item.name}
                     </option>
                   ))}
                 </select>
-                <Input
-                  type="text"
-                  id="phone"
-                  placeholder="Phone number"
-                  value={data.phone}
-                  onChange={onFieldChange}
-                  className="flex-1 px-3 py-2 text-sm rounded-r-lg border-0 focus:outline-none w-full"
-                />
               </div>
-            </div>
-            <div className="flex-1">
-              <label className="text-xs font-medium text-gray-700 mb-1 block">Company Name</label>
-              <Input
-                id="company"
-                placeholder="Company name"
-                value={data.company}
-                onChange={onFieldChange}
-                className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
-              />
-            </div>
-            <div className="flex-1">
-              <label className="text-xs font-medium text-gray-700 mb-1 block">Website</label>
-              <Input
-                id="website"
-                placeholder="https://company.com"
-                value={data.website}
-                onChange={onFieldChange}
-                className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
-              />
-            </div>
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="flex-1">
-              <label className="text-xs font-medium text-gray-700 mb-1 block">
-                VAT Number{' '}
-                {data.user_type === 'seller' ? <span className="text-red-500">*</span> : null}
-              </label>
-              <Input
-                id="vat_number"
-                placeholder="VAT number"
-                value={data.vat_number || ''}
-                onChange={onFieldChange}
-                className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
-              />
-            </div>
-            <div className="flex-1">
-              <label className="text-xs font-medium text-gray-700 mb-1 block">Industry</label>
-              <select
-                id="industry"
-                value={data.industry}
-                onChange={onFieldChange}
-                className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 bg-white"
-              >
-                <option value="">Select Industry</option>
-                {industryList.map((item) => (
-                  <option key={item._id} value={item._id}>
-                    {item.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="flex-1">
-              <label className="text-xs font-medium text-gray-700 mb-1 block">Location</label>
-              <select
-                id="location"
-                value={data.location}
-                onChange={onFieldChange}
-                className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 bg-white"
-              >
-                <option value="">Select Location</option>
-                {countries.map((c, idx) => (
-                  <option key={idx} value={c.name}>
-                    {c.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          <div>
-            <label className="text-xs font-medium text-gray-700 mb-1 block">Address</label>
-            <Input
-              id="address"
-              placeholder="Full address"
-              value={data.address}
-              onChange={onFieldChange}
-              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
-            />
-          </div>
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="flex-1">
-              <label className="text-xs font-medium text-gray-700 mb-1 block">Password</label>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? 'text' : 'password'}
-                  value={data.password}
+              <div className="flex-1">
+                <label className="text-xs font-medium text-gray-700 mb-1 block">Location</label>
+                <select
+                  id="location"
+                  value={data.location}
                   onChange={onFieldChange}
-                  placeholder="Create password"
-                  className="w-full px-3 py-2 pr-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
-                />
-                <button
-                  type="button"
-                  className="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
-                  onClick={() => setShowPassword(!showPassword)}
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 bg-white"
                 >
-                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                </button>
+                  <option value="">Select Location</option>
+                  {countries.map((c, idx) => (
+                    <option key={idx} value={c.name}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
-            <div className="flex-1">
-              <label className="text-xs font-medium text-gray-700 mb-1 block">
-                Confirm Password
-              </label>
-              <div className="relative">
-                <Input
-                  id="confirmPassword"
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  value={data.confirmPassword}
-                  onChange={onFieldChange}
-                  placeholder="Confirm password"
-                  className="w-full px-3 py-2 pr-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
-                />
-                <button
-                  type="button"
-                  className="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                >
-                  {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                </button>
+
+            <div>
+              <label className="text-xs font-medium text-gray-700 mb-1 block">Address</label>
+              <Input
+                id="address"
+                placeholder="Full address"
+                value={data.address}
+                onChange={onFieldChange}
+                className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+              />
+            </div>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex-1">
+                <label className="text-xs font-medium text-gray-700 mb-1 block">Password</label>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? 'text' : 'password'}
+                    value={data.password}
+                    onChange={onFieldChange}
+                    placeholder="Create password"
+                    className="w-full px-3 py-2 pr-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                  />
+                  <button
+                    type="button"
+                    className="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
+              </div>
+              <div className="flex-1">
+                <label className="text-xs font-medium text-gray-700 mb-1 block">
+                  Confirm Password
+                </label>
+                <div className="relative">
+                  <Input
+                    id="confirmPassword"
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    value={data.confirmPassword}
+                    onChange={onFieldChange}
+                    placeholder="Confirm password"
+                    className="w-full px-3 py-2 pr-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                  />
+                  <button
+                    type="button"
+                    className="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  >
+                    {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
         )}
 
         {/* OTP STEP UI */}
         {otpStep && (
           <div className="flex flex-col gap-6">
             <div className="flex justify-center gap-2">
-              {[0,1,2,3,4,5].map((i) => (
+              {[0, 1, 2, 3, 4, 5].map((i) => (
                 <input
                   key={i}
                   inputMode="numeric"
                   maxLength={1}
                   value={otp[i] || ''}
                   onChange={(e) => {
-                    const val = e.target.value.replace(/[^0-9]/g,'');
+                    const val = e.target.value.replace(/[^0-9]/g, '');
                     if (!val) {
                       const newOtp = otp.split('');
                       newOtp[i] = '';
                       setOtp(newOtp.join(''));
                       return;
                     }
-                    const newOtp = otp.padEnd(6,' ').split('');
+                    const newOtp = otp.padEnd(6, ' ').split('');
                     newOtp[i] = val;
-                    const joined = newOtp.join('').replace(/\s/g,'');
+                    const joined = newOtp.join('').replace(/\s/g, '');
                     setOtp(joined);
                     // focus next
-                    const next = document.getElementById(`otp-${i+1}`) as HTMLInputElement | null;
+                    const next = document.getElementById(`otp-${i + 1}`) as HTMLInputElement | null;
                     if (next) next.focus();
                   }}
                   id={`otp-${i}`}
@@ -564,13 +566,13 @@ const Register: React.FC = () => {
               ))}
             </div>
             <div className="text-center text-sm text-gray-500 flex flex-col gap-2">
-              <p>Didn't receive the code?</p>
+              <p>{`Didn't receive the code?`}</p>
               <button
-                disabled={resendTimer>0}
+                disabled={resendTimer > 0}
                 onClick={handleResend}
                 className="text-green-600 disabled:text-gray-400 font-medium hover:underline"
               >
-                {resendTimer>0 ? `Resend in ${resendTimer}s` : 'Resend Code'}
+                {resendTimer > 0 ? `Resend in ${resendTimer}s` : 'Resend Code'}
               </button>
             </div>
             <button
@@ -581,7 +583,10 @@ const Register: React.FC = () => {
               {verifyingOtp ? 'Verifying...' : 'Verify & Continue'}
             </button>
             <button
-              onClick={() => { setOtpStep(false); setIsLoading(false); }}
+              onClick={() => {
+                setOtpStep(false);
+                setIsLoading(false);
+              }}
               className="text-xs text-gray-400 hover:text-gray-500 underline"
             >
               Edit registration details

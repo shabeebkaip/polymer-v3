@@ -24,11 +24,13 @@ import {
   Truck
 } from "lucide-react";
 import Image from 'next/image';
+import { useUserInfo } from '@/lib/useUserInfo';
 
 const QuoteRequestDetail = () => {
   const router = useRouter();
   const params = useParams();
   const { quoteRequestDetail, loading, error, fetchQuoteRequestDetail, clearQuoteRequestDetail } = useQuoteRequestStore();
+  const { user } = useUserInfo();
 
   useEffect(() => {
     if (params.id && typeof params.id === 'string') {
@@ -42,15 +44,23 @@ const QuoteRequestDetail = () => {
 
   const getStatusTimeline = () => {
     const statusOrder = ['pending', 'responded', 'negotiation', 'accepted', 'in_progress', 'shipped', 'delivered', 'completed', 'rejected', 'cancelled'];
-    const currentStatusIndex = statusOrder.indexOf(quoteRequestDetail?.status || '');
-    
-    return statusOrder.map((status, index) => ({
+    const currentStatus = quoteRequestDetail?.status || '';
+    const currentStatusIndex = statusOrder.indexOf(currentStatus);
+
+    const full = statusOrder.map((status, index) => ({
       status,
       label: getStatusText(status),
-      completed: index <= currentStatusIndex && !['rejected', 'cancelled'].includes(quoteRequestDetail?.status || ''),
-      current: status === quoteRequestDetail?.status,
+      completed: index <= currentStatusIndex && !['rejected', 'cancelled'].includes(currentStatus),
+      current: status === currentStatus,
       icon: getStatusIcon(status)
     }));
+
+    // For buyers, only show statuses up to (and including) current one
+    if (user?.user_type === 'buyer' && currentStatusIndex >= 0) {
+      // If status is rejected or cancelled, still show previous statuses up to that point
+      return full.filter((_, idx) => idx <= currentStatusIndex);
+    }
+    return full;
   };
 
   const getStatusIcon = (status: string) => {
@@ -548,7 +558,7 @@ const QuoteRequestDetail = () => {
 
               {/* Timeline Progress */}
               <div className="relative">
-                {getStatusTimeline().map((timelineItem, index) => (
+                {(() => { const timeline = getStatusTimeline(); return timeline.map((timelineItem, index) => (
                   <div key={timelineItem.status} className="flex items-center mb-4 last:mb-0">
                     <div className="flex items-center gap-4 flex-1">
                       <div className={`relative flex items-center justify-center w-10 h-10 rounded-full border-2 ${
@@ -593,13 +603,13 @@ const QuoteRequestDetail = () => {
                       </div>
                     </div>
                     
-                    {index < getStatusTimeline().length - 1 && (
+          {index < timeline.length - 1 && (
                       <div className={`absolute left-5 mt-10 w-0.5 h-6 ${
                         timelineItem.completed ? 'bg-green-500' : 'bg-gray-300'
                       }`} style={{ top: `${index * 64 + 40}px` }}></div>
                     )}
                   </div>
-                ))}
+        )) })()}
               </div>
 
               {/* Timestamps */}
