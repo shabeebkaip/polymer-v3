@@ -75,6 +75,96 @@ export const getUserQuoteRequests = async (params?: {
   }
 };
 
+// Get deal quote requests (buyer side)
+export const getDealQuoteRequests = async (params?: {
+  page?: number;
+  limit?: number;
+  search?: string;
+  status?: string;
+  sortBy?: string;
+  sortOrder?: string;
+  startDate?: string;
+  endDate?: string;
+}) => {
+  try {
+    const queryParams = new URLSearchParams();
+
+    if (params?.page) queryParams.append("page", params.page.toString());
+    if (params?.limit) queryParams.append("limit", params.limit.toString());
+    if (params?.search) queryParams.append("search", params.search);
+    if (params?.status) queryParams.append("status", params.status);
+    if (params?.sortBy) queryParams.append("sortBy", params.sortBy);
+    if (params?.sortOrder) queryParams.append("sortOrder", params.sortOrder);
+    if (params?.startDate) queryParams.append("startDate", params.startDate);
+    if (params?.endDate) queryParams.append("endDate", params.endDate);
+
+    const url = `/quote-request/deal-quotes${
+      queryParams.toString() ? `?${queryParams.toString()}` : ""
+    }`;
+    const response = await axiosInstance.get(url);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching deal quote requests:", error);
+    throw error;
+  }
+};
+
+// Get product quote requests (buyer side)
+export const getProductQuoteRequests = async (params?: {
+  page?: number;
+  limit?: number;
+  search?: string;
+  status?: string;
+  sortBy?: string;
+  sortOrder?: string;
+  startDate?: string;
+  endDate?: string;
+}) => {
+  try {
+    const queryParams = new URLSearchParams();
+
+    if (params?.page) queryParams.append("page", params.page.toString());
+    if (params?.limit) queryParams.append("limit", params.limit.toString());
+    if (params?.search) queryParams.append("search", params.search);
+    if (params?.status) queryParams.append("status", params.status);
+    if (params?.sortBy) queryParams.append("sortBy", params.sortBy);
+    if (params?.sortOrder) queryParams.append("sortOrder", params.sortOrder);
+    if (params?.startDate) queryParams.append("startDate", params.startDate);
+    if (params?.endDate) queryParams.append("endDate", params.endDate);
+
+    const url = `/quote-request/product-quotes${
+      queryParams.toString() ? `?${queryParams.toString()}` : ""
+    }`;
+    const response = await axiosInstance.get(url);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching product quote requests:", error);
+    throw error;
+  }
+};
+
+// Get single deal quote detail
+export const getDealQuoteDetail = async (id: string) => {
+  try {
+    const response = await axiosInstance.get(`/quote-request/deal-quotes/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching deal quote detail:", error);
+    throw error;
+  }
+};
+
+// Get single product quote detail
+export const getProductQuoteDetail = async (id: string) => {
+  try {
+    const response = await axiosInstance.get(`/quote-request/product-quotes/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching product quote detail:", error);
+    throw error;
+  }
+};
+
 export const getQuoteRequestDetail = async (id: string) => {
   try {
     const response = await axiosInstance.get(`/quote-request/history/${id}`);

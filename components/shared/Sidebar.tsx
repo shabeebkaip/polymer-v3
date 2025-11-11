@@ -155,9 +155,15 @@ const Sidebar = () => {
               icon: "Flask",
             },
             {
-              displayName: "Quote Request Enquiries",
-              route: "/user/quote-enquiries",
-              name: "quote-request-enquiries",
+              displayName: "Deal Quotes",
+              route: "/user/deal-quotes",
+              name: "deal-quotes",
+              icon: "ShoppingCart",
+            },
+            {
+              displayName: "Product Quote Enquiries",
+              route: "/user/product-quotes",
+              name: "product-quote-enquiries",
               icon: "DollarSign",
             },
           ],
@@ -205,16 +211,16 @@ const Sidebar = () => {
         icon: "ClipboardList",
         subItems: [
           {
+            displayName: "Quote Request",
+            route: "/user/quote-requests",
+            name: "quote-request",
+            icon: "FileText",
+          },
+          {
             displayName: "Sample Request",
             route: "/user/sample-requests",
             name: "sample-request",
             icon: "Flask",
-          },
-          {
-            displayName: "Quote Request",
-            route: "/user/quote-requests",
-            name: "quote-request",
-            icon: "DollarSign",
           },
           {
             displayName: "Finance Request",

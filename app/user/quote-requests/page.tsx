@@ -522,7 +522,6 @@ const QuoteRequests = () => {
                   <TableHead className="font-bold text-gray-900 py-4">Product</TableHead>
                   <TableHead className="font-bold text-gray-900 py-4">Type</TableHead>
                   <TableHead className="font-bold text-gray-900 py-4">Quantity</TableHead>
-                  <TableHead className="font-bold text-gray-900 py-4">Company</TableHead>
                   <TableHead className="font-bold text-gray-900 py-4">Date</TableHead>
                   <TableHead className="font-bold text-gray-900 py-4">Status</TableHead>
                   <TableHead className="font-bold text-gray-900 py-4 text-center">Actions</TableHead>
@@ -575,19 +574,6 @@ const QuoteRequests = () => {
                             {item.unit}
                           </span>
                         )}
-                      </div>
-                    </TableCell>
-                    <TableCell className="py-6">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-gradient-to-br from-teal-100 to-cyan-100 rounded-lg flex items-center justify-center">
-                          <Building2 className="w-4 h-4 text-teal-600" />
-                        </div>
-                        <span className="text-gray-900 font-medium">
-                          {item.company || 
-                           item.productQuote?.product?.createdBy?.company || 
-                           item.dealQuote?.bestDeal?.productId?.productName || 
-                           "N/A"}
-                        </span>
                       </div>
                     </TableCell>
                     <TableCell className="py-6">
