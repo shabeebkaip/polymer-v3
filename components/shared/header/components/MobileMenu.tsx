@@ -39,6 +39,7 @@ const MobileMenu: React.FC<mobileMenuType> = ({
 
       {/* Mobile Menu Content */}
       <div className="flex-1 p-6 space-y-2">
+        {/* Main Links */}
         {links.map((link) => (
           <div key={link.href} className="group">
             <button
@@ -92,6 +93,46 @@ const MobileMenu: React.FC<mobileMenuType> = ({
             </button>
           </div>
         ))}
+
+        {/* Industries & Product Families Links */}
+        <div className="pt-4 border-t border-gray-100 space-y-2">
+          <button
+            onClick={() => handleNavigate('/industries')}
+            className={`w-full text-left px-4 py-3 rounded-xl transition-all duration-200 flex items-center gap-3 ${
+              pathname === '/industries'
+                ? 'bg-green-50 text-[var(--green-main)] font-medium'
+                : 'text-gray-700 hover:bg-gray-50 hover:text-[var(--green-main)]'
+            }`}
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+              />
+            </svg>
+            <span>Industries</span>
+          </button>
+          <button
+            onClick={() => handleNavigate('/product-families')}
+            className={`w-full text-left px-4 py-3 rounded-xl transition-all duration-200 flex items-center gap-3 ${
+              pathname === '/product-families'
+                ? 'bg-green-50 text-[var(--green-main)] font-medium'
+                : 'text-gray-700 hover:bg-gray-50 hover:text-[var(--green-main)]'
+            }`}
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 5a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 16a1 1 0 011-1h4a1 1 0 011 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-3zM14 16a1 1 0 011-1h4a1 1 0 011 1v3a1 1 0 01-1 1h-4a1 1 0 01-1-1v-3z"
+              />
+            </svg>
+            <span>Product Families</span>
+          </button>
+        </div>
 
         {user && (
           <div className="pt-4 border-t border-gray-100 space-y-2">

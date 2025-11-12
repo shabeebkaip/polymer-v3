@@ -10,6 +10,10 @@ export type linksType = {
   label: string;
 };
 
+export type NavigationProps = {
+  links: linksType[];
+};
+
 export type userPopoverType = {
   isUserPopoverOpen: boolean;
   setIsUserPopoverOpen: (isOpen: boolean) => void;

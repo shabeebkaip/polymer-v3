@@ -11,6 +11,7 @@ import AuthButtons from '@/components/shared/header/components/AuthButtons';
 import MobileMenuButton from '@/components/shared/header/components/MobileMenuButton';
 import MobileMenuOverlay from '@/components/shared/header/components/MobileMenuOverlay';
 import MobileMenu from '@/components/shared/header/components/MobileMenu';
+import MegaMenu from '@/components/shared/header/components/MegaMenu';
 
 type Language = 'en' | 'ar' | 'de' | 'zh';
 const Header: React.FC = () => {
@@ -98,10 +99,16 @@ const Header: React.FC = () => {
 
   return (
     <header className="w-full bg-white shadow-sm border-b border-gray-100/50 z-30 sticky top-0">
-      <div className="container mx-auto px-4 py-2 flex items-center justify-between">
+      <div className="container mx-auto px-4 py-2 flex items-center justify-between gap-6">
         {/* Enhanced Logo */}
         <Logo />
-        <Navigation links={links} />
+        
+        {/* Navigation with Mega Menu */}
+        <div className="hidden lg:flex items-center gap-1">
+          <Navigation links={links} />
+          <MegaMenu />
+        </div>
+        
         <div className="flex items-center gap-4">
           {user && <Notification />}
           {user && (

@@ -1,22 +1,21 @@
 import React from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import Image from "next/image";
 
 const Logo = () => {
-  const router = useRouter();
   return (
-    <div
-      className="relative overflow-hidden rounded-lg p-1 group-hover:bg-green-50 transition-all duration-200"
-      onClick={() => router.push("/")}
+    <Link 
+      href="/"
+      className="inline-block cursor-pointer"
     >
       <Image
-        src="/typography.svg"
+        src="/logo.png"
         alt="Polymers Hub Logo"
-        width={120}
-        height={50}
-        className="md:h-12 h-8 w-auto transition-transform duration-200 group-hover:scale-105"
+        width={200}
+        height={200}
+        className="md:h-16 h-12 w-auto"
       />
-    </div>
+    </Link>
   );
 };
 

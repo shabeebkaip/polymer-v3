@@ -1,10 +1,6 @@
 import React from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { linksType} from "@/types/header";
-
-type NavigationProps = {
-    links: linksType[];
-};
+import { linksType, NavigationProps } from "@/types/header";
 
 const Navigation: React.FC<NavigationProps> = ({ links }) => {
     const router = useRouter();
