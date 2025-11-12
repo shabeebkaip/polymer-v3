@@ -234,7 +234,7 @@ const Register: React.FC = () => {
       {/* Header Section */}
       {!otpStep && (
         <div className="text-center space-y-2 max-w-lg">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-bold text-primary-500">
             Create Your Account
           </h1>
           <p className="text-gray-600 text-sm">
@@ -244,7 +244,7 @@ const Register: React.FC = () => {
       )}
       {otpStep && (
         <div className="text-center space-y-2 max-w-lg">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-bold text-primary-500">
             Verify Your Email
           </h1>
           <p className="text-gray-600 text-sm">{`We've sent a 6-digit code to ${data.email}`}</p>
@@ -261,7 +261,7 @@ const Register: React.FC = () => {
                   <div
                     className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold text-sm transition-all duration-300 ${
                       currentStep >= step
-                        ? 'bg-gradient-to-r from-green-600 to-emerald-600 text-white shadow-md'
+                        ? 'bg-primary-500 text-white shadow-md'
                         : 'bg-gray-200 text-gray-500'
                     }`}
                   >
@@ -272,7 +272,7 @@ const Register: React.FC = () => {
                     )}
                   </div>
                   <span className={`text-xs mt-1.5 font-medium ${
-                    currentStep >= step ? 'text-green-700' : 'text-gray-400'
+                    currentStep >= step ? 'text-primary-600' : 'text-gray-400'
                   }`}>
                     {step === 1 && 'Personal'}
                     {step === 2 && 'Security'}
@@ -281,7 +281,7 @@ const Register: React.FC = () => {
                 </div>
                 {step < 3 && (
                   <div className={`h-0.5 flex-1 mx-2 transition-all duration-300 ${
-                    currentStep > step ? 'bg-gradient-to-r from-green-600 to-emerald-600' : 'bg-gray-200'
+                    currentStep > step ? 'bg-primary-500' : 'bg-gray-200'
                   }`} />
                 )}
               </React.Fragment>
@@ -316,7 +316,7 @@ const Register: React.FC = () => {
                       className={`w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 ${
                         errors.firstName && touched.firstName
                           ? 'border-red-500 focus:ring-red-500'
-                          : 'border-gray-300 focus:ring-green-500'
+                          : 'border-gray-300 focus:ring-primary-500'
                       }`}
                     />
                     {errors.firstName && touched.firstName && (
@@ -341,7 +341,7 @@ const Register: React.FC = () => {
                       className={`w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 ${
                         errors.lastName && touched.lastName
                           ? 'border-red-500 focus:ring-red-500'
-                          : 'border-gray-300 focus:ring-green-500'
+                          : 'border-gray-300 focus:ring-primary-500'
                       }`}
                     />
                     {errors.lastName && touched.lastName && (
@@ -369,7 +369,7 @@ const Register: React.FC = () => {
                     className={`w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 ${
                       errors.email && touched.email
                         ? 'border-red-500 focus:ring-red-500'
-                        : 'border-gray-300 focus:ring-green-500'
+                        : 'border-gray-300 focus:ring-primary-500'
                     }`}
                   />
                   {errors.email && touched.email ? (
@@ -393,7 +393,7 @@ const Register: React.FC = () => {
                       id="country_code"
                       value={data.country_code}
                       onChange={onFieldChange}
-                      className="px-3 py-2.5 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 w-32"
+                      className="px-3 py-2.5 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 w-32"
                     >
                       {countries?.map((c, idx) => (
                         <option key={idx} value={c.dialCode}>
@@ -407,7 +407,7 @@ const Register: React.FC = () => {
                       placeholder="Phone number"
                       value={data.phone}
                       onChange={onFieldChange}
-                      className="flex-1 px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                      className="flex-1 px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
                     />
                   </div>
                 </div>
@@ -437,7 +437,7 @@ const Register: React.FC = () => {
                       className={`w-full px-4 py-2.5 pr-12 border rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 ${
                         errors.password && touched.password
                           ? 'border-red-500 focus:ring-red-500'
-                          : 'border-gray-300 focus:ring-green-500'
+                          : 'border-gray-300 focus:ring-primary-500'
                       }`}
                     />
                     <button
@@ -475,7 +475,7 @@ const Register: React.FC = () => {
                       className={`w-full px-4 py-2.5 pr-12 border rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 ${
                         errors.confirmPassword && touched.confirmPassword
                           ? 'border-red-500 focus:ring-red-500'
-                          : 'border-gray-300 focus:ring-green-500'
+                          : 'border-gray-300 focus:ring-primary-500'
                       }`}
                     />
                     <button
@@ -514,7 +514,7 @@ const Register: React.FC = () => {
                   </label>
                   {data?.company_logo ? (
                     <div className="flex items-center gap-3 p-3 bg-gray-50 border border-gray-200 rounded-xl">
-                      <div className="w-16 h-16 border border-green-300 rounded-xl bg-white flex items-center justify-center overflow-hidden flex-shrink-0">
+                      <div className="w-16 h-16 border border-primary-500/30 rounded-xl bg-white flex items-center justify-center overflow-hidden flex-shrink-0">
                         <Image
                           src={data.company_logo}
                           alt="Company Logo"
@@ -528,7 +528,7 @@ const Register: React.FC = () => {
                         <button
                           type="button"
                           onClick={handleAvatarClick}
-                          className="text-xs text-green-600 hover:text-green-700 font-medium mt-0.5"
+                          className="text-xs text-primary-500 hover:text-primary-600 font-medium mt-0.5"
                         >
                           Change logo
                         </button>
@@ -537,11 +537,11 @@ const Register: React.FC = () => {
                   ) : (
                     <button
                       type="button"
-                      className="w-full flex flex-col items-center justify-center p-6 border-2 border-dashed rounded-xl transition-all duration-200 focus:outline-none border-gray-300 bg-gray-50 hover:border-green-400 hover:bg-green-50"
+                      className="w-full flex flex-col items-center justify-center p-6 border-2 border-dashed rounded-xl transition-all duration-200 focus:outline-none border-gray-300 bg-gray-50 hover:border-primary-500 hover:bg-primary-50"
                       onClick={() => fileInputRef.current?.click()}
                     >
-                      <div className="w-12 h-12 rounded-full flex items-center justify-center mb-2 bg-green-100">
-                        <Upload className="w-6 h-6 text-green-600" />
+                      <div className="w-12 h-12 rounded-full flex items-center justify-center mb-2 bg-primary-50">
+                        <Upload className="w-6 h-6 text-primary-500" />
                       </div>
                       <span className="text-sm font-medium text-gray-700">Upload Company Logo</span>
                       <span className="text-xs text-gray-500 mt-1">PNG, JPG up to 5MB</span>
@@ -566,7 +566,7 @@ const Register: React.FC = () => {
                       placeholder="Your company name"
                       value={data.company}
                       onChange={onFieldChange}
-                      className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                      className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
                     />
                   </div>
                   <div className="space-y-1">
@@ -578,7 +578,7 @@ const Register: React.FC = () => {
                       placeholder="https://company.com"
                       value={data.website}
                       onChange={onFieldChange}
-                      className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                      className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
                     />
                   </div>
                 </div>
@@ -593,7 +593,7 @@ const Register: React.FC = () => {
                       placeholder="Enter VAT number"
                       value={data.vat_number || ''}
                       onChange={onFieldChange}
-                      className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                      className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
                     />
                   </div>
                   <div className="space-y-1">
@@ -604,7 +604,7 @@ const Register: React.FC = () => {
                       id="industry"
                       value={data.industry}
                       onChange={onFieldChange}
-                      className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 bg-white"
+                      className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 bg-white"
                     >
                       <option value="">Select Industry</option>
                       {industryList.map((item) => (
@@ -624,7 +624,7 @@ const Register: React.FC = () => {
                     id="location"
                     value={data.location}
                     onChange={onFieldChange}
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 bg-white"
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 bg-white"
                   >
                     <option value="">Select Location</option>
                     {countries.map((c, idx) => (
@@ -644,7 +644,7 @@ const Register: React.FC = () => {
                     placeholder="Full business address"
                     value={data.address}
                     onChange={onFieldChange}
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
                   />
                 </div>
               </div>
@@ -667,8 +667,8 @@ const Register: React.FC = () => {
               {currentStep < totalSteps && (
                 <button
                   onClick={nextStep}
-                  className="flex-1 px-6 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-medium rounded-xl
-                            hover:from-green-700 hover:to-emerald-700 focus:outline-none focus:ring-4 focus:ring-green-300
+                  className="flex-1 px-6 py-2.5 bg-primary-500 hover:bg-primary-600 text-white font-medium rounded-xl
+                            focus:outline-none focus:ring-4 focus:ring-primary-500/30
                             transform hover:scale-[1.02] transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
                 >
                   Continue
@@ -681,8 +681,8 @@ const Register: React.FC = () => {
                 <button
                   onClick={handleSubmit}
                   disabled={!isFormValid() || isLoading}
-                  className="flex-1 px-6 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-medium rounded-xl
-                            hover:from-green-700 hover:to-emerald-700 focus:outline-none focus:ring-4 focus:ring-green-300
+                  className="flex-1 px-6 py-2.5 bg-primary-500 hover:bg-primary-600 text-white font-medium rounded-xl
+                            focus:outline-none focus:ring-4 focus:ring-primary-500/30
                             disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02]
                             transition-all duration-200 shadow-lg hover:shadow-xl"
                 >
@@ -704,7 +704,7 @@ const Register: React.FC = () => {
                 Already have an account?{' '}
                 <button
                   onClick={() => router.push('/auth/login')}
-                  className="font-medium text-green-600 hover:text-green-700 transition-colors hover:underline"
+                  className="font-medium text-primary-500 hover:text-primary-600 transition-colors hover:underline"
                 >
                   Sign in here
                 </button>

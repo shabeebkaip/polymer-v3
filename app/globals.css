@@ -23,6 +23,11 @@
   /* #009C7D */
   --green-dark: rgb(0, 146, 10);
   /* #00920A */
+  
+  /* primary brand color */
+  --color-primary-500: #136F47;
+  --color-primary-600: #0f5a38;
+  --color-primary-50: #e8f5f0;
   /* gray */
   --text-gray-primary: #777777;
   --text-gray-secondary: #9F9F9F;

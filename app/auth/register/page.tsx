@@ -8,7 +8,7 @@ function RegisterLoading() {
   return (
     <div className="min-h-screen bg-[url('/assets/authbg.png')] bg-cover bg-center flex items-center justify-center px-4 py-4 relative">
       {/* Background overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-green-900/20 via-transparent to-emerald-900/20"></div>
+      <div className="absolute inset-0 bg-primary-500/10"></div>
       
       {/* Loading content */}
       <div className="relative z-10 bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-8 w-full max-w-5xl border border-white/20">

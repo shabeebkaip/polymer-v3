@@ -78,7 +78,7 @@ const Login: React.FC = () => {
 
       {/* Header Section */}
       <div className="text-center space-y-2 max-w-lg">
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+        <h1 className="text-3xl font-bold text-primary-500">
           Welcome Back
         </h1>
         <p className="text-gray-600 text-sm">
@@ -102,7 +102,7 @@ const Login: React.FC = () => {
             }
             required
             placeholder="your.email@company.com"
-            className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+            className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
           />
         </div>
 
@@ -121,7 +121,7 @@ const Login: React.FC = () => {
               }
               required
               placeholder="Enter your password"
-              className="w-full px-4 py-2.5 pr-12 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+              className="w-full px-4 py-2.5 pr-12 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
             />
             <button
               type="button"
@@ -138,8 +138,8 @@ const Login: React.FC = () => {
           type="button"
           onClick={handleSubmit}
           disabled={isLoading || !email || !password}
-          className="w-full px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-medium rounded-xl 
-                   hover:from-green-700 hover:to-emerald-700 focus:outline-none focus:ring-4 focus:ring-green-300 
+          className="w-full px-6 py-3 bg-primary-500 hover:bg-primary-600 text-white font-medium rounded-xl 
+                   focus:outline-none focus:ring-4 focus:ring-primary-500/30 
                    disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02] 
                    transition-all duration-200 shadow-lg hover:shadow-xl"
         >
@@ -160,7 +160,7 @@ const Login: React.FC = () => {
           Don&apos;t have an account?{' '}
           <Link
             href="/auth/user-type"
-            className="font-medium text-green-600 hover:text-green-700 transition-colors hover:underline"
+            className="font-medium text-primary-500 hover:text-primary-600 transition-colors hover:underline"
           >
             Sign up for free
           </Link>

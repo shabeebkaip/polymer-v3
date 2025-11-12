@@ -24,12 +24,12 @@ const UserTypeSelection: React.FC = () => {
       description: 'Perfect for polymer producers and traders to list products globally.',
       icon: '/icons/Seller.svg',
       link: '/auth/register?role=seller',
-      bgHover: 'from-green-50 to-emerald-50',
-      borderHover: 'hover:border-green-500',
-      iconBg: 'from-green-100 to-emerald-100',
-      iconBgHover: 'group-hover:from-green-200 group-hover:to-emerald-200',
-      titleHover: 'group-hover:text-green-700',
-      arrowBgHover: 'group-hover:bg-green-500',
+      bgHover: 'from-primary-50 to-primary-50',
+      borderHover: 'hover:border-primary-500',
+      iconBg: 'from-primary-50 to-primary-50',
+      iconBgHover: 'group-hover:from-primary-500/20 group-hover:to-primary-500/20',
+      titleHover: 'group-hover:text-primary-600',
+      arrowBgHover: 'group-hover:bg-primary-500',
     },
   ];
 
@@ -50,7 +50,7 @@ const UserTypeSelection: React.FC = () => {
 
       {/* Header Section */}
       <div className="text-center space-y-2 max-w-lg">
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+        <h1 className="text-3xl font-bold text-primary-500">
           Join Our Marketplace
         </h1>
         <h2 className="text-xl font-semibold text-gray-800">Select your role to continue</h2>
@@ -124,7 +124,7 @@ const UserTypeSelection: React.FC = () => {
           Already have an account?{' '}
           <Link
             href="/auth/login"
-            className="font-medium text-green-600 hover:text-green-700 transition-colors hover:underline"
+            className="font-medium text-primary-500 hover:text-primary-600 transition-colors hover:underline"
           >
             Sign in here
           </Link>
