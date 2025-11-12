@@ -12,11 +12,7 @@ const stats = [
 	{ value: "24/7", label: "Expert Support" },
 ];
 const gradientTextClass = `
-  bg-gradient-to-r
-  from-green-600
-  to-emerald-600
-  bg-clip-text
-  text-transparent
+  text-primary-500
 `;
 
 const Hero: React.FC = () => {
@@ -81,7 +77,7 @@ const Hero: React.FC = () => {
 								className="text-center group hover:scale-105 transition-transform duration-300 p-2 sm:p-3"
 								style={{ animationDelay: `${index * 0.1}s` }}
 							>
-								<div className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-bold text-green-700 mb-1 sm:mb-2 animate-count-up">
+								<div className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-bold text-primary-600 mb-1 sm:mb-2 animate-count-up">
 									{stat.value}
 								</div>
 								<div className="text-xs sm:text-sm md:text-base text-gray-600 font-medium leading-tight">
@@ -93,9 +89,9 @@ const Hero: React.FC = () => {
 
 					{/* Trust Indicators */}
 					<div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 md:gap-4 lg:gap-6 mt-6 sm:mt-8 lg:mt-10 animate-fade-in-up-delayed-5 px-4">
-						<div className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 bg-green-50 rounded-full border border-green-200">
-							<div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-500 rounded-full animate-pulse"></div>
-							<span className="text-xs sm:text-sm font-medium text-green-700 whitespace-nowrap">
+						<div className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 bg-primary-50 rounded-full border border-primary-500">
+							<div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-primary-500 rounded-full animate-pulse"></div>
+							<span className="text-xs sm:text-sm font-medium text-primary-600 whitespace-nowrap">
 								SASO Compliant
 							</span>
 						</div>
@@ -105,9 +101,9 @@ const Hero: React.FC = () => {
 								Secure Payments
 							</span>
 						</div>
-						<div className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 bg-green-50 rounded-full border border-green-200">
-							<div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-500 rounded-full animate-pulse"></div>
-							<span className="text-xs sm:text-sm font-medium text-green-700 whitespace-nowrap">
+						<div className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 bg-primary-50 rounded-full border border-primary-500">
+							<div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-primary-500 rounded-full animate-pulse"></div>
+							<span className="text-xs sm:text-sm font-medium text-primary-600 whitespace-nowrap">
 								Global Shipping
 							</span>
 						</div>

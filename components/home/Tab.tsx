@@ -14,10 +14,10 @@ const Tab: React.FC<TabProps> = ({
     <button
       type="button"
       onClick={onClick}
-      className={`flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl transition focus:outline-none focus:ring-2 focus:ring-green-300 duration-200 group shadow-sm hover:shadow-md min-w-0 flex-1 sm:flex-initial ${
+      className={`flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl transition focus:outline-none focus:ring-2 focus:ring-primary-500 duration-200 group shadow-sm hover:shadow-md min-w-0 flex-1 sm:flex-initial ${
         isSelected
-          ? "bg-gradient-to-r from-[var(--green-gradient-from)] via-[var(--green-gradient-via)] to-[var(--green-gradient-to)] text-white"
-          : "border-2 border-[var(--green-main)] text-[var(--green-main)] hover:bg-green-50"
+          ? "bg-primary-500 text-white"
+          : "border-2 border-primary-500 text-primary-500 hover:bg-primary-50"
       }`}
       tabIndex={0}
       aria-pressed={isSelected}

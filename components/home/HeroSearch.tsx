@@ -141,7 +141,7 @@ const HeroSearch = () => {
                     ref={inputRef}
                     type="text"
                     placeholder="Search polymers, compounds, resins..."
-                    className="w-full px-4 sm:px-6 lg:px-8 py-3 sm:py-4 lg:py-6 rounded-full border-2 border-[var(--green-light)] focus:ring-4 focus:ring-green-200 focus:border-green-500 shadow-xl transition-all duration-300 pr-12 sm:pr-14 lg:pr-16 text-sm sm:text-base lg:text-lg font-medium placeholder:text-gray-400 bg-white/95 backdrop-blur-sm hover:shadow-2xl"
+                    className="w-full px-4 sm:px-6 lg:px-8 py-3 sm:py-4 lg:py-6 rounded-full border-2 border-primary-500/30 focus:ring-4 focus:ring-primary-500/30 focus:border-primary-500 shadow-xl transition-all duration-300 pr-12 sm:pr-14 lg:pr-16 text-sm sm:text-base lg:text-lg font-medium placeholder:text-gray-400 bg-white/95 backdrop-blur-sm hover:shadow-2xl"
                     value={searchQuery}
                     onChange={(e) => {
                         setSearchQuery(e.target.value);
@@ -153,7 +153,7 @@ const HeroSearch = () => {
                     autoComplete="off"
                 />
                 <div
-                    className="absolute right-6 sm:right-8 lg:right-12 top-1/2 -translate-y-1/2 flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 bg-green-500 rounded-full shadow-md hover:bg-green-600 transition-colors duration-200"
+                    className="absolute right-6 sm:right-8 lg:right-12 top-1/2 -translate-y-1/2 flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 bg-primary-500 rounded-full shadow-md hover:bg-primary-600 transition-colors duration-200"
                 >
                     {loading ? (
                         <span className="animate-spin w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 border-2 border-white border-t-transparent rounded-full"></span>
@@ -188,7 +188,7 @@ const HeroSearch = () => {
                             {products.map((product, index) => (
                                 <div
                                     key={product._id}
-                                    className={`p-3 sm:p-4 border-b border-gray-100 flex items-center gap-3 sm:gap-4 cursor-pointer transition-colors duration-150 hover:bg-green-50 ${highlighted === index ? 'bg-green-100' : ''}`}
+                                    className={`p-3 sm:p-4 border-b border-gray-100 flex items-center gap-3 sm:gap-4 cursor-pointer transition-colors duration-150 hover:bg-primary-50 ${highlighted === index ? 'bg-primary-50' : ''}`}
                                     onClick={() => {
                                         router.push(`/products/${product._id}`);
                                         setSearchQuery('');

@@ -46,11 +46,11 @@ const ProductsByBrand: React.FC = () => {
   };
 
   return (
-    <div className="relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-green-50/30 py-8 md:py-12 lg:py-16">
+    <div className="relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-primary-50/30 py-8 md:py-12 lg:py-16">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-30">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_25%,_rgba(34,197,94,0.1)_0%,_transparent_50%)]"></div>
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_75%,_rgba(16,185,129,0.1)_0%,_transparent_50%)]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_25%,_rgba(19,111,71,0.1)_0%,_transparent_50%)]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_75%,_rgba(15,90,56,0.1)_0%,_transparent_50%)]"></div>
       </div>
       
       <div className="container mx-auto px-4 relative">
@@ -58,7 +58,7 @@ const ProductsByBrand: React.FC = () => {
           {/* Enhanced Header with Trust Badge */}
           <div className="text-center space-y-4 md:space-y-6">
             {/* Trust Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-medium">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary-50 text-primary-600 rounded-full text-sm font-medium">
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
               </svg>
@@ -68,10 +68,10 @@ const ProductsByBrand: React.FC = () => {
             <h1 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-gray-900 leading-tight">
               Browse Products by{" "}
               <span className="relative">
-                <span className="bg-gradient-to-r from-green-600 via-emerald-600 to-green-700 bg-clip-text text-transparent">
+                <span className="text-primary-500">
                   Top Suppliers
                 </span>
-                <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
+                <div className="absolute bottom-0 left-0 w-full h-1 bg-primary-500 rounded-full transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
               </span>
             </h1>
             
@@ -106,8 +106,8 @@ const ProductsByBrand: React.FC = () => {
                     onClick={() => handleTabClick(seller)}
                     className={`flex-shrink-0 w-[calc(75%-0.5rem)] flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${
                       selectedTab === seller._id
-                        ? "bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-lg"
-                        : "border border-gray-200 text-gray-700 hover:border-green-300 hover:bg-green-50 bg-white"
+                        ? "bg-primary-500 text-white shadow-lg"
+                        : "border border-gray-200 text-gray-700 hover:border-primary-500 hover:bg-primary-50 bg-white"
                     }`}
                   >
                     <div className="flex-shrink-0 w-10 h-10 rounded-lg overflow-hidden ring-1 ring-white/30">
@@ -133,7 +133,7 @@ const ProductsByBrand: React.FC = () => {
                     </div>
                     
                     <div className={`w-2 h-2 rounded-full flex-shrink-0 ${
-                      selectedTab === seller._id ? "bg-white" : "bg-green-500"
+                      selectedTab === seller._id ? "bg-white" : "bg-primary-500"
                     }`} />
                   </button>
                 ))}
@@ -141,9 +141,9 @@ const ProductsByBrand: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => router.push("/suppliers")}
-                  className="flex-shrink-0 w-[calc(60%-0.5rem)] flex flex-col items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-dashed border-green-400 text-green-600 hover:border-green-500 hover:bg-green-50 transition-all duration-300 bg-green-50/50"
+                  className="flex-shrink-0 w-[calc(60%-0.5rem)] flex flex-col items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-dashed border-primary-500 text-primary-600 hover:border-primary-600 hover:bg-primary-50 transition-all duration-300 bg-primary-50/50"
                 >
-                  <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center text-white">
+                  <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center text-white">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                     </svg>
@@ -179,13 +179,13 @@ const ProductsByBrand: React.FC = () => {
                   onClick={() => handleTabClick(seller)}
                   className={`group relative flex items-center gap-4 px-6 py-4 rounded-2xl transition-all duration-300 transform hover:scale-105 min-w-60 min-h-24 overflow-hidden ${
                     selectedTab === seller._id
-                      ? "bg-gradient-to-br from-green-500 via-green-600 to-emerald-600 text-white shadow-lg shadow-green-200/50"
-                      : "border border-gray-200 text-gray-700 hover:border-green-300 hover:bg-white hover:shadow-lg bg-white/80 backdrop-blur-sm"
+                      ? "bg-primary-500 text-white shadow-lg shadow-primary-500/20"
+                      : "border border-gray-200 text-gray-700 hover:border-primary-500 hover:bg-white hover:shadow-lg bg-white/80 backdrop-blur-sm"
                   }`}
                 >
                   {/* Selected Tab Glow Effect */}
                   {selectedTab === seller._id && (
-                    <div className="absolute inset-0 bg-gradient-to-br from-green-400 to-emerald-500 opacity-20 blur-xl"></div>
+                    <div className="absolute inset-0 bg-primary-500 opacity-20 blur-xl"></div>
                   )}
                   
                   <div className="relative flex-shrink-0 w-16 h-16 rounded-2xl overflow-hidden ring-2 ring-white/30 shadow-lg">
@@ -211,7 +211,7 @@ const ProductsByBrand: React.FC = () => {
                   </div>
                   
                   <div className={`relative w-3 h-3 rounded-full transition-all duration-300 ${
-                    selectedTab === seller._id ? "bg-white shadow-sm" : "bg-green-500 group-hover:bg-green-600"
+                    selectedTab === seller._id ? "bg-white shadow-sm" : "bg-primary-500 group-hover:bg-primary-600"
                   }`} />
                 </button>
               ))}
@@ -220,11 +220,11 @@ const ProductsByBrand: React.FC = () => {
               <button
                 type="button"
                 onClick={() => router.push("/suppliers")}
-                className="group relative flex items-center justify-center gap-4 px-6 py-4 rounded-2xl border-2 border-dashed border-green-400 text-green-600 hover:border-green-500 hover:bg-green-50 transition-all duration-300 transform hover:scale-105 min-w-48 min-h-24 bg-gradient-to-br from-green-50/50 to-emerald-50/50 backdrop-blur-sm overflow-hidden"
+                className="group relative flex items-center justify-center gap-4 px-6 py-4 rounded-2xl border-2 border-dashed border-primary-500 text-primary-600 hover:border-primary-600 hover:bg-primary-50 transition-all duration-300 transform hover:scale-105 min-w-48 min-h-24 bg-primary-50/50 backdrop-blur-sm overflow-hidden"
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-green-100 to-emerald-100 opacity-0 group-hover:opacity-50 transition-opacity duration-300"></div>
+                <div className="absolute inset-0 bg-primary-50 opacity-0 group-hover:opacity-50 transition-opacity duration-300"></div>
                 
-                <div className="relative w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center text-white font-bold text-lg group-hover:from-green-600 group-hover:to-emerald-700 transition-all duration-300 shadow-lg">
+                <div className="relative w-10 h-10 bg-primary-500 rounded-2xl flex items-center justify-center text-white font-bold text-lg group-hover:bg-primary-600 transition-all duration-300 shadow-lg">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                   </svg>
@@ -271,7 +271,7 @@ const ProductsByBrand: React.FC = () => {
             
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <button
-                className="group relative overflow-hidden bg-gradient-to-r from-green-500 to-emerald-600 text-white px-8 md:px-12 py-4 rounded-2xl text-lg font-semibold hover:from-green-600 hover:to-emerald-700 transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl flex items-center gap-3"
+                className="group relative overflow-hidden bg-primary-500 text-white px-8 md:px-12 py-4 rounded-2xl text-lg font-semibold hover:bg-primary-600 transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl flex items-center gap-3"
                 onClick={() => router.push("/products")}
               >
                 <span className="relative z-10">View All Products</span>
@@ -280,11 +280,11 @@ const ProductsByBrand: React.FC = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                   </svg>
                 </div>
-                <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-green-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute inset-0 bg-primary-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </button>
               
               <button
-                className="group flex items-center gap-3 px-8 py-4 rounded-2xl border-2 border-green-500 text-green-600 hover:bg-green-50 transition-all duration-300 transform hover:scale-105 font-semibold"
+                className="group flex items-center gap-3 px-8 py-4 rounded-2xl border-2 border-primary-500 text-primary-600 hover:bg-primary-50 transition-all duration-300 transform hover:scale-105 font-semibold"
                 onClick={() => router.push("/suppliers")}
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

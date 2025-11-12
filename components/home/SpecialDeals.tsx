@@ -147,7 +147,7 @@ const SpecialDeals: React.FC = () => {
     <div className="mb-16 container mx-auto px-4">
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-3">
-          <div className="bg-green-700 p-2 rounded-lg">
+          <div className="bg-primary-500 p-2 rounded-lg">
             <Gift className="w-5 h-5 text-white" />
           </div>
           <div>
@@ -158,11 +158,11 @@ const SpecialDeals: React.FC = () => {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <span className="bg-gray-100 text-green-700 px-3 py-1 rounded text-xs font-semibold border border-green-200">
+          <span className="bg-gray-100 text-primary-600 px-3 py-1 rounded text-xs font-semibold border border-primary-500">
             {displayDeals.length} Available
           </span>
           <button
-            className="ml-2 px-3 py-1 rounded text-xs font-semibold bg-white border border-emerald-200 text-emerald-600 hover:bg-emerald-50 transition"
+            className="ml-2 px-3 py-1 rounded text-xs font-semibold bg-white border border-primary-500 text-primary-600 hover:bg-primary-50 transition"
             onClick={() => {
               // TODO: Implement navigation to all deals page
             }}
@@ -202,7 +202,7 @@ const SpecialDeals: React.FC = () => {
                       key={i}
                       className="bg-white rounded-xl shadow border p-5 animate-pulse flex-shrink-0 w-[calc(90.91%-0.5rem)]"
                     >
-                      <div className="bg-green-200 h-8 rounded mb-3"></div>
+                      <div className="bg-primary-500/20 h-8 rounded mb-3"></div>
                       <div className="bg-gray-100 h-4 rounded mb-2"></div>
                       <div className="bg-gray-100 h-4 rounded w-3/4 mb-4"></div>
                       <div className="flex gap-2 mb-3">
@@ -218,7 +218,7 @@ const SpecialDeals: React.FC = () => {
               <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {[1, 2, 3].map((i) => (
                   <div key={i} className="bg-white rounded-xl shadow border p-5 animate-pulse">
-                    <div className="bg-green-200 h-8 rounded mb-3"></div>
+                    <div className="bg-primary-500/20 h-8 rounded mb-3"></div>
                     <div className="bg-gray-100 h-4 rounded mb-2"></div>
                     <div className="bg-gray-100 h-4 rounded w-3/4 mb-4"></div>
                     <div className="flex gap-2 mb-3">
@@ -283,8 +283,8 @@ const SpecialDeals: React.FC = () => {
               <button
                 key={index}
                 onClick={() => setCurrentSlide(index)}
-                className={`w-3 h-3 rounded-full border border-green-300 transition-all duration-200 ${
-                  currentSlide === index ? 'bg-green-700 w-6' : 'bg-gray-200 hover:bg-gray-300'
+                className={`w-3 h-3 rounded-full border border-primary-500 transition-all duration-200 ${
+                  currentSlide === index ? 'bg-primary-500 w-6' : 'bg-gray-200 hover:bg-gray-300'
                 }`}
               />
             ))}

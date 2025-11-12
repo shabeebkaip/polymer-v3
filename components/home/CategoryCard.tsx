@@ -14,7 +14,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ name, image, selectedCatego
   };
   return (
     <div
-      className="relative w-full aspect-[4/3] rounded-xl sm:rounded-t-2xl sm:rounded-b-xl lg:rounded-t-3xl lg:rounded-b-2xl overflow-hidden shadow-md hover:shadow-xl cursor-pointer hover:scale-105 focus:scale-105 focus:shadow-xl focus:ring-2 focus:ring-green-300 duration-300 transition group"
+      className="relative w-full aspect-[4/3] rounded-xl sm:rounded-t-2xl sm:rounded-b-xl lg:rounded-t-3xl lg:rounded-b-2xl overflow-hidden shadow-md hover:shadow-xl cursor-pointer hover:scale-105 focus:scale-105 focus:shadow-xl focus:ring-2 focus:ring-primary-500 duration-300 transition group"
       tabIndex={0}
       onClick={handleClick}
       onKeyPress={(e) => {

@@ -24,8 +24,8 @@ const ProductCard: React.FC<{ product: ProductHome }> = ({ product }) => {
       <p className="text-sm text-gray-600 flex-grow line-clamp-3">
         {product.description}
       </p>
-      <div className="mt-4 text-green-600 font-medium">
-        ₹{product.price} / {product.uom}
+      <div className="mt-4 text-primary-600 font-medium">
+        {product.price} / {product.uom}
       </div>
     </div>
   );

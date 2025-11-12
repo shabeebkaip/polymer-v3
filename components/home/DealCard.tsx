@@ -49,7 +49,7 @@ const DealCard: React.FC<{
     return (
       <button
         onClick={handleButtonClick}
-        className="w-full bg-green-700 text-white py-2 rounded font-medium border border-green-800 hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-400 transition-all duration-200 flex items-center justify-center gap-2 shadow-sm focus:ring-offset-2 group"
+        className="w-full bg-primary-500 text-white py-2 rounded font-medium border border-primary-600 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all duration-200 flex items-center justify-center gap-2 shadow-sm focus:ring-offset-2 group"
       >
         <Zap className="w-5 h-5 transition-transform duration-200 group-hover:scale-110" />
         <span className="tracking-tight">{getButtonText()}</span>
@@ -60,13 +60,13 @@ const DealCard: React.FC<{
   return (
     <div className="bg-white rounded-xl shadow border hover:shadow-xl transition-all duration-200 overflow-hidden group">
       {/* Badge */}
-      <div className="bg-green-700 text-white px-4 py-2 text-xs font-semibold flex items-center justify-between">
+      <div className="bg-primary-500 text-white px-4 py-2 text-xs font-semibold flex items-center justify-between">
         <span className="flex items-center gap-2">
           <Gift className="w-4 h-4" />
           {deal.badge}
         </span>
         {deal.discount > 0 && (
-          <span className="bg-white text-green-700 px-2 py-1 rounded text-xs font-bold border border-green-200">
+          <span className="bg-white text-primary-600 px-2 py-1 rounded text-xs font-bold border border-primary-500">
             -{deal.discount}% OFF
           </span>
         )}
@@ -79,8 +79,8 @@ const DealCard: React.FC<{
 
         {/* Supplier Info */}
         <div className="flex items-center gap-3 mb-3 p-2 bg-gray-50 rounded-lg">
-          <div className="w-8 h-8 bg-green-100 rounded flex items-center justify-center overflow-hidden">
-            <Package className="w-4 h-4 text-green-600" />
+          <div className="w-8 h-8 bg-primary-50 rounded flex items-center justify-center overflow-hidden">
+            <Package className="w-4 h-4 text-primary-500" />
           </div>
           <div className="flex-1 min-w-0">
             <h3 className="font-medium text-gray-900 text-sm truncate">{deal.supplier.name}</h3>
@@ -96,7 +96,7 @@ const DealCard: React.FC<{
 
         {/* Pricing */}
         <div className="flex items-center gap-2 mb-3">
-          <span className="text-xl font-bold text-green-700">
+          <span className="text-xl font-bold text-primary-600">
             {formatPrice(deal.discountedPrice)}
           </span>
           {deal.originalPrice !== deal.discountedPrice && (
