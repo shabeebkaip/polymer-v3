@@ -3,50 +3,18 @@
 import React, { useEffect, useRef, useState, ChangeEvent, useMemo } from 'react';
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
-import Cookies from 'js-cookie';
 import { toast } from 'sonner';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, Upload, CheckCircle2 } from 'lucide-react';
 
 import Input from '@/components/shared/Input';
 import { getIndustryList, imageUpload } from '@/apiServices/shared';
-import { register, verifyRegistrationOtp, resendRegistrationOtp } from '@/apiServices/auth';
+import { register } from '@/apiServices/auth';
 import { getCountryList } from '@/lib/useCountries';
-import { useUserInfo } from '@/lib/useUserInfo';
-
-interface Industry {
-  _id: string;
-  name: string;
-  bg: string;
-  image?: string;
-}
-
-interface Country {
-  code: string;
-  name: string;
-  dialCode: string;
-}
-
-interface RegisterData {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-  website: string;
-  phone: string;
-  company: string;
-  country_code: string;
-  industry: string;
-  address: string;
-  location: string;
-  company_logo: string;
-  user_type?: string;
-  vat_number?: string;
-}
+import OTPVerification from '@/components/auth/OTPVerification';
+import { Industry, Country, RegisterData } from '@/types/auth';
 
 const Register: React.FC = () => {
   const router = useRouter();
-  const { setUser } = useUserInfo();
   const searchParams = useSearchParams();
   const userType = searchParams.get('role');
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -56,9 +24,7 @@ const Register: React.FC = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [otpStep, setOtpStep] = useState(false);
-  const [otp, setOtp] = useState('');
-  const [verifyingOtp, setVerifyingOtp] = useState(false);
-  const [resendTimer, setResendTimer] = useState(0);
+  const [currentStep, setCurrentStep] = useState(1);
   const [data, setData] = useState<RegisterData>({
     firstName: '',
     lastName: '',
@@ -112,13 +78,14 @@ const Register: React.FC = () => {
     try {
       const { fileUrl } = await imageUpload(formData);
       setData((prev) => ({ ...prev, company_logo: fileUrl }));
+      toast.success('Logo uploaded successfully');
     } catch (error) {
       console.error('File upload failed', error);
+      toast.error('Failed to upload logo');
     }
   };
 
   const validateForm = () => {
-    // Basic validation
     if (
       !data.firstName ||
       !data.lastName ||
@@ -129,12 +96,10 @@ const Register: React.FC = () => {
       return 'Please fill in all required fields.';
     }
 
-    // Password confirmation
     if (data.password !== data.confirmPassword) {
       return 'Passwords do not match.';
     }
 
-    // Seller-specific validation
     if (data.user_type === 'seller') {
       if (!data.vat_number || data.vat_number.trim() === '') {
         return 'VAT number is required for sellers.';
@@ -147,45 +112,6 @@ const Register: React.FC = () => {
     return null;
   };
 
-  // Start countdown for resend button
-  useEffect(() => {
-    if (!otpStep) return;
-    if (resendTimer <= 0) return;
-    const interval = setInterval(() => setResendTimer((t) => t - 1), 1000);
-    return () => clearInterval(interval);
-  }, [resendTimer, otpStep]);
-
-  const handleResend = async () => {
-    if (!data.email) return;
-    const resp = await resendRegistrationOtp(data.email);
-    if (resp?.status) {
-      toast.success('Verification code resent');
-      setResendTimer(60); // 60 second cooldown
-    } else {
-      toast.error(resp?.message || 'Unable to resend code');
-    }
-  };
-
-  const handleVerifyOtp = async () => {
-    if (!otp || otp.length !== 6) {
-      toast.error('Enter 6-digit code');
-      return;
-    }
-    setVerifyingOtp(true);
-    const resp = await verifyRegistrationOtp(data.email, otp);
-    setVerifyingOtp(false);
-    if (resp?.status) {
-      toast.success('Email verified successfully');
-      // Save token & user
-      Cookies.set('token', resp.token);
-      Cookies.set('userInfo', JSON.stringify(resp.userInfo));
-      setUser(resp.userInfo);
-      router.push('/');
-    } else {
-      toast.error(resp?.message || 'Invalid code');
-    }
-  };
-
   const handleSubmit = async () => {
     const validationError = validateForm();
     if (validationError) {
@@ -194,18 +120,15 @@ const Register: React.FC = () => {
     }
 
     setIsLoading(true);
-    const toastId = toast.loading('Registering user...');
+    const toastId = toast.loading('Creating your account...');
 
     try {
       const response = await register(data);
-
       toast.dismiss(toastId);
 
       if (response?.status) {
-        // API doc indicates requiresVerification true and no token until OTP verify
-        toast.success('Registration successful. Check your email for the code.');
+        toast.success('Registration successful! Check your email for the verification code.');
         setOtpStep(true);
-        setResendTimer(60); // start countdown
       } else {
         toast.error(response?.message || 'Registration failed.');
         setIsLoading(false);
@@ -218,8 +141,42 @@ const Register: React.FC = () => {
     }
   };
 
+  const totalSteps = 3;
+
+  const nextStep = () => {
+    if (currentStep === 1) {
+      if (!data.firstName || !data.lastName || !data.email) {
+        toast.error('Please fill in all required fields');
+        return;
+      }
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(data.email)) {
+        toast.error('Please enter a valid email address');
+        return;
+      }
+    }
+    if (currentStep === 2) {
+      if (!data.password || !data.confirmPassword) {
+        toast.error('Please enter and confirm your password');
+        return;
+      }
+      if (data.password !== data.confirmPassword) {
+        toast.error('Passwords do not match');
+        return;
+      }
+      if (data.password.length < 6) {
+        toast.error('Password must be at least 6 characters');
+        return;
+      }
+    }
+    setCurrentStep((prev) => Math.min(prev + 1, totalSteps));
+  };
+
+  const prevStep = () => {
+    setCurrentStep((prev) => Math.max(prev - 1, 1));
+  };
+
   const isFormValid = () => {
-    // Basic validation
     if (
       !data.firstName ||
       !data.lastName ||
@@ -230,7 +187,6 @@ const Register: React.FC = () => {
       return false;
     }
 
-    // Seller-specific validation
     if (data.user_type === 'seller') {
       if (
         !data.vat_number ||
@@ -246,371 +202,436 @@ const Register: React.FC = () => {
   };
 
   return (
-    <>
-      <div className="w-full max-w-2xl bg-white/90 rounded-2xl shadow-xl border border-gray-100 p-6 sm:p-8 flex flex-col gap-6 mx-auto">
-        {/* Company Logo Upload Section */}
-        <div className="text-center ">
-          <Image
-            src="/typography.svg"
-            alt="Logo"
-            width={90}
-            height={40}
-            className="h-8 w-auto cursor-pointer hover:opacity-80 transition-opacity mx-auto"
-            onClick={() => router.push('/')}
-          />
+    <div className="flex flex-col items-center justify-center gap-6 w-full">
+      {/* Logo Section */}
+      <div className="text-center">
+        <Image
+          src="/typography.svg"
+          alt="Logo"
+          width={100}
+          height={50}
+          className="h-14 w-auto cursor-pointer hover:opacity-80 transition-opacity mx-auto"
+          onClick={() => router.push('/')}
+        />
+      </div>
+
+      {/* Header Section */}
+      {!otpStep && (
+        <div className="text-center space-y-2 max-w-lg">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+            Create Your Account
+          </h1>
+          <p className="text-gray-600 text-sm">
+            Join the Polymer Marketplace in 3 simple steps
+          </p>
         </div>
-        {!otpStep && (
-          <div className="text-center space-y-1 max-w-xl  mx-auto">
-            <h1 className="text-2xl font-bold text-gray-900">Create your account</h1>
-            <p className="text-gray-500 text-sm">Join the Polymer Marketplace</p>
+      )}
+      {otpStep && (
+        <div className="text-center space-y-2 max-w-lg">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+            Verify Your Email
+          </h1>
+          <p className="text-gray-600 text-sm">{`We've sent a 6-digit code to ${data.email}`}</p>
+        </div>
+      )}
+
+      {/* Progress Indicator */}
+      {!otpStep && (
+        <div className="w-full max-w-2xl">
+          <div className="flex items-center justify-between">
+            {[1, 2, 3].map((step) => (
+              <React.Fragment key={step}>
+                <div className="flex flex-col items-center flex-1">
+                  <div
+                    className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold text-sm transition-all duration-300 ${
+                      currentStep >= step
+                        ? 'bg-gradient-to-r from-green-600 to-emerald-600 text-white shadow-md'
+                        : 'bg-gray-200 text-gray-500'
+                    }`}
+                  >
+                    {currentStep > step ? (
+                      <CheckCircle2 className="w-5 h-5" />
+                    ) : (
+                      step
+                    )}
+                  </div>
+                  <span className={`text-xs mt-1.5 font-medium ${
+                    currentStep >= step ? 'text-green-700' : 'text-gray-400'
+                  }`}>
+                    {step === 1 && 'Personal'}
+                    {step === 2 && 'Security'}
+                    {step === 3 && 'Business'}
+                  </span>
+                </div>
+                {step < 3 && (
+                  <div className={`h-0.5 flex-1 mx-2 transition-all duration-300 ${
+                    currentStep > step ? 'bg-gradient-to-r from-green-600 to-emerald-600' : 'bg-gray-200'
+                  }`} />
+                )}
+              </React.Fragment>
+            ))}
           </div>
-        )}
-        {otpStep && (
-          <div className="text-center space-y-2 max-w-xl mx-auto">
-            <h1 className="text-2xl font-bold text-gray-900">Verify your email</h1>
-            <p className="text-gray-500 text-sm">{`We've sent a 6-digit code to ${data.email}`}</p>
-            <p className="text-xs text-gray-400">Enter the code below to activate your account.</p>
-          </div>
-        )}
-        {!otpStep && (
-          <div className="flex flex-col items-center gap-2 mb-2">
-            <p className="text-xs font-medium text-gray-700 mb-1">
-              Company Logo{' '}
-              {data.user_type === 'seller' ? (
-                <span className="text-red-500">*</span>
-              ) : (
-                <span className="text-gray-400">(optional)</span>
-              )}
-            </p>
-            {data?.company_logo ? (
-              <div className="flex flex-col items-center gap-1">
-                <div
-                  className="w-20 h-20 border-2 border-green-200 shadow cursor-pointer hover:scale-105 transition-transform rounded-full bg-gradient-to-br from-green-100 to-emerald-100 flex items-center justify-center overflow-hidden"
-                  onClick={handleAvatarClick}
-                >
-                  <Image
-                    src={data.company_logo}
-                    alt="Company Logo"
-                    width={64}
-                    height={64}
-                    className="w-full h-full object-cover rounded-full"
+        </div>
+      )}
+
+      {/* Form Content */}
+      {!otpStep && (
+        <div className="w-full max-w-2xl">
+          <>
+            {/* STEP 1: Personal Information */}
+            {currentStep === 1 && (
+              <div className="space-y-4">
+                <div className="text-center pb-2">
+                  <h2 className="text-xl font-semibold text-gray-800">Personal Information</h2>
+                  <p className="text-sm text-gray-600 mt-1">Let's start with your basic details</p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-sm font-medium text-gray-700">
+                      First Name <span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      id="firstName"
+                      placeholder="Enter your first name"
+                      value={data.firstName}
+                      onChange={onFieldChange}
+                      className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-sm font-medium text-gray-700">
+                      Last Name <span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      id="lastName"
+                      placeholder="Enter your last name"
+                      value={data.lastName}
+                      onChange={onFieldChange}
+                      className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-sm font-medium text-gray-700">
+                    Email Address <span className="text-red-500">*</span>
+                  </label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="your.email@company.com"
+                    value={data.email}
+                    onChange={onFieldChange}
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">We'll send a verification code to this email</p>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-sm font-medium text-gray-700">
+                    Phone Number
+                  </label>
+                  <div className="flex gap-2">
+                    <select
+                      id="country_code"
+                      value={data.country_code}
+                      onChange={onFieldChange}
+                      className="px-3 py-2.5 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 w-32"
+                    >
+                      {countries?.map((c, idx) => (
+                        <option key={idx} value={c.dialCode}>
+                          {c.code} {c.dialCode}
+                        </option>
+                      ))}
+                    </select>
+                    <Input
+                      type="text"
+                      id="phone"
+                      placeholder="Phone number"
+                      value={data.phone}
+                      onChange={onFieldChange}
+                      className="flex-1 px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* STEP 2: Security */}
+            {currentStep === 2 && (
+              <div className="space-y-4">
+                <div className="text-center pb-2">
+                  <h2 className="text-xl font-semibold text-gray-800">Security</h2>
+                  <p className="text-sm text-gray-600 mt-1">Create a strong password to protect your account</p>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-sm font-medium text-gray-700">
+                    Password <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      type={showPassword ? 'text' : 'password'}
+                      value={data.password}
+                      onChange={onFieldChange}
+                      placeholder="Create a strong password"
+                      className="w-full px-4 py-2.5 pr-12 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                    />
+                    <button
+                      type="button"
+                      className="absolute inset-y-0 right-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">Password must be at least 6 characters long</p>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-sm font-medium text-gray-700">
+                    Confirm Password <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <Input
+                      id="confirmPassword"
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      value={data.confirmPassword}
+                      onChange={onFieldChange}
+                      placeholder="Confirm your password"
+                      className="w-full px-4 py-2.5 pr-12 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                    />
+                    <button
+                      type="button"
+                      className="absolute inset-y-0 right-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    >
+                      {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
+                </div>
+
+                {data.password && data.confirmPassword && data.password !== data.confirmPassword && (
+                  <div className="flex items-center gap-2 p-2.5 bg-red-50 border border-red-200 rounded-xl">
+                    <svg className="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-xs text-red-700 font-medium">Passwords do not match</span>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* STEP 3: Business Details */}
+            {currentStep === 3 && (
+              <div className="space-y-4">
+                <div className="text-center pb-2">
+                  <h2 className="text-xl font-semibold text-gray-800">Business Details</h2>
+                  <p className="text-sm text-gray-600 mt-1">Tell us about your company</p>
+                </div>
+
+                {/* Company Logo Upload */}
+                <div className="space-y-1">
+                  <label className="text-sm font-medium text-gray-700">
+                    Company Logo{' '}
+                    {data.user_type === 'seller' ? (
+                      <span className="text-red-500">*</span>
+                    ) : (
+                      <span className="text-gray-500 font-normal">(Optional)</span>
+                    )}
+                  </label>
+                  {data?.company_logo ? (
+                    <div className="flex items-center gap-3 p-3 bg-gray-50 border border-gray-200 rounded-xl">
+                      <div className="w-16 h-16 border border-green-300 rounded-xl bg-white flex items-center justify-center overflow-hidden flex-shrink-0">
+                        <Image
+                          src={data.company_logo}
+                          alt="Company Logo"
+                          width={64}
+                          height={64}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-gray-700">Logo uploaded</p>
+                        <button
+                          type="button"
+                          onClick={handleAvatarClick}
+                          className="text-xs text-green-600 hover:text-green-700 font-medium mt-0.5"
+                        >
+                          Change logo
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      className="w-full flex flex-col items-center justify-center p-6 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50 hover:border-green-400 hover:bg-green-50 transition-all duration-200 focus:outline-none"
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-2">
+                        <Upload className="w-6 h-6 text-green-600" />
+                      </div>
+                      <span className="text-sm font-medium text-gray-700">Upload Company Logo</span>
+                      <span className="text-xs text-gray-500 mt-1">PNG, JPG up to 5MB</span>
+                    </button>
+                  )}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    ref={fileInputRef}
+                    onChange={onFileChange}
+                    className="hidden"
                   />
                 </div>
-                <button
-                  type="button"
-                  onClick={handleAvatarClick}
-                  className="text-xs text-green-600 hover:text-green-700 font-medium"
-                >
-                  Change Logo
-                </button>
-                <input
-                  type="file"
-                  accept="image/*"
-                  ref={fileInputRef}
-                  onChange={onFileChange}
-                  className="hidden"
-                />
-              </div>
-            ) : (
-              <button
-                type="button"
-                className="flex flex-col items-center justify-center w-20 h-20 border-2 border-dashed border-green-300 rounded-full bg-green-50 hover:border-green-400 hover:bg-green-100 transition-colors focus:outline-none"
-                onClick={() => fileInputRef.current?.click()}
-              >
-                <svg
-                  className="w-6 h-6 text-green-500 mb-1"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                  />
-                </svg>
-                <span className="text-xs text-green-700 font-medium">Upload Logo</span>
-                <input
-                  type="file"
-                  accept="image/*"
-                  ref={fileInputRef}
-                  onChange={onFileChange}
-                  className="hidden"
-                />
-              </button>
-            )}
-          </div>
-        )}
 
-        {/* Registration Form Fields */}
-        {!otpStep && (
-          <div className="flex flex-col gap-4">
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="flex-1">
-                <label className="text-xs font-medium text-gray-700 mb-1 block">First Name</label>
-                <Input
-                  id="firstName"
-                  placeholder="First name"
-                  value={data.firstName}
-                  onChange={onFieldChange}
-                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
-                />
-              </div>
-              <div className="flex-1">
-                <label className="text-xs font-medium text-gray-700 mb-1 block">Last Name</label>
-                <Input
-                  id="lastName"
-                  placeholder="Last name"
-                  value={data.lastName}
-                  onChange={onFieldChange}
-                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
-                />
-              </div>
-              <div className="flex-1">
-                <label className="text-xs font-medium text-gray-700 mb-1 block">
-                  Email Address
-                </label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="Email address"
-                  value={data.email}
-                  onChange={onFieldChange}
-                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
-                />
-              </div>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="flex-1 flex flex-col">
-                <label className="text-xs font-medium text-gray-700 mb-1 block">Phone Number</label>
-                <div className="flex w-full rounded-lg border border-gray-200 focus-within:ring-2 focus-within:ring-green-500 focus-within:border-transparent transition-all duration-200">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-sm font-medium text-gray-700">
+                      Company Name
+                    </label>
+                    <Input
+                      id="company"
+                      placeholder="Your company name"
+                      value={data.company}
+                      onChange={onFieldChange}
+                      className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-sm font-medium text-gray-700">
+                      Website
+                    </label>
+                    <Input
+                      id="website"
+                      placeholder="https://company.com"
+                      value={data.website}
+                      onChange={onFieldChange}
+                      className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-sm font-medium text-gray-700">
+                      VAT Number{' '}
+                      {data.user_type === 'seller' ? <span className="text-red-500">*</span> : null}
+                    </label>
+                    <Input
+                      id="vat_number"
+                      placeholder="Enter VAT number"
+                      value={data.vat_number || ''}
+                      onChange={onFieldChange}
+                      className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-sm font-medium text-gray-700">
+                      Industry
+                    </label>
+                    <select
+                      id="industry"
+                      value={data.industry}
+                      onChange={onFieldChange}
+                      className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 bg-white"
+                    >
+                      <option value="">Select Industry</option>
+                      {industryList.map((item) => (
+                        <option key={item._id} value={item._id}>
+                          {item.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-sm font-medium text-gray-700">
+                    Location
+                  </label>
                   <select
-                    id="country_code"
-                    value={data.country_code}
+                    id="location"
+                    value={data.location}
                     onChange={onFieldChange}
-                    className="px-2 py-2 bg-gray-50 text-xs border-r border-gray-200 rounded-l-lg focus:outline-none focus:bg-white w-28 min-w-[80px]"
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 bg-white"
                   >
-                    {countries?.map((c, idx) => (
-                      <option key={idx} value={c.dialCode}>
-                        {c.code} {c.dialCode}
+                    <option value="">Select Location</option>
+                    {countries.map((c, idx) => (
+                      <option key={idx} value={c.name}>
+                        {c.name}
                       </option>
                     ))}
                   </select>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-sm font-medium text-gray-700">
+                    Address
+                  </label>
                   <Input
-                    type="text"
-                    id="phone"
-                    placeholder="Phone number"
-                    value={data.phone}
+                    id="address"
+                    placeholder="Full business address"
+                    value={data.address}
                     onChange={onFieldChange}
-                    className="flex-1 px-3 py-2 text-sm rounded-r-lg border-0 focus:outline-none w-full"
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
                   />
                 </div>
               </div>
-              <div className="flex-1">
-                <label className="text-xs font-medium text-gray-700 mb-1 block">Company Name</label>
-                <Input
-                  id="company"
-                  placeholder="Company name"
-                  value={data.company}
-                  onChange={onFieldChange}
-                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
-                />
-              </div>
-              <div className="flex-1">
-                <label className="text-xs font-medium text-gray-700 mb-1 block">Website</label>
-                <Input
-                  id="website"
-                  placeholder="https://company.com"
-                  value={data.website}
-                  onChange={onFieldChange}
-                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
-                />
-              </div>
-            </div>
+            )}
 
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="flex-1">
-                <label className="text-xs font-medium text-gray-700 mb-1 block">
-                  VAT Number{' '}
-                  {data.user_type === 'seller' ? <span className="text-red-500">*</span> : null}
-                </label>
-                <Input
-                  id="vat_number"
-                  placeholder="VAT number"
-                  value={data.vat_number || ''}
-                  onChange={onFieldChange}
-                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
-                />
-              </div>
-              <div className="flex-1">
-                <label className="text-xs font-medium text-gray-700 mb-1 block">Industry</label>
-                <select
-                  id="industry"
-                  value={data.industry}
-                  onChange={onFieldChange}
-                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 bg-white"
+            {/* Navigation Buttons */}
+            <div className="flex gap-3 mt-6 pt-4">
+              {currentStep > 1 && (
+                <button
+                  onClick={prevStep}
+                  className="px-5 py-2.5 bg-gray-100 text-gray-700 font-medium rounded-xl
+                            hover:bg-gray-200 transition-all duration-200 flex items-center gap-2"
                 >
-                  <option value="">Select Industry</option>
-                  {industryList.map((item) => (
-                    <option key={item._id} value={item._id}>
-                      {item.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="flex-1">
-                <label className="text-xs font-medium text-gray-700 mb-1 block">Location</label>
-                <select
-                  id="location"
-                  value={data.location}
-                  onChange={onFieldChange}
-                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 bg-white"
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                  Previous
+                </button>
+              )}
+              {currentStep < totalSteps && (
+                <button
+                  onClick={nextStep}
+                  className="flex-1 px-6 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-medium rounded-xl
+                            hover:from-green-700 hover:to-emerald-700 focus:outline-none focus:ring-4 focus:ring-green-300
+                            transform hover:scale-[1.02] transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
                 >
-                  <option value="">Select Location</option>
-                  {countries.map((c, idx) => (
-                    <option key={idx} value={c.name}>
-                      {c.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
+                  Continue
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              )}
+              {currentStep === totalSteps && (
+                <button
+                  onClick={handleSubmit}
+                  disabled={!isFormValid() || isLoading}
+                  className="flex-1 px-6 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-medium rounded-xl
+                            hover:from-green-700 hover:to-emerald-700 focus:outline-none focus:ring-4 focus:ring-green-300
+                            disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02]
+                            transition-all duration-200 shadow-lg hover:shadow-xl"
+                >
+                  {isLoading ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      Creating Account...
+                    </span>
+                  ) : (
+                    'Create Account'
+                  )}
+                </button>
+              )}
             </div>
 
-            <div>
-              <label className="text-xs font-medium text-gray-700 mb-1 block">Address</label>
-              <Input
-                id="address"
-                placeholder="Full address"
-                value={data.address}
-                onChange={onFieldChange}
-                className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
-              />
-            </div>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="flex-1">
-                <label className="text-xs font-medium text-gray-700 mb-1 block">Password</label>
-                <div className="relative">
-                  <Input
-                    id="password"
-                    type={showPassword ? 'text' : 'password'}
-                    value={data.password}
-                    onChange={onFieldChange}
-                    placeholder="Create password"
-                    className="w-full px-3 py-2 pr-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
-                  />
-                  <button
-                    type="button"
-                    className="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                  </button>
-                </div>
-              </div>
-              <div className="flex-1">
-                <label className="text-xs font-medium text-gray-700 mb-1 block">
-                  Confirm Password
-                </label>
-                <div className="relative">
-                  <Input
-                    id="confirmPassword"
-                    type={showConfirmPassword ? 'text' : 'password'}
-                    value={data.confirmPassword}
-                    onChange={onFieldChange}
-                    placeholder="Confirm password"
-                    className="w-full px-3 py-2 pr-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
-                  />
-                  <button
-                    type="button"
-                    className="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  >
-                    {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* OTP STEP UI */}
-        {otpStep && (
-          <div className="flex flex-col gap-6">
-            <div className="flex justify-center gap-2">
-              {[0, 1, 2, 3, 4, 5].map((i) => (
-                <input
-                  key={i}
-                  inputMode="numeric"
-                  maxLength={1}
-                  value={otp[i] || ''}
-                  onChange={(e) => {
-                    const val = e.target.value.replace(/[^0-9]/g, '');
-                    if (!val) {
-                      const newOtp = otp.split('');
-                      newOtp[i] = '';
-                      setOtp(newOtp.join(''));
-                      return;
-                    }
-                    const newOtp = otp.padEnd(6, ' ').split('');
-                    newOtp[i] = val;
-                    const joined = newOtp.join('').replace(/\s/g, '');
-                    setOtp(joined);
-                    // focus next
-                    const next = document.getElementById(`otp-${i + 1}`) as HTMLInputElement | null;
-                    if (next) next.focus();
-                  }}
-                  id={`otp-${i}`}
-                  className="w-12 h-14 text-center text-xl font-semibold border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 tracking-widest"
-                />
-              ))}
-            </div>
-            <div className="text-center text-sm text-gray-500 flex flex-col gap-2">
-              <p>{`Didn't receive the code?`}</p>
-              <button
-                disabled={resendTimer > 0}
-                onClick={handleResend}
-                className="text-green-600 disabled:text-gray-400 font-medium hover:underline"
-              >
-                {resendTimer > 0 ? `Resend in ${resendTimer}s` : 'Resend Code'}
-              </button>
-            </div>
-            <button
-              onClick={handleVerifyOtp}
-              disabled={otp.length !== 6 || verifyingOtp}
-              className="w-full px-4 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold rounded-lg text-base disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {verifyingOtp ? 'Verifying...' : 'Verify & Continue'}
-            </button>
-            <button
-              onClick={() => {
-                setOtpStep(false);
-                setIsLoading(false);
-              }}
-              className="text-xs text-gray-400 hover:text-gray-500 underline"
-            >
-              Edit registration details
-            </button>
-          </div>
-        )}
-
-        {/* Primary Action Buttons */}
-        {!otpStep && (
-          <>
-            <div className="pt-2">
-              <button
-                onClick={handleSubmit}
-                disabled={!isFormValid()}
-                className="w-full px-4 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold rounded-lg text-base
-                          hover:from-green-700 hover:to-emerald-700 focus:outline-none focus:ring-4 focus:ring-green-300
-                          disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02]
-                          transition-all duration-200 shadow-lg hover:shadow-xl cursor-pointer"
-              >
-                {isLoading ? 'Creating Account...' : 'Create Account'}
-              </button>
-            </div>
-            <div className="text-center pt-1">
-              <p className="text-gray-500 text-xs">
+            {/* Sign In Link */}
+            <div className="text-center pt-4">
+              <p className="text-gray-600 text-sm">
                 Already have an account?{' '}
                 <button
                   onClick={() => router.push('/auth/login')}
@@ -621,9 +642,17 @@ const Register: React.FC = () => {
               </p>
             </div>
           </>
-        )}
-      </div>
-    </>
+        </div>
+      )}
+
+      {/* OTP Verification */}
+      {otpStep && (
+        <OTPVerification 
+          email={data.email} 
+          onBack={() => setOtpStep(false)}
+        />
+      )}
+    </div>
   );
 };
 
