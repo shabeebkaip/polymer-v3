@@ -48,7 +48,7 @@ const SupplierDetail = () => {
     return (
       <section className="container mt-10 mx-auto px-4">
         <div className="animate-pulse">
-          <div className="bg-gradient-to-r from-green-50 to-green-100 rounded-2xl p-8 mb-8">
+          <div className="bg-primary-50 rounded-2xl p-8 mb-8">
             <div className="flex flex-col md:flex-row gap-8 items-start">
               <Skeleton className="w-32 h-32 rounded-xl" />
               <div className="flex-1 space-y-4">
@@ -83,7 +83,7 @@ const SupplierDetail = () => {
   return (
     <section className="container mt-10 mx-auto px-4 pb-12">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-green-50 to-green-100 rounded-2xl p-8 mb-8">
+      <div className="bg-primary-50 rounded-2xl p-8 mb-8">
         <div className="flex flex-col md:flex-row gap-8 items-start">
           <div className="flex-shrink-0">
             <Image
@@ -99,17 +99,17 @@ const SupplierDetail = () => {
             <h1 className="text-4xl font-bold text-gray-900 mb-4">{supplier.company}</h1>
             <div className="flex flex-wrap gap-4 mb-6 text-gray-600">
               <div className="flex items-center gap-2">
-                <MapPin className="w-5 h-5 text-green-600" />
+                <MapPin className="w-5 h-5 text-primary-500" />
                 <span>{supplier.location}</span>
               </div>
               {supplier.website && (
                 <div className="flex items-center gap-2">
-                  <Globe className="w-5 h-5 text-green-600" />
+                  <Globe className="w-5 h-5 text-primary-500" />
                   <a
                     href={supplier.website}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-green-600 hover:text-green-800 hover:underline"
+                    className="text-primary-500 hover:text-primary-600 hover:underline"
                   >
                     Visit Website
                   </a>
@@ -117,12 +117,12 @@ const SupplierDetail = () => {
               )}
             </div>
             <div className="flex flex-wrap gap-2 mb-6">
-              <Badge variant="secondary" className="bg-green-100 text-green-800">
+              <Badge variant="secondary" className="bg-primary-50 text-primary-600">
                 <Building2 className="w-4 h-4 mr-1" />
                 Verified Supplier
               </Badge>
               {supplier.yearsInBusiness && (
-                <Badge variant="secondary" className="bg-green-100 text-green-800">
+                <Badge variant="secondary" className="bg-primary-50 text-primary-600">
                   <Calendar className="w-4 h-4 mr-1" />
                   {supplier.yearsInBusiness}+ Years
                 </Badge>
@@ -130,7 +130,7 @@ const SupplierDetail = () => {
             </div>
             <div className="flex flex-wrap gap-3">
               <Button
-                className="bg-gradient-to-r from-green-600 to-green-800 hover:from-green-700 hover:to-green-700"
+                className="bg-primary-500 hover:bg-primary-600"
                 onClick={() => window.open(`mailto:${supplier.email}`, '_blank')}
               >
                 <Mail className="w-4 h-4 mr-2" />
@@ -139,7 +139,7 @@ const SupplierDetail = () => {
               {supplier.website && (
                 <Button
                   variant="outline"
-                  className="border-green-600 text-green-600 hover:bg-green-50"
+                  className="border-primary-500 text-primary-500 hover:bg-primary-50"
                   onClick={() => window.open(supplier.website, '_blank')}
                 >
                   <Globe className="w-4 h-4 mr-2" />
@@ -162,13 +162,13 @@ const SupplierDetail = () => {
               dangerouslySetInnerHTML={{
                 __html: `
                   <style>
-                    .supplier-about strong { color: #166534; font-weight: bold; }
-                    .supplier-about em { color: #047857; font-style: italic; }
-                    .supplier-about ul { margin: 1em 0 1em 1.5em; list-style: disc; color: #166534; }
+                    .supplier-about strong { color: #136F47; font-weight: bold; }
+                    .supplier-about em { color: #136F47; font-style: italic; }
+                    .supplier-about ul { margin: 1em 0 1em 1.5em; list-style: disc; color: #136F47; }
                     .supplier-about li { margin-bottom: 0.5em; }
-                    .supplier-about h3, .supplier-about h2 { color: #166534; font-size: 1.25em; font-weight: bold; margin-top: 1em; margin-bottom: 0.5em; }
-                    .supplier-about a { color: #047857; text-decoration: underline; }
-                    .supplier-about blockquote { border-left: 4px solid #047857; padding-left: 1em; color: #166534; background: #f0fdf4; margin: 1em 0; }
+                    .supplier-about h3, .supplier-about h2 { color: #136F47; font-size: 1.25em; font-weight: bold; margin-top: 1em; margin-bottom: 0.5em; }
+                    .supplier-about a { color: #136F47; text-decoration: underline; }
+                    .supplier-about blockquote { border-left: 4px solid #136F47; padding-left: 1em; color: #136F47; background: #e8f5f0; margin: 1em 0; }
                   </style>
                   <div class="supplier-about">
                     ${supplier.about_us || `${supplier.company} is a <strong>trusted supplier</strong> in the polymer and chemical industry, committed to providing <em>high-quality products</em> and exceptional service to customers worldwide. With years of experience in the market, we specialize in delivering <strong>innovative solutions</strong> that meet the evolving needs of our clients.`}
@@ -177,15 +177,15 @@ const SupplierDetail = () => {
               }}
             />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="flex items-center gap-3 p-3 bg-green-50 rounded-lg">
-                <Shield className="w-6 h-6 text-green-600" />
+              <div className="flex items-center gap-3 p-3 bg-primary-50 rounded-lg">
+                <Shield className="w-6 h-6 text-primary-500" />
                 <div>
                   <p className="font-semibold text-gray-900">Quality Assured</p>
                   <p className="text-sm text-gray-600">Certified products & processes</p>
                 </div>
               </div>
-              <div className="flex items-center gap-3 p-3 bg-green-50 rounded-lg">
-                <Truck className="w-6 h-6 text-green-600" />
+              <div className="flex items-center gap-3 p-3 bg-primary-50 rounded-lg">
+                <Truck className="w-6 h-6 text-primary-500" />
                 <div>
                   <p className="font-semibold text-gray-900">Fast Delivery</p>
                   <p className="text-sm text-gray-600">Reliable logistics network</p>
@@ -236,7 +236,7 @@ const SupplierDetail = () => {
               <div className="space-y-2">
                 {supplier.certifications.map((cert, index) => (
                   <div key={index} className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <div className="w-2 h-2 bg-primary-500 rounded-full"></div>
                     <span className="text-sm text-gray-700">{cert}</span>
                   </div>
                 ))}
@@ -283,16 +283,16 @@ const SupplierDetail = () => {
       </div>
 
       {/* Contact CTA */}
-      <div className="bg-gradient-to-r from-green-400 to-green-600  via-green-600 rounded-2xl p-8 mt-8 text-center text-white">
+      <div className="bg-primary-500 rounded-2xl p-8 mt-8 text-center text-white">
         <h2 className="text-3xl font-bold mb-4">Ready to Connect?</h2>
-        <p className="text-green-100 mb-6 max-w-2xl mx-auto">
+        <p className="text-primary-50 mb-6 max-w-2xl mx-auto">
           {`Get in touch with ${supplier.company} to discuss your requirements,
           request quotes, or learn more about their products and services.`}
         </p>
         <div className="flex flex-wrap justify-center gap-4">
           <Button
             size="lg"
-            className="bg-white text-green-600 hover:bg-gray-100 cursor-pointer"
+            className="bg-white text-primary-500 hover:bg-primary-50 cursor-pointer"
             onClick={() => window.open(`mailto:${supplier.email}`, '_blank')}
           >
             <Mail className="w-5 h-5 mr-2" />
@@ -302,7 +302,7 @@ const SupplierDetail = () => {
             <Button
               size="lg"
               variant="outline"
-              className="bg-white text-green-600 hover:bg-gray-100 cursor-pointer"
+              className="bg-white text-primary-500 hover:bg-primary-50 cursor-pointer"
               onClick={() => window.open(supplier.website, '_blank')}
             >
               <Globe className="w-5 h-5 mr-2" />
