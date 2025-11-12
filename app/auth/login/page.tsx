@@ -62,55 +62,54 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center gap-4 w-full">
+    <div className="flex flex-col items-center justify-center gap-6 w-full">
       {/* Logo Section */}
       <div className="text-center">
-        <Image
-          src="/typography.svg"
-          alt="Logo"
-          width={90}
-          height={45}
-          className="h-10 w-auto cursor-pointer hover:opacity-80 transition-opacity mx-auto"
-          onClick={() => router.push("/")}
-        />
+        <Link href="/" className="inline-block cursor-pointer hover:opacity-80 transition-opacity">
+          <Image
+            src="/logo.png"
+            alt="Logo"
+            width={200}
+            height={200}
+            className="h-20 w-auto mx-auto"
+          />
+        </Link>
       </div>
 
       {/* Header Section */}
-      <div className="text-center space-y-1 max-w-md">
-        <h1 className="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
-          {"Welcome Back"}
+      <div className="text-center space-y-2 max-w-lg">
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+          Welcome Back
         </h1>
         <p className="text-gray-600 text-sm">
-          {"Sign in to your account"}
+          Sign in to your account to continue
         </p>
       </div>
 
       {/* Login Form */}
-      <div className="w-full max-w-sm space-y-4">
+      <div className="w-full max-w-md space-y-4">
         {/* Email Field */}
         <div className="space-y-1">
           <label htmlFor="email" className="text-sm font-medium text-gray-700">
-            Email Address
+            Email Address <span className="text-red-500">*</span>
           </label>
-          <div className="relative">
-            <Input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                setEmail(e.target.value)
-              }
-              required
-              placeholder="Enter your email"
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
-            />
-          </div>
+          <Input
+            type="email"
+            id="email"
+            value={email}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              setEmail(e.target.value)
+            }
+            required
+            placeholder="your.email@company.com"
+            className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+          />
         </div>
 
         {/* Password Field */}
         <div className="space-y-1">
           <label htmlFor="password" className="text-sm font-medium text-gray-700">
-            Password
+            Password <span className="text-red-500">*</span>
           </label>
           <div className="relative">
             <Input
@@ -139,31 +138,24 @@ const Login: React.FC = () => {
           type="button"
           onClick={handleSubmit}
           disabled={isLoading || !email || !password}
-          className="w-full px-6 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-medium rounded-xl 
+          className="w-full px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-medium rounded-xl 
                    hover:from-green-700 hover:to-emerald-700 focus:outline-none focus:ring-4 focus:ring-green-300 
                    disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02] 
                    transition-all duration-200 shadow-lg hover:shadow-xl"
         >
           {isLoading ? (
-            <div className="flex items-center justify-center gap-2">
+            <span className="flex items-center justify-center gap-2">
               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
               Signing in...
-            </div>
+            </span>
           ) : (
             "Sign In"
           )}
         </button>
       </div>
 
-      {/* Divider */}
-      <div className="flex items-center w-full max-w-sm">
-        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
-        <span className="px-3 text-xs text-gray-500 font-medium">or</span>
-        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
-      </div>
-
       {/* Sign Up Link */}
-      <div className="text-center">
+      <div className="text-center pt-2">
         <p className="text-gray-600 text-sm">
           Don&apos;t have an account?{' '}
           <Link

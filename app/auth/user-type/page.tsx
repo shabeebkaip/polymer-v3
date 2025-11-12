@@ -1,5 +1,6 @@
 'use client';
 import Image from 'next/image';
+import Link from 'next/link';
 import React from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -36,14 +37,15 @@ const UserTypeSelection: React.FC = () => {
     <div className="flex flex-col items-center justify-center gap-6 w-full h-full">
       {/* Logo Section */}
       <div className="text-center">
-        <Image
-          src="/typography.svg"
-          alt="Logo"
-          width={100}
-          height={50}
-          className="h-14 w-auto cursor-pointer hover:opacity-80 transition-opacity mx-auto"
-          onClick={() => router.push('/')}
-        />
+        <Link href="/" className="inline-block cursor-pointer hover:opacity-80 transition-opacity">
+          <Image
+            src="/logo.png"
+            alt="Logo"
+            width={200}
+            height={200}
+            className="h-20 w-auto mx-auto"
+          />
+        </Link>
       </div>
 
       {/* Header Section */}
@@ -53,7 +55,7 @@ const UserTypeSelection: React.FC = () => {
         </h1>
         <h2 className="text-xl font-semibold text-gray-800">Select your role to continue</h2>
         <p className="text-gray-600 leading-relaxed text-sm">
-          Select your role below to get started with our Polymer Marketplace.
+          Choose your account type to get started with the Polymer Marketplace
         </p>
       </div>
       {/* User Type Selection */}
@@ -117,15 +119,15 @@ const UserTypeSelection: React.FC = () => {
       </div>
 
       {/* Already have account link */}
-      <div className="text-center">
+      <div className="text-center pt-2">
         <p className="text-gray-600 text-sm">
           Already have an account?{' '}
-          <button
-            onClick={() => router.push('/auth/login')}
-            className="font-semibold text-base text-green-700 hover:text-green-800 transition-colors hover:underline"
+          <Link
+            href="/auth/login"
+            className="font-medium text-green-600 hover:text-green-700 transition-colors hover:underline"
           >
             Sign in here
-          </button>
+          </Link>
         </p>
       </div>
     </div>

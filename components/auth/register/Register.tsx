@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState, ChangeEvent, useMemo } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
 import { Eye, EyeOff, Upload, CheckCircle2 } from 'lucide-react';
@@ -205,14 +206,15 @@ const Register: React.FC = () => {
     <div className="flex flex-col items-center justify-center gap-6 w-full">
       {/* Logo Section */}
       <div className="text-center">
-        <Image
-          src="/logo.png"
-          alt="Logo"
-          width={200}
-          height={200}
-          className="h-20 w-auto cursor-pointer hover:opacity-80 transition-opacity mx-auto"
-          onClick={() => router.push('/')}
-        />
+        <Link href="/" className="inline-block cursor-pointer hover:opacity-80 transition-opacity">
+          <Image
+            src="/logo.png"
+            alt="Logo"
+            width={200}
+            height={200}
+            className="h-20 w-auto mx-auto"
+          />
+        </Link>
       </div>
 
       {/* Header Section */}
