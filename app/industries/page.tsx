@@ -34,11 +34,11 @@ const Page: React.FC = () => {
   return (
     <section className="container mx-auto px-4 py-12">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-green-50 to-green-100 rounded-2xl p-8 mb-12">
+      <div className="bg-primary-50 rounded-2xl p-8 mb-12">
         <div className="text-center max-w-4xl mx-auto">
           <div className="flex justify-center mb-6">
             <div className="bg-white rounded-full p-4 shadow-lg">
-              <Factory className="w-12 h-12 text-green-600" />
+              <Factory className="w-12 h-12 text-primary-500" />
             </div>
           </div>
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
@@ -53,7 +53,7 @@ const Page: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
             <div className="bg-white rounded-xl p-6 shadow-sm border">
               <div className="flex items-center gap-3 mb-3">
-                <Building2 className="w-6 h-6 text-green-600" />
+                <Building2 className="w-6 h-6 text-primary-500" />
                 <h3 className="font-semibold text-gray-900">Global Reach</h3>
               </div>
               <p className="text-gray-600 text-sm">
@@ -62,7 +62,7 @@ const Page: React.FC = () => {
             </div>
             <div className="bg-white rounded-xl p-6 shadow-sm border">
               <div className="flex items-center gap-3 mb-3">
-                <Zap className="w-6 h-6 text-green-600" />
+                <Zap className="w-6 h-6 text-primary-500" />
                 <h3 className="font-semibold text-gray-900">Innovation</h3>
               </div>
               <p className="text-gray-600 text-sm">
@@ -71,7 +71,7 @@ const Page: React.FC = () => {
             </div>
             <div className="bg-white rounded-xl p-6 shadow-sm border">
               <div className="flex items-center gap-3 mb-3">
-                <Briefcase className="w-6 h-6 text-green-600" />
+                <Briefcase className="w-6 h-6 text-primary-500" />
                 <h3 className="font-semibold text-gray-900">Expertise</h3>
               </div>
               <p className="text-gray-600 text-sm">
@@ -130,16 +130,16 @@ const Page: React.FC = () => {
       )}
 
       {/* Call to Action */}
-      <div className="bg-gradient-to-r from-green-600 to-green-800 rounded-2xl p-8 mt-12 text-center text-white">
+      <div className="bg-primary-500 rounded-2xl p-8 mt-12 text-center text-white">
         <h2 className="text-3xl font-bold mb-4">
           {"Don't See Your Industry?"}
         </h2>
-        <p className="text-green-100 mb-6 max-w-2xl mx-auto">
+        <p className="text-primary-50 mb-6 max-w-2xl mx-auto">
           {
             "We work with many specialized industries and can develop custom solutions for your unique requirements. Contact us to discuss your specific needs."
           }
         </p>
-        <button className="bg-white border-2 border-[var(--green-main)] text-[var(--green-main)] px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+        <button className="bg-white border-2 border-primary-500 text-primary-500 px-8 py-3 rounded-lg font-semibold hover:bg-primary-50 transition-colors">
           {"Contact Our Experts"}
         </button>
       </div>
