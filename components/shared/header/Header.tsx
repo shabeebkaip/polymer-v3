@@ -6,12 +6,12 @@ import { useUserInfo } from '@/lib/useUserInfo';
 import Logo from './components/Logo';
 import Navigation from './components/Navigation';
 import Notification from './components/Notification';
-import UserPopover from '@/components/shared/header/components/UserPopover';
+import UserButton from '@/components/shared/header/components/UserButton';
 import AuthButtons from '@/components/shared/header/components/AuthButtons';
 import MobileMenuButton from '@/components/shared/header/components/MobileMenuButton';
 import MobileMenuOverlay from '@/components/shared/header/components/MobileMenuOverlay';
 import MobileMenu from '@/components/shared/header/components/MobileMenu';
-import MegaMenu from '@/components/shared/header/components/MegaMenu';
+import SubHeader from '@/components/shared/header/components/SubHeader';
 
 type Language = 'en' | 'ar' | 'de' | 'zh';
 const Header: React.FC = () => {
@@ -20,7 +20,6 @@ const Header: React.FC = () => {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
-  const [isUserPopoverOpen, setIsUserPopoverOpen] = useState(false);
 
   const [language, setLanguage] = useState<Language>('en');
 
@@ -31,14 +30,12 @@ const Header: React.FC = () => {
 
   const handleLogout = () => {
     logout();
-    setIsUserPopoverOpen(false); // Close the popover
     router.refresh();
     router.push('/');
   };
 
   const handleNavigate = (href: string) => {
     setIsOpen(false);
-    setIsUserPopoverOpen(false); // Close the popover
     router.push(href);
   };
 
@@ -48,12 +45,15 @@ const Header: React.FC = () => {
 
   const toggleVisibility = () => setIsVisible(!isVisible);
 
+  // Base navigation links
   const links = [
     { href: '/', label: 'Home' },
     { href: '/products', label: 'Products' },
     { href: '/suppliers', label: 'Suppliers' },
+    {href: '/about-us', label: 'About Us' },
   ];
 
+  // User-specific navigation options for mobile menu
   const navOptions =
     user?.user_type === 'buyer'
       ? [
@@ -76,7 +76,8 @@ const Header: React.FC = () => {
             id: 'product-request',
           },
         ]
-      : [
+      : user
+      ? [
           {
             href: '/user/profile',
             label: 'Profile',
@@ -95,49 +96,52 @@ const Header: React.FC = () => {
             icon: '📝',
             id: 'offers',
           },
-        ];
+        ]
+      : [];
 
   return (
-    <header className="w-full bg-white shadow-sm border-b border-gray-100/50 z-30 sticky top-0">
-      <div className="container mx-auto px-4 py-2 flex items-center justify-between gap-6">
-        {/* Enhanced Logo */}
-        <Logo />
-        
-        {/* Navigation with Mega Menu */}
-        <div className="hidden lg:flex items-center gap-1">
-          <Navigation links={links} />
-          <MegaMenu />
+    <>
+      {/* Main Header */}
+      <header className="w-full bg-white border-b border-gray-200 sticky top-0 z-30 shadow-sm backdrop-blur-sm">
+        <div className="container mx-auto px-4 lg:px-6">
+          <div className="flex items-center justify-between gap-4 h-16">
+            {/* Logo */}
+            <div className="flex-shrink-0">
+              <Logo />
+            </div>
+            
+            {/* Center Navigation */}
+            <div className="flex-1 flex justify-center">
+              <Navigation links={links} />
+            </div>
+            
+            {/* Right Section */}
+            <div className="flex items-center gap-3 flex-shrink-0">
+              {user && <Notification />}
+              {user && <UserButton />}
+              {!user && <AuthButtons />}
+              <MobileMenuButton isOpen={isOpen} toggleMenu={toggleMenu} />
+              {isOpen && <MobileMenuOverlay toggleMenu={toggleMenu} />}
+              <MobileMenu
+                isOpen={isOpen}
+                links={links}
+                handleNavigate={handleNavigate}
+                toggleVisibility={toggleVisibility}
+                language={language}
+                changeLanguage={(selectedLanguage: string) =>
+                  changeLanguage(selectedLanguage as Language)
+                }
+                isVisible={isVisible}
+                handleLogout={handleLogout}
+              />
+            </div>
+          </div>
         </div>
-        
-        <div className="flex items-center gap-4">
-          {user && <Notification />}
-          {user && (
-            <UserPopover
-              isUserPopoverOpen={isUserPopoverOpen}
-              setIsUserPopoverOpen={setIsUserPopoverOpen}
-              handleNavigate={handleNavigate}
-              handleLogout={handleLogout}
-              navOptions={navOptions}
-            />
-          )}
-          {!user && <AuthButtons />}
-          <MobileMenuButton isOpen={isOpen} toggleMenu={toggleMenu} />
-          {isOpen && <MobileMenuOverlay toggleMenu={toggleMenu} />}
-          <MobileMenu
-            isOpen={isOpen}
-            links={links}
-            handleNavigate={handleNavigate}
-            toggleVisibility={toggleVisibility}
-            language={language}
-            changeLanguage={(selectedLanguage: string) =>
-              changeLanguage(selectedLanguage as Language)
-            }
-            isVisible={isVisible}
-            handleLogout={handleLogout}
-          />
-        </div>
-      </div>
-    </header>
+      </header>
+
+      {/* Sub Header */}
+      <SubHeader />
+    </>
   );
 };
 

@@ -12,10 +12,10 @@ const Navigation: React.FC<NavigationProps> = ({ links }) => {
                 <div key={link.href} className="relative group">
                     <p
                         onClick={() => router.push(link.href)}
-                        className={`cursor-pointer font-medium transition-all duration-200 px-3 py-2 rounded-lg hover:bg-green-50 ${
+                        className={`cursor-pointer font-semibold transition-all duration-200 px-3 py-2 rounded-lg hover:bg-green-50 ${
                             pathname === link.href
                                 ? "text-emerald-600 bg-green-50"
-                                : "text-gray-700 hover:text-[var(--green-main)]"
+                                : "text-gray-900 hover:text-[var(--green-main)]"
                         }`}
                     >
                         {link.label}
