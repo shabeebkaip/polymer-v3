@@ -26,6 +26,8 @@ const Register: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [otpStep, setOtpStep] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [data, setData] = useState<RegisterData>({
     firstName: '',
     lastName: '',
@@ -60,9 +62,51 @@ const Register: React.FC = () => {
     });
   }, []);
 
+  const validateField = (fieldName: string, value: string) => {
+    let error = '';
+    
+    switch (fieldName) {
+      case 'firstName':
+        if (!value.trim()) error = 'First name is required';
+        else if (value.trim().length < 2) error = 'First name must be at least 2 characters';
+        break;
+      case 'lastName':
+        if (!value.trim()) error = 'Last name is required';
+        else if (value.trim().length < 2) error = 'Last name must be at least 2 characters';
+        break;
+      case 'email':
+        if (!value.trim()) error = 'Email address is required';
+        else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) error = 'Please enter a valid email address';
+        break;
+      case 'password':
+        if (!value) error = 'Password is required';
+        else if (value.length < 6) error = 'Password must be at least 6 characters';
+        break;
+      case 'confirmPassword':
+        if (!value) error = 'Please confirm your password';
+        else if (value !== data.password) error = 'Passwords do not match';
+        break;
+    }
+    
+    return error;
+  };
+
   const onFieldChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { id, value } = e.target;
     setData((prev) => ({ ...prev, [id]: value }));
+    
+    // Clear error when user starts typing
+    if (touched[id]) {
+      const error = validateField(id, value);
+      setErrors((prev) => ({ ...prev, [id]: error }));
+    }
+  };
+
+  const handleBlur = (fieldName: string) => {
+    setTouched((prev) => ({ ...prev, [fieldName]: true }));
+    const value = data[fieldName as keyof RegisterData] as string;
+    const error = validateField(fieldName, value);
+    setErrors((prev) => ({ ...prev, [fieldName]: error }));
   };
 
   const handleAvatarClick = () => {
@@ -79,6 +123,12 @@ const Register: React.FC = () => {
     try {
       const { fileUrl } = await imageUpload(formData);
       setData((prev) => ({ ...prev, company_logo: fileUrl }));
+      
+      // Clear company_logo error if exists
+      if (errors.company_logo) {
+        setErrors((prev) => ({ ...prev, company_logo: '' }));
+      }
+      
       toast.success('Logo uploaded successfully');
     } catch (error) {
       console.error('File upload failed', error);
@@ -86,40 +136,7 @@ const Register: React.FC = () => {
     }
   };
 
-  const validateForm = () => {
-    if (
-      !data.firstName ||
-      !data.lastName ||
-      !data.email ||
-      !data.password ||
-      !data.confirmPassword
-    ) {
-      return 'Please fill in all required fields.';
-    }
-
-    if (data.password !== data.confirmPassword) {
-      return 'Passwords do not match.';
-    }
-
-    if (data.user_type === 'seller') {
-      if (!data.vat_number || data.vat_number.trim() === '') {
-        return 'VAT number is required for sellers.';
-      }
-      if (!data.company_logo || data.company_logo.trim() === '') {
-        return 'Company logo is required for sellers.';
-      }
-    }
-
-    return null;
-  };
-
   const handleSubmit = async () => {
-    const validationError = validateForm();
-    if (validationError) {
-      toast.error(validationError);
-      return;
-    }
-
     setIsLoading(true);
     const toastId = toast.loading('Creating your account...');
 
@@ -144,31 +161,39 @@ const Register: React.FC = () => {
 
   const totalSteps = 3;
 
-  const nextStep = () => {
-    if (currentStep === 1) {
-      if (!data.firstName || !data.lastName || !data.email) {
-        toast.error('Please fill in all required fields');
-        return;
-      }
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(data.email)) {
-        toast.error('Please enter a valid email address');
-        return;
-      }
+  const validateStep = (step: number) => {
+    const newErrors: Record<string, string> = {};
+    const newTouched: Record<string, boolean> = {};
+
+    if (step === 1) {
+      // Validate step 1 fields
+      const fields = ['firstName', 'lastName', 'email'];
+      fields.forEach(field => {
+        newTouched[field] = true;
+        const value = data[field as keyof RegisterData] as string;
+        const error = validateField(field, value);
+        if (error) newErrors[field] = error;
+      });
+    } else if (step === 2) {
+      // Validate step 2 fields
+      const fields = ['password', 'confirmPassword'];
+      fields.forEach(field => {
+        newTouched[field] = true;
+        const value = data[field as keyof RegisterData] as string;
+        const error = validateField(field, value);
+        if (error) newErrors[field] = error;
+      });
     }
-    if (currentStep === 2) {
-      if (!data.password || !data.confirmPassword) {
-        toast.error('Please enter and confirm your password');
-        return;
-      }
-      if (data.password !== data.confirmPassword) {
-        toast.error('Passwords do not match');
-        return;
-      }
-      if (data.password.length < 6) {
-        toast.error('Password must be at least 6 characters');
-        return;
-      }
+
+    setTouched(prev => ({ ...prev, ...newTouched }));
+    setErrors(prev => ({ ...prev, ...newErrors }));
+
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const nextStep = () => {
+    if (!validateStep(currentStep)) {
+      return;
     }
     setCurrentStep((prev) => Math.min(prev + 1, totalSteps));
   };
@@ -186,17 +211,6 @@ const Register: React.FC = () => {
       !data.confirmPassword
     ) {
       return false;
-    }
-
-    if (data.user_type === 'seller') {
-      if (
-        !data.vat_number ||
-        data.vat_number.trim() === '' ||
-        !data.company_logo ||
-        data.company_logo.trim() === ''
-      ) {
-        return false;
-      }
     }
 
     return true;
@@ -298,8 +312,21 @@ const Register: React.FC = () => {
                       placeholder="Enter your first name"
                       value={data.firstName}
                       onChange={onFieldChange}
-                      className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                      onBlur={() => handleBlur('firstName')}
+                      className={`w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 ${
+                        errors.firstName && touched.firstName
+                          ? 'border-red-500 focus:ring-red-500'
+                          : 'border-gray-300 focus:ring-green-500'
+                      }`}
                     />
+                    {errors.firstName && touched.firstName && (
+                      <p className="text-xs text-red-600 mt-1 flex items-center gap-1">
+                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                        </svg>
+                        {errors.firstName}
+                      </p>
+                    )}
                   </div>
                   <div className="space-y-1">
                     <label className="text-sm font-medium text-gray-700">
@@ -310,8 +337,21 @@ const Register: React.FC = () => {
                       placeholder="Enter your last name"
                       value={data.lastName}
                       onChange={onFieldChange}
-                      className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                      onBlur={() => handleBlur('lastName')}
+                      className={`w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 ${
+                        errors.lastName && touched.lastName
+                          ? 'border-red-500 focus:ring-red-500'
+                          : 'border-gray-300 focus:ring-green-500'
+                      }`}
                     />
+                    {errors.lastName && touched.lastName && (
+                      <p className="text-xs text-red-600 mt-1 flex items-center gap-1">
+                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                        </svg>
+                        {errors.lastName}
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -325,9 +365,23 @@ const Register: React.FC = () => {
                     placeholder="your.email@company.com"
                     value={data.email}
                     onChange={onFieldChange}
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                    onBlur={() => handleBlur('email')}
+                    className={`w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 ${
+                      errors.email && touched.email
+                        ? 'border-red-500 focus:ring-red-500'
+                        : 'border-gray-300 focus:ring-green-500'
+                    }`}
                   />
-                  <p className="text-xs text-gray-500 mt-1">We'll send a verification code to this email</p>
+                  {errors.email && touched.email ? (
+                    <p className="text-xs text-red-600 mt-1 flex items-center gap-1">
+                      <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                      </svg>
+                      {errors.email}
+                    </p>
+                  ) : (
+                    <p className="text-xs text-gray-500 mt-1">We'll send a verification code to this email</p>
+                  )}
                 </div>
 
                 <div className="space-y-1">
@@ -378,18 +432,32 @@ const Register: React.FC = () => {
                       type={showPassword ? 'text' : 'password'}
                       value={data.password}
                       onChange={onFieldChange}
+                      onBlur={() => handleBlur('password')}
                       placeholder="Create a strong password"
-                      className="w-full px-4 py-2.5 pr-12 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                      className={`w-full px-4 py-2.5 pr-12 border rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 ${
+                        errors.password && touched.password
+                          ? 'border-red-500 focus:ring-red-500'
+                          : 'border-gray-300 focus:ring-green-500'
+                      }`}
                     />
                     <button
                       type="button"
-                      className="absolute inset-y-0 right-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+                      className="absolute inset-y-0 right-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors z-10"
                       onClick={() => setShowPassword(!showPassword)}
                     >
                       {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">Password must be at least 6 characters long</p>
+                  {errors.password && touched.password ? (
+                    <p className="text-xs text-red-600 mt-1 flex items-center gap-1">
+                      <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                      </svg>
+                      {errors.password}
+                    </p>
+                  ) : (
+                    <p className="text-xs text-gray-500 mt-1">Password must be at least 6 characters long</p>
+                  )}
                 </div>
 
                 <div className="space-y-1">
@@ -402,27 +470,31 @@ const Register: React.FC = () => {
                       type={showConfirmPassword ? 'text' : 'password'}
                       value={data.confirmPassword}
                       onChange={onFieldChange}
+                      onBlur={() => handleBlur('confirmPassword')}
                       placeholder="Confirm your password"
-                      className="w-full px-4 py-2.5 pr-12 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                      className={`w-full px-4 py-2.5 pr-12 border rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 ${
+                        errors.confirmPassword && touched.confirmPassword
+                          ? 'border-red-500 focus:ring-red-500'
+                          : 'border-gray-300 focus:ring-green-500'
+                      }`}
                     />
                     <button
                       type="button"
-                      className="absolute inset-y-0 right-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+                      className="absolute inset-y-0 right-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors z-10"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     >
                       {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
                   </div>
+                  {errors.confirmPassword && touched.confirmPassword && (
+                    <p className="text-xs text-red-600 mt-1 flex items-center gap-1">
+                      <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                      </svg>
+                      {errors.confirmPassword}
+                    </p>
+                  )}
                 </div>
-
-                {data.password && data.confirmPassword && data.password !== data.confirmPassword && (
-                  <div className="flex items-center gap-2 p-2.5 bg-red-50 border border-red-200 rounded-xl">
-                    <svg className="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-xs text-red-700 font-medium">Passwords do not match</span>
-                  </div>
-                )}
               </div>
             )}
 
@@ -438,11 +510,7 @@ const Register: React.FC = () => {
                 <div className="space-y-1">
                   <label className="text-sm font-medium text-gray-700">
                     Company Logo{' '}
-                    {data.user_type === 'seller' ? (
-                      <span className="text-red-500">*</span>
-                    ) : (
-                      <span className="text-gray-500 font-normal">(Optional)</span>
-                    )}
+                    <span className="text-gray-500 font-normal">(Optional)</span>
                   </label>
                   {data?.company_logo ? (
                     <div className="flex items-center gap-3 p-3 bg-gray-50 border border-gray-200 rounded-xl">
@@ -469,10 +537,10 @@ const Register: React.FC = () => {
                   ) : (
                     <button
                       type="button"
-                      className="w-full flex flex-col items-center justify-center p-6 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50 hover:border-green-400 hover:bg-green-50 transition-all duration-200 focus:outline-none"
+                      className="w-full flex flex-col items-center justify-center p-6 border-2 border-dashed rounded-xl transition-all duration-200 focus:outline-none border-gray-300 bg-gray-50 hover:border-green-400 hover:bg-green-50"
                       onClick={() => fileInputRef.current?.click()}
                     >
-                      <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-2">
+                      <div className="w-12 h-12 rounded-full flex items-center justify-center mb-2 bg-green-100">
                         <Upload className="w-6 h-6 text-green-600" />
                       </div>
                       <span className="text-sm font-medium text-gray-700">Upload Company Logo</span>
@@ -518,8 +586,7 @@ const Register: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1">
                     <label className="text-sm font-medium text-gray-700">
-                      VAT Number{' '}
-                      {data.user_type === 'seller' ? <span className="text-red-500">*</span> : null}
+                      VAT Number
                     </label>
                     <Input
                       id="vat_number"

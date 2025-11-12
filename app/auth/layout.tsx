@@ -19,20 +19,16 @@ const AuthLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-green-400/5 to-emerald-400/5 rounded-full blur-3xl"></div>
       </div>
 
-      {isSignupPage ? (
-        <div className="relative w-full max-w-7xl p-4">{children}</div>
-      ) : (
-        <div
-          className={`relative w-full ${
-            isLoginPage ? 'max-w-md' : 'max-w-lg'
-          } p-6 rounded-3xl shadow-2xl bg-white/90 backdrop-blur-xl border border-white/30
-          hover:shadow-3xl transition-all duration-300`}
-        >
-          {/* Card inner glow effect */}
-          <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-white/50 to-green-50/20 pointer-events-none"></div>
-          <div className="relative z-10">{children}</div>
-        </div>
-      )}
+      <div
+        className={`relative w-full ${
+          isSignupPage ? 'max-w-4xl' : isLoginPage ? 'max-w-md' : 'max-w-lg'
+        } p-8 rounded-3xl shadow-2xl bg-white/90 backdrop-blur-xl border border-white/30
+        hover:shadow-3xl transition-all duration-300`}
+      >
+        {/* Card inner glow effect */}
+        <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-white/50 to-green-50/20 pointer-events-none"></div>
+        <div className="relative z-10">{children}</div>
+      </div>
     </div>
   );
 };

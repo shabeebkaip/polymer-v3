@@ -11,7 +11,7 @@ interface InputProps {
   icon?: React.ReactNode;
   name?: string;
   autoComplete?: string;
-
+  onBlur?: () => void;
 }
 
 const Input: React.FC<InputProps> = ({
@@ -25,6 +25,7 @@ const Input: React.FC<InputProps> = ({
   icon,
   name,
   autoComplete = "off",
+  onBlur,
 }) => {
   return (
     <div className="relative">
@@ -40,6 +41,7 @@ const Input: React.FC<InputProps> = ({
         name={name}
         value={value}
         onChange={onChange}
+        onBlur={onBlur}
         placeholder={placeholder}
         className={`border border-[var(--input-border)] rounded-lg px-2 py-4 outline-none w-full bg-white ${className} text-[var(--text-gray-tertiary)] placeholder:text-[var(--text-gray-tertiary)]`}
       />
