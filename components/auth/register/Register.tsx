@@ -206,11 +206,11 @@ const Register: React.FC = () => {
       {/* Logo Section */}
       <div className="text-center">
         <Image
-          src="/typography.svg"
+          src="/logo.png"
           alt="Logo"
-          width={100}
-          height={50}
-          className="h-14 w-auto cursor-pointer hover:opacity-80 transition-opacity mx-auto"
+          width={200}
+          height={200}
+          className="h-20 w-auto cursor-pointer hover:opacity-80 transition-opacity mx-auto"
           onClick={() => router.push('/')}
         />
       </div>
