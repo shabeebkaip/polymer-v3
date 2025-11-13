@@ -74,7 +74,7 @@ const FinanceRequestDetail = () => {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "approved":
-        return <CheckCircle className="w-5 h-5 text-green-500" />;
+        return <CheckCircle className="w-5 h-5 text-primary-500" />;
       case "rejected":
         return <XCircle className="w-5 h-5 text-red-500" />;
       case "cancelled":
@@ -92,7 +92,7 @@ const FinanceRequestDetail = () => {
     
     switch (status) {
       case "approved":
-        return `${baseClasses} bg-green-100 text-green-700 border border-green-200`;
+        return `${baseClasses} bg-primary-50 text-primary-600 border border-primary-500/30`;
       case "rejected":
         return `${baseClasses} bg-red-100 text-red-700 border border-red-200`;
       case "cancelled":
@@ -161,9 +161,9 @@ const FinanceRequestDetail = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-green-50/20 to-emerald-50/30 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-primary-50/20 to-primary-50/30 flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
           <p className="text-gray-600 font-medium">Loading finance request details...</p>
         </div>
       </div>
@@ -172,7 +172,7 @@ const FinanceRequestDetail = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-green-50/20 to-emerald-50/30 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-primary-50/20 to-primary-50/30 flex items-center justify-center">
         <div className="text-center max-w-md">
           <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Error Loading Request</h2>
@@ -193,7 +193,7 @@ const FinanceRequestDetail = () => {
 
   if (!financeRequest) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-green-50/20 to-emerald-50/30 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-primary-50/20 to-primary-50/30 flex items-center justify-center">
         <div className="text-center max-w-md">
           <CreditCard className="w-16 h-16 text-gray-400 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Request Not Found</h2>
@@ -208,11 +208,11 @@ const FinanceRequestDetail = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-green-50/20 to-emerald-50/30">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-primary-50/20 to-primary-50/30">
       <div className="container mx-auto  py-8 ">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
-          <Button 
+          <Button
             onClick={() => router.push('/user/finance-requests')}
             variant="outline"
             className="flex items-center gap-2"
@@ -221,7 +221,7 @@ const FinanceRequestDetail = () => {
             Back to Finance Requests
           </Button>
           <div className="flex items-center gap-3">
-            <div className="p-3 bg-gradient-to-br from-green-600 to-emerald-600 rounded-xl">
+            <div className="p-3 bg-primary-500 rounded-xl">
               <CreditCard className="w-6 h-6 text-white" />
             </div>
             <div>
@@ -238,7 +238,7 @@ const FinanceRequestDetail = () => {
             <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 p-8">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-bold text-gray-900 flex items-center gap-3">
-                  <Banknote className="w-6 h-6 text-green-600" />
+                  <Banknote className="w-6 h-6 text-primary-500" />
                   Finance Request Overview
                 </h2>
                 <div className={getStatusBadge(financeRequest.status)}>
@@ -249,8 +249,8 @@ const FinanceRequestDetail = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
-                  <div className="flex items-center gap-3 p-4 bg-green-50 rounded-xl">
-                    <DollarSign className="w-5 h-5 text-green-600" />
+                  <div className="flex items-center gap-3 p-4 bg-primary-50 rounded-xl">
+                    <DollarSign className="w-5 h-5 text-primary-500" />
                     <div>
                       <p className="text-sm text-gray-600">Estimated Price</p>
                       <p className="font-semibold text-gray-900">
@@ -321,7 +321,7 @@ const FinanceRequestDetail = () => {
             {/* Product Information */}
             <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 p-8">
               <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-                <Package className="w-6 h-6 text-green-600" />
+                <Package className="w-6 h-6 text-primary-500" />
                 Product Information
               </h2>
               
@@ -377,7 +377,7 @@ const FinanceRequestDetail = () => {
             {(financeRequest.previousPurchaseHistory || financeRequest.additionalNotes) && (
               <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 p-8">
                 <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-                  <FileText className="w-6 h-6 text-green-600" />
+                  <FileText className="w-6 h-6 text-primary-500" />
                   Additional Information
                 </h2>
                 
@@ -405,7 +405,7 @@ const FinanceRequestDetail = () => {
             {/* User Information */}
             <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 p-6">
               <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <User className="w-5 h-5 text-green-600" />
+                <User className="w-5 h-5 text-primary-500" />
                 Applicant Information
               </h3>
               <div className="space-y-4">
@@ -456,7 +456,7 @@ const FinanceRequestDetail = () => {
             {/* Delivery Information */}
             <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 p-6">
               <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <MapPin className="w-5 h-5 text-green-600" />
+                <MapPin className="w-5 h-5 text-primary-500" />
                 Delivery Information
               </h3>
               <div className="space-y-4">
@@ -501,7 +501,7 @@ const FinanceRequestDetail = () => {
             {/* Request Timeline */}
             <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 p-6">
               <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-green-600" />
+                <Calendar className="w-5 h-5 text-primary-500" />
                 Request Timeline
               </h3>
               <div className="space-y-4">
@@ -526,7 +526,7 @@ const FinanceRequestDetail = () => {
             {/* Supplier Information */}
             <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 p-6">
               <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <Building2 className="w-5 h-5 text-green-600" />
+                <Building2 className="w-5 h-5 text-primary-500" />
                 Product Supplier
               </h3>
               <div className="space-y-4">
