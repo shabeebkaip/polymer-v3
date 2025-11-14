@@ -28,7 +28,7 @@ const MobileMenu: React.FC<mobileMenuType> = ({
       {/* Mobile Menu Header */}
       <div className="flex items-center justify-between p-6 border-b border-gray-100">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl flex items-center justify-center">
+          <div className="w-10 h-10 bg-primary-500 rounded-xl flex items-center justify-center">
             <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
               <path d="M10 2L3 7v11a1 1 0 001 1h12a1 1 0 001-1V7l-7-5z" />
             </svg>
@@ -46,8 +46,8 @@ const MobileMenu: React.FC<mobileMenuType> = ({
               onClick={() => handleNavigate(link.href)}
               className={`w-full text-left px-4 py-3 rounded-xl transition-all duration-200 flex items-center gap-3 ${
                 pathname === link.href
-                  ? 'bg-green-50 text-[var(--green-main)] font-medium'
-                  : 'text-gray-700 hover:bg-gray-50 hover:text-[var(--green-main)]'
+                  ? 'bg-primary-50 text-primary-500 font-medium'
+                  : 'text-gray-700 hover:bg-gray-50 hover:text-primary-600'
               }`}
             >
               <div className="w-5 h-5 flex items-center justify-center">
@@ -100,8 +100,8 @@ const MobileMenu: React.FC<mobileMenuType> = ({
             onClick={() => handleNavigate('/industries')}
             className={`w-full text-left px-4 py-3 rounded-xl transition-all duration-200 flex items-center gap-3 ${
               pathname === '/industries'
-                ? 'bg-green-50 text-[var(--green-main)] font-medium'
-                : 'text-gray-700 hover:bg-gray-50 hover:text-[var(--green-main)]'
+                ? 'bg-primary-50 text-primary-500 font-medium'
+                : 'text-gray-700 hover:bg-gray-50 hover:text-primary-600'
             }`}
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -118,8 +118,8 @@ const MobileMenu: React.FC<mobileMenuType> = ({
             onClick={() => handleNavigate('/product-families')}
             className={`w-full text-left px-4 py-3 rounded-xl transition-all duration-200 flex items-center gap-3 ${
               pathname === '/product-families'
-                ? 'bg-green-50 text-[var(--green-main)] font-medium'
-                : 'text-gray-700 hover:bg-gray-50 hover:text-[var(--green-main)]'
+                ? 'bg-primary-50 text-primary-500 font-medium'
+                : 'text-gray-700 hover:bg-gray-50 hover:text-primary-600'
             }`}
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -136,9 +136,9 @@ const MobileMenu: React.FC<mobileMenuType> = ({
 
         {user && (
           <div className="pt-4 border-t border-gray-100 space-y-2">
-            <div className="px-4 py-3 bg-green-50 rounded-xl">
+            <div className="px-4 py-3 bg-primary-50 rounded-xl">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-emerald-500 rounded-lg flex items-center justify-center text-white font-medium">
+                <div className="w-10 h-10 bg-primary-500 rounded-lg flex items-center justify-center text-white font-medium">
                   {user?.firstName?.charAt(0)?.toUpperCase() || 'U'}
                 </div>
                 <div>
@@ -153,7 +153,7 @@ const MobileMenu: React.FC<mobileMenuType> = ({
               onClick={() => handleNavigate('/user/profile')}
               className={`w-full text-left px-4 py-3 rounded-xl transition-all duration-200 flex items-center gap-3 ${
                 pathname === '/user/profile'
-                  ? 'bg-green-50 text-[var(--green-main)] font-medium'
+                  ? 'bg-primary-50 text-primary-500 font-medium'
                   : 'text-gray-700 hover:bg-gray-50'
               }`}
             >
@@ -225,7 +225,7 @@ const MobileMenu: React.FC<mobileMenuType> = ({
                   onClick={() => changeLanguage(lang.code as Language)}
                   className={`w-full text-left px-3 py-2 rounded-lg transition-all duration-200 flex items-center gap-3 ${
                     language === lang.code
-                      ? 'bg-green-100 text-[var(--green-main)] font-medium'
+                      ? 'bg-primary-50 text-primary-500 font-medium'
                       : 'text-gray-600 hover:bg-gray-50'
                   }`}
                 >
@@ -274,7 +274,7 @@ const MobileMenu: React.FC<mobileMenuType> = ({
             </button>
             <button
               onClick={() => handleNavigate('/auth/user-type')}
-              className="w-full px-4 py-3 bg-gradient-to-r from-[var(--green-gradient-from)] via-[var(--green-gradient-via)] to-[var(--green-gradient-to)] text-white rounded-xl hover:opacity-90 transition-all duration-200 font-medium"
+              className="w-full px-4 py-3 bg-primary-500 hover:bg-primary-600 text-white rounded-xl transition-all duration-200 font-medium"
             >
               Sign Up for Free
             </button>

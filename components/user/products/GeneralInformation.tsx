@@ -21,10 +21,10 @@ const GeneralInformation: React.FC<GeneralInformationProps> = ({
   return (
     <>
       <div className="col-span-full mb-4 sm:mb-6">
-        <Card className="border-green-200 bg-green-50/50">
+        <Card className="border-primary-500/30 bg-primary-50/50">
           <CardContent className="p-3 sm:p-4">
-            <h4 className="text-base sm:text-lg font-semibold text-green-800 mb-2">Basic Product Information</h4>
-            <p className="text-xs sm:text-sm text-green-600">Enter the core details that identify your product</p>
+            <h4 className="text-base sm:text-lg font-semibold text-primary-500 mb-2">Basic Product Information</h4>
+            <p className="text-xs sm:text-sm text-primary-500">Enter the core details that identify your product</p>
           </CardContent>
         </Card>
       </div>
@@ -45,7 +45,7 @@ const GeneralInformation: React.FC<GeneralInformationProps> = ({
           className={`transition-all duration-200 ${
             error.productName 
               ? 'border-red-300 focus:border-red-500 focus:ring-red-200' 
-              : 'border-gray-300 focus:border-green-500 focus:ring-green-200'
+              : 'border-gray-300 focus:border-primary-500 focus:ring-primary-500/30'
           }`}
         />
       </div>
@@ -66,7 +66,7 @@ const GeneralInformation: React.FC<GeneralInformationProps> = ({
           className={`transition-all duration-200 ${
             error.chemicalName 
               ? 'border-red-300 focus:border-red-500 focus:ring-red-200' 
-              : 'border-gray-300 focus:border-green-500 focus:ring-green-200'
+              : 'border-gray-300 focus:border-primary-500 focus:ring-primary-500/30'
           }`}
         />
       </div>
@@ -87,7 +87,7 @@ const GeneralInformation: React.FC<GeneralInformationProps> = ({
           className={`transition-all duration-200 ${
             error.tradeName 
               ? 'border-red-300 focus:border-red-500 focus:ring-red-200' 
-              : 'border-gray-300 focus:border-green-500 focus:ring-green-200'
+              : 'border-gray-300 focus:border-primary-500 focus:ring-primary-500/30'
           }`}
         />
       </div>
@@ -102,7 +102,7 @@ const GeneralInformation: React.FC<GeneralInformationProps> = ({
           placeholder="Provide a detailed description of your product..."
           value={data.description || ""}
           onChange={(e) => onFieldChange("description", e.target.value)}
-          className="min-h-[80px] sm:min-h-[100px] resize-y border-gray-300 focus:border-green-500 focus:ring-green-200 transition-all duration-200"
+          className="min-h-[80px] sm:min-h-[100px] resize-y border-gray-300 focus:border-primary-500 focus:ring-primary-500/30 transition-all duration-200"
           rows={3}
         />
         <p className="text-xs text-gray-500">Help buyers understand your product better with a comprehensive description</p>

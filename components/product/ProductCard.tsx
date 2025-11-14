@@ -16,7 +16,7 @@ interface ProductCardProps {
 const ProductCard: React.FC<ProductCardProps> = ({ product, userType }) => {
   const router = useRouter();
   return (
-    <div className="group bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-emerald-200 h-full flex flex-col">
+    <div className="group bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-primary-500/30 h-full flex flex-col">
       <div className="relative overflow-hidden">
         {/* Product image */}
         <div className="aspect-w-16 aspect-h-10 bg-gray-100 relative">
@@ -64,7 +64,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, userType }) => {
             />
           </div>
           <div className="flex-1 min-w-0">
-            <h4 className="font-semibold text-base text-gray-900 truncate group-hover:text-emerald-700 transition-colors duration-200">
+            <h4 className="font-semibold text-base text-gray-900 truncate group-hover:text-primary-600 transition-colors duration-200">
               {product?.productName || 'Untitled Product'}
             </h4>
             <p className="text-xs text-gray-500 flex items-center gap-1">
@@ -102,19 +102,19 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, userType }) => {
           {userType === "buyer" && (
             <div className="grid grid-cols-2 gap-2">
               <QuoteRequestModal
-                className="px-2 py-1.5 bg-gradient-to-r from-emerald-500 to-green-600 text-white rounded-md hover:from-emerald-600 hover:to-green-700 transition-all duration-300 cursor-pointer text-xs font-medium text-center"
+                className="px-2 py-1.5 bg-primary-500 hover:bg-primary-600 text-white rounded-md transition-all duration-300 cursor-pointer text-xs font-medium text-center"
                 productId={product?._id}
                 uom={product?.uom}
               />
               <SampleRequestModal
-                className="px-2 py-1.5 border border-emerald-500 text-emerald-600 rounded-md hover:bg-emerald-50 transition-all duration-300 cursor-pointer text-xs font-medium text-center hover:border-emerald-600"
+                className="px-2 py-1.5 border border-primary-500 text-primary-600 rounded-md hover:bg-primary-50 transition-all duration-300 cursor-pointer text-xs font-medium text-center hover:border-primary-600"
                 productId={product?._id}
                 uom={product?.uom}
               />
             </div>
           )}
           <button
-            className="w-full px-3 py-2 border border-gray-300 text-gray-700 rounded-md hover:border-emerald-500 hover:text-emerald-600 hover:bg-emerald-50 transition-all duration-300 text-xs font-medium"
+            className="w-full px-3 py-2 border border-gray-300 text-gray-700 rounded-md hover:border-primary-500 hover:text-primary-600 hover:bg-primary-50 transition-all duration-300 text-xs font-medium"
             onClick={() => {
               router.push(`/products/${product._id}`);
             }}

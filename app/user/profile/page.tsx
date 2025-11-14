@@ -68,8 +68,6 @@ const Profile = () => {
       return html ? html.replace(/<[^>]*>/g, '').trim() : '';
     };
 
-    // Debug: log about_us value before save
-    console.log('About Us value before save:', editedUser.about_us);
 
     // Validate about_us length
     if (editedUser.about_us) {
@@ -121,8 +119,6 @@ const Profile = () => {
         }
       });
 
-      console.log("Saving user profile data:", updateData);
-
       const response = await editUserProfile(updateData);
 
       if (response.success) {
@@ -156,7 +152,6 @@ const Profile = () => {
     }));
   };
 
-  console.log(user, "user");
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 max-w-7xl">

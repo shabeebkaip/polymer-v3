@@ -107,7 +107,7 @@ const ProductTradeInformation: React.FC<ProductTradeInformationProps> = ({ produ
                 <Badge
                   key={g._id || index}
                   variant="outline"
-                  className="text-green-600 border-green-600"
+                  className="text-primary-600 border-primary-600"
                 >
                   {g.name}
                 </Badge>

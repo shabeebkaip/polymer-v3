@@ -21,7 +21,7 @@ const AuthButtons = () => {
       </button>
       <button
         onClick={() => router.push('/auth/user-type')}
-        className="px-6 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600  text-white rounded-xl hover:opacity-90 transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:scale-105"
+        className="px-6 py-2.5 bg-primary-500 hover:bg-primary-600 text-white rounded-xl transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:scale-105"
       >
         Sign Up for Free
       </button>

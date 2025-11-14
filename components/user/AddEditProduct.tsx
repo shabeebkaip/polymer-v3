@@ -505,11 +505,11 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
 
   console.log("Errors", data);
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-primary-50 to-blue-50">
       <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
         {/* Header */}
         <div className="text-center mb-6 sm:mb-8">
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 bg-clip-text text-transparent mb-2">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-primary-500 mb-2">
             {isEditMode ? 'Edit Product' : 'Add New Product'}
           </h1>
           <p className="text-sm sm:text-base text-gray-600 px-4">
@@ -524,7 +524,7 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
               <h2 className="text-base sm:text-lg font-semibold text-gray-800">
                 Step {currentStep} of {FORM_STEPS.length}
               </h2>
-              <Badge variant="outline" className="bg-green-100 text-green-700 border-green-300 text-xs sm:text-sm">
+              <Badge variant="outline" className="bg-primary-50 text-primary-500 border-primary-500/30 text-xs sm:text-sm">
                 {Math.round(((currentStep - 1) / FORM_STEPS.length) * 100)}% Complete
               </Badge>
             </div>
@@ -532,7 +532,7 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
             {/* Progress bar */}
             <div className="w-full bg-gray-200 rounded-full h-2 mb-4 sm:mb-6">
               <div 
-                className="bg-gradient-to-r from-green-500 to-emerald-500 h-2 rounded-full transition-all duration-500"
+                className="bg-primary-500 h-2 rounded-full transition-all duration-500"
                 style={{ width: `${((currentStep - 1) / FORM_STEPS.length) * 100}%` }}
               />
             </div>
@@ -560,9 +560,9 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
                     className={`
                       p-2 sm:p-3 rounded-lg text-center transition-all duration-300 group relative min-h-[3rem] sm:min-h-[4rem]
                       ${isCurrent 
-                        ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg scale-105' 
+                        ? 'bg-primary-500 text-white shadow-lg scale-105' 
                         : isCompleted
-                        ? 'bg-green-100 text-green-700 hover:bg-green-200 active:bg-green-300'
+                        ? 'bg-primary-50 text-primary-500 hover:bg-primary-100 active:bg-primary-200'
                         : isAccessible
                         ? 'bg-gray-100 text-gray-600 hover:bg-gray-200 active:bg-gray-300'
                         : 'bg-gray-50 text-gray-400 cursor-not-allowed'
@@ -573,7 +573,7 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
                     <div className="text-xs font-medium truncate hidden sm:block">{step.title}</div>
                     <div className="text-xs font-medium truncate sm:hidden">{step.id}</div>
                     {isCompleted && (
-                      <CheckCircle className="w-2 h-2 sm:w-3 sm:h-3 mx-auto mt-1 text-green-600" />
+                      <CheckCircle className="w-2 h-2 sm:w-3 sm:h-3 mx-auto mt-1 text-primary-500" />
                     )}
                   </button>
                 );
@@ -584,10 +584,10 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
 
         {/* Main Form Content */}
         <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
-          <CardHeader className="bg-gradient-to-r from-green-500/10 via-emerald-500/10 to-teal-500/10 p-4 sm:p-6">
+          <CardHeader className="bg-primary-50/50 p-4 sm:p-6">
             <div className="flex items-center space-x-3">
               {React.createElement(FORM_STEPS[currentStep - 1].icon, { 
-                className: "w-5 h-5 sm:w-6 sm:h-6 text-green-600 flex-shrink-0" 
+                className: "w-5 h-5 sm:w-6 sm:h-6 text-primary-500 flex-shrink-0" 
               })}
               <div className="min-w-0 flex-1">
                 <CardTitle className="text-lg sm:text-xl text-gray-800 truncate">
@@ -616,7 +616,7 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
               disabled={currentStep === 1}
               variant="outline"
               size="lg"
-              className="flex items-center gap-2 border-green-300 text-green-700 hover:bg-green-50 px-6 py-3 min-h-[44px]"
+              className="flex items-center gap-2 border-primary-500/30 text-primary-500 hover:bg-primary-50 px-6 py-3 min-h-[44px]"
             >
               <ChevronLeft className="w-4 h-4" />
               <span className="hidden sm:inline">Previous</span>
@@ -627,7 +627,7 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
               <Button
                 onClick={nextStep}
                 size="lg"
-                className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-6 py-3 min-h-[44px]"
+                className="flex items-center gap-2 bg-primary-500 hover:bg-primary-600 text-white px-6 py-3 min-h-[44px]"
               >
                 <span className="hidden sm:inline">Next</span>
                 <span className="sm:hidden">Next</span>
@@ -637,7 +637,7 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
               <Button
                 onClick={handleSubmit}
                 size="lg"
-                className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-lg px-6 py-3 min-h-[44px]"
+                className="flex items-center gap-2 bg-primary-500 hover:bg-primary-600 text-white shadow-lg px-6 py-3 min-h-[44px]"
               >
                 <Save className="w-4 h-4" />
                 <span className="hidden sm:inline">{isEditMode ? 'Update Product' : 'Create Product'}</span>
@@ -653,7 +653,7 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
               <Button
                 onClick={handleSubmit}
                 size="lg"
-                className="flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-lg px-6 py-3 min-h-[44px]"
+                className="flex items-center gap-2 bg-primary-500 hover:bg-primary-600 text-white shadow-lg px-6 py-3 min-h-[44px]"
               >
                 <Save className="w-4 h-4" />
                 <span className="hidden sm:inline">Save Changes</span>
@@ -675,7 +675,7 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
         </div>
 
         {/* Quick Actions */}
-        <Card className="mt-4 sm:mt-6 border-0 bg-gradient-to-r from-green-50 to-emerald-50">
+        <Card className="mt-4 sm:mt-6 border-0 bg-primary-50">
           <CardContent className="p-3 sm:p-4">
             <div className="flex flex-wrap gap-1 sm:gap-2 justify-center">
               <Badge variant="secondary" className="text-xs">
@@ -691,7 +691,7 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
                 <span className="sm:hidden">Auto-saved</span>
               </Badge>
               {isEditMode && (
-                <Badge variant="secondary" className="text-xs bg-emerald-100 text-emerald-700">
+                <Badge variant="secondary" className="text-xs bg-primary-50 text-primary-500">
                   ✨ <span className="hidden sm:inline">Use &quot;Save Changes&quot; button to save edits at any step</span>
                   <span className="sm:hidden">Save anytime</span>
                 </Badge>
@@ -706,7 +706,7 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
             <Button
               onClick={handleSubmit}
               size="lg"
-              className="flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-2xl rounded-full px-4 py-3 sm:px-6 animate-pulse hover:animate-none transition-all duration-300"
+              className="flex items-center gap-2 bg-primary-500 hover:bg-primary-600 text-white shadow-2xl rounded-full px-4 py-3 sm:px-6 animate-pulse hover:animate-none transition-all duration-300"
             >
               <Save className="w-4 h-4 sm:w-5 sm:h-5" />
               <span className="hidden sm:inline">Save Changes</span>

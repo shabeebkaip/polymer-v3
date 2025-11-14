@@ -213,7 +213,6 @@ const CreateProductRequest = () => {
         request_document: formData.request_document,
       };
 
-      console.log("Submitting product request:", requestData);
 
       const response = await createBuyerProductRequest(requestData);
 

@@ -50,7 +50,7 @@ const CompanyDetails: React.FC<CompanyDetailsProps> = ({ companyDetails, product
       </div>
 
       {/* Company Card */}
-      <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-6 border-2 border-green-200">
+      <div className="bg-primary-50 rounded-2xl p-6 border-2 border-primary-500/30">
         <div className="flex flex-col md:flex-row items-center gap-6">
           {/* Company Logo */}
           <div className="flex-shrink-0">
@@ -81,10 +81,10 @@ const CompanyDetails: React.FC<CompanyDetailsProps> = ({ companyDetails, product
           {/* Company Info */}
           <div className="flex-1 text-center md:text-left">
             <div className="flex flex-wrap justify-center md:justify-start gap-2 mb-3">
-              <Badge variant="secondary" className="bg-green-100 text-green-800">
+              <Badge variant="secondary" className="bg-primary-50 text-primary-600">
                 <Shield className="w-3 h-3 mr-1" /> Verified Supplier
               </Badge>
-              <Badge variant="secondary" className="bg-green-100 text-green-800">
+              <Badge variant="secondary" className="bg-primary-50 text-primary-600">
                 <Award className="w-3 h-3 mr-1" /> Premium Partner
               </Badge>
             </div>
@@ -94,13 +94,13 @@ const CompanyDetails: React.FC<CompanyDetailsProps> = ({ companyDetails, product
             <div className="flex flex-wrap justify-center md:justify-start gap-4 text-gray-600 mb-4">
               {companyDetails?.location && (
                 <div className="flex items-center gap-1">
-                  <MapPin className="w-4 h-4 text-green-600" />
+                  <MapPin className="w-4 h-4 text-primary-500" />
                   <span className="text-sm">{companyDetails.location}</span>
                 </div>
               )}
               {companyDetails?.address && (
                 <div className="flex items-center gap-1">
-                  <Users className="w-4 h-4 text-green-600" />
+                  <Users className="w-4 h-4 text-primary-500" />
                   <span className="text-sm">{companyDetails.address}</span>
                 </div>
               )}
@@ -116,7 +116,7 @@ const CompanyDetails: React.FC<CompanyDetailsProps> = ({ companyDetails, product
                 href={companyDetails.website}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-green-600 hover:text-green-800 transition-colors"
+                className="inline-flex items-center gap-2 text-primary-500 hover:text-primary-600 transition-colors"
               >
                 <Globe className="w-4 h-4" />
                 <span className="text-sm font-medium">Visit Website</span>
@@ -131,7 +131,7 @@ const CompanyDetails: React.FC<CompanyDetailsProps> = ({ companyDetails, product
           <VisitShopButton supplierId={companyDetails?._id} />
           {userType === 'buyer' && (
             <button
-              className="px-5 py-2 border-2 border-emerald-600 text-emerald-700 bg-white rounded-lg font-semibold flex items-center gap-2 shadow-sm transition-all duration-150 cursor-pointer hover:bg-emerald-50 focus:outline-none focus:ring-2 focus:ring-emerald-200"
+              className="px-5 py-2 border-2 border-primary-500 text-primary-600 bg-white rounded-lg font-semibold flex items-center gap-2 shadow-sm transition-all duration-150 cursor-pointer hover:bg-primary-50 focus:outline-none focus:ring-2 focus:ring-primary-500/30"
               onClick={handleChatClick}
               type="button"
             >

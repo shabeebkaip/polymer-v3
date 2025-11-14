@@ -22,8 +22,8 @@ const VisitShopButton: React.FC<VisitShopButtonProps> = ({ supplierId, from }) =
       onClick={handleClick}
       className={
         from === 'supplier'
-          ? 'flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gradient-to-r from-green-500 to-green-700 text-white font-semibold shadow hover:from-green-600 hover:to-green-800 transition-all duration-200 w-fit cursor-pointer border-none focus:outline-none focus:ring-2 focus:ring-green-400 text-sm'
-          : 'flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-green-500 to-green-700 text-white font-semibold shadow-lg hover:from-green-600 hover:to-green-800 hover:scale-[1.03] transition-all duration-200 w-fit  cursor-pointer border-none focus:outline-none focus:ring-2 focus:ring-green-400'
+          ? 'flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary-500 text-white font-semibold shadow hover:bg-primary-600 transition-all duration-200 w-fit cursor-pointer border-none focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm'
+          : 'flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary-500 text-white font-semibold shadow-lg hover:bg-primary-600 hover:scale-[1.03] transition-all duration-200 w-fit  cursor-pointer border-none focus:outline-none focus:ring-2 focus:ring-primary-500'
       }
     >
       <Image

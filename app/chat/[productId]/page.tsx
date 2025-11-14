@@ -13,10 +13,6 @@ const ChatPage = () => {
   const receiverId = chatUser?.receiverId || '';
   const receiverName = chatUser?.receiverName || '';
 
-  // Debug log
-  console.log('ChatPage productId:', productId);
-  console.log('ChatPage userId:', userId);
-  console.log('ChatPage receiverId:', receiverId);
 
   // Show loading spinner if chatUser is not yet populated
   if (!chatUser || !chatUser.userId || !chatUser.receiverId) {
@@ -29,7 +25,6 @@ const ChatPage = () => {
   }
 
   // Extra debug logging for props (outside JSX)
-  console.log('Rendering ChatContainer with:', { userId, productId, receiverId, receiverName, serverUrl: process.env.NEXT_PUBLIC_SOCKET_URL });
 
   // Only render the chat container, let it handle header/status
   return (

@@ -94,7 +94,7 @@ const ProductHeroSection = ({ product, user }: { product: Product; user: UserTyp
                     </span>
                   )}
                   {product.stock > 0 ? (
-                    <span className="font-medium text-green-700 bg-green-100 px-2 py-1 rounded">
+                    <span className="font-medium text-primary-600 bg-primary-50 px-2 py-1 rounded">
                       In Stock
                     </span>
                   ) : (

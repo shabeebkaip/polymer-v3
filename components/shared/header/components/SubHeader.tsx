@@ -49,8 +49,8 @@ const SubHeader: React.FC = () => {
                 href="/products"
                 className={`px-3 py-1.5 text-sm font-semibold rounded-lg transition-all duration-200 ${
                   pathname === '/products'
-                    ? 'text-green-600 bg-green-50'
-                    : 'text-gray-800 hover:text-green-600 hover:bg-gray-100'
+                    ? 'text-primary-500 bg-primary-50'
+                    : 'text-gray-800 hover:text-primary-600 hover:bg-gray-100'
                 }`}
               >
                 All Products
@@ -59,8 +59,8 @@ const SubHeader: React.FC = () => {
                 href="/suppliers"
                 className={`px-3 py-1.5 text-sm font-semibold rounded-lg transition-all duration-200 ${
                   pathname === '/suppliers'
-                    ? 'text-green-600 bg-green-50'
-                    : 'text-gray-800 hover:text-green-600 hover:bg-gray-100'
+                    ? 'text-primary-500 bg-primary-50'
+                    : 'text-gray-800 hover:text-primary-600 hover:bg-gray-100'
                 }`}
               >
                 Find Suppliers
@@ -69,8 +69,8 @@ const SubHeader: React.FC = () => {
                 href="/user/promotions"
                 className={`px-3 py-1.5 text-sm font-semibold rounded-lg transition-all duration-200 ${
                   pathname === '/user/promotions'
-                    ? 'text-green-600 bg-green-50'
-                    : 'text-gray-800 hover:text-green-600 hover:bg-gray-100'
+                    ? 'text-primary-500 bg-primary-50'
+                    : 'text-gray-800 hover:text-primary-600 hover:bg-gray-100'
                 }`}
               >
                 Special Deals
@@ -79,8 +79,8 @@ const SubHeader: React.FC = () => {
                 href="/user/quote-requests"
                 className={`px-3 py-1.5 text-sm font-semibold rounded-lg transition-all duration-200 ${
                   pathname === '/user/quote-requests'
-                    ? 'text-green-600 bg-green-50'
-                    : 'text-gray-800 hover:text-green-600 hover:bg-gray-100'
+                    ? 'text-primary-500 bg-primary-50'
+                    : 'text-gray-800 hover:text-primary-600 hover:bg-gray-100'
                 }`}
               >
                 Bulk Orders
@@ -97,8 +97,8 @@ const SubHeader: React.FC = () => {
                   href={link.href}
                   className={`flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold rounded-lg transition-all duration-200 ${
                     pathname === link.href
-                      ? 'text-green-600 bg-green-50'
-                      : 'text-gray-800 hover:text-green-600 hover:bg-green-50'
+                      ? 'text-primary-500 bg-primary-50'
+                      : 'text-gray-800 hover:text-primary-600 hover:bg-primary-50'
                   }`}
                 >
                   {link.label}

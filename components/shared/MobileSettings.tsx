@@ -97,7 +97,7 @@ const MobileSettingsMenu = () => {
     return (
       <IconComponent
         className={`w-5 h-5 ${
-          isActive ? "text-[var(--green-main)]" : "text-[#A8A8A8]"
+          isActive ? "text-primary-500" : "text-[#A8A8A8]"
         }`}
       />
     );
@@ -120,7 +120,7 @@ const MobileSettingsMenu = () => {
                 {renderIcon(item.icon || "UserRound", isActive)}
                 <span 
                   className={`${
-                    isActive ? "text-[var(--green-main)]" : "text-[#A8A8A8]"
+                    isActive ? "text-primary-500" : "text-[#A8A8A8]"
                   } text-sm lg:text-base`}
                 >
                   {item.displayName}

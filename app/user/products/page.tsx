@@ -44,7 +44,6 @@ const ProductsPage: React.FC = () => {
     product.chemicalName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     product.polymerType?.name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
-  console.log("products", products);
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-green-50/30 to-emerald-50/40">
       <div className="max-w-[calc(100vw-2rem)] sm:max-w-[calc(100vw-4rem)] lg:max-w-[calc(100vw-12rem)] xl:max-w-7xl mx-auto px-4 py-8">

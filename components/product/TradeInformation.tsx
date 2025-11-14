@@ -61,14 +61,14 @@ const TradeInformation: React.FC<GeneralTabInformationProps> = ({
   const renderAvailableQuantity = (): React.ReactElement => {
     if (product?.stock && product.stock > 0) {
       return (
-        <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg border border-green-200">
+        <div className="flex items-center justify-between p-4 bg-primary-50 rounded-lg border border-primary-500/30">
           <div>
             <p className="text-sm font-medium text-gray-700">Available Quantity</p>
             <p className="text-lg font-bold text-gray-900">
               {product.stock} {product.uom}
             </p>
           </div>
-          <Badge className="bg-green-100 text-green-800">
+          <Badge className="bg-primary-50 text-primary-600">
             <CheckCircle className="w-4 h-4 mr-1" />
             In Stock
           </Badge>
@@ -139,7 +139,7 @@ const TradeInformation: React.FC<GeneralTabInformationProps> = ({
       {/* Packaging & Logistics */}
       <div className="bg-white rounded-lg p-4 border shadow-sm">
         <div className="flex items-center gap-2 mb-3">
-          <Package className="w-5 h-5 text-green-600" />
+          <Package className="w-5 h-5 text-primary-500" />
           <h3 className="text-lg font-bold text-gray-900">Packaging & Logistics</h3>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -160,7 +160,7 @@ const TradeInformation: React.FC<GeneralTabInformationProps> = ({
             <label className="text-sm font-medium text-gray-700 mb-2 block">Packaging Types</label>
             <div className="flex flex-wrap gap-1">
               {product.packagingType.map((item, index) => (
-                <Badge key={index} variant="secondary" className="bg-green-100 text-green-800 text-xs">
+                <Badge key={index} variant="secondary" className="bg-primary-50 text-primary-600 text-xs">
                   {item.name}
                 </Badge>
               ))}
@@ -172,9 +172,9 @@ const TradeInformation: React.FC<GeneralTabInformationProps> = ({
       {/* Environmental & Certifications */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Environmental */}
-        <div className="bg-gradient-to-r from-green-50 to-green-100 rounded-lg p-4 border-l-4 border-green-500">
+        <div className="bg-primary-50 rounded-lg p-4 border-l-4 border-primary-500">
           <div className="flex items-center gap-2 mb-3">
-            <Leaf className="w-5 h-5 text-green-600" />
+            <Leaf className="w-5 h-5 text-primary-500" />
             <h3 className="text-lg font-bold text-gray-900">Environmental</h3>
           </div>
           <div className="space-y-2">

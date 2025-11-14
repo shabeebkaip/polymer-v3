@@ -31,15 +31,15 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
     switch (variant) {
       case 'compact':
         if (type === 'chat')
-          return `${baseStyles} px-4 py-2 text-sm border-2 border-emerald-600 text-emerald-600 hover:bg-emerald-50`;
+          return `${baseStyles} px-4 py-2 text-sm border-2 border-primary-500 text-primary-500 hover:bg-primary-50`;
         return `${baseStyles} px-4 py-2 text-sm ${
           type === 'quote'
-            ? 'border border-green-600 text-emerald-600 cursor-pointer hover:bg-green-50'
-            : 'border-2 border-green-600 text-green-600 hover:bg-green-50'
+            ? 'border border-primary-500 text-primary-500 cursor-pointer hover:bg-primary-50'
+            : 'border-2 border-primary-500 text-primary-500 hover:bg-primary-50'
         }`;
       case 'large':
         if (type === 'chat')
-          return `${baseStyles} px-8 py-4 text-lg border-2 border-emerald-600 text-emerald-600 hover:bg-emerald-50`;
+          return `${baseStyles} px-8 py-4 text-lg border-2 border-primary-500 text-primary-500 hover:bg-primary-50`;
         return `${baseStyles} px-8 py-4 text-lg ${
           type === 'quote'
             ? 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white'
@@ -49,7 +49,7 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
         return className;
       default:
         if (type === 'chat')
-          return `${baseStyles} px-6 py-3 border-2 border-emerald-600 text-emerald-600 hover:bg-emerald-50`;
+          return `${baseStyles} px-6 py-3 border-2 border-primary-500 text-primary-500 hover:bg-primary-50`;
         return `${baseStyles} px-6 py-3 ${
           type === 'quote'
             ? 'bg-blue-600 hover:bg-blue-700 text-white'

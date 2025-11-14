@@ -76,8 +76,8 @@ const ProductFamiliesDropdown: React.FC = () => {
     >
       {/* Trigger Button */}
       <button
-        className={`flex items-center gap-1.5 px-3 py-2 font-medium text-gray-700 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200 ${
-          isOpen ? 'text-green-600 bg-green-50' : ''
+        className={`flex items-center gap-1.5 px-3 py-2 font-medium text-gray-700 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-all duration-200 ${
+          isOpen ? 'text-primary-500 bg-primary-50' : ''
         }`}
         onClick={() => setIsOpen(!isOpen)}
       >
@@ -97,7 +97,7 @@ const ProductFamiliesDropdown: React.FC = () => {
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-gray-100">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center">
+                <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center">
                   <Package className="w-4 h-4 text-white" />
                 </div>
                 <div>
@@ -108,7 +108,7 @@ const ProductFamiliesDropdown: React.FC = () => {
               <Link
                 href="/product-families"
                 onClick={handleItemClick}
-                className="text-xs font-semibold text-green-600 hover:text-green-700 flex items-center gap-1 hover:gap-1.5 transition-all"
+                className="text-xs font-semibold text-primary-500 hover:text-primary-600 flex items-center gap-1 hover:gap-1.5 transition-all"
               >
                 View All
                 <ArrowRight className="w-3 h-3" />
@@ -133,7 +133,7 @@ const ProductFamiliesDropdown: React.FC = () => {
                       key={family._id}
                       href={`/products?productFamily=${family._id}`}
                       onClick={handleItemClick}
-                      className="flex items-center gap-2.5 p-2 rounded-lg hover:bg-green-50/70 transition-all duration-150 group"
+                      className="flex items-center gap-2.5 p-2 rounded-lg hover:bg-primary-50/70 transition-all duration-150 group"
                     >
                       <div className="relative w-10 h-10 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0 border border-gray-200">
                         <Image
@@ -145,7 +145,7 @@ const ProductFamiliesDropdown: React.FC = () => {
                         />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h4 className="text-sm font-medium text-gray-800 group-hover:text-green-600 transition-colors line-clamp-1">
+                        <h4 className="text-sm font-medium text-gray-800 group-hover:text-primary-600 transition-colors line-clamp-1">
                           {family.name}
                         </h4>
                       </div>

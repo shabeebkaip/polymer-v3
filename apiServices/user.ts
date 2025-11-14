@@ -104,7 +104,6 @@ export const updateQuoteRequestStatus = async (
       `/quote-request/status/${id}`,
       data
     );
-    console.log("✅ Quote request status updated successfully:", response.data);
     return response.data;
   } catch (error: any) {
     console.error("❌ Error updating quote request status:", error);
@@ -224,14 +223,9 @@ export const updateSampleRequestStatus = async (
   }
 ) => {
   try {
-    console.log("🔍 Updating sample request status:", { id, data });
     const response = await axiosInstance.patch(
       `/sample-request/status/${id}`,
       data
-    );
-    console.log(
-      "✅ Sample request status updated successfully:",
-      response.data
     );
     return response.data;
   } catch (error: any) {
@@ -346,12 +340,7 @@ export const updateFinanceRequestStatus = async (
   }
 ) => {
   try {
-    console.log("🔍 Updating finance request status:", { id, data });
     const response = await axiosInstance.patch(`/finance/status/${id}`, data);
-    console.log(
-      "✅ Finance request status updated successfully:",
-      response.data
-    );
     return response.data;
   } catch (error: any) {
     console.error("❌ Error updating finance request status:", error);
@@ -444,7 +433,6 @@ export const sellerSubmitOffer = async ( data: any) => {
   try {
    
     const response = await axiosInstance.post(`/bulk-order/supplier-offer/create`, data);
-    console.log("✅ Offer submitted successfully:", response.data);
     return response.data;
   } catch (error: any) {
     console.error("❌ Error submitting offer:", error);
@@ -477,7 +465,6 @@ export const getCreatedPromotionsForSeller = async () => {
 export const createPromotion = async (data: any) => {
   try {
     const response = await axiosInstance.post("/best-deal/create", data);
-    console.log("✅ Promotion created successfully:", response.data);
     return response.data;
   } catch (error: any) {
     console.error("❌ Error creating promotion:", error);
@@ -506,7 +493,6 @@ export const getPromotionDetail = async (id: string) => {
 export const updatePromotion = async (id: string, offerPrice: number) => {
   try {
     const response = await axiosInstance.put(`/best-deal/edit/${id}`, { offerPrice });
-    console.log("✅ Promotion updated successfully:", response.data);
     return response.data;
   } catch (error: any) {
     console.error("❌ Error updating promotion:", error);
@@ -525,7 +511,6 @@ export const updatePromotion = async (id: string, offerPrice: number) => {
 export const createDealQuoteRequest = async (data: DealQuoteRequest) => {
   try {
     const response = await axiosInstance.post("/best-deal/buyer-deal-quote", data);
-    console.log("✅ Deal quote request created successfully:", response.data);
     return response.data;
   } catch (error: any) {  
     console.error("❌ Error creating deal quote request:", error);
@@ -548,9 +533,7 @@ export const createDealQuoteRequest = async (data: DealQuoteRequest) => {
 
 export const testApiConnectivity = async () => {
   try {
-    console.log("🔍 Testing API connectivity...");
     const response = await axiosInstance.get("/user/profile");
-    console.log("✅ API connectivity test successful:", response.status);
     return { success: true, status: response.status };
   } catch (error: any) {
     console.error("❌ API connectivity test failed:", error);

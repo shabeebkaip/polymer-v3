@@ -48,7 +48,6 @@ const CreatePromotion = () => {
           createdBy: [user._id as string],
         });
         setProducts(response.data || []);
-        console.log("Products data:", response.data); // Debug log
       } catch (err) {
         console.error("Error fetching products:", err);
         setError("Failed to load your products");

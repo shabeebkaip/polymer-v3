@@ -155,7 +155,7 @@ const ProductsClient: React.FC = () => {
 
   console.log("filters", filters);
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-emerald-50/20">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-primary-50/20">
       {/* Header Section with Breadcrumb */}
       <div className="bg-white/80 backdrop-blur-sm border-b border-gray-200/50 shadow-sm">
         <div className="container mx-auto px-4 py-6">
@@ -177,10 +177,10 @@ const ProductsClient: React.FC = () => {
           <div className="hidden lg:block lg:col-span-3">
             <div className="sticky top-6 space-y-6">
               <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-100/50 overflow-hidden">
-                <div className="p-6 border-b border-gray-100/50 bg-gradient-to-r from-emerald-50/80 to-green-50/80">
+                <div className="p-6 border-b border-gray-100/50 bg-primary-50/80">
                   <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                    <div className="p-2 bg-emerald-100 rounded-lg">
-                      <svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="p-2 bg-primary-50 rounded-lg">
+                      <svg className="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                       </svg>
                     </div>
@@ -224,7 +224,7 @@ const ProductsClient: React.FC = () => {
                 {/* Mobile Filter Button */}
                 <div className="lg:hidden">
                   <button
-                    className="group relative overflow-hidden bg-gradient-to-r from-emerald-500 to-green-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-emerald-600 hover:to-green-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center gap-2"
+                    className="group relative overflow-hidden bg-primary-500 text-white px-6 py-3 rounded-xl font-semibold hover:bg-primary-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center gap-2"
                     onClick={() => setMobileFilterOpen(true)}
                   >
                     <div className="p-1 bg-white/20 rounded-lg">
@@ -233,7 +233,6 @@ const ProductsClient: React.FC = () => {
                       </svg>
                     </div>
                     <span>Filters</span>
-                    <div className="absolute inset-0 bg-gradient-to-r from-green-600 to-emerald-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </button>
                 </div>
 
@@ -280,13 +279,13 @@ const ProductsClient: React.FC = () => {
                         };
                         if (Array.isArray(value)) {
                           return (
-                            <span key={`${key}-${value.join(',')}`} className="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-medium">
+                            <span key={`${key}-${value.join(',')}`} className="bg-primary-50 text-primary-600 px-3 py-1 rounded-full text-xs font-medium">
                               {filterSection.displayName || key}: {value.map(v => getDisplayName(v)).join(", ")}
                             </span>
                           );
                         } else {
                           return (
-                            <span key={`${key}-${value}`} className="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-medium">
+                            <span key={`${key}-${value}`} className="bg-primary-50 text-primary-600 px-3 py-1 rounded-full text-xs font-medium">
                               {filterSection.displayName || key}: {getDisplayName(value)}
                             </span>
                           );
@@ -294,7 +293,7 @@ const ProductsClient: React.FC = () => {
                       }
                       // fallback: just show raw value
                       return (
-                        <span key={`${key}-raw`} className="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-medium">
+                        <span key={`${key}-raw`} className="bg-primary-50 text-primary-600 px-3 py-1 rounded-full text-xs font-medium">
                           {key}: {Array.isArray(value) ? value.join(", ") : value}
                         </span>
                       );
@@ -302,7 +301,7 @@ const ProductsClient: React.FC = () => {
                   {Object.keys(query).length > 0 && (
                     <button
                       onClick={() => setQuery({})}
-                      className="ml-2 px-3 py-1 bg-gradient-to-r from-emerald-500 to-green-600 text-white rounded-full text-xs font-semibold shadow hover:from-emerald-600 hover:to-green-700 transition-all duration-200"
+                      className="ml-2 px-3 py-1 bg-primary-500 hover:bg-primary-600 text-white rounded-full text-xs font-semibold shadow transition-all duration-200"
                     >
                       Clear Filters
                     </button>
@@ -340,7 +339,7 @@ const ProductsClient: React.FC = () => {
                         <div className="hidden sm:flex items-center gap-2">
                           <div className="w-20 h-2 bg-gray-200 rounded-full overflow-hidden">
                             <div 
-                              className="h-full bg-gradient-to-r from-blue-500 to-emerald-500 transition-all duration-500"
+                              className="h-full bg-gradient-to-r from-blue-500 to-primary-500 transition-all duration-500"
                               style={{ width: `${(products.length / pagination.totalItems) * 100}%` }}
                             />
                           </div>
@@ -382,7 +381,7 @@ const ProductsClient: React.FC = () => {
                     <button
                       onClick={loadMoreProducts}
                       disabled={loadingMore}
-                      className="group relative inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-emerald-500 to-green-600 text-white rounded-xl hover:from-emerald-600 hover:to-green-700 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none"
+                      className="group relative inline-flex items-center gap-3 px-8 py-4 bg-primary-500 text-white rounded-xl hover:bg-primary-600 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none"
                     >
                       {loadingMore ? (
                         <>
@@ -408,8 +407,8 @@ const ProductsClient: React.FC = () => {
                 {loadingMore && (
                   <div className="mt-8">
                     <div className="text-center mb-6">
-                      <div className="inline-flex items-center gap-3 px-6 py-3 bg-emerald-50 rounded-xl text-emerald-700">
-                        <div className="w-5 h-5 border-2 border-emerald-300 border-t-emerald-600 rounded-full animate-spin"></div>
+                      <div className="inline-flex items-center gap-3 px-6 py-3 bg-primary-50 rounded-xl text-primary-600">
+                        <div className="w-5 h-5 border-2 border-primary-500/30 border-t-primary-500 rounded-full animate-spin"></div>
                         <span className="font-medium">Loading more products...</span>
                       </div>
                     </div>
@@ -458,7 +457,7 @@ const ProductsClient: React.FC = () => {
                         setProducts([]);
                         setHasMore(true);
                       }}
-                      className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-green-600 text-white rounded-xl hover:from-emerald-600 hover:to-green-700 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl"
+                      className="inline-flex items-center gap-2 px-6 py-3 bg-primary-500 hover:bg-primary-600 text-white rounded-xl transition-all duration-300 font-semibold shadow-lg hover:shadow-xl"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -479,8 +478,8 @@ const ProductsClient: React.FC = () => {
         >
           <div className="p-6">
             <div className="flex items-center gap-3 mb-6 pb-4 border-b border-gray-200">
-              <div className="p-2 bg-emerald-100 rounded-lg">
-                <svg className="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="p-2 bg-primary-50 rounded-lg">
+                <svg className="w-6 h-6 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                 </svg>
               </div>

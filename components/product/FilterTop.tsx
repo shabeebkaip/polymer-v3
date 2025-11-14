@@ -70,30 +70,30 @@ const FilterTop: React.FC<FilterTopProps> = ({ filters, onFilterChange, query })
               type="button"
               className={`group flex items-center gap-2 px-4 py-3 border rounded-xl bg-white hover:bg-gray-50 transition-all duration-200 text-sm min-w-[140px] shadow-sm hover:shadow-md transform hover:scale-[1.02] ${
                 getSelectedCount(filter) > 0
-                  ? "border-emerald-500 bg-emerald-50 text-emerald-700 shadow-emerald-100"
+                  ? "border-primary-500 bg-primary-50 text-primary-600 shadow-primary-500/10"
                   : "border-gray-300 text-gray-700 hover:border-gray-400"
               }`}
             >
               <span className="font-medium truncate flex-1 text-left">{filter.displayName}</span>
               <div className="flex items-center gap-2">
                 {getSelectedCount(filter) > 0 && (
-                  <span className="bg-emerald-500 text-white text-xs px-2 py-1 rounded-full min-w-[20px] text-center flex-shrink-0 font-semibold">
+                  <span className="bg-primary-500 text-white text-xs px-2 py-1 rounded-full min-w-[20px] text-center flex-shrink-0 font-semibold">
                     {getSelectedCount(filter)}
                   </span>
                 )}
                 <ChevronDown
                   className={`w-4 h-4 transition-transform duration-200 flex-shrink-0 ${
                     openDropdown === filter.name ? "rotate-180" : ""
-                  } ${getSelectedCount(filter) > 0 ? "text-emerald-600" : "text-gray-400"}`}
+                  } ${getSelectedCount(filter) > 0 ? "text-primary-500" : "text-gray-400"}`}
                 />
               </div>
             </button>
           </PopoverTrigger>
           <PopoverContent className="w-80 p-0 z-50">
-            <div className="px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-emerald-50/30">
+            <div className="px-4 py-3 border-b border-gray-100 bg-gray-50">
               <div className="flex items-center justify-between">
                 <span className="font-semibold text-gray-900 flex items-center gap-2">
-                  <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
+                  <div className="w-2 h-2 bg-primary-500 rounded-full"></div>
                   {filter.displayName}
                 </span>
                 {getSelectedCount(filter) > 0 && (
@@ -126,7 +126,7 @@ const FilterTop: React.FC<FilterTopProps> = ({ filters, onFilterChange, query })
                       type="text"
                       placeholder={`Search ${filter.displayName.toLowerCase()}...`}
                       value={searchTerms[filter.name] || ''}
-                      className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-gray-50 focus:bg-white transition-all duration-200"
+                      className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-gray-50 focus:bg-white transition-all duration-200"
                       onChange={(e) => handleSearchChange(filter.name, e.target.value)}
                     />
                   </div>
@@ -140,24 +140,24 @@ const FilterTop: React.FC<FilterTopProps> = ({ filters, onFilterChange, query })
                     <label
                       key={index}
                       className={`flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg cursor-pointer transition-all duration-150 group ${
-                        isSelected ? 'bg-emerald-50 border border-emerald-200' : 'hover:border hover:border-gray-200'
+                        isSelected ? 'bg-primary-50 border border-primary-500/30' : 'hover:border hover:border-gray-200'
                       }`}
                     >
                       <input
                         type="checkbox"
                         checked={isSelected}
                         onChange={(e) => handleOptionChange(filter.name, optionId, e.target.checked)}
-                        className="w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500 focus:ring-2 transition-colors duration-200"
+                        className="w-4 h-4 text-primary-500 accent-primary-500 border-gray-300 rounded focus:ring-primary-500 focus:ring-2 transition-colors duration-200"
                       />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between">
                           <span className={`text-sm truncate transition-colors duration-150 ${
-                            isSelected ? 'text-emerald-700 font-medium' : 'text-gray-900 group-hover:text-gray-700'
+                            isSelected ? 'text-primary-600 font-medium' : 'text-gray-900 group-hover:text-gray-700'
                           }`}>
                             {option.name}
                           </span>
                           <span className={`text-xs ml-3 flex-shrink-0 px-2 py-1 rounded-full font-medium ${
-                            isSelected ? 'bg-emerald-200 text-emerald-800' : 'bg-gray-100 text-gray-600'
+                            isSelected ? 'bg-primary-50 text-primary-600' : 'bg-gray-100 text-gray-600'
                           }`}>
                             {option.count}
                           </span>
@@ -180,7 +180,7 @@ const FilterTop: React.FC<FilterTopProps> = ({ filters, onFilterChange, query })
                   {searchTerms[filter.name] && (
                     <button
                       onClick={() => handleSearchChange(filter.name, '')}
-                      className="text-xs text-emerald-600 hover:text-emerald-800 mt-2 font-medium"
+                      className="text-xs text-primary-500 hover:text-primary-600 mt-2 font-medium"
                     >
                       Clear search
                     </button>

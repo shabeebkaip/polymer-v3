@@ -43,10 +43,10 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
   return (
     <>
       <div className="col-span-full mb-4 sm:mb-6">
-        <Card className="border-emerald-200 bg-emerald-50/50">
+        <Card className="border-primary-500/30 bg-primary-50/50">
           <CardContent className="p-3 sm:p-4">
-            <h4 className="text-base sm:text-lg font-semibold text-emerald-800 mb-2">Technical Specifications</h4>
-            <p className="text-xs sm:text-sm text-emerald-600">Define the technical characteristics and categories</p>
+            <h4 className="text-base sm:text-lg font-semibold text-primary-500 mb-2">Technical Specifications</h4>
+            <p className="text-xs sm:text-sm text-primary-500">Define the technical characteristics and categories</p>
           </CardContent>
         </Card>
       </div>
@@ -67,7 +67,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
             className={`transition-all duration-200 ${
               error.chemicalFamily 
                 ? 'border-red-300 focus:border-red-500 focus:ring-red-200' 
-                : 'border-gray-300 focus:border-emerald-500 focus:ring-emerald-200'
+                : 'border-gray-300 focus:border-primary-500 focus:ring-primary-500/30'
             }`}
           >
             <SelectValue placeholder="Select Chemical Family" />
@@ -86,7 +86,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
             placeholder="Please specify other chemical family"
             value={data.chemicalFamilyOther || ""}
             onChange={e => onFieldChange("chemicalFamilyOther", e.target.value)}
-            className="mt-2 border-gray-300 focus:border-emerald-500 focus:ring-emerald-200"
+            className="mt-2 border-gray-300 focus:border-primary-500 focus:ring-primary-500/30"
           />
         )}
         {error.chemicalFamily && (
@@ -130,7 +130,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
             className={`transition-all duration-200 ${
               error.polymerType 
                 ? 'border-red-300 focus:border-red-500 focus:ring-red-200' 
-                : 'border-gray-300 focus:border-emerald-500 focus:ring-emerald-200'
+                : 'border-gray-300 focus:border-primary-500 focus:ring-primary-500/30'
             }`}
           >
             <SelectValue placeholder="Select Polymer Type" />
@@ -149,7 +149,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
             placeholder="Please specify other polymer type"
             value={data.polymerTypeOther || ""}
             onChange={e => onFieldChange("polymerTypeOther", e.target.value)}
-            className="mt-2 border-gray-300 focus:border-emerald-500 focus:ring-emerald-200"
+            className="mt-2 border-gray-300 focus:border-primary-500 focus:ring-primary-500/30"
           />
         )}
         {error.polymerType && (
@@ -193,7 +193,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
             className={`transition-all duration-200 ${
               error.physicalForm 
                 ? 'border-red-300 focus:border-red-500 focus:ring-red-200' 
-                : 'border-gray-300 focus:border-emerald-500 focus:ring-emerald-200'
+                : 'border-gray-300 focus:border-primary-500 focus:ring-primary-500/30'
             }`}
           >
             <SelectValue placeholder="Select Physical Form" />
@@ -212,7 +212,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
             placeholder="Please specify other physical form"
             value={data.physicalFormOther || ""}
             onChange={e => onFieldChange("physicalFormOther", e.target.value)}
-            className="mt-2 border-gray-300 focus:border-emerald-500 focus:ring-emerald-200"
+            className="mt-2 border-gray-300 focus:border-primary-500 focus:ring-primary-500/30"
           />
         )}
         {error.physicalForm && (
@@ -230,7 +230,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
           placeholder="Enter manufacturing method"
           value={data.manufacturingMethod || ""}
           onChange={(e) => onFieldChange("manufacturingMethod", e.target.value)}
-          className="border-gray-300 focus:border-emerald-500 focus:ring-emerald-200 transition-all duration-200"
+          className="border-gray-300 focus:border-primary-500 focus:ring-primary-500/30 transition-all duration-200"
         />
       </div>
 
@@ -244,7 +244,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
           placeholder="Enter country of origin"
           value={data.countryOfOrigin || ""}
           onChange={(e) => onFieldChange("countryOfOrigin", e.target.value)}
-          className="border-gray-300 focus:border-emerald-500 focus:ring-emerald-200 transition-all duration-200"
+          className="border-gray-300 focus:border-primary-500 focus:ring-primary-500/30 transition-all duration-200"
         />
       </div>
 
@@ -258,7 +258,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
           placeholder="Enter color"
           value={data.color || ""}
           onChange={(e) => onFieldChange("color", e.target.value)}
-          className="border-gray-300 focus:border-emerald-500 focus:ring-emerald-200 transition-all duration-200"
+          className="border-gray-300 focus:border-primary-500 focus:ring-primary-500/30 transition-all duration-200"
         />
       </div>
     </>

@@ -45,7 +45,7 @@ const FilterItem: React.FC<FilterItemProps> = ({
         <div className="flex items-center gap-3">
           <h4 className="font-semibold text-gray-900">{filter?.displayName}</h4>
           {getSelectedCount() > 0 && (
-            <span className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full font-medium">
+            <span className="bg-primary-50 text-primary-600 text-xs px-2 py-1 rounded-full font-medium">
               {getSelectedCount()}
             </span>
           )}
@@ -112,7 +112,7 @@ const FilterItem: React.FC<FilterItemProps> = ({
                     onChange={(e) =>
                       onFilterChange(filter.name, id, e.target.checked)
                     }
-                    className="w-4 h-4 rounded border-gray-300 text-green-600 focus:ring-green-500 focus:ring-2 transition-colors duration-200"
+                    className="w-4 h-4 rounded border-gray-300 text-primary-500 focus:ring-primary-500 focus:ring-2 transition-colors duration-200"
                   />
                   <div className="flex-1 flex items-center justify-between min-w-0">
                     <span className="text-sm text-gray-700 group-hover:text-gray-900 transition-colors duration-150 truncate">

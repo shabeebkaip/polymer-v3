@@ -95,9 +95,9 @@ const ProductDetailClient: React.FC<ProductDetailClientProps> = ({ product }) =>
         )}
 
         {/* Call to Action - Brand Greenish */}
-        <div className="bg-gradient-to-r from-green-500 to-green-700 rounded-2xl p-6 mt-8 text-center text-white">
+        <div className="bg-primary-500 rounded-2xl p-6 mt-8 text-center text-white">
           <h2 className="text-2xl font-bold mb-3">Need More Information?</h2>
-          <p className="text-green-100 mb-4 max-w-xl mx-auto">
+          <p className="text-white/80 mb-4 max-w-xl mx-auto">
             Contact {product.createdBy?.company || 'the supplier'} for detailed specifications,
             custom quotes, or bulk pricing.
           </p>
@@ -106,7 +106,7 @@ const ProductDetailClient: React.FC<ProductDetailClientProps> = ({ product }) =>
               <QuoteRequestModal
                 productId={product._id}
                 uom={product.uom || 'kg'}
-                className="px-6 py-3 bg-white text-green-700 hover:bg-green-50 rounded-lg font-medium transition-all flex items-center gap-2 shadow"
+                className="px-6 py-3 bg-white text-primary-600 hover:bg-primary-50 rounded-lg font-medium transition-all flex items-center gap-2 shadow"
               >
                 <ShoppingCart className="w-5 h-5" />
                 Request Quote
@@ -114,7 +114,7 @@ const ProductDetailClient: React.FC<ProductDetailClientProps> = ({ product }) =>
               <SampleRequestModal
                 productId={product._id}
                 uom={product.uom || 'kg'}
-                className="px-6 py-3 border-2 border-white text-white hover:bg-white hover:text-green-700 rounded-lg font-medium transition-all flex items-center gap-2 shadow"
+                className="px-6 py-3 border-2 border-white text-white hover:bg-white hover:text-primary-600 rounded-lg font-medium transition-all flex items-center gap-2 shadow"
               >
                 <FileText className="w-5 h-5" />
                 Request Sample

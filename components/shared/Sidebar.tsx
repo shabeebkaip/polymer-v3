@@ -297,22 +297,12 @@ const Sidebar = () => {
     return subItems.some((subItem) => isActiveRoute(subItem.route));
   };
 
-  // Debug logging
-  console.log("Sidebar debug:", {
-    user: !!user,
-    userDetails: user ? { firstName: user.firstName, email: user.email, user_type: user.user_type } : null,
-    isInitialized,
-    hasToken: !!Cookies.get("token"),
-    tokenValue: Cookies.get("token")?.substring(0, 10) + "...",
-    fallbackUserType: user?.user_type || "unknown",
-    sidebarItemsCount: displaySidebarList.length
-  });
   return (
     <div className="h-full w-full bg-white border-r border-gray-200 flex flex-col overflow-hidden">
       {/* User Profile Header */}
       <div className="p-4 border-b border-gray-100 bg-gray-50/50 flex-shrink-0">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-md flex-shrink-0">
+          <div className="w-12 h-12 bg-primary-500 rounded-xl flex items-center justify-center shadow-md flex-shrink-0">
             <User className="w-6 h-6 text-white" />
           </div>
           <div className="flex-1 min-w-0">
@@ -322,11 +312,11 @@ const Sidebar = () => {
                 : user?.firstName || user?.lastName || "User"}
             </h3>
             <div className="flex items-center gap-2 mt-1">
-              <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-emerald-100 text-emerald-700 capitalize">
+              <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-primary-50 text-primary-500 capitalize">
                 {user?.user_type || "Member"}
               </span>
               <div
-                className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse flex-shrink-0"
+                className="w-1.5 h-1.5 bg-primary-500 rounded-full animate-pulse flex-shrink-0"
                 title="Online"
               ></div>
             </div>
@@ -361,7 +351,7 @@ const Sidebar = () => {
                       flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer transition-colors duration-200 group min-w-0
                       ${
                         showAsActive
-                          ? "bg-emerald-50 text-emerald-700 border-l-3 border-emerald-600"
+                          ? "bg-primary-50 text-primary-500 border-l-3 border-primary-500"
                           : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                       }
                     `}
@@ -377,7 +367,7 @@ const Sidebar = () => {
                     <div
                       className={`flex-shrink-0 ${
                         showAsActive
-                          ? "text-emerald-600"
+                          ? "text-primary-500"
                           : "text-gray-500 group-hover:text-gray-700"
                       }`}
                     >
@@ -414,7 +404,7 @@ const Sidebar = () => {
                               flex items-center gap-2 px-2 py-2 rounded-lg cursor-pointer transition-colors duration-200 min-w-0
                               ${
                                 isSubActive
-                                  ? "bg-emerald-50 text-emerald-700"
+                                  ? "bg-primary-50 text-primary-500"
                                   : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                               }
                             `}
@@ -424,7 +414,7 @@ const Sidebar = () => {
                             <div
                               className={`flex-shrink-0 ${
                                 isSubActive
-                                  ? "text-emerald-600"
+                                  ? "text-primary-500"
                                   : "text-gray-400"
                               }`}
                             >

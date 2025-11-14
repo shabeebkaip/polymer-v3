@@ -18,8 +18,8 @@ const ENVIRONMENTAL_FEATURES = [
     title: "Recyclable",
     description: "Material can be recycled after use",
     icon: Recycle,
-    color: "text-green-600",
-    bgColor: "bg-green-50",
+    color: "text-primary-500",
+    bgColor: "bg-primary-50",
     benefits: "Reduces waste and supports circular economy"
   },
   {
@@ -27,8 +27,8 @@ const ENVIRONMENTAL_FEATURES = [
     title: "Bio-Degradable", 
     description: "Material naturally decomposes over time",
     icon: TreePine,
-    color: "text-emerald-600",
-    bgColor: "bg-emerald-50",
+    color: "text-primary-500",
+    bgColor: "bg-primary-50",
     benefits: "Minimizes environmental impact at end of life"
   }
 ];
@@ -44,18 +44,18 @@ const Environmental: React.FC<EnvironmentalProps> = ({
   return (
     <>
       <div className="col-span-full mb-6">
-        <Card className="border-green-200 bg-green-50/50">
+        <Card className="border-primary-500/30 bg-primary-50/50">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <h4 className="text-lg font-semibold text-green-800 mb-2">Environmental Impact</h4>
-                <p className="text-sm text-green-600">Highlight eco-friendly properties and sustainability features</p>
+                <h4 className="text-lg font-semibold text-primary-500 mb-2">Environmental Impact</h4>
+                <p className="text-sm text-primary-500">Highlight eco-friendly properties and sustainability features</p>
               </div>
               <div className="text-right">
-                <Badge variant="outline" className="bg-green-100 text-green-700 border-green-300">
+                <Badge variant="outline" className="bg-primary-50 text-primary-500 border-primary-500/30">
                   {getSelectedCount()} / {ENVIRONMENTAL_FEATURES.length} Selected
                 </Badge>
-                <p className="text-xs text-green-600 mt-1">Boost your product&apos;s appeal</p>
+                <p className="text-xs text-primary-500 mt-1">Boost your product&apos;s appeal</p>
               </div>
             </div>
           </CardContent>
@@ -72,13 +72,13 @@ const Environmental: React.FC<EnvironmentalProps> = ({
             <Card 
               key={feature.key} 
               className={`transition-all duration-200 cursor-pointer hover:shadow-md ${
-                isSelected ? 'ring-2 ring-green-300 border-green-300' : 'border-gray-200'
+                isSelected ? 'ring-2 ring-primary-500/30 border-primary-500/30' : 'border-gray-200'
               }`}
               onClick={() => onFieldChange(feature.key, !isSelected)}
             >
               <CardContent className="p-4">
                 <div className="flex items-start space-x-4">
-                  <div className={`p-3 rounded-lg ${feature.bgColor} ${isSelected ? 'ring-2 ring-green-300' : ''}`}>
+                  <div className={`p-3 rounded-lg ${feature.bgColor} ${isSelected ? 'ring-2 ring-primary-500/30' : ''}`}>
                     <Icon className={`w-6 h-6 ${feature.color}`} />
                   </div>
                   
@@ -90,14 +90,14 @@ const Environmental: React.FC<EnvironmentalProps> = ({
                         onCheckedChange={(checked) =>
                           onFieldChange(feature.key, Boolean(checked))
                         }
-                        className="data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
+                        className="data-[state=checked]:bg-primary-500 data-[state=checked]:border-primary-500"
                       />
                       <Label 
                         htmlFor={String(feature.key)} 
                         className="text-base font-semibold text-gray-800 cursor-pointer flex items-center gap-2"
                       >
                         {feature.title}
-                        {isSelected && <CheckCircle2 className="w-4 h-4 text-green-600" />}
+                        {isSelected && <CheckCircle2 className="w-4 h-4 text-primary-500" />}
                       </Label>
                     </div>
                     
@@ -117,30 +117,30 @@ const Environmental: React.FC<EnvironmentalProps> = ({
 
       {/* Benefits Section */}
       <div className="col-span-full mt-6">
-        <Card className="border-emerald-200 bg-emerald-50/30">
+        <Card className="border-primary-500/30 bg-primary-50/30">
           <CardContent className="p-4">
             <div className="flex items-center gap-2 mb-3">
-              <Earth className="w-5 h-5 text-emerald-600" />
+              <Earth className="w-5 h-5 text-primary-500" />
               <h6 className="font-medium text-gray-800">Why Environmental Features Matter</h6>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">
               <div className="flex items-start gap-2">
-                <div className="w-2 h-2 bg-emerald-400 rounded-full mt-2"></div>
+                <div className="w-2 h-2 bg-primary-500 rounded-full mt-2"></div>
                 <div>
                   <p className="font-medium">Market Advantage</p>
                   <p className="text-xs">Eco-conscious buyers actively seek sustainable products</p>
                 </div>
               </div>
               <div className="flex items-start gap-2">
-                <div className="w-2 h-2 bg-emerald-400 rounded-full mt-2"></div>
+                <div className="w-2 h-2 bg-primary-500 rounded-full mt-2"></div>
                 <div>
                   <p className="font-medium">Compliance Ready</p>
                   <p className="text-xs">Meet increasing environmental regulations and standards</p>
                 </div>
               </div>
               <div className="flex items-start gap-2">
-                <div className="w-2 h-2 bg-emerald-400 rounded-full mt-2"></div>
+                <div className="w-2 h-2 bg-primary-500 rounded-full mt-2"></div>
                 <div>
                   <p className="font-medium">Premium Pricing</p>
                   <p className="text-xs">Sustainable products often command higher prices</p>

@@ -79,7 +79,6 @@ const SupplierDetail = () => {
       </section>
     );
   }
-  console.log('supplier', supplier);
   return (
     <section className="container mt-10 mx-auto px-4 pb-12">
       {/* Hero Section */}

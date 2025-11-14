@@ -336,7 +336,7 @@ const SampleRequestModal = ({
         <DialogContent className="sm:max-w-5xl max-h-[95vh] overflow-hidden bg-gradient-to-br from-white to-gray-50 border-0 shadow-2xl">
           <DialogHeader className="border-b border-gray-100 pb-6">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
+              <div className="w-12 h-12 bg-primary-500 rounded-xl flex items-center justify-center shadow-lg">
                 <Package className="w-6 h-6 text-white" />
               </div>
               <div>
@@ -354,7 +354,7 @@ const SampleRequestModal = ({
             {loading ? (
               <div className="flex items-center justify-center py-12">
                 <div className="flex flex-col items-center gap-3">
-                  <div className="w-8 h-8 border-4 border-emerald-200 border-t-emerald-600 rounded-full animate-spin"></div>
+                  <div className="w-8 h-8 border-4 border-primary-500/20 border-t-primary-500 rounded-full animate-spin"></div>
                   <p className="text-gray-600">Loading form options...</p>
                 </div>
               </div>
@@ -363,7 +363,7 @@ const SampleRequestModal = ({
                 {/* Product & Sample Details Section */}
                 <div className="space-y-4">
                   <div className="flex items-center gap-2 text-lg font-semibold text-gray-800">
-                    <Package className="w-5 h-5 text-emerald-600" />
+                    <Package className="w-5 h-5 text-primary-500" />
                     Sample Details
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -372,7 +372,7 @@ const SampleRequestModal = ({
                       <div className="relative">
                         <MemoizedInput
                           placeholder="Enter sample quantity"
-                          className="pr-20 bg-white border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 transition-all duration-200"
+                          className="pr-20 bg-white border-gray-200 focus:border-primary-500 focus:ring-primary-500 transition-all duration-200"
                           type="number"
                           min="1"
                           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -380,7 +380,7 @@ const SampleRequestModal = ({
                           }
                           value={data?.quantity}
                         />
-                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-medium text-emerald-600 border-l border-gray-200 pl-3">
+                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-medium text-primary-500 border-l border-gray-200 pl-3">
                           {data?.uom}
                         </span>
                       </div>
@@ -392,7 +392,7 @@ const SampleRequestModal = ({
                         value={data.grade}
                         onValueChange={(value: string) => onFieldChange('grade', value)}
                         placeholder="Select product grade"
-                        className="bg-white border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 transition-all duration-200"
+                        className="bg-white border-gray-200 focus:border-primary-500 focus:ring-primary-500 transition-all duration-200"
                       >
                         {grades.map((grade) => (
                           <SelectItem key={grade._id} value={grade._id}>
@@ -408,7 +408,7 @@ const SampleRequestModal = ({
                       </label>
                       <MemoizedInput
                         placeholder="Annual quantity requirement"
-                        className="bg-white border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 transition-all duration-200"
+                        className="bg-white border-gray-200 focus:border-primary-500 focus:ring-primary-500 transition-all duration-200"
                         type="number"
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                           onFieldChange('expected_annual_volume', e.target.value)
@@ -423,7 +423,7 @@ const SampleRequestModal = ({
                       </label>
                       <MemoizedTextarea
                         placeholder="What will this product be used for?"
-                        className="bg-white border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 transition-all duration-200 min-h-[80px]"
+                        className="bg-white border-gray-200 focus:border-primary-500 focus:ring-primary-500 transition-all duration-200 min-h-[80px]"
                         onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
                           onFieldChange('application', e.target.value)
                         }
@@ -436,7 +436,7 @@ const SampleRequestModal = ({
                 {/* Timeline Section */}
                 <div className="space-y-4">
                   <div className="flex items-center gap-2 text-lg font-semibold text-gray-800">
-                    <Clock className="w-5 h-5 text-emerald-600" />
+                    <Clock className="w-5 h-5 text-primary-500" />
                     Timeline
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -457,7 +457,7 @@ const SampleRequestModal = ({
                           }
                           placeholder="When do you need this sample?"
                           onFocus={() => setCalendarOpen2(true)}
-                          className="bg-white border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 transition-all duration-200 cursor-pointer pr-10"
+                          className="bg-white border-gray-200 focus:border-primary-500 focus:ring-primary-500 transition-all duration-200 cursor-pointer pr-10"
                         />
                         <CalendarIcon className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                         {calendarOpen2 && (
@@ -496,7 +496,7 @@ const SampleRequestModal = ({
                           }
                           placeholder="When might you place an order?"
                           onFocus={() => setCalendarOpen(true)}
-                          className="bg-white border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 transition-all duration-200 cursor-pointer pr-10"
+                          className="bg-white border-gray-200 focus:border-primary-500 focus:ring-primary-500 transition-all duration-200 cursor-pointer pr-10"
                         />
                         <CalendarIcon className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                         {calendarOpen && (
@@ -521,7 +521,7 @@ const SampleRequestModal = ({
                 {/* Shipping Address Section */}
                 <div className="space-y-4">
                   <div className="flex items-center gap-2 text-lg font-semibold text-gray-800">
-                    <MapPin className="w-5 h-5 text-emerald-600" />
+                    <MapPin className="w-5 h-5 text-primary-500" />
                     Shipping Address
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -531,7 +531,7 @@ const SampleRequestModal = ({
                         <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <MemoizedInput
                           placeholder="Enter country"
-                          className="pl-10 bg-white border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 transition-all duration-200"
+                          className="pl-10 bg-white border-gray-200 focus:border-primary-500 focus:ring-primary-500 transition-all duration-200"
                           type="text"
                           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                             onFieldChange('country', e.target.value)
@@ -546,7 +546,7 @@ const SampleRequestModal = ({
                     <label className="text-sm font-medium text-gray-700">Complete Address *</label>
                     <MemoizedTextarea
                       placeholder="Enter complete shipping address including street, postal code, and any specific delivery instructions"
-                      className="bg-white border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 transition-all duration-200 min-h-[80px]"
+                      className="bg-white border-gray-200 focus:border-primary-500 focus:ring-primary-500 transition-all duration-200 min-h-[80px]"
                       onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
                         onFieldChange('address', e.target.value)
                       }
@@ -558,14 +558,14 @@ const SampleRequestModal = ({
                 {/* Additional Information Section */}
                 <div className="space-y-4">
                   <div className="flex items-center gap-2 text-lg font-semibold text-gray-800">
-                    <FileText className="w-5 h-5 text-emerald-600" />
+                    <FileText className="w-5 h-5 text-primary-500" />
                     Additional Information
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-gray-700">Additional Notes</label>
                     <MemoizedTextarea
                       placeholder="Any special requirements, handling instructions, or additional information for the supplier"
-                      className="bg-white border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 transition-all duration-200 min-h-[100px]"
+                      className="bg-white border-gray-200 focus:border-primary-500 focus:ring-primary-500 transition-all duration-200 min-h-[100px]"
                       rows={3}
                       onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
                         onFieldChange('message', e.target.value)
@@ -592,7 +592,7 @@ const SampleRequestModal = ({
               type="submit"
               onClick={handleSubmit}
               disabled={!isFormValid || loading || isSubmitting}
-              className="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white px-8 py-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+              className="bg-primary-500 hover:bg-primary-600 text-white px-8 py-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
             >
               {isSubmitting ? (
                 <div className="flex items-center gap-2">

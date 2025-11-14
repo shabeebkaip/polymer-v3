@@ -14,7 +14,7 @@ const ProductSummaryBar: React.FC<ProductSummaryBarProps> = ({ product }) => {
           <div className="flex items-center gap-2">
             <Badge
               variant="outline"
-              className="text-green-600 border-green-600"
+              className="text-primary-600 border-primary-600"
             >
               {product.productType || product.polymerType?.name || "Product"}
             </Badge>

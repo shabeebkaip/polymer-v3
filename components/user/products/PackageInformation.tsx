@@ -31,10 +31,10 @@ const PackageInformation: React.FC<PackageInformationProps> = ({
   return (
     <>
       <div className="col-span-full mb-6">
-        <Card className="border-teal-200 bg-teal-50/50">
+        <Card className="border-primary-500/30 bg-primary-50/50">
           <CardContent className="p-4">
-            <h4 className="text-lg font-semibold text-teal-800 mb-2">Package & Storage Information</h4>
-            <p className="text-sm text-teal-600">Define packaging specifications and storage requirements</p>
+            <h4 className="text-lg font-semibold text-primary-500 mb-2">Package & Storage Information</h4>
+            <p className="text-sm text-primary-500">Define packaging specifications and storage requirements</p>
             <Badge variant="secondary" className="mt-2 text-xs">Optional - Helps with logistics planning</Badge>
           </CardContent>
         </Card>
@@ -44,8 +44,8 @@ const PackageInformation: React.FC<PackageInformationProps> = ({
       <div className="col-span-full mb-6">
         <Card className="border-gray-200">
           <CardContent className="p-4">
-            <div className="flex items-center gap-2 mb-4 p-2 rounded-lg bg-teal-50">
-              <Package className="w-5 h-5 text-teal-600" />
+            <div className="flex items-center gap-2 mb-4 p-2 rounded-lg bg-primary-50">
+              <Package className="w-5 h-5 text-primary-500" />
               <h5 className="font-semibold text-gray-800">Packaging Details</h5>
             </div>
             
@@ -80,7 +80,7 @@ const PackageInformation: React.FC<PackageInformationProps> = ({
                     placeholder="Enter package weight"
                     value={data.packagingWeight || ""}
                     onChange={(e) => onFieldChange("packagingWeight", e.target.value)}
-                    className="pr-12 border-gray-300 focus:border-teal-500 focus:ring-teal-200 transition-all duration-200"
+                    className="pr-12 border-gray-300 focus:border-primary-500 focus:ring-primary-500/30 transition-all duration-200"
                   />
                   <div className="absolute right-3 top-2.5 text-sm text-gray-500 pointer-events-none">kg</div>
                 </div>
@@ -112,7 +112,7 @@ const PackageInformation: React.FC<PackageInformationProps> = ({
                   placeholder="e.g., Store in cool, dry place at 15-25°C"
                   value={data.storageConditions || ""}
                   onChange={(e) => onFieldChange("storageConditions", e.target.value)}
-                  className="border-gray-300 focus:border-teal-500 focus:ring-teal-200 transition-all duration-200"
+                  className="border-gray-300 focus:border-primary-500 focus:ring-primary-500/30 transition-all duration-200"
                 />
                 <p className="text-xs text-gray-500">Temperature, humidity, and other storage requirements</p>
               </div>
@@ -129,7 +129,7 @@ const PackageInformation: React.FC<PackageInformationProps> = ({
                     placeholder="Enter shelf life"
                     value={data.shelfLife || ""}
                     onChange={(e) => onFieldChange("shelfLife", e.target.value)}
-                    className="pr-20 border-gray-300 focus:border-teal-500 focus:ring-teal-200 transition-all duration-200"
+                    className="pr-20 border-gray-300 focus:border-primary-500 focus:ring-primary-500/30 transition-all duration-200"
                   />
                   <div className="absolute right-3 top-2.5 text-sm text-gray-500 pointer-events-none">months</div>
                 </div>

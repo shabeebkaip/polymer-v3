@@ -6,7 +6,7 @@ const MobileMenuButton: React.FC<mobileMenuButtonType> = ({ toggleMenu, isOpen }
     <div className="flex items-center lg:hidden">
       <button
         onClick={toggleMenu}
-        className="inline-flex items-center justify-center p-2.5 text-[var(--green-main)] rounded-xl hover:bg-green-50 transition-all duration-200 relative z-[60]"
+        className="inline-flex items-center justify-center p-2.5 text-primary-500 rounded-xl hover:bg-primary-50 transition-all duration-200 relative z-[60]"
       >
         <svg
           className="w-6 h-6 transition-transform duration-200"

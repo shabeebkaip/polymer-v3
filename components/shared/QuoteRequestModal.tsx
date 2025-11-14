@@ -399,7 +399,7 @@ const QuoteRequestModal = ({
         <DialogContent className="sm:max-w-5xl max-h-[95vh] overflow-hidden bg-gradient-to-br from-white to-gray-50 border-0 shadow-2xl">
           <DialogHeader className="border-b border-gray-100 pb-6">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
+              <div className="w-12 h-12 bg-primary-500 rounded-xl flex items-center justify-center shadow-lg">
                 <Package className="w-6 h-6 text-white" />
               </div>
               <div>
@@ -417,7 +417,7 @@ const QuoteRequestModal = ({
             {loading ? (
               <div className="flex items-center justify-center py-12">
                 <div className="flex flex-col items-center gap-3">
-                  <div className="w-8 h-8 border-4 border-emerald-200 border-t-emerald-600 rounded-full animate-spin"></div>
+                  <div className="w-8 h-8 border-4 border-primary-500/20 border-t-primary-500 rounded-full animate-spin"></div>
                   <p className="text-gray-600">Loading form options...</p>
                 </div>
               </div>
@@ -426,7 +426,7 @@ const QuoteRequestModal = ({
                 {/* Product & Quantity Section */}
                 <div className="space-y-4">
                   <div className="flex items-center gap-2 text-lg font-semibold text-gray-800">
-                    <Package className="w-5 h-5 text-emerald-600" />
+                    <Package className="w-5 h-5 text-primary-500" />
                     Product Details
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -435,7 +435,7 @@ const QuoteRequestModal = ({
                       <div className="relative">
                         <MemoizedInput
                           placeholder="Enter quantity"
-                          className="pr-20 bg-white border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 transition-all duration-200"
+                          className="pr-20 bg-white border-gray-200 focus:border-primary-500 focus:ring-primary-500 transition-all duration-200"
                           type="number"
                           min="1"
                           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -443,7 +443,7 @@ const QuoteRequestModal = ({
                           }
                           value={data?.quantity || ''}
                         />
-                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-medium text-emerald-600 border-l border-gray-200 pl-3">
+                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-medium text-primary-500 border-l border-gray-200 pl-3">
                           {data?.uom}
                         </span>
                       </div>
@@ -455,7 +455,7 @@ const QuoteRequestModal = ({
                         value={data.grade}
                         onValueChange={(value: string) => onFieldChange('grade', value)}
                         placeholder="Select product grade"
-                        className="bg-white border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 transition-all duration-200"
+                        className="bg-white border-gray-200 focus:border-primary-500 focus:ring-primary-500 transition-all duration-200"
                       >
                         {grades.map((grade) => (
                           <SelectItem key={grade._id} value={grade._id}>
@@ -470,7 +470,7 @@ const QuoteRequestModal = ({
                 {/* Shipping & Logistics Section */}
                 <div className="space-y-4">
                   <div className="flex items-center gap-2 text-lg font-semibold text-gray-800">
-                    <Truck className="w-5 h-5 text-emerald-600" />
+                    <Truck className="w-5 h-5 text-primary-500" />
                     Shipping & Logistics
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -480,7 +480,7 @@ const QuoteRequestModal = ({
                         value={data.incoterm}
                         onValueChange={(value: string) => onFieldChange('incoterm', value)}
                         placeholder="Select shipping terms"
-                        className="bg-white border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 transition-all duration-200"
+                        className="bg-white border-gray-200 focus:border-primary-500 focus:ring-primary-500 transition-all duration-200"
                       >
                         {incoterms.map((incoterm) => (
                           <SelectItem key={incoterm._id} value={incoterm._id}>
@@ -496,7 +496,7 @@ const QuoteRequestModal = ({
                         <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <MemoizedInput
                           placeholder="Enter destination country"
-                          className="pl-10 bg-white border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 transition-all duration-200"
+                          className="pl-10 bg-white border-gray-200 focus:border-primary-500 focus:ring-primary-500 transition-all duration-200"
                           type="text"
                           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                             onFieldChange('country', e.target.value)
@@ -513,7 +513,7 @@ const QuoteRequestModal = ({
                     </label>
                     <MemoizedTextarea
                       placeholder="Enter complete shipping address including city, postal code, and any specific delivery instructions"
-                      className="bg-white border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 transition-all duration-200 min-h-[80px]"
+                      className="bg-white border-gray-200 focus:border-primary-500 focus:ring-primary-500 transition-all duration-200 min-h-[80px]"
                       onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
                         onFieldChange('destination', e.target.value)
                       }
@@ -525,7 +525,7 @@ const QuoteRequestModal = ({
                 {/* Packaging Section */}
                 <div className="space-y-4">
                   <div className="flex items-center gap-2 text-lg font-semibold text-gray-800">
-                    <Package className="w-5 h-5 text-emerald-600" />
+                    <Package className="w-5 h-5 text-primary-500" />
                     Packaging Requirements
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -535,7 +535,7 @@ const QuoteRequestModal = ({
                         value={data.packagingType}
                         onValueChange={(value: string) => onFieldChange('packagingType', value)}
                         placeholder="Select packaging type"
-                        className="bg-white border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 transition-all duration-200"
+                        className="bg-white border-gray-200 focus:border-primary-500 focus:ring-primary-500 transition-all duration-200"
                       >
                         {packagingTypes.map((packagingType) => (
                           <SelectItem key={packagingType._id} value={packagingType._id}>
@@ -549,7 +549,7 @@ const QuoteRequestModal = ({
                       <label className="text-sm font-medium text-gray-700">Packaging Size *</label>
                       <MemoizedInput
                         placeholder="e.g., 25kg bags, 1000kg big bags"
-                        className="bg-white border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 transition-all duration-200"
+                        className="bg-white border-gray-200 focus:border-primary-500 focus:ring-primary-500 transition-all duration-200"
                         type="text"
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                           onFieldChange('packaging_size', e.target.value)
@@ -563,7 +563,7 @@ const QuoteRequestModal = ({
                 {/* Timeline & Volume Section */}
                 <div className="space-y-4">
                   <div className="flex items-center gap-2 text-lg font-semibold text-gray-800">
-                    <Clock className="w-5 h-5 text-emerald-600" />
+                    <Clock className="w-5 h-5 text-primary-500" />
                     Timeline & Volume
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -573,7 +573,7 @@ const QuoteRequestModal = ({
                       </label>
                       <MemoizedInput
                         placeholder="Annual quantity requirement"
-                        className="bg-white border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 transition-all duration-200"
+                        className="bg-white border-gray-200 focus:border-primary-500 focus:ring-primary-500 transition-all duration-200"
                         type="number"
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                           onFieldChange('expected_annual_volume', e.target.value)
@@ -599,7 +599,7 @@ const QuoteRequestModal = ({
                           }
                           placeholder="Select delivery date"
                           onFocus={() => setCalendarOpen(true)}
-                          className="bg-white border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 transition-all duration-200 cursor-pointer pr-10"
+                          className="bg-white border-gray-200 focus:border-primary-500 focus:ring-primary-500 transition-all duration-200 cursor-pointer pr-10"
                         />
                         <CalendarIcon className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                         {calendarOpen && (
@@ -631,7 +631,7 @@ const QuoteRequestModal = ({
                       </label>
                       <MemoizedTextarea
                         placeholder="What will this product be used for? (e.g., automotive parts, packaging, construction)"
-                        className="bg-white border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 transition-all duration-200 min-h-[80px]"
+                        className="bg-white border-gray-200 focus:border-primary-500 focus:ring-primary-500 transition-all duration-200 min-h-[80px]"
                         onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
                           onFieldChange('application', e.target.value)
                         }
@@ -643,7 +643,7 @@ const QuoteRequestModal = ({
                       <label className="text-sm font-medium text-gray-700">Additional Notes</label>
                       <MemoizedTextarea
                         placeholder="Any special requirements, certifications needed, or additional information for the supplier"
-                        className="bg-white border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 transition-all duration-200 min-h-[100px]"
+                        className="bg-white border-gray-200 focus:border-primary-500 focus:ring-primary-500 transition-all duration-200 min-h-[100px]"
                         onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
                           onFieldChange('message', e.target.value)
                         }
@@ -670,7 +670,7 @@ const QuoteRequestModal = ({
               type="submit"
               onClick={handleSubmit}
               disabled={!isFormValid || loading || isSubmitting}
-              className="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white px-8 py-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+              className="bg-primary-500 hover:bg-primary-600 text-white px-8 py-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
             >
               {isSubmitting ? (
                 <div className="flex items-center gap-2">

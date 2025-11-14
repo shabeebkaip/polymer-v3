@@ -39,9 +39,9 @@ const DOCUMENT_TYPES = [
     title: "Certificate of Analysis (COA)",
     description: "Quality assurance and testing results",
     icon: Shield,
-    color: "text-green-600",
-    bgColor: "bg-green-50",
-    borderColor: "border-green-200",
+    color: "text-primary-500",
+    bgColor: "bg-primary-50",
+    borderColor: "border-primary-500/30",
     required: false,
     acceptedFormats: "PDF, DOC, DOCX"
   }
@@ -83,7 +83,7 @@ const Documents: React.FC<DocumentsProps> = ({ data, onFieldChange }) => {
 
         return (
           <div key={docType.key} className="col-span-full mb-6">
-            <Card className={`transition-all duration-200 hover:shadow-md ${docType.borderColor} ${hasFiles ? 'ring-2 ring-green-200' : ''}`}>
+            <Card className={`transition-all duration-200 hover:shadow-md ${docType.borderColor} ${hasFiles ? 'ring-2 ring-primary-500/30' : ''}`}>
               <CardHeader className={`${docType.bgColor} pb-3`}>
                 <div className="flex items-start space-x-3">
                   <div className={`p-2 rounded-lg bg-white ${docType.borderColor} border`}>
@@ -92,7 +92,7 @@ const Documents: React.FC<DocumentsProps> = ({ data, onFieldChange }) => {
                   <div className="flex-1">
                     <CardTitle className="text-base font-semibold text-gray-800 flex items-center gap-2">
                       {docType.title}
-                      {hasFiles && <CheckCircle2 className="w-4 h-4 text-green-600" />}
+                      {hasFiles && <CheckCircle2 className="w-4 h-4 text-primary-500" />}
                       {docType.required && <Badge variant="destructive" className="text-xs">Required</Badge>}
                     </CardTitle>
                     <p className="text-sm text-gray-600 mt-1">{docType.description}</p>
@@ -122,12 +122,12 @@ const Documents: React.FC<DocumentsProps> = ({ data, onFieldChange }) => {
                 />
                 
                 {hasFiles && (
-                  <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
-                    <div className="flex items-center gap-2 text-sm text-green-700">
+                  <div className="mt-3 p-3 bg-primary-50 border border-primary-500/30 rounded-lg">
+                    <div className="flex items-center gap-2 text-sm text-primary-500">
                       <CheckCircle2 className="w-4 h-4" />
                       <span className="font-medium">Document uploaded successfully</span>
                     </div>
-                    <p className="text-xs text-green-600 mt-1">
+                    <p className="text-xs text-primary-500 mt-1">
                       This document will be available to buyers after purchase approval
                     </p>
                   </div>

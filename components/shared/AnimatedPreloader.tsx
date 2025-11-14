@@ -41,7 +41,7 @@ export default function AnimatedPreloader({
         {minimal ? (
           /* Minimal loader for small components */
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 border-2 border-gray-200 border-t-green-600 rounded-full animate-spin"></div>
+            <div className="w-8 h-8 border-2 border-gray-200 border-t-primary-500 rounded-full animate-spin"></div>
             <span className="text-gray-600 font-medium">{message}</span>
           </div>
         ) : (
@@ -50,11 +50,11 @@ export default function AnimatedPreloader({
             {/* Professional logo/spinner */}
             <div className="relative">
               {/* Main spinner */}
-              <div className="w-16 h-16 border-4 border-gray-100 border-t-green-600 border-r-green-600 rounded-full animate-spin"></div>
+              <div className="w-16 h-16 border-4 border-gray-100 border-t-primary-500 border-r-primary-500 rounded-full animate-spin"></div>
               
               {/* Inner dot */}
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-3 h-3 bg-green-600 rounded-full animate-pulse"></div>
+                <div className="w-3 h-3 bg-primary-500 rounded-full animate-pulse"></div>
               </div>
             </div>
 
@@ -71,7 +71,7 @@ export default function AnimatedPreloader({
             {/* Professional loading bar */}
             <div className="w-64 h-1 bg-gray-100 rounded-full overflow-hidden">
               <div 
-                className="h-full bg-gradient-to-r from-green-500 to-green-600 rounded-full animate-pulse"
+                className="h-full bg-primary-500 rounded-full animate-pulse"
                 style={{
                   transformOrigin: 'left center',
                   animation: 'pulse 2s ease-in-out infinite',

@@ -309,7 +309,7 @@ const QuoteDealRequestModal = ({
       ) : (
         <Button
           onClick={() => setOpen(true)}
-          className={`w-full bg-green-700 text-white py-2 rounded font-medium border border-green-800 hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-400 transition-all duration-200 flex items-center justify-center gap-2 shadow-sm focus:ring-offset-2 group ${className}`}
+          className={`w-full bg-primary-500 text-white py-2 rounded font-medium border border-primary-600 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500/30 transition-all duration-200 flex items-center justify-center gap-2 shadow-sm focus:ring-offset-2 group ${className}`}
         >
           <Gift className="w-5 h-5 transition-transform duration-200 group-hover:scale-110" />
           <span className="tracking-tight">{buttonText}</span>
@@ -327,8 +327,8 @@ const QuoteDealRequestModal = ({
             </DialogDescription>
             
             {/* Deal Information */}
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4 space-y-2">
-              <div className="flex items-center gap-2 text-green-800">
+            <div className="bg-primary-50 border border-primary-500/30 rounded-lg p-4 space-y-2">
+              <div className="flex items-center gap-2 text-primary-500">
                 <Gift className="w-4 h-4" />
                 <span className="font-medium text-sm">Deal Information</span>
               </div>
@@ -413,7 +413,7 @@ const QuoteDealRequestModal = ({
                   value={formatDate(data.deliveryDeadline)}
                   placeholder="Select delivery deadline"
                   onFocus={() => setCalendarOpen(true)}
-                  className="calendar-input bg-white border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 transition-all duration-200 cursor-pointer pr-10"
+                  className="calendar-input bg-white border-gray-200 focus:border-primary-500 focus:ring-primary-500 transition-all duration-200 cursor-pointer pr-10"
                 />
                 <CalendarIcon className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 {calendarOpen && (
@@ -464,7 +464,7 @@ const QuoteDealRequestModal = ({
               type="button"
               onClick={handleSubmit}
               disabled={isSubmitting || validationErrors.length > 0}
-              className="w-full sm:w-auto bg-green-700 hover:bg-green-800"
+              className="w-full sm:w-auto bg-primary-500 hover:bg-primary-600"
             >
               {isSubmitting ? "Submitting..." : "Submit Quote Request"}
             </Button>

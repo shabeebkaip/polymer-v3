@@ -45,7 +45,7 @@ const FilterModal: React.FC<FilterModalProps> = ({ open, onClose, children }) =>
         <div className="p-4 border-t sticky bottom-0 bg-white z-10">
           <div className="flex justify-end">
             <button
-              className="px-4 py-2 bg-gradient-to-r from-[var(--green-gradient-from)] via-[var(--green-gradient-via)] to-[var(--green-gradient-to)] text-white rounded font-semibold"
+              className="px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded font-semibold transition-colors duration-200"
               onClick={onClose}
             >
               Apply Filters

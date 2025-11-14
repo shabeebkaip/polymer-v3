@@ -33,10 +33,10 @@ const UserPanelHeader = () => {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <div className="flex items-center">
-            <div className="text-2xl font-bold text-emerald-600">
+            <div className="text-2xl font-bold text-primary-500">
               POLYMERS HUB
             </div>
-            <div className="ml-4 px-3 py-1 bg-emerald-100 text-emerald-700 text-sm font-medium rounded-full">
+            <div className="ml-4 px-3 py-1 bg-primary-50 text-primary-500 text-sm font-medium rounded-full">
               User Panel
             </div>
           </div>
@@ -47,7 +47,7 @@ const UserPanelHeader = () => {
             <Button
               onClick={handleVisitMarketplace}
               variant="outline"
-              className="inline-flex items-center gap-2 px-4 py-2 border border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:border-emerald-300 transition-colors duration-200"
+              className="inline-flex items-center gap-2 px-4 py-2 border border-primary-500/30 text-primary-500 hover:bg-primary-50 hover:border-primary-500 transition-colors duration-200"
             >
               <Home className="w-4 h-4" />
               <span className="font-medium">Visit Marketplace</span>
@@ -61,7 +61,7 @@ const UserPanelHeader = () => {
                 className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50"
                 onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
               >
-                <div className="w-8 h-8 bg-emerald-600 rounded-full flex items-center justify-center">
+                <div className="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center">
                   <User className="w-4 h-4 text-white" />
                 </div>
                 <div className="flex flex-col items-start">

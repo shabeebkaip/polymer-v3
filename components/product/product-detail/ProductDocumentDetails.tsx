@@ -52,18 +52,18 @@ const ProductDocumentDetails: React.FC<ProductDocumentDetailsProps> = ({ product
             </div>
           )}
           {product.certificate_of_analysis && (
-            <div className="bg-green-50 rounded-lg p-4 border border-green-200">
+            <div className="bg-primary-50 rounded-lg p-4 border border-primary-500/30">
               <div className="flex items-center gap-3 mb-3">
-                <Award className="w-6 h-6 text-green-600" />
+                <Award className="w-6 h-6 text-primary-500" />
                 <div>
-                  <h4 className="font-semibold text-green-900">Certificate of Analysis</h4>
-                  <p className="text-sm text-green-700">{product.certificate_of_analysis?.name || ""}</p>
+                  <h4 className="font-semibold text-primary-600">Certificate of Analysis</h4>
+                  <p className="text-sm text-primary-600">{product.certificate_of_analysis?.name || ""}</p>
                 </div>
               </div>
               <Button
                 variant="outline"
                 size="sm"
-                className="w-full border-green-300 text-green-600 hover:bg-green-50"
+                className="w-full border-primary-500 text-primary-600 hover:bg-primary-50"
                 onClick={() => window.open(product.certificate_of_analysis?.fileUrl || "", "_blank")}
               >
                 Download PDF

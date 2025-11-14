@@ -12,7 +12,7 @@ const SupplierBasic: React.FC = () => {
     <div
       className={`${
         supplierDetail ? "flex" : "hidden"
-      } w-full  border border-[var(--green-light)] rounded-lg p-4 gap-4 items-center justify-start mb-10`}
+      } w-full  border border-primary-500/30 rounded-lg p-4 gap-4 items-center justify-start mb-10`}
     >
       <div>
         <Image
