@@ -30,22 +30,7 @@ import {
 import { Button } from "../ui/button";
 import Cookies from "js-cookie";
 import { useUserInfo } from "@/lib/useUserInfo";
-
-// Define types for sidebar items
-interface SidebarSubItem {
-  displayName: string;
-  route: string;
-  name: string;
-  icon: string;
-}
-
-interface SidebarItem {
-  displayName: string;
-  route: string;
-  name: string;
-  icon: string;
-  subItems?: SidebarSubItem[];
-}
+import { SidebarSubItem, SidebarItem } from "@/types/shared";
 
 // Icon mapping for dynamic icons - using exact Lucide icon names
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {

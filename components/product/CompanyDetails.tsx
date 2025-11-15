@@ -5,28 +5,9 @@ import VisitShopButton from '@/components/suppliers/VisitShopButton';
 import { Badge } from '@/components/ui/badge';
 import { FALLBACK_COMPANY_IMAGE } from '@/lib/fallbackImages';
 import { useChatUserStore } from '@/stores/chatUser';
-import { Product } from '@/types/product';
+import { Product, CompanyDetailsProps } from '@/types/product';
 import { useRouter } from 'next/navigation';
 import { useUserInfo } from '@/lib/useUserInfo';
-
-interface CompanyDetailsProps {
-  companyDetails: {
-    _id: string;
-    company: string;
-    company_logo: string;
-    location?: string;
-    website?: string;
-    name?: string;
-    email?: string;
-    phone?: number;
-    address?: string;
-    [key: string]: unknown;
-  };
-  productId: string;
-  uom: string;
-  userType?: string;
-  product: Product;
-}
 
 const CompanyDetails: React.FC<CompanyDetailsProps> = ({ companyDetails, product, userType }) => {
   const setChatUser = useChatUserStore((s) => s.setChatUser);

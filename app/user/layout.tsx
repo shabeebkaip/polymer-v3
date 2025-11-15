@@ -5,11 +5,8 @@ import Sidebar from "@/components/shared/Sidebar";
 import UserPanelHeader from "@/components/shared/UserPanelHeader";
 import UserInitializer from "@/components/providers/UserInitializer";
 import { useAuthGuard } from "@/lib/useAuthGuard";
-import React, { ReactNode } from "react";
-
-interface UserLayoutProps {
-  children: ReactNode;
-}
+import { UserLayoutProps } from "@/types/user";
+import React from "react";
 
 const UserLayout: React.FC<UserLayoutProps> = ({ children }) => {
   // Auth guard to protect all user routes

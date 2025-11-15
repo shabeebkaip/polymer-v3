@@ -4,12 +4,7 @@ import { Label } from "../../ui/label";
 import { Card, CardContent } from "../../ui/card";
 import { Badge } from "../../ui/badge";
 import { Recycle, TreePine, Earth, Award, CheckCircle2 } from "lucide-react";
-import { ProductFormData } from "@/types/product";
-
-interface EnvironmentalProps {
-  data: ProductFormData;
-  onFieldChange: (field: keyof ProductFormData, value: boolean) => void;
-}
+import { ProductFormData, EnvironmentalProps } from "@/types/product";
 
 // Environmental features configuration
 const ENVIRONMENTAL_FEATURES = [

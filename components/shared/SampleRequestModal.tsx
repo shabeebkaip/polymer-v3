@@ -116,17 +116,7 @@ MemoizedInput.displayName = 'MemoizedInput';
 MemoizedTextarea.displayName = 'MemoizedTextarea';
 MemoizedSelect.displayName = 'MemoizedSelect';
 
-interface Grade {
-  _id: string;
-  name: string;
-}
-interface SampleRequestModalProps {
-  className?: string;
-  productId: string;
-  uom: string;
-  buttonText?: string;
-  children?: React.ReactNode;
-}
+import { Grade, SampleRequestModalProps } from '@/types/shared';
 
 const SampleRequestModal = ({
   className,

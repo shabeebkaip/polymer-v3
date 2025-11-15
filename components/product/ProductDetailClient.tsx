@@ -4,7 +4,7 @@ import { useUserInfo } from '@/lib/useUserInfo';
 import SampleRequestModal from '@/components/shared/SampleRequestModal';
 import QuoteRequestModal from '@/components/shared/QuoteRequestModal';
 import { ShoppingCart, FileText } from 'lucide-react';
-import { Product } from '@/types/product';
+import { Product, ProductDetailClientProps } from '@/types/product';
 import ProductDetailBreadCrumb from '@/components/product/product-detail/ProductDetailBreadCrumb';
 import ProductSummaryBar from '@/components/product/product-detail/ProductSummaryBar';
 import ProductHeroSection from '@/components/product/product-detail/ProductHeroSection';
@@ -15,10 +15,6 @@ import ProductCertifications from '@/components/product/product-detail/ProductCe
 import ProductOverview from '@/components/product/product-detail/ProductOverview';
 import ProductTradeInformation from '@/components/product/product-detail/ProductTradeInformation';
 import ProductDocumentDetails from '@/components/product/product-detail/ProductDocumentDetails';
-
-interface ProductDetailClientProps {
-  product: Product;
-}
 
 const ProductDetailClient: React.FC<ProductDetailClientProps> = ({ product }) => {
   const { user } = useUserInfo();

@@ -3,14 +3,7 @@ import { Label } from "../../ui/label";
 import { Input } from "../../ui/input";
 import { Textarea } from "../../ui/textarea";
 import { Card, CardContent } from "../../ui/card";
-import { ProductFormData } from "@/types/product";
-
-interface GeneralInformationProps {
-  data: ProductFormData;
-  onFieldChange: (field: keyof ProductFormData, value: string | number | boolean) => void;
-  onFieldError: (field: keyof ProductFormData) => void;
-  error: Partial<Record<keyof ProductFormData, string>>;
-}
+import { ProductFormData, GeneralInformationProps } from "@/types/product";
 
 const GeneralInformation: React.FC<GeneralInformationProps> = ({
   data,

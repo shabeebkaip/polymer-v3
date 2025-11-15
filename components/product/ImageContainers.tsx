@@ -4,17 +4,7 @@ import React, { useState } from "react";
 import { useKeenSlider, KeenSliderPlugin } from "keen-slider/react";
 import "keen-slider/keen-slider.min.css";
 import Image from "next/image";
-
-interface Image {
-  fileUrl: string;
-  [key: string]: unknown;
-}
-
-interface ImageContainersProps {
-  productImages: Image[];
-  [key: string]: unknown;
-  isCompact?: boolean;
-}
+import { ImageContainersProps, Image as ProductImageType } from "@/types/product";
 
 // Autoplay plugin
 const autoplay: KeenSliderPlugin = (slider) => {

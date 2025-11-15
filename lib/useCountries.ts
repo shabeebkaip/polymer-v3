@@ -2,14 +2,9 @@
 import { PhoneNumberUtil } from "google-libphonenumber";
 import countries from "i18n-iso-countries";
 import en from "i18n-iso-countries/langs/en.json";
+import { Country } from "@/types/shared";
 
 countries.registerLocale(en);
-
-export interface Country {
-  code: string;
-  name: string;
-  dialCode: string;
-}
 
 export const getCountryList = (): Country[] => {
   const phoneUtil = PhoneNumberUtil.getInstance();

@@ -6,16 +6,7 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import Image from "next/image";
-
-interface PreviewFile {
-    fileUrl: string;
-    type?: string;
-}
-
-interface FileViewerProps {
-    previewFile?: PreviewFile;
-    triggerComp: React.ReactNode;
-}
+import { PreviewFile, FileViewerProps } from "@/types/shared";
 
 const FileViewer: React.FC<FileViewerProps> = ({
     previewFile,

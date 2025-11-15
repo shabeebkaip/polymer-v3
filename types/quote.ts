@@ -42,6 +42,33 @@ export interface DealQuoteRequest extends QuoteRequestBase {
 
 export type QuoteRequest = ProductQuoteRequest | DealQuoteRequest;
 
+export interface PaginationMeta {
+  total: number;
+  page: number;
+  totalPages: number;
+  count: number;
+  limit: number;
+}
+
+export interface QuoteEnquiriesState {
+  enquiries: QuoteEnquiry[];
+  meta: {
+    pagination: PaginationMeta;
+    filters: { search: string; status: string };
+  } | null;
+  enquiryDetail: QuoteEnquiry | null;
+  loading: boolean;
+  error: string | null;
+  updating: boolean;
+  setEnquiries: (enquiries: QuoteEnquiry[], meta: any) => void;
+  clearEnquiries: () => void;
+  setEnquiryDetail: (enquiry: QuoteEnquiry) => void;
+  clearEnquiryDetail: () => void;
+  setLoading: (loading: boolean) => void;
+  setError: (error: string | null) => void;
+  setUpdating: (updating: boolean) => void;
+}
+
 export interface QuoteRequestResponse {
   _id: string;
   requestType: string;
@@ -49,4 +76,143 @@ export interface QuoteRequestResponse {
   createdAt: string;
   updatedAt: string;
   // Add other response fields as needed
+}
+
+// Quote Enquiry Types
+export interface QuoteEnquiryProduct {
+  productName?: string;
+  sku?: string;
+}
+
+export interface QuoteEnquiryUser {
+  email?: string;
+  name?: string;
+}
+
+export interface QuoteEnquiryGrade {
+  name?: string;
+}
+
+export interface QuoteEnquiryUnified {
+  title?: string;
+  quantity?: number;
+}
+
+export interface QuoteEnquiryBuyer {
+  email?: string;
+  name?: string;
+}
+
+export interface QuoteEnquiry {
+  _id?: string;
+  id?: string;
+  user?: QuoteEnquiryUser;
+  buyer?: QuoteEnquiryBuyer;
+  product?: QuoteEnquiryProduct;
+  unified?: QuoteEnquiryUnified;
+  quantity?: number;
+  uom?: string;
+  incoterm?: string | { name?: string };
+  grade?: QuoteEnquiryGrade;
+  packaging?: string;
+  message?: string;
+  status: string;
+  createdAt: string;
+  updatedAt?: string;
+  orderDetails?: {
+    quantity: number;
+    uom: string;
+    incoterm: string | { name?: string };
+  };
+}
+
+export interface StatusOption {
+  value: string;
+  label: string;
+  description: string;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  color: string;
+}
+
+// Quote Request List Types
+export const ALLOWED_STATUSES = [
+  "pending", "responded", "negotiation", "accepted", "in_progress", 
+  "shipped", "delivered", "completed", "rejected", "cancelled"
+] as const;
+
+export type QuoteStatus = typeof ALLOWED_STATUSES[number];
+export type QuoteRequestType = "product_quote" | "deal_quote" | "all";
+
+export interface QuoteRequestList {
+  _id: string;
+  requestType: QuoteRequestType;
+  status: QuoteStatus;
+  createdAt: string;
+  updatedAt: string;
+  statusMessage: unknown[];
+  productName: string;
+  productId: string;
+  company: string;
+  companyId: string | null;
+  quantity: number;
+  unit: string;
+  destination: string;
+  deliveryDate: string;
+  grade: string;
+  buyer: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    name: string;
+    company: string;
+    email: string;
+  };
+  unified: {
+    statusIcon: string;
+    priorityLevel: string;
+    quantity: number;
+    deliveryDate: string;
+    location: string;
+    productInfo: string;
+    type: QuoteRequestType;
+    title: string;
+  };
+  quoteType: string;
+  productQuote?: {
+    product: {
+      _id: string;
+      productName: string;
+      createdBy: {
+        _id: string;
+        firstName: string;
+        lastName: string;
+        company: string;
+        email: string;
+      };
+    };
+    packaging_size: string;
+    incoterm: {
+      _id: string;
+      name: string;
+    };
+  };
+  dealQuote?: {
+    bestDeal: {
+      _id: string;
+      productId: {
+        _id: string;
+        productName: string;
+      };
+      offerPrice: number;
+      status: string;
+    };
+    paymentTerms: string;
+    offerPrice: number;
+  };
+}
+
+export interface QuoteRequestDetailPageProps {
+  params: Promise<{
+    id: string;
+  }>;
 }

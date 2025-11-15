@@ -1,11 +1,5 @@
 import { useEffect, useCallback } from 'react';
-
-interface UseInfiniteScrollProps {
-  hasMore: boolean;
-  loading: boolean;
-  onLoadMore: () => void;
-  threshold?: number;
-}
+import { UseInfiniteScrollProps } from '@/types/shared';
 
 export const useInfiniteScroll = ({ 
   hasMore, 

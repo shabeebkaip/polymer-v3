@@ -1,10 +1,6 @@
 import React from "react";
 import { Badge } from "@/components/ui/badge";
-import { Product } from "@/types/product";
-
-export interface ProductSummaryBarProps {
-  product: Product;
-}
+import { Product, ProductSummaryBarProps } from "@/types/product";
 
 const ProductSummaryBar: React.FC<ProductSummaryBarProps> = ({ product }) => {
   return (

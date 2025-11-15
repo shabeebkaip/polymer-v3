@@ -1,11 +1,6 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
-
-interface ProductDetailBreadCrumbProps {
-  product: {
-    productName: string;
-  }
-}
+import { ProductDetailBreadCrumbProps } from '@/types/product';
 
 const ProductDetailBreadCrumb: React.FC<ProductDetailBreadCrumbProps> = ({ product }) => {
     const  router = useRouter();

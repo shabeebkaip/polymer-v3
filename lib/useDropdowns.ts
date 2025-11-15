@@ -12,12 +12,7 @@ import {
   getProductFamilies,
 } from "@/apiServices/shared";
 import { useState, useEffect } from "react";
-
-interface DropdownItem {
-  _id: string;
-  name: string;
-  [key: string]: unknown;
-}
+import { DropdownItem } from "@/types/shared";
 
 export function useDropdowns() {
   const [chemicalFamilies, setChemicalFamilies] = useState<DropdownItem[]>([]);

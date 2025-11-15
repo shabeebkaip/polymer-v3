@@ -6,11 +6,7 @@ import Benefits from "@/components/home/Benefits";
 import FeaturedSuppliers from "@/components/home/FeaturedSuppliers";
 import HomeDataProvider from "@/components/providers/HomeDataProvider";
 import DealsAndRequests from "@/components/home/DealsAndRequests";
-import { HomePageData } from "@/types/home";
-
-interface HomePageClientProps {
-  initialData: HomePageData;
-}
+import { HomePageData, HomePageClientProps } from "@/types/home";
 
 export default function HomePageClient({ initialData }: HomePageClientProps) {
   return (

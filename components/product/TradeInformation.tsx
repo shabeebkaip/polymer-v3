@@ -12,47 +12,7 @@ import {
 } from "lucide-react";
 import FileViewer from "../shared/FileViewer";
 import { Badge } from "@/components/ui/badge";
-
-interface NamedItem {
-  _id: string;
-  name: string;
-  ar_name?: string;
-  ger_name?: string;
-  cn_name?: string;
-}
-
-interface DocumentFile {
-  id: string;
-  fileUrl: string;
-  name?: string;
-  type?: string;
-}
-
-interface Product {
-  minimum_order_quantity?: number;
-  uom?: string;
-  stock?: number;
-  price?: string | number;
-  priceTerms?: string;
-  incoterms?: NamedItem[];
-  leadTime?: string | Date;
-  packagingType?: NamedItem[];
-  packagingWeight?: string;
-  storageConditions?: string;
-  shelfLife?: string;
-  recyclable?: boolean;
-  bioDegradable?: boolean;
-  fdaApproved?: boolean;
-  medicalGrade?: boolean;
-  technical_data_sheet?: DocumentFile;
-  safety_data_sheet?: DocumentFile;
-  certificate_of_analysis?: DocumentFile;
-  [key: string]: unknown;
-}
-
-interface GeneralTabInformationProps {
-  product: Product;
-}
+import { GeneralTabInformationProps } from "@/types/product";
 
 const TradeInformation: React.FC<GeneralTabInformationProps> = ({
   product,

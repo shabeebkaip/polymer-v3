@@ -1,9 +1,5 @@
 import React from 'react';
-
-interface TypingIndicatorProps {
-  typingUsers: Set<string>;
-  userNames: Record<string, string>;
-}
+import { TypingIndicatorProps } from '@/types/chat';
 
 export const TypingIndicator: React.FC<TypingIndicatorProps> = ({
   typingUsers,

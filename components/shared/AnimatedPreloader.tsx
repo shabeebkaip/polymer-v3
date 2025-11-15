@@ -1,13 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
-interface AnimatedPreloaderProps {
-  isLoading: boolean;
-  children: React.ReactNode;
-  message?: string;
-  minimal?: boolean;
-}
+import { AnimatedPreloaderProps } from "@/types/shared";
 
 export default function AnimatedPreloader({ 
   isLoading, 

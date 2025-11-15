@@ -5,50 +5,7 @@ import {
   getSellers,
 } from "@/apiServices/shared";
 import { getBuyerOpportunities, getSuppliersSpecialDeals } from "@/apiServices/dealsAndRequests";
-
-interface CacheMetadata {
-  lastFetch: number;
-  ttl: number; // Time to live in milliseconds
-}
-
-interface SharedState {
-  industries: any[];
-  productFamilies: any[];
-  sellers: any[];
-  buyerOpportunities: any[];
-  suppliersSpecialDeals: any[];
-  
-  // Cache metadata
-  industriesCache: CacheMetadata | null;
-  productFamiliesCache: CacheMetadata | null;
-  sellersCache: CacheMetadata | null;
-  buyerOpportunitiesCache: CacheMetadata | null;
-  suppliersSpecialDealsCache: CacheMetadata | null;
-  
-  industriesLoading: boolean;
-  familiesLoading: boolean;
-  sellersLoading: boolean;
-  buyerOpportunitiesLoading: boolean;
-  suppliersSpecialDealsLoading: boolean;
-  
-  // Enhanced fetch methods with caching
-  fetchIndustries: (forceRefresh?: boolean) => Promise<void>;
-  fetchProductFamilies: (forceRefresh?: boolean) => Promise<void>;
-  fetchSellers: (forceRefresh?: boolean) => Promise<void>;
-  fetchBuyerOpportunities: (forceRefresh?: boolean) => Promise<void>;
-  fetchSuppliersSpecialDeals: (forceRefresh?: boolean) => Promise<void>;
-  
-  // Cache management
-  invalidateCache: (cacheKey?: string) => void;
-  isCacheValid: (cacheKey: string) => boolean;
-  
-  // Setter methods for SSR hydration
-  setIndustries: (industries: any[]) => void;
-  setProductFamilies: (families: any[]) => void;
-  setSellers: (sellers: any[]) => void;
-  setBuyerOpportunities: (opportunities: any[]) => void;
-  setSuppliersSpecialDeals: (deals: any[]) => void;
-}
+import { CacheMetadata, SharedState } from "@/types/shared";
 
 // Cache configuration
 const CACHE_DURATION = {

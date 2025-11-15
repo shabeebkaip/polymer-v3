@@ -1,29 +1,6 @@
 import React from "react";
 import FilterItem from "@/components/product/FilterItem";
-
-// Updated interface to match the API response structure
-interface FilterDataItem {
-  _id: string | boolean;
-  name: string;
-  count: number;
-}
-
-interface FilterSection {
-  name: string;
-  displayName: string;
-  component: string;
-  filterType: string;
-  collapsible: boolean;
-  searchable?: boolean;
-  data: FilterDataItem[];
-}
-
-interface FilterProps {
-  filters: FilterSection[];
-  query: Record<string, string | string[]>;
-  onFilterChange: (name: string, id: string, isChecked: boolean) => void;
-  loader?: boolean;
-}
+import { FilterProps } from "@/types/product";
 
 const Filter: React.FC<FilterProps> = ({ filters, onFilterChange, query }) => {
   return (

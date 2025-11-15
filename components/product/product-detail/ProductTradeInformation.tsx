@@ -1,11 +1,7 @@
-import { Product } from "@/types/product";
+import { Product, ProductTradeInformationProps } from "@/types/product";
 import ProductValueCard from "@/components/product/product-detail/ProductValueCard";
 import { Badge } from "@/components/ui/badge";
 import React from "react";
-
-interface ProductTradeInformationProps {
-  product: Product;
-}
 
 const ProductTradeInformation: React.FC<ProductTradeInformationProps> = ({ product }) => {
   return (

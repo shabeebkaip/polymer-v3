@@ -1,11 +1,5 @@
 import React, { useState, useRef } from 'react';
-
-interface ChatInputProps {
-  onSendMessage: (message: string) => void;
-  onTyping: (isTyping: boolean) => void;
-  disabled?: boolean;
-  placeholder?: string;
-}
+import { ChatInputProps } from '@/types/chat';
 
 export const ChatInput: React.FC<ChatInputProps> = ({
   onSendMessage,

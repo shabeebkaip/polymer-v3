@@ -5,16 +5,7 @@ import { ShoppingCart, FileText } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import QuoteRequestModal from './QuoteRequestModal';
 import SampleRequestModal from './SampleRequestModal';
-import { UserType } from '@/types/user';
-
-interface ActionButtonsProps {
-  productId: string;
-  uom: string;
-  className?: string;
-  variant?: 'default' | 'compact' | 'large' | 'custom';
-  onChatClick?: () => void;
-  user: UserType;
-}
+import { UserType, ActionButtonsProps } from '@/types/user';
 
 const ActionButtons: React.FC<ActionButtonsProps> = ({
   productId,

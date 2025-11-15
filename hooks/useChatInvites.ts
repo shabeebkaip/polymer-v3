@@ -1,13 +1,7 @@
 import { useEffect, useState } from "react";
 import SocketManager from "@/lib/socket";
 import { useChatUserStore } from "@/stores/chatUser";
-
-export interface ChatInvite {
-  productId: string;
-  buyerId: string;
-  buyerName: string;
-  productName?: string;
-}
+import { ChatInvite } from "@/types/chat";
 
 export function useChatInvites() {
   const [invites, setInvites] = useState<ChatInvite[]>([]);

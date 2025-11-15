@@ -3,29 +3,7 @@
 import React, { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
-
-// Updated interface to match the API response structure
-interface FilterDataItem {
-  _id: string | boolean;
-  name: string;
-  count: number;
-}
-
-interface FilterSection {
-  name: string;
-  displayName: string;
-  component: string;
-  filterType: string;
-  collapsible: boolean;
-  searchable?: boolean;
-  data: FilterDataItem[];
-}
-
-interface FilterTopProps {
-  filters: FilterSection[];
-  query: Record<string, unknown>;
-  onFilterChange: (name: string, id: string, isChecked: boolean) => void;
-}
+import { FilterTopProps, FilterSection } from "@/types/product";
 
 const FilterTop: React.FC<FilterTopProps> = ({ filters, onFilterChange, query }) => {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);

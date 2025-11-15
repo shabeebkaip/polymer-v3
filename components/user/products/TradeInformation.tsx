@@ -10,22 +10,9 @@ import {
 } from "../../ui/select";
 import { Card, CardContent } from "../../ui/card";
 import { uomDropdown } from "@/lib/utils";
-import { ProductFormData } from "@/types/product";
+import { ProductFormData, TradeInformationProps } from "@/types/product";
 import MultiSelect from "@/components/shared/MultiSelect";
-
-interface DropdownItem {
-  _id: string;
-  name: string;
-}
-
-interface TradeInformationProps {
-  data: ProductFormData;
-  onFieldChange: (field: keyof ProductFormData, value: string | string[]) => void;
-  incoterms?: DropdownItem[];
-  paymentTerms?: DropdownItem[];
-  error: Partial<Record<keyof ProductFormData, string>>;
-  onFieldError: (field: keyof ProductFormData) => void;
-}
+import { DropdownItem } from "@/types/shared";
 
 const TradeInformation: React.FC<TradeInformationProps> = ({
   data,

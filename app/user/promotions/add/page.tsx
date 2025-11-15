@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { getProductList } from "@/apiServices/products";
 import { createPromotion } from "@/apiServices/user";
 import { useUserInfo } from "@/lib/useUserInfo";
+import { Product } from "@/types/product";
 import { 
   ArrowLeft, 
   Package, 
@@ -13,15 +14,6 @@ import {
   CheckCircle,
   AlertTriangle
 } from 'lucide-react';
-
-interface Product {
-  _id: string;
-  productName: string;
-  price: number;
-  chemicalName?: string;
-  stock?: number;
-  uom?: string;
-}
 
 const CreatePromotion = () => {
   const router = useRouter();

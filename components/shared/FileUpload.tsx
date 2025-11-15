@@ -16,21 +16,7 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
-
-interface UploadedFile {
-  id: string;
-  fileUrl: string;
-  type?: string;
-  name?: string;
-}
-
-interface FileUploadProps {
-  onFileUpload: (files: UploadedFile[]) => void;
-  existingFiles?: UploadedFile[];
-  multiple?: boolean;
-  setCloudinaryImage?: (url: string) => void;
-  buttonText?: string;
-}
+import { FileUploadProps, UploadedFile } from "@/types/shared";
 
 const FileUpload: React.FC<FileUploadProps> = ({
   onFileUpload,

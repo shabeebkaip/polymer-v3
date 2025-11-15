@@ -3,12 +3,7 @@ import FileUpload from "@/components/shared/FileUpload";
 import { Card, CardContent, CardHeader, CardTitle } from "../../ui/card";
 import { Badge } from "../../ui/badge";
 import { FileText, Shield, AlertTriangle, CheckCircle2, Upload } from "lucide-react";
-import { UploadedFile, ProductFormData } from "@/types/product";
-
-interface DocumentsProps {
-  data: ProductFormData;
-  onFieldChange: (field: keyof ProductFormData, value: UploadedFile[]) => void;
-}
+import { UploadedFile, ProductFormData, DocumentsProps } from "@/types/product";
 
 // Document type configurations
 const DOCUMENT_TYPES = [

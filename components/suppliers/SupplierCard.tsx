@@ -1,14 +1,7 @@
 import React from 'react';
 import VisitShopButton from './VisitShopButton';
 import Image from 'next/image';
-
-interface SupplierCardProps {
-  name: string;
-  location: string;
-  logo: string;
-  website?: string;
-  supplierId: string; // Made it required for type safety
-}
+import { SupplierCardProps } from '@/types/seller';
 
 const SupplierCard: React.FC<SupplierCardProps> = ({
   name,

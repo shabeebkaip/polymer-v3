@@ -1,13 +1,7 @@
 
 // components/chat/ChatMessage.tsx
 import React from 'react';
-import { Message } from '@/types/chat';
-
-interface ChatMessageProps {
-  message: Message;
-  isCurrentUser: boolean;
-  onMarkAsRead?: (messageId: string) => void;
-}
+import { Message, ChatMessageProps } from '@/types/chat';
 
 export const ChatMessage: React.FC<ChatMessageProps> = ({
   message,

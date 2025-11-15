@@ -1,9 +1,5 @@
 import React from 'react';
-
-interface OnlineStatusProps {
-  isOnline: boolean;
-  className?: string;
-}
+import { OnlineStatusProps } from '@/types/chat';
 
 export const OnlineStatus: React.FC<OnlineStatusProps> = ({
   isOnline,

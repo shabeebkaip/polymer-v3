@@ -1,9 +1,5 @@
 import React from "react";
-
-interface LabelValueVerticalProps {
-  label: string;
-  value: string | number | React.ReactNode;
-}
+import { LabelValueVerticalProps } from "@/types/shared";
 
 const LabelValueVertical: React.FC<LabelValueVerticalProps> = ({
   label,

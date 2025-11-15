@@ -28,3 +28,8 @@ export interface RegisterData {
   user_type?: string;
   vat_number?: string;
 }
+
+export interface OTPVerificationProps {
+  email: string;
+  onBack: () => void;
+}

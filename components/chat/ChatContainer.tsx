@@ -4,15 +4,7 @@ import { ChatMessage } from './ChatMessage';
 import { ChatInput } from './ChatInput';
 import { TypingIndicator } from './TypingIndicator';
 import { OnlineStatus } from './OnlineStatus';
-
-interface ChatContainerProps {
-  userId: string;
-  productId: string;
-  receiverId: string;
-  receiverName: string;
-  serverUrl: string;
-  className?: string;
-}
+import { ChatContainerProps } from '@/types/chat';
 
 export const ChatContainer: React.FC<ChatContainerProps> = ({
   userId,

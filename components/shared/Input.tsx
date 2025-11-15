@@ -1,18 +1,5 @@
 import React from "react";
-
-interface InputProps {
-  value: string;
-  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  placeholder?: string;
-  type?: string;
-  className?: string;
-  id?: string;
-  required?: boolean;
-  icon?: React.ReactNode;
-  name?: string;
-  autoComplete?: string;
-  onBlur?: () => void;
-}
+import { InputProps } from "@/types/shared";
 
 const Input: React.FC<InputProps> = ({
   value,

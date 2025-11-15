@@ -1,12 +1,7 @@
 "use client";
 
 import React from 'react';
-
-interface QuoteRequestDetailPageProps {
-  params: Promise<{
-    id: string;
-  }>;
-}
+import { QuoteRequestDetailPageProps } from '@/types/quote';
 
 const QuoteRequestDetailPage = ({ params }: QuoteRequestDetailPageProps) => {
   const [id, setId] = React.useState<string>('');

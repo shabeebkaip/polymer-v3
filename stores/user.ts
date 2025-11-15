@@ -1,207 +1,30 @@
 import { create } from "zustand";
 import { getSampleRequestDetail, updateSampleRequestStatus, getQuoteRequestDetail, updateQuoteRequestStatus } from "@/apiServices/user";
-
-// Type definitions based on the API response structure
-interface User {
-  _id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  company: string;
-  address: string;
-  city: string;
-  state: string;
-  country: string;
-  pincode: string;
-  userType: string;
-}
-
-interface ProductImage {
-  id: string;
-  name: string;
-  type: string;
-  fileUrl: string;
-}
-
-interface Grade {
-  _id: string;
-  name: string;
-  description: string;
-}
-
-interface Product {
-  _id: string;
-  productName: string;
-  chemicalName: string;
-  description: string;
-  tradeName: string;
-  countryOfOrigin: string;
-  color: string;
-  manufacturingMethod: string;
-  productImages: ProductImage[];
-  density: number;
-  mfi: number;
-  tensileStrength: number;
-  elongationAtBreak: number;
-  shoreHardness: number;
-  waterAbsorption: number;
-  createdBy: User;
-}
-
-interface SampleRequestDetail {
-  _id: string;
-  user: User;
-  product: Product;
-  grade: Grade;
-  quantity: number;
-  uom: string;
-  phone: string;
-  address: string;
-  country: string;
-  application: string;
-  expected_annual_volume: number;
-  orderDate: string;
-  neededBy: string;
-  message: string;
-  request_document?: string;
-  status: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface QuoteRequestDetail {
-  _id: string;
-  requestType: "product_quote" | "deal_quote";
-  status: string;
-  createdAt: string;
-  updatedAt: string;
-  statusHistory: any[];
-  requester: {
-    _id: string;
-    name: string;
-    email: string;
-    phone: number;
-    company: string;
-    address: {
-      full: string;
-    };
-  };
-  quoteType: string;
-  
-  // Product quote specific fields
-  product?: {
-    _id: string;
-    productName: string;
-    chemicalName: string;
-    description: string;
-    productImages: Array<{
-      id: string;
-      name: string;
-      type: string;
-      fileUrl: string;
-      _id: string;
-    }>;
-    countryOfOrigin: string;
-    specifications: any;
-    creator: {
-      _id: string;
-      name: string;
-      company: string;
-      email: string;
-    };
-  };
-  orderDetails?: {
-    quantity?: number;
-    uom?: string;
-    destination?: string;
-    country?: string;
-    deliveryDate?: string;
-    packagingSize?: string;
-    // Deal specific fields
-    desiredQuantity?: number;
-    shippingCountry?: string;
-    paymentTerms?: string;
-    deliveryDeadline?: string;
-  };
-  specifications?: {
-    grade?: {
-      _id: string;
-      name: string;
-      description: string;
-    };
-    incoterm?: {
-      _id: string;
-      name: string;
-    };
-  };
-  
-  // Deal quote specific fields
-  bestDeal?: {
-    _id: string;
-    offerPrice: number;
-    status: string;
-    adminNote: string;
-    createdAt: string;
-    product: {
-      _id: string;
-      productName: string;
-      chemicalName: string;
-      tradeName: string;
-      productImages: Array<{
-        id: string;
-        name: string;
-        type: string;
-        fileUrl: string;
-        _id: string;
-      }>;
-      countryOfOrigin: string;
-      color: string;
-      createdBy?: {
-        _id: string;
-        firstName: string;
-        lastName: string;
-        company: string;
-        email: string;
-      };
-    };
-  };
-  
-  unified: {
-    type: string;
-    title?: string;
-    quantity: number;
-    deliveryDate: string;
-    location: string;
-    destination: string;
-    isProductQuote: boolean;
-    isDealQuote: boolean;
-    statusIcon: string;
-    priorityLevel: string;
-  };
-  timeline: {
-    requested: string;
-    lastUpdate: string;
-    deadline: string;
-    statusUpdates: number;
-  };
-  metadata: {
-    canEdit: boolean;
-    canCancel: boolean;
-    nextActions: string[];
-    estimatedProcessingTime: string;
-  };
-}
-
-interface SampleRequestStore {
-  sampleRequestDetail: SampleRequestDetail | null;
-  loading: boolean;
-  error: string | null;
-  updating: boolean;
-  fetchSampleRequestDetail: (id: string) => Promise<void>;
-  updateStatus: (id: string, status: string, statusMessage: string) => Promise<boolean>;
-  clearSampleRequestDetail: () => void;
-}
+import type {
+  SampleRequestDetail,
+  SampleRequestStore,
+  SampleRequestListItem,
+  SampleRequestsListStore,
+  QuoteRequestDetail,
+  QuoteRequestStore,
+  QuoteRequestListItem,
+  QuoteRequestsListStore,
+  FinanceRequestListItem,
+  FinanceRequestsListStore,
+  FinanceRequestDetail,
+  FinanceRequestStore,
+  ProductRequestUser,
+  ProductRequestProduct,
+  ProductRequestListItem,
+  ProductRequestsListResponse,
+  ProductRequestsListStore,
+  ProductRequestDetailUser,
+  ProductRequestDetailProduct,
+  SupplierOffer,
+  ProductRequestDetailResponse,
+  ProductRequestDetail,
+  ProductRequestDetailStore,
+} from "@/types/userRequests";
 
 export const useSampleRequestStore = create<SampleRequestStore>((set, get) => ({
   sampleRequestDetail: null,
@@ -278,16 +101,6 @@ export const useSampleRequestStore = create<SampleRequestStore>((set, get) => ({
   },
 }));
 
-interface QuoteRequestStore {
-  quoteRequestDetail: QuoteRequestDetail | null;
-  loading: boolean;
-  error: string | null;
-  updating: boolean;
-  fetchQuoteRequestDetail: (id: string) => Promise<void>;
-  updateStatus: (id: string, status: string, statusMessage: string) => Promise<boolean>;
-  clearQuoteRequestDetail: () => void;
-}
-
 export const useQuoteRequestStore = create<QuoteRequestStore>((set, get) => ({
   quoteRequestDetail: null,
   loading: false,
@@ -362,74 +175,6 @@ export const useQuoteRequestStore = create<QuoteRequestStore>((set, get) => ({
     });
   },
 }));
-
-// Sample Requests List Store
-interface SampleRequestListItem {
-  _id: string;
-  user: string;
-  product?: {
-    _id: string;
-    productName: string;
-    createdBy?: {
-      _id: string;
-      firstName: string;
-      lastName: string;
-      company: string;
-      email: string;
-    };
-  };
-  quantity: number;
-  uom?: string;
-  address?: string;
-  country?: string;
-  grade?: {
-    _id: string;
-    name: string;
-  };
-  application?: string;
-  expected_annual_volume?: number;
-  orderDate?: string;
-  neededBy?: string;
-  message?: string;
-  request_document?: string;
-  status: string;
-  createdAt: string;
-  updatedAt: string;
-  __v?: number;
-  statusMessage?: Array<{
-    status: string;
-    message: string;
-    date: string;
-    _id: string;
-  }>;
-}
-
-interface SampleRequestsListStore {
-  requests: SampleRequestListItem[];
-  loading: boolean;
-  error: string | null;
-  currentPage: number;
-  totalPages: number;
-  totalRequests: number;
-  pageSize: number;
-  searchTerm: string;
-  statusFilter: string;
-  lastFetchParams: string | null; // To prevent duplicate calls
-  
-  // Actions
-  setSearchTerm: (term: string) => void;
-  setStatusFilter: (status: string) => void;
-  setCurrentPage: (page: number) => void;
-  fetchSampleRequests: (params?: {
-    page?: number;
-    limit?: number;
-    search?: string;
-    status?: string;
-    forceRefresh?: boolean;
-  }) => Promise<void>;
-  clearFilters: () => void;
-  reset: () => void;
-}
 
 export const useSampleRequestsListStore = create<SampleRequestsListStore>((set, get) => ({
   requests: [],
@@ -540,100 +285,6 @@ export const useSampleRequestsListStore = create<SampleRequestsListStore>((set, 
   }
 }));
 
-// Quote Requests List Store
-interface QuoteRequestListItem {
-  _id: string;
-  user: {
-    _id: string;
-    firstName: string;
-    lastName: string;
-    company: string;
-    email: string;
-    address: string;
-    phone: number;
-  };
-  product: {
-    _id: string;
-    productName: string;
-    createdBy: {
-      _id: string;
-      firstName: string;
-      lastName: string;
-      company: string;
-      email: string;
-    };
-  };
-  quantity: number;
-  uom: string;
-  grade: {
-    _id: string;
-    name: string;
-  };
-  incoterm?: {
-    _id: string;
-    name: string;
-  } | null;
-  postCode?: string;
-  city?: string;
-  country: string;
-  destination: string;
-  packagingType?: {
-    _id: string;
-    name: string;
-  };
-  packaging_size: string;
-  expected_annual_volume: number;
-  delivery_date: string;
-  application: string;
-  pricing?: string;
-  message: string;
-  request_document?: string;
-  open_request: boolean;
-  status: "pending" | "responded" | "approved" | "rejected" | "cancelled";
-  createdAt: string;
-  updatedAt: string;
-  __v?: number;
-  statusMessage?: Array<{
-    status: string;
-    message: string;
-    date: string;
-    _id: string;
-  }>;
-  responseMessage?: Array<{
-    status: string;
-    response: string;
-    date: string;
-    _id: string;
-  }>;
-}
-
-interface QuoteRequestsListStore {
-  requests: QuoteRequestListItem[];
-  loading: boolean;
-  error: string | null;
-  currentPage: number;
-  totalPages: number;
-  totalRequests: number;
-  pageSize: number;
-  searchTerm: string;
-  statusFilter: string;
-  lastFetchParams: string | null; // To prevent duplicate calls
-  
-  // Actions
-  setSearchTerm: (term: string) => void;
-  setStatusFilter: (status: string) => void;
-  setCurrentPage: (page: number) => void;
-  fetchQuoteRequests: (params?: {
-    page?: number;
-    limit?: number;
-    search?: string;
-    status?: string;
-    forceRefresh?: boolean;
-  }) => Promise<void>;
-  clearFilters: () => void;
-  reset: () => void;
-}
-
 export const useQuoteRequestsListStore = create<QuoteRequestsListStore>((set, get) => ({
   requests: [],
   loading: false,
@@ -743,63 +394,6 @@ export const useQuoteRequestsListStore = create<QuoteRequestsListStore>((set, ge
   }
 }));
 
-// Finance Requests List Store
-interface FinanceRequestListItem {
-  _id: string;
-  userId: string;
-  productId: {
-    _id: string;
-    productName: string;
-  };
-  emiMonths: number;
-  quantity: number;
-  estimatedPrice: number;
-  notes: string;
-  status: "pending" | "approved" | "rejected" | "under_review" | "cancelled";
-  createdAt: string;
-  updatedAt: string;
-  __v?: number;
-}
-
-interface FinanceRequestsListResponse {
-  data: FinanceRequestListItem[];
-  total: number;
-  meta?: {
-    pagination: {
-      total: number;
-      totalPages: number;
-      currentPage: number;
-      limit: number;
-    };
-  };
-}
-
-interface FinanceRequestsListStore {
-  requests: FinanceRequestListItem[];
-  loading: boolean;
-  error: string | null;
-  currentPage: number;
-  totalPages: number;
-  totalRequests: number;
-  pageSize: number;
-  searchTerm: string;
-  statusFilter: string;
-  lastFetchParams: string | null;
-
-  setSearchTerm: (term: string) => void;
-  setStatusFilter: (status: string) => void;
-  setCurrentPage: (page: number) => void;
-  fetchFinanceRequests: (params?: {
-    page?: number;
-    limit?: number;
-    search?: string;
-    status?: string;
-    forceRefresh?: boolean;
-  }) => Promise<void>;
-  clearFilters: () => void;
-  reset: () => void;
-}
-
 export const useFinanceRequestsListStore = create<FinanceRequestsListStore>((set, get) => ({
   requests: [],
   loading: false,
@@ -907,40 +501,6 @@ export const useFinanceRequestsListStore = create<FinanceRequestsListStore>((set
   }
 }));
 
-// Finance Request Detail Store
-interface FinanceRequestDetail {
-  _id: string;
-  user: User;
-  amount: number;
-  currency: string;
-  financeType: string;
-  purpose: string;
-  duration?: number;
-  interestRate?: number;
-  collateral?: string;
-  description: string;
-  documents?: string[];
-  status: string;
-  createdAt: string;
-  updatedAt: string;
-  statusMessage?: Array<{
-    status: string;
-    message: string;
-    date: string;
-    _id: string;
-  }>;
-}
-
-interface FinanceRequestStore {
-  financeRequestDetail: FinanceRequestDetail | null;
-  loading: boolean;
-  error: string | null;
-  updating: boolean;
-  fetchFinanceRequestDetail: (id: string) => Promise<void>;
-  updateStatus: (id: string, status: string, statusMessage: string) => Promise<boolean>;
-  clearFinanceRequestDetail: () => void;
-}
-
 export const useFinanceRequestStore = create<FinanceRequestStore>((set, get) => ({
   financeRequestDetail: null,
   loading: false,
@@ -1012,104 +572,6 @@ export const useFinanceRequestStore = create<FinanceRequestStore>((set, get) => 
     });
   },
 }));
-
-// Product Requests Types
-interface ProductRequestUser {
-  _id: string;
-  firstName: string;
-  lastName: string;
-  company: string;
-  email: string;
-  address: string;
-  phone: number;
-}
-
-interface ProductRequestProduct {
-  _id: string;
-  productName: string;
-  createdBy: {
-    _id: string;
-    firstName: string;
-    lastName: string;
-    company: string;
-    email: string;
-  };
-}
-
-interface ProductRequestListItem {
-  _id: string;
-  user: ProductRequestUser;
-  product: ProductRequestProduct;
-  quantity: number;
-  uom: string;
-  city: string;
-  country: string;
-  destination: string;
-  delivery_date: string;
-  message: string;
-  request_document: string;
-  status: "pending" | "approved" | "rejected" | "under_review" | "cancelled";
-  sellerStatus: "pending" | "accepted" | "in_progress" | "shipped" | "delivered" | "completed" | "cancelled" | "rejected";
-  statusMessage: Array<{
-    status: string;
-    message: string;
-    date: string;
-    _id: string;
-  }>;
-  createdAt: string;
-  updatedAt: string;
-  statusTracking?: {
-    adminStatus: string;
-    sellerStatus: string;
-    lastUpdate: string;
-    totalUpdates: number;
-  };
-}
-
-interface ProductRequestsListResponse {
-  success: boolean;
-  message: string;
-  data: ProductRequestListItem[];
-  meta: {
-    pagination: {
-      total: number;
-      page: number;
-      totalPages: number;
-      count: number;
-      limit: number;
-    };
-    filters: {
-      search: string;
-      status: string;
-    };
-  };
-}
-
-interface ProductRequestsListStore {
-  requests: ProductRequestListItem[];
-  loading: boolean;
-  error: string | null;
-  currentPage: number;
-  totalPages: number;
-  totalRequests: number;
-  pageSize: number;
-  searchTerm: string;
-  statusFilter: string;
-  lastFetchParams: string | null;
-
-  setSearchTerm: (term: string) => void;
-  setStatusFilter: (status: string) => void;
-  setCurrentPage: (page: number) => void;
-  fetchProductRequests: (params?: {
-    page?: number;
-    limit?: number;
-    search?: string;
-    status?: string;
-    forceRefresh?: boolean;
-  }) => Promise<void>;
-  clearFilters: () => void;
-  reset: () => void;
-}
 
 export const useProductRequestsListStore = create<ProductRequestsListStore>((set, get) => ({
   requests: [],
@@ -1220,134 +682,6 @@ export const useProductRequestsListStore = create<ProductRequestsListStore>((set
     });
   },
 }));
-
-// Product Request Detail Types
-interface ProductRequestDetailUser {
-  _id: string;
-  firstName: string;
-  lastName: string;
-  company: string;
-  email: string;
-  address: string;
-  phone: number;
-}
-
-interface ProductRequestDetailProduct {
-  _id: string;
-  productName: string;
-  chemicalName: string;
-  description: string;
-  tradeName: string;
-  manufacturingMethod: string;
-  countryOfOrigin: string;
-  color: string;
-  productImages: Array<{
-    id: string;
-    name: string;
-    type: string;
-    fileUrl: string;
-    _id: string;
-  }>;
-  density: number;
-  mfi: number;
-  tensileStrength: number;
-  elongationAtBreak: number;
-  shoreHardness: number;
-  waterAbsorption: number;
-  createdBy: {
-    _id: string;
-    firstName: string;
-    lastName: string;
-    company: string;
-    email: string;
-    address: string;
-    phone: number;
-  };
-}
-
-interface SupplierOffer {
-  _id: string;
-  bulkOrderId: {
-    _id: string;
-    product: string;
-    quantity: number;
-    uom: string;
-    city: string;
-    country: string;
-    delivery_date: string;
-  };
-  supplierId: {
-    _id: string;
-    firstName: string;
-    lastName: string;
-    company: string;
-    email: string;
-  };
-  pricePerUnit: number;
-  availableQuantity: number;
-  deliveryTimeInDays: number;
-  incotermAndPackaging: string;
-  message: string;
-  status: "pending" | "approved" | "rejected";
-  statusMessage: Array<{
-    status: string;
-    message: string;
-    date: string;
-    updatedBy: string;
-    _id: string;
-  }>;
-  createdAt: string;
-  updatedAt: string;
-  __v?: number;
-}
-
-interface ProductRequestDetailResponse {
-  order: ProductRequestDetail;
-  offers: SupplierOffer[];
-}
-
-interface ProductRequestDetail {
-  _id: string;
-  user: ProductRequestDetailUser;
-  product: ProductRequestDetailProduct;
-  quantity: number;
-  uom: string;
-  city: string;
-  country: string;
-  destination: string;
-  delivery_date: string;
-  message: string;
-  request_document: string;
-  status: "pending" | "approved" | "rejected" | "under_review" | "cancelled";
-  sellerStatus: "pending" | "accepted" | "in_progress" | "shipped" | "delivered" | "completed" | "cancelled" | "rejected";
-  statusMessage: Array<{
-    status: string;
-    message: string;
-    date: string;
-    _id: string;
-  }>;
-  createdAt: string;
-  updatedAt: string;
-  __v?: number;
-  statusTracking?: {
-    adminStatus: string;
-    sellerStatus: string;
-    lastUpdate: string;
-    totalUpdates: number;
-    statusHistory: Array<any>;
-  };
-}
-
-interface ProductRequestDetailStore {
-  productRequestDetail: ProductRequestDetail | null;
-  supplierOffers: SupplierOffer[];
-  loading: boolean;
-  error: string | null;
-  updating: boolean;
-  fetchProductRequestDetail: (id: string) => Promise<void>;
-  updateStatus: (id: string, status: string, statusMessage: string) => Promise<boolean>;
-  clearProductRequestDetail: () => void;
-}
 
 export const useProductRequestDetailStore = create<ProductRequestDetailStore>((set, get) => ({
   productRequestDetail: null,

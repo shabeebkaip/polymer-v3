@@ -4,20 +4,7 @@ import {
   getBenefitsOfSuppliers,
   getSocialLinks,
 } from "@/apiServices/cms";
-import { BenefitsContent } from "@/types/cms";
-
-interface CmsState {
-  buyersBenefits: BenefitsContent;
-  suppliersBenefits: BenefitsContent;
-  socialLinks: any[];
-  loading: boolean;
-  getBenefitsOfBuyers: () => Promise<void>;
-  getBenefitsOfSuppliers: () => Promise<void>;
-  getSocialLinks: () => Promise<void>;
-  // Setter methods for SSR hydration
-  setBuyersBenefits: (benefits: BenefitsContent) => void;
-  setSuppliersBenefits: (benefits: BenefitsContent) => void;
-}
+import { BenefitsContent, CmsState } from "@/types/cms";
 
 export const useCmsStore = create<CmsState>((set, get) => ({
   buyersBenefits: {},

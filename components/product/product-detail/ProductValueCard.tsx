@@ -1,9 +1,5 @@
 import React from "react";
-
-interface ProductValueCardProps {
-    label: string;
-    value: string | number;
-}
+import { ProductValueCardProps } from "@/types/product";
 
 const ProductValueCard: React.FC<ProductValueCardProps> = ({ label, value }) => {
     return (

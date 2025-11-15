@@ -1,11 +1,7 @@
 import React from "react";
 import { Award, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Product } from "@/types/product";
-
-interface ProductDocumentDetailsProps {
-  product: Product;
-}
+import { Product, ProductDocumentDetailsProps } from "@/types/product";
 
 const ProductDocumentDetails: React.FC<ProductDocumentDetailsProps> = ({ product }) => {
   return (

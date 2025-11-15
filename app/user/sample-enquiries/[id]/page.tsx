@@ -40,21 +40,7 @@ import {
   FlaskConical
 } from "lucide-react";
 import Image from 'next/image';
-
-// Type definitions
-interface StatusOption {
-  value: string;
-  label: string;
-  description: string;
-}
-
-interface ProductImage {
-  id: string;
-  name: string;
-  type: string;
-  fileUrl: string;
-  _id: string;
-}
+import { StatusOption, ProductImage } from '@/types/sample';
 
 // Define statuses outside component to prevent recreation
 const supplierAllowedStatuses: StatusOption[] = [

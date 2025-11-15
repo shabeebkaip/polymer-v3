@@ -1,16 +1,5 @@
 import { create } from "zustand";
-
-interface ChatUserInfo {
-  userId: string;
-  receiverId: string;
-  receiverName: string;
-}
-
-interface ChatUserStore {
-  chatUser: ChatUserInfo | null;
-  setChatUser: (info: ChatUserInfo) => void;
-  clearChatUser: () => void;
-}
+import { ChatUserInfo, ChatUserStore } from "@/types/chat";
 
 export const useChatUserStore = create<ChatUserStore>((set) => ({
   chatUser: null,

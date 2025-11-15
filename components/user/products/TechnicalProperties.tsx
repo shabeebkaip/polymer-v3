@@ -4,19 +4,9 @@ import { Input } from "../../ui/input";
 import { Card, CardContent } from "../../ui/card";
 import { Badge } from "../../ui/badge";
 import { Gauge, FileText } from "lucide-react";
-import { ProductFormData } from "@/types/product";
+import { ProductFormData, TechnicalPropertiesProps } from "@/types/product";
 import MultiSelect from "@/components/shared/MultiSelect";
-
-interface DropdownItem {
-  _id: string;
-  name: string;
-}
-
-interface TechnicalPropertiesProps {
-  data: ProductFormData;
-  onFieldChange: (field: keyof ProductFormData, value: string | string[]) => void;
-  grades?: DropdownItem[];
-}
+import { DropdownItem } from "@/types/shared";
 
 // Technical property categories based on backend schema
 const PROPERTY_CATEGORIES = [

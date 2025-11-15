@@ -1,9 +1,5 @@
 import React from "react";
-import { Product } from "@/types/product";
-
-interface ProductOverviewProps {
-  product: Product;
-}
+import { Product, ProductOverviewProps } from "@/types/product";
 
 const ProductOverview: React.FC<ProductOverviewProps> = ({ product }) => {
   return (

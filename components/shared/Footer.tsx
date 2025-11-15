@@ -3,12 +3,7 @@ import Image from "next/image";
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { getSocialLinks } from "@/apiServices/cms";
-
-interface SocialLink {
-  label: string;
-  icon: string;
-  link: string;
-}
+import { SocialLink } from "@/types/shared";
 
 const Footer: React.FC = () => {
   const router = useRouter();

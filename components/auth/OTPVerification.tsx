@@ -6,11 +6,7 @@ import Cookies from 'js-cookie';
 import { toast } from 'sonner';
 import { verifyRegistrationOtp, resendRegistrationOtp } from '@/apiServices/auth';
 import { useUserInfo } from '@/lib/useUserInfo';
-
-interface OTPVerificationProps {
-  email: string;
-  onBack: () => void;
-}
+import { OTPVerificationProps } from '@/types/auth';
 
 const OTPVerification: React.FC<OTPVerificationProps> = ({ email, onBack }) => {
   const router = useRouter();

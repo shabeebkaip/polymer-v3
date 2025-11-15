@@ -9,25 +9,9 @@ import {
 } from "../../ui/select";
 import { Input } from "../../ui/input";
 import { Card, CardContent } from "../../ui/card";
-import { ProductFormData } from "@/types/product";
+import { ProductFormData, ProductDetailsProps } from "@/types/product";
 import MultiSelect from "@/components/shared/MultiSelect";
-
-interface DropdownItem {
-  _id: string;
-  name: string;
-}
-
-interface ProductDetailsProps {
-  data: ProductFormData;
-  onFieldChange: (field: keyof ProductFormData, value: string | string[]) => void;
-  chemicalFamilies: DropdownItem[];
-  polymersTypes: DropdownItem[];
-  industry: DropdownItem[];
-  physicalForms: DropdownItem[];
-  productFamilies: DropdownItem[];
-  onFieldError: (field: keyof ProductFormData) => void;
-  error: Partial<Record<keyof ProductFormData, string>>;
-}
+import { DropdownItem } from "@/types/shared";
 
 const ProductDetails: React.FC<ProductDetailsProps> = ({
   data,

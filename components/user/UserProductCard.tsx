@@ -4,24 +4,7 @@ import { Button } from "../ui/button";
 import { Delete, Pencil } from "lucide-react";
 import Image from "next/image";
 import { FALLBACK_PRODUCT_IMAGE, FALLBACK_COMPANY_IMAGE } from "@/lib/fallbackImages";
-
-interface Product {
-  _id?: string;
-  productName?: string;
-  productImages?: Array<{ fileUrl: string }>;
-  createdBy?: {
-    company_logo?: string;
-    company?: string;
-  };
-  chemicalName?: string;
-  productFormName?: string;
-  polymerType?: { name?: string };
-  countryOfOrigin?: string;
-}
-
-interface UserProductCardProps {
-  product: Product;
-}
+import { UserProductCardProps } from "@/types/product";
 
 const UserProductCard: React.FC<UserProductCardProps> = ({ product }) => {
   const router = useRouter();

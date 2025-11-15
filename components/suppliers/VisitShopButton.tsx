@@ -3,11 +3,7 @@
 import Image from 'next/image';
 import React from 'react';
 import { useRouter } from 'next/navigation';
-
-interface VisitShopButtonProps {
-  supplierId: string;
-  from?: string; // Optional prop to indicate where the button is used
-}
+import { VisitShopButtonProps } from '@/types/seller';
 
 const VisitShopButton: React.FC<VisitShopButtonProps> = ({ supplierId, from }) => {
   const router = useRouter();

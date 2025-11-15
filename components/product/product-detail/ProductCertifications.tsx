@@ -1,10 +1,6 @@
-import { Product } from '@/types/product';
+import { Product, ProductCertificationsProps } from '@/types/product';
 import React from 'react';
 import ProductValueCard from '@/components/product/product-detail/ProductValueCard';
-
-interface ProductCertificationsProps {
-  product: Product;
-}
 
 const ProductCertifications: React.FC<ProductCertificationsProps> = ({ product }) => {
   return (

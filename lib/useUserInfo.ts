@@ -1,21 +1,6 @@
 import { create } from 'zustand';
 import Cookies from 'js-cookie';
-
-export interface UserInfo {
-  firstName?: string;
-  lastName?: string;
-  email?: string;
-  user_type?: string;
-  [key: string]: unknown;
-}
-
-interface UserStore {
-  user: UserInfo | null;
-  isInitialized: boolean;
-  setUser: (user: UserInfo | null) => void;
-  loadUserFromCookies: () => void;
-  logout: () => void;
-}
+import { UserInfo, UserStore } from '@/types/user';
 
 export const useUserInfo = create<UserStore>((set) => ({
   user: null,

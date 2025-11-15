@@ -1,27 +1,7 @@
 // hooks/useChat.ts
 import { useState, useEffect, useCallback, useRef } from 'react';
 import SocketManager from '@/lib/socket';
-import { Message, TypingIndicator, UserOnlineStatus } from '@/types/chat';
-
-interface UseChatProps {
-  userId: string;
-  productId: string;
-  receiverId: string;
-  serverUrl: string;
-}
-
-interface UseChatReturn {
-  messages: Message[];
-  onlineUsers: Set<string>;
-  typingUsers: Set<string>;
-  isConnected: boolean;
-  sendMessage: (message: string) => void;
-  markAsRead: (messageIds: string[]) => void;
-  setTyping: (isTyping: boolean) => void;
-  loadMessages: () => void;
-  isLoading: boolean;
-  error: string | null;
-}
+import { Message, TypingIndicator, UserOnlineStatus, UseChatProps, UseChatReturn } from '@/types/chat';
 
 export const useChat = ({
   userId,

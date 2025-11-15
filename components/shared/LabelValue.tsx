@@ -1,11 +1,5 @@
 import React from "react";
-
-interface LabelValueProps {
-  label: string;
-  value: string | number | React.ReactNode;
-  horizontal?: boolean;
-  compact?: boolean;
-}
+import { LabelValueProps } from "@/types/shared";
 
 const LabelValue: React.FC<LabelValueProps> = ({
   label,

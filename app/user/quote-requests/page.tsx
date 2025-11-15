@@ -29,86 +29,7 @@ import {
   Gift
 } from "lucide-react";
 import { useQuoteRequestsListStore } from "@/stores/user";
-
-// Define the allowed statuses for quote requests based on API response
-const ALLOWED_STATUSES = [
-  "pending", "responded", "negotiation", "accepted", "in_progress", 
-  "shipped", "delivered", "completed", "rejected", "cancelled"
-] as const;
-
-type QuoteStatus = typeof ALLOWED_STATUSES[number];
-
-// Define quote request types
-type QuoteRequestType = "product_quote" | "deal_quote" | "all";
-
-// Interface for the unified quote request structure
-interface QuoteRequest {
-  _id: string;
-  requestType: QuoteRequestType;
-  status: QuoteStatus;
-  createdAt: string;
-  updatedAt: string;
-  statusMessage: unknown[];
-  productName: string;
-  productId: string;
-  company: string;
-  companyId: string | null;
-  quantity: number;
-  unit: string;
-  destination: string;
-  deliveryDate: string;
-  grade: string;
-  buyer: {
-    _id: string;
-    firstName: string;
-    lastName: string;
-    name: string;
-    company: string;
-    email: string;
-  };
-  unified: {
-    statusIcon: string;
-    priorityLevel: string;
-    quantity: number;
-    deliveryDate: string;
-    location: string;
-    productInfo: string;
-    type: QuoteRequestType;
-    title: string;
-  };
-  quoteType: string;
-  productQuote?: {
-    product: {
-      _id: string;
-      productName: string;
-      createdBy: {
-        _id: string;
-        firstName: string;
-        lastName: string;
-        company: string;
-        email: string;
-      };
-    };
-    packaging_size: string;
-    incoterm: {
-      _id: string;
-      name: string;
-    };
-  };
-  dealQuote?: {
-    bestDeal: {
-      _id: string;
-      productId: {
-        _id: string;
-        productName: string;
-      };
-      offerPrice: number;
-      status: string;
-    };
-    paymentTerms: string;
-    offerPrice: number;
-  };
-}
+import { ALLOWED_STATUSES, QuoteStatus, QuoteRequestType, QuoteRequestList } from "@/types/quote";
 
 const QuoteRequests = () => {
   const router = useRouter();
@@ -117,7 +38,6 @@ const QuoteRequests = () => {
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [quoteTypeFilter, setQuoteTypeFilter] = useState<"all" | "product_quote" | "deal_quote">("all");
   
-  // Zustand store (we'll cast the data to our new interface)
   const {
     requests: rawRequests,
     loading,
@@ -136,7 +56,7 @@ const QuoteRequests = () => {
   } = useQuoteRequestsListStore();
 
   // Cast the requests to the new unified structure and apply client-side filtering
-  const allQuoteRequests = rawRequests as unknown as QuoteRequest[];
+  const allQuoteRequests = rawRequests as unknown as QuoteRequestList[];
   const quoteRequests = quoteTypeFilter === "all" 
     ? allQuoteRequests 
     : allQuoteRequests.filter(req => req.requestType === quoteTypeFilter);

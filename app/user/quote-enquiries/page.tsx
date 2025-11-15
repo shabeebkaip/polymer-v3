@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Skeleton } from "@/components/ui/skeleton";
+} from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   Table,
   TableBody,
@@ -17,7 +17,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from '@/components/ui/table';
 import {
   Quote,
   Package,
@@ -33,82 +33,32 @@ import {
   ChevronRight,
   Eye,
   X,
-} from "lucide-react";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { getUserQuoteEnquiries } from "@/apiServices/user";
-import { useQuoteEnquiriesStore } from "@/stores/quoteEnquiriesStore";
-
-// Enhanced interface for better type safety
-interface QuoteEnquiryProduct {
-  productName?: string;
-  sku?: string;
-}
-
-interface QuoteEnquiryUser {
-  email?: string;
-  name?: string;
-}
-
-interface QuoteEnquiryGrade {
-  name?: string;
-}
-
-interface QuoteEnquiryUnified {
-  title?: string;
-  quantity?: number;
-}
-
-interface QuoteEnquiryBuyer {
-  email?: string;
-  name?: string;
-}
-
-interface QuoteEnquiry {
-  _id?: string;
-  id?: string;
-  user?: QuoteEnquiryUser;
-  buyer?: QuoteEnquiryBuyer;
-  product?: QuoteEnquiryProduct;
-  unified?: QuoteEnquiryUnified;
-  quantity?: number;
-  uom?: string;
-  incoterm?: string | { name?: string };
-  grade?: QuoteEnquiryGrade;
-  packaging?: string;
-  message?: string;
-  status: string;
-  createdAt: string;
-  updatedAt?: string;
-  orderDetails?: {
-    quantity: number;
-    uom: string;
-    incoterm: string | { name?: string };
-  };
-}
+} from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { getUserQuoteEnquiries } from '@/apiServices/user';
+import { useQuoteEnquiriesStore } from '@/stores/quoteEnquiriesStore';
+import { QuoteEnquiry } from '@/types/quote';
 
 const statusOptions = [
-  { label: "All", value: "all" },
-  { label: "Pending", value: "pending" },
-  { label: "Approved", value: "approved" },
-  { label: "Rejected", value: "rejected" }, 
-  { label: "Completed", value: "completed" },
+  { label: 'All', value: 'all' },
+  { label: 'Pending', value: 'pending' },
+  { label: 'Approved', value: 'approved' },
+  { label: 'Rejected', value: 'rejected' },
+  { label: 'Completed', value: 'completed' },
 ];
 
 const QuoteEnquiries = () => {
   const router = useRouter();
 
   // Zustand store with proper typing
-  const { enquiries, meta, setEnquiries, clearEnquiries } =
-    useQuoteEnquiriesStore();
+  const { enquiries, meta, setEnquiries, clearEnquiries } = useQuoteEnquiriesStore();
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   // Filter states
-  const [searchTerm, setSearchTerm] = useState(meta?.filters?.search || "");
-  const [statusFilter, setStatusFilter] = useState(
-    meta?.filters?.status || "all"
-  );
+  const [searchTerm, setSearchTerm] = useState(meta?.filters?.search || '');
+  const [statusFilter, setStatusFilter] = useState(meta?.filters?.status || 'all');
   const [currentPage, setCurrentPage] = useState(meta?.pagination?.page || 1);
   const pageSize = 10;
 
@@ -134,13 +84,13 @@ const QuoteEnquiries = () => {
   // Keyboard shortcut for clearing filters (Escape key)
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && (searchTerm || statusFilter !== "all")) {
+      if (event.key === 'Escape' && (searchTerm || statusFilter !== 'all')) {
         clearFilters();
       }
     };
 
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
   }, [searchTerm, statusFilter]);
 
   // Fetch data when component mounts or when filters change
@@ -152,34 +102,28 @@ const QuoteEnquiries = () => {
           page: currentPage,
           limit: pageSize,
           ...(debouncedSearchTerm && { search: debouncedSearchTerm }),
-          ...(statusFilter !== "all" && { status: statusFilter }),
+          ...(statusFilter !== 'all' && { status: statusFilter }),
         };
 
         const response = await getUserQuoteEnquiries(params);
         setEnquiries(response.data || [], response.meta);
         setError(null);
       } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : "Failed to load quote enquiries";
+        const errorMessage = err instanceof Error ? err.message : 'Failed to load quote enquiries';
         setError(errorMessage);
         clearEnquiries();
-        console.error("Error fetching enquiries:", err);
+        console.error('Error fetching enquiries:', err);
       } finally {
         setLoading(false);
       }
     };
 
     fetchEnquiries();
-  }, [
-    currentPage,
-    debouncedSearchTerm,
-    statusFilter,
-    setEnquiries,
-    clearEnquiries,
-  ]);
+  }, [currentPage, debouncedSearchTerm, statusFilter, setEnquiries, clearEnquiries]);
 
   // Reset to first page when filters change
   useEffect(() => {
-    if (currentPage !== 1 && (debouncedSearchTerm || statusFilter !== "all")) {
+    if (currentPage !== 1 && (debouncedSearchTerm || statusFilter !== 'all')) {
       setCurrentPage(1);
     }
   }, [debouncedSearchTerm, statusFilter, currentPage]);
@@ -191,49 +135,48 @@ const QuoteEnquiries = () => {
 
   const handlePageChange = (page: number): void => {
     setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const clearFilters = (): void => {
-    setSearchTerm("");
-    setStatusFilter("all");
+    setSearchTerm('');
+    setStatusFilter('all');
     setCurrentPage(1);
   };
 
   const getStatusIcon = (status: string): React.ReactElement => {
     switch (status) {
-      case "approved":
+      case 'approved':
         return <CheckCircle className="w-4 h-4 text-green-500" />;
-      case "rejected":
+      case 'rejected':
         return <XCircle className="w-4 h-4 text-red-500" />;
-      case "cancelled":
+      case 'cancelled':
         return <XCircle className="w-4 h-4 text-gray-500" />;
-      case "completed":
+      case 'completed':
         return <CheckCircle className="w-4 h-4 text-emerald-500" />;
-      case "responded":
+      case 'responded':
         return <AlertCircle className="w-4 h-4 text-orange-500" />;
-      case "pending":
+      case 'pending':
       default:
         return <Clock className="w-4 h-4 text-yellow-500" />;
     }
   };
 
   const getStatusBadge = (status: string): string => {
-    const baseClasses =
-      "inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium";
+    const baseClasses = 'inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium';
 
     switch (status) {
-      case "approved":
+      case 'approved':
         return `${baseClasses} bg-green-100 text-green-700 border border-green-200`;
-      case "rejected":
+      case 'rejected':
         return `${baseClasses} bg-red-100 text-red-700 border border-red-200`;
-      case "cancelled":
+      case 'cancelled':
         return `${baseClasses} bg-gray-100 text-gray-700 border border-gray-200`;
-      case "completed":
+      case 'completed':
         return `${baseClasses} bg-emerald-100 text-emerald-700 border border-emerald-200`;
-      case "responded":
+      case 'responded':
         return `${baseClasses} bg-orange-100 text-orange-700 border border-orange-200`;
-      case "pending":
+      case 'pending':
         return `${baseClasses} bg-yellow-100 text-yellow-700 border border-yellow-200`;
       default:
         return `${baseClasses} bg-gray-100 text-gray-700 border border-gray-200`;
@@ -242,20 +185,20 @@ const QuoteEnquiries = () => {
 
   const getStatusText = (status: string): string => {
     switch (status) {
-      case "pending":
-        return "Pending";
-      case "responded":
-        return "Responded";
-      case "completed":
-        return "Completed";
-      case "approved":
-        return "Approved";
-      case "rejected":
-        return "Rejected";
-      case "cancelled":
-        return "Cancelled";
+      case 'pending':
+        return 'Pending';
+      case 'responded':
+        return 'Responded';
+      case 'completed':
+        return 'Completed';
+      case 'approved':
+        return 'Approved';
+      case 'rejected':
+        return 'Rejected';
+      case 'cancelled':
+        return 'Cancelled';
       default:
-        return "Unknown";
+        return 'Unknown';
     }
   };
   return (
@@ -306,11 +249,9 @@ const QuoteEnquiries = () => {
               <div className="group bg-white/80 backdrop-blur-sm rounded-2xl p-4 lg:p-6 border border-gray-200/50 hover:shadow-xl hover:scale-105 transition-all duration-500 hover:bg-white/90">
                 <div className="flex items-center justify-between">
                   <div className="flex-1 min-w-0">
-                    <p className="text-gray-600 text-xs sm:text-sm font-medium mb-1">
-                      Pending
-                    </p>
+                    <p className="text-gray-600 text-xs sm:text-sm font-medium mb-1">Pending</p>
                     <p className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
-                      {enquiries.filter((r: QuoteEnquiry) => r.status === "pending").length}
+                      {enquiries.filter((r: QuoteEnquiry) => r.status === 'pending').length}
                     </p>
                   </div>
                   <div className="bg-gradient-to-br from-yellow-100 to-orange-100 p-2 sm:p-3 rounded-xl group-hover:from-yellow-200 group-hover:to-orange-200 transition-all duration-300 flex-shrink-0">
@@ -321,11 +262,9 @@ const QuoteEnquiries = () => {
               <div className="group bg-white/80 backdrop-blur-sm rounded-2xl p-4 lg:p-6 border border-gray-200/50 hover:shadow-xl hover:scale-105 transition-all duration-500 hover:bg-white/90">
                 <div className="flex items-center justify-between">
                   <div className="flex-1 min-w-0">
-                    <p className="text-gray-600 text-xs sm:text-sm font-medium mb-1">
-                      Approved
-                    </p>
+                    <p className="text-gray-600 text-xs sm:text-sm font-medium mb-1">Approved</p>
                     <p className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
-                      {enquiries.filter((r: QuoteEnquiry) => r.status === "approved").length}
+                      {enquiries.filter((r: QuoteEnquiry) => r.status === 'approved').length}
                     </p>
                   </div>
                   <div className="bg-gradient-to-br from-green-100 to-emerald-100 p-2 sm:p-3 rounded-xl group-hover:from-green-200 group-hover:to-emerald-200 transition-all duration-300 flex-shrink-0">
@@ -336,9 +275,7 @@ const QuoteEnquiries = () => {
               <div className="group bg-white/80 backdrop-blur-sm rounded-2xl p-4 lg:p-6 border border-gray-200/50 hover:shadow-xl hover:scale-105 transition-all duration-500 hover:bg-white/90">
                 <div className="flex items-center justify-between">
                   <div className="flex-1 min-w-0">
-                    <p className="text-gray-600 text-xs sm:text-sm font-medium mb-1">
-                      This Month
-                    </p>
+                    <p className="text-gray-600 text-xs sm:text-sm font-medium mb-1">This Month</p>
                     <p className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-teal-600 to-green-600 bg-clip-text text-transparent">
                       {
                         enquiries.filter((e: QuoteEnquiry) => {
@@ -346,8 +283,7 @@ const QuoteEnquiries = () => {
                           const currentDate = new Date();
                           return (
                             enquiryDate.getMonth() === currentDate.getMonth() &&
-                            enquiryDate.getFullYear() ===
-                              currentDate.getFullYear()
+                            enquiryDate.getFullYear() === currentDate.getFullYear()
                           );
                         }).length
                       }
@@ -394,7 +330,7 @@ const QuoteEnquiries = () => {
             </div>
 
             {/* Clear Filters */}
-            {(searchTerm || statusFilter !== "all") && (
+            {(searchTerm || statusFilter !== 'all') && (
               <Button
                 variant="ghost"
                 onClick={clearFilters}
@@ -557,9 +493,7 @@ const QuoteEnquiries = () => {
                       Quantity
                     </TableHead>
 
-                    <TableHead className="w-28 sm:w-32 font-semibold text-gray-700">
-                      Date
-                    </TableHead>
+                    <TableHead className="w-28 sm:w-32 font-semibold text-gray-700">Date</TableHead>
                     <TableHead className="w-20 sm:w-24 font-semibold text-gray-700">
                       Status
                     </TableHead>
@@ -581,14 +515,14 @@ const QuoteEnquiries = () => {
                           </div>
                           <div>
                             <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                              {searchTerm || statusFilter !== "all"
-                                ? "No matching quote enquiries"
-                                : "No quote enquiries yet"}
+                              {searchTerm || statusFilter !== 'all'
+                                ? 'No matching quote enquiries'
+                                : 'No quote enquiries yet'}
                             </h3>
                             <p className="text-gray-600 text-sm">
-                              {searchTerm || statusFilter !== "all"
-                                ? "Try adjusting your search criteria"
-                                : "Quote enquiries will appear here once customers request quotes"}
+                              {searchTerm || statusFilter !== 'all'
+                                ? 'Try adjusting your search criteria'
+                                : 'Quote enquiries will appear here once customers request quotes'}
                             </p>
                           </div>
                         </div>
@@ -608,11 +542,17 @@ const QuoteEnquiries = () => {
                               <Package className="w-5 h-5 text-green-600" />
                             </div>
                             <div className="min-w-0 flex-1">
-                              <p className="font-medium text-gray-900 truncate" title={item.unified?.title || "Unknown Product"}>
-                                {item.unified?.title || "Unknown Product"}
+                              <p
+                                className="font-medium text-gray-900 truncate"
+                                title={item.unified?.title || 'Unknown Product'}
+                              >
+                                {item.unified?.title || 'Unknown Product'}
                               </p>
                               {item.product?.sku && (
-                                <p className="text-xs text-gray-500 truncate" title={`SKU: ${item.product.sku}`}>
+                                <p
+                                  className="text-xs text-gray-500 truncate"
+                                  title={`SKU: ${item.product.sku}`}
+                                >
                                   SKU: {item.product.sku}
                                 </p>
                               )}
@@ -622,13 +562,9 @@ const QuoteEnquiries = () => {
                         <TableCell>
                           <div className="flex items-center gap-1">
                             <span className="font-medium text-gray-900">
-                              {item.unified?.quantity || "--"}
+                              {item.unified?.quantity || '--'}
                             </span>
-                            {item.uom && (
-                              <span className="text-sm text-gray-500">
-                                {item.uom}
-                              </span>
-                            )}
+                            {item.uom && <span className="text-sm text-gray-500">{item.uom}</span>}
                           </div>
                         </TableCell>
                         <TableCell>
@@ -637,22 +573,19 @@ const QuoteEnquiries = () => {
                               <Calendar className="w-3 h-3 text-gray-400 flex-shrink-0" />
                               <span className="text-sm font-medium text-gray-900">
                                 {item.createdAt
-                                  ? new Date(item.createdAt).toLocaleDateString(
-                                      "en-US",
-                                      {
-                                        month: "short",
-                                        day: "2-digit",
-                                        year: "2-digit",
-                                      }
-                                    )
-                                  : "--"}
+                                  ? new Date(item.createdAt).toLocaleDateString('en-US', {
+                                      month: 'short',
+                                      day: '2-digit',
+                                      year: '2-digit',
+                                    })
+                                  : '--'}
                               </span>
                             </div>
                             {item.createdAt && (
                               <span className="text-xs text-gray-500 ml-5">
-                                {new Date(item.createdAt).toLocaleTimeString("en-US", {
-                                  hour: "2-digit",
-                                  minute: "2-digit",
+                                {new Date(item.createdAt).toLocaleTimeString('en-US', {
+                                  hour: '2-digit',
+                                  minute: '2-digit',
                                 })}
                               </span>
                             )}
@@ -670,11 +603,17 @@ const QuoteEnquiries = () => {
                               <Building2 className="w-4 h-4 text-gray-500" />
                             </div>
                             <div className="min-w-0 flex-1">
-                              <p className="text-sm font-medium text-gray-900 truncate" title={item.buyer?.email || "Unknown User"}>
-                                {item.buyer?.email || "Unknown User"}
+                              <p
+                                className="text-sm font-medium text-gray-900 truncate"
+                                title={item.buyer?.email || 'Unknown User'}
+                              >
+                                {item.buyer?.email || 'Unknown User'}
                               </p>
                               {item.buyer?.name && (
-                                <p className="text-xs text-gray-500 truncate" title={item.buyer.name}>
+                                <p
+                                  className="text-xs text-gray-500 truncate"
+                                  title={item.buyer.name}
+                                >
                                   {item.buyer.name}
                                 </p>
                               )}
@@ -706,9 +645,8 @@ const QuoteEnquiries = () => {
             <div className="p-4 sm:p-6 border-t border-gray-200 bg-gray-50/30">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0">
                 <div className="text-xs sm:text-sm text-gray-600">
-                  Showing {(currentPage - 1) * pageSize + 1} to{" "}
-                  {Math.min(currentPage * pageSize, totalRequests)} of{" "}
-                  {totalRequests} enquiries
+                  Showing {(currentPage - 1) * pageSize + 1} to{' '}
+                  {Math.min(currentPage * pageSize, totalRequests)} of {totalRequests} enquiries
                 </div>
 
                 <div className="flex items-center gap-2 w-full sm:w-auto justify-center sm:justify-end">
@@ -730,7 +668,7 @@ const QuoteEnquiries = () => {
                       return (
                         <Button
                           key={page}
-                          variant={currentPage === page ? "default" : "outline"}
+                          variant={currentPage === page ? 'default' : 'outline'}
                           size="sm"
                           onClick={() => handlePageChange(page)}
                           className="w-7 h-7 sm:w-8 sm:h-8 p-0 text-xs sm:text-sm"
@@ -743,7 +681,7 @@ const QuoteEnquiries = () => {
                       <>
                         <span className="text-gray-500 px-1 sm:px-2 text-xs sm:text-sm">...</span>
                         <Button
-                          variant={currentPage === totalPages ? "default" : "outline"}
+                          variant={currentPage === totalPages ? 'default' : 'outline'}
                           size="sm"
                           onClick={() => handlePageChange(totalPages)}
                           className="w-7 h-7 sm:w-8 sm:h-8 p-0 text-xs sm:text-sm"

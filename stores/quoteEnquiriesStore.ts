@@ -1,54 +1,5 @@
 import { create } from "zustand";
-
-interface QuoteEnquiry {
-  _id: string;
-  id: string;
-  user: any;
-  product: any;
-  quantity: number;
-  uom: string;
-  incoterm: string;
-  grade: any;
-  packaging: string;
-  message: string;
-  status: string;
-  createdAt: string;
-  updatedAt: string;
-  [key: string]: any;
-}
-
-interface PaginationMeta {
-  total: number;
-  page: number;
-  totalPages: number;
-  count: number;
-  limit: number;
-}
-
-interface QuoteEnquiriesState {
-  enquiries: QuoteEnquiry[];
-  meta: {
-    pagination: PaginationMeta;
-    filters: { search: string; status: string };
-  } | null;
-  
-  // Detail state
-  enquiryDetail: QuoteEnquiry | null;
-  loading: boolean;
-  error: string | null;
-  updating: boolean;
-  
-  // Actions
-  setEnquiries: (enquiries: QuoteEnquiry[], meta: any) => void;
-  clearEnquiries: () => void;
-  
-  // Detail actions
-  setEnquiryDetail: (enquiry: QuoteEnquiry) => void;
-  clearEnquiryDetail: () => void;
-  setLoading: (loading: boolean) => void;
-  setError: (error: string | null) => void;
-  setUpdating: (updating: boolean) => void;
-}
+import { QuoteEnquiry, PaginationMeta, QuoteEnquiriesState } from "@/types/quote";
 
 export const useQuoteEnquiriesStore = create<QuoteEnquiriesState>((set, get) => ({
   enquiries: [],

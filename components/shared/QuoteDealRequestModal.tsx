@@ -26,17 +26,7 @@ import { useRouter } from "next/navigation";
 import { DealQuoteRequest } from "@/types/quote";
 import { getCountryList } from "@/lib/useCountries";
 import Cookies from "js-cookie";
-
-interface QuoteDealRequestModalProps {
-  className?: string;
-  dealId: string;
-  dealProduct: string;
-  dealSupplier: string;
-  dealMinQuantity: string;
-  dealPrice: number;
-  buttonText?: string;
-  children?: React.ReactNode;
-}
+import { QuoteDealRequestModalProps } from "@/types/shared";
 
 // Payment terms options
 const PAYMENT_TERMS = [

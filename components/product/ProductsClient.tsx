@@ -9,38 +9,7 @@ import FilterModal from "./FilterModal";
 import { useUserInfo } from "@/lib/useUserInfo";
 import { useInfiniteScroll } from "@/lib/useInfiniteScroll";
 import BackToTop from "@/components/shared/BackToTop";
-import { ProductCardTypes } from "@/types/product";
-
-// --- Types ---
-interface FilterDataItem {
-  _id: string | boolean;
-  name: string;
-  count: number;
-}
-
-interface FilterSection {
-  name: string;
-  displayName: string;
-  component: string;
-  filterType: string;
-  collapsible: boolean;
-  searchable?: boolean;
-  data: FilterDataItem[];
-}
-
-interface ProductFilter {
-  filterSide: FilterSection[];
-  filterTop: FilterSection[];
-}
-
-
-
-interface Pagination {
-  page: number;
-  totalPages: number;
-  totalItems: number;
-  limit: number;
-}
+import { ProductCardTypes, ProductFilter, Pagination } from "@/types/product";
 
 // --- Dynamic Imports ---
 import Filter from "@/components/product/Filter";

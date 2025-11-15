@@ -4,12 +4,7 @@ import { Label } from "../../ui/label";
 import { Card, CardContent } from "../../ui/card";
 import { Badge } from "../../ui/badge";
 import { Shield, Award, CheckCircle2, Star, Crown, Zap } from "lucide-react";
-import { ProductFormData } from "@/types/product";
-
-interface CertificationProps {
-  data: ProductFormData;
-  onFieldChange: (field: keyof ProductFormData, value: boolean) => void;
-}
+import { ProductFormData, CertificationProps } from "@/types/product";
 
 // Certification configuration
 const CERTIFICATIONS = [

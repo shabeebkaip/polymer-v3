@@ -9,23 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-
-interface UploadedFile {
-  fileUrl: string;
-  id: string;
-  name: string;
-  type: string;
-  [key: string]: unknown;
-}
-
-interface ImageUploadProps {
-  onFilesUpload: (files: UploadedFile[]) => void;
-  previews: string[];
-  setPreviews: (index: number) => void;
-  onImageClick?: (index: number) => void;
-  width?: string;
-  height?: string;
-}
+import { ImageUploadProps, UploadedFile } from "@/types/shared";
 
 const ImageUpload: React.FC<ImageUploadProps> = ({
   onFilesUpload,

@@ -27,26 +27,7 @@ import { createQuoteRequest } from '@/apiServices/user';
 import { useRouter } from 'next/navigation';
 import { ProductQuoteRequest } from '@/types/quote';
 import Cookies from 'js-cookie';
-
-interface Grade {
-  _id: string;
-  name: string;
-}
-interface Incoterm {
-  _id: string;
-  name: string;
-}
-interface PackagingType {
-  _id: string;
-  name: string;
-}
-interface QuoteRequestModalProps {
-  className?: string;
-  productId: string;
-  uom: string;
-  buttonText?: string;
-  children?: React.ReactNode;
-}
+import { Grade, Incoterm, PackagingType, QuoteRequestModalProps } from '@/types/shared';
 
 // Memoized input components to prevent unnecessary re-renders
 const MemoizedInput = React.memo(

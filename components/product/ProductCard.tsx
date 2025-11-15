@@ -3,15 +3,8 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import QuoteRequestModal from "../shared/QuoteRequestModal";
 import SampleRequestModal from "../shared/SampleRequestModal";
-import { ProductCardTypes } from "@/types/product";
+import { ProductCardTypes, ProductCardProps } from "@/types/product";
 import { FALLBACK_PRODUCT_IMAGE, FALLBACK_COMPANY_IMAGE } from "@/lib/fallbackImages";
-
-// Define a proper type for product props
-
-interface ProductCardProps {
-  product: ProductCardTypes;
-  userType?: string; // Optional prop for user type
-}
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, userType }) => {
   const router = useRouter();

@@ -1,12 +1,7 @@
 import React, { useState } from "react";
 import ImageUpload from "../../shared/ImageUpload";
 import { Card, CardContent } from "../../ui/card";
-import { ProductFormData, UploadedFile } from "@/types/product";
-
-interface ProductImagesProps {
-  data: ProductFormData;
-  onFieldChange: (field: keyof ProductFormData, value: Array<{ id: string; fileUrl: string }>) => void;
-}
+import { ProductFormData, UploadedFile, ProductImagesProps } from "@/types/product";
 
 const ProductImages: React.FC<ProductImagesProps> = ({
   data,

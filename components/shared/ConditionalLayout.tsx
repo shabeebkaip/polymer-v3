@@ -3,10 +3,7 @@ import React from "react";
 import { usePathname } from "next/navigation";
 import Header from "./header/Header";
 import Footer from "./Footer";
-
-interface ConditionalLayoutProps {
-  children: React.ReactNode;
-}
+import { ConditionalLayoutProps } from "@/types/shared";
 
 const ConditionalLayout: React.FC<ConditionalLayoutProps> = ({ children }) => {
   const pathname = usePathname();

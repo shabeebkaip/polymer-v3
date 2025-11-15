@@ -1,26 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-
-interface Data {
-  name: string;
-  _id: string | boolean;
-  count?: number;
-}
-
-interface FilterItemProps {
-  filter: {
-    name: string;
-    displayName: string;
-    component?: string;
-    filterType?: string;
-    collapsible?: boolean;
-    searchable?: boolean;
-    data: Data[];
-  };
-  query: Record<string, unknown>;
-  onFilterChange: (name: string, id: string, isChecked: boolean) => void;
-}
+import { FilterItemProps, FilterItemData } from "@/types/product";
 
 const FilterItem: React.FC<FilterItemProps> = ({
   filter,
@@ -88,7 +69,7 @@ const FilterItem: React.FC<FilterItemProps> = ({
       >
         <div className="px-4 pb-4">
           <div className="space-y-2 max-h-64 overflow-y-auto">
-            {filter?.data?.map((option: Data, index: number) => {
+            {filter?.data?.map((option: FilterItemData, index: number) => {
               const id =
                 typeof option === "object"
                   ? String(option._id || option.name)

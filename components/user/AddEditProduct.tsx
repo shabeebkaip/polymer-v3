@@ -10,7 +10,7 @@ import PackageInformation from "./products/PackageInformation";
 import Environmental from "./products/Environmental";
 import Certification from "./products/Certifications";
 import Documents from "./products/Documents";
-import { ProductFormData } from "@/types/product";
+import { ProductFormData, ValidationErrors, RequiredField, AddEditProductProps } from "@/types/product";
 import type { UploadedFile } from "@/types/product";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
@@ -20,13 +20,6 @@ import { createProduct, updateProduct } from "@/apiServices/products";
 import { initialFormData } from "@/apiServices/constants/userProductCrud";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-
-// 🛠️ Interface to type the error state
-type ValidationErrors = Partial<Record<keyof ProductFormData, string>>;
-interface RequiredField {
-  field: keyof ProductFormData;
-  label: string;
-}
 
 // Form steps configuration
 const FORM_STEPS = [
@@ -94,10 +87,6 @@ const FORM_STEPS = [
     component: "documents"
   }
 ];
-interface AddEditProductProps {
-  product?: ProductFormData;
-  id?: string;
-}
 
 const AddEditProduct = ({ product, id }: AddEditProductProps) => {
   const router = useRouter();

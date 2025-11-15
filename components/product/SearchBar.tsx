@@ -1,10 +1,6 @@
 "use client";
 import React from "react";
-
-interface SearchBarProps {
-  onSearch?: (query: string) => void;
-  query: Record<string, string[] | string>;
-}
+import { SearchBarProps } from "@/types/product";
 
 const SearchBar: React.FC<SearchBarProps> = ({ onSearch, query }) => {
   

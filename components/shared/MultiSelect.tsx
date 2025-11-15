@@ -1,24 +1,9 @@
-import { useEffect, useRef, useState, FocusEventHandler } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-interface DropdownItem {
-  _id: string;
-  name: string;
-}
-
-interface MultiSelectProps {
-  label: string;
-  placeholder?: string;
-  options: DropdownItem[];
-  selected: string[];
-  onChange: (selected: string[]) => void;
-  error?: boolean;
-  helperText?: string;
-  onFocus?: FocusEventHandler<HTMLDivElement>; // 👈 added here
-}
+import { DropdownItem, MultiSelectProps } from "@/types/shared";
 
 const MultiSelect: React.FC<MultiSelectProps> = ({
   label,

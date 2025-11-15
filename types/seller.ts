@@ -24,3 +24,16 @@ export interface Supplier {
   createdAt?: string;
   [key: string]: any;
 }
+
+export interface SupplierCardProps {
+  name: string;
+  location: string;
+  logo: string;
+  website?: string;
+  supplierId: string;
+}
+
+export interface VisitShopButtonProps {
+  supplierId: string;
+  from?: string;
+}

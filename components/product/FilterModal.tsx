@@ -1,12 +1,7 @@
 "use client";
 
-import React, { ReactNode, useEffect } from "react";
-
-interface FilterModalProps {
-  open: boolean;
-  onClose: () => void;
-  children: ReactNode;
-}
+import React, { useEffect } from "react";
+import { FilterModalProps } from "@/types/product";
 
 const FilterModal: React.FC<FilterModalProps> = ({ open, onClose, children }) => {
   useEffect(() => {

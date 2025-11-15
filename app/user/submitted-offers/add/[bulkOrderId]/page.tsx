@@ -37,6 +37,7 @@ import { useUserInfo } from "@/lib/useUserInfo";
 import { sellerSubmitOffer } from "@/apiServices/user";
 import { getIncoterms, postFileUpload, type UploadedFile } from "@/apiServices/shared";
 import { getBuyerOpportunities } from "@/apiServices/dealsAndRequests";
+import { BulkOrder } from "@/types/user";
 
 // Zod schema for form validation
 const offerSchema = z.object({
@@ -63,29 +64,6 @@ const offerSchema = z.object({
 });
 
 type OfferFormData = z.infer<typeof offerSchema>;
-
-interface BulkOrder {
-  _id: string;
-  product: {
-    productName: string;
-    chemicalName?: string;
-    tradeName?: string;
-    description?: string;
-  };
-  quantity: number;
-  uom: string;
-  city: string;
-  country: string;
-  delivery_date: string;
-  status: string;
-  message?: string;
-  user: {
-    firstName: string;
-    lastName: string;
-    company: string;
-    email: string;
-  };
-}
 
 const SubmitOffer = () => {
   const router = useRouter();

@@ -35,29 +35,7 @@ import { toast } from "sonner";
 import { getProductList } from "@/apiServices/products";
 import { createBuyerProductRequest } from "@/apiServices/user";
 import { getCountryList } from "@/lib/useCountries";
-
-interface Product {
-  _id: string;
-  productName: string;
-  grade?: { name: string };
-  uom?: string;
-  pricePerUnit?: number;
-  createdBy?: {
-    company?: string;
-  };
-}
-
-interface ProductRequestFormData {
-  productId: string;
-  quantity: number;
-  uom: string;
-  city: string;
-  country: string;
-  destination: string;
-  delivery_date: Date | undefined;
-  message: string;
-  request_document: string;
-}
+import { Product, ProductRequestFormData } from "@/types/product";
 
 const UOM_OPTIONS = [
   "Kilogram",
@@ -380,9 +358,9 @@ const CreateProductRequest = () => {
                         <span className="font-semibold">
                           {selectedProduct.productName}
                         </span>
-                        {selectedProduct.grade?.name && (
+                        {selectedProduct.grade && selectedProduct.grade.length > 0 && (
                           <span className="ml-2 text-green-600">
-                            ({selectedProduct.grade.name})
+                            ({selectedProduct.grade[0].name})
                           </span>
                         )}
                       </p>

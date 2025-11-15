@@ -5,23 +5,7 @@ import { Card, CardContent } from "../../ui/card";
 import { Badge } from "../../ui/badge";
 import { Package, Weight, Clock, Shield, Thermometer, Truck } from "lucide-react";
 import MultiSelect from "@/components/shared/MultiSelect";
-
-interface PackagingType {
-  _id: string;
-  name: string;
-}
-
-interface PackageInformationProps {
-  data: {
-    packagingType?: string[];
-    packagingWeight?: string;
-    storageConditions?: string;
-    shelfLife?: string;
-    [key: string]: unknown;
-  };
-  onFieldChange: (field: string, value: string | string[]) => void;
-  packagingTypes?: PackagingType[];
-}
+import { PackagingType, PackageInformationProps } from "@/types/product";
 
 const PackageInformation: React.FC<PackageInformationProps> = ({
   data,

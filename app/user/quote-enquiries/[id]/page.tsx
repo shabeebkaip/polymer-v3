@@ -39,15 +39,7 @@ import {
   Weight,
 } from 'lucide-react';
 import Image from 'next/image';
-
-// Type definitions
-interface StatusOption {
-  value: string;
-  label: string;
-  description: string;
-  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
-  color: string;
-}
+import { StatusOption } from '@/types/quote';
 
 const QuoteEnquiryDetails = () => {
   const params = useParams();

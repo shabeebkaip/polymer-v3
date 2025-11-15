@@ -1,15 +1,10 @@
 "use client";
 
-import { HomePageData } from "@/types/home";
+import { HomePageData, HomeDataProviderProps } from "@/types/home";
 import { useSharedState } from "@/stores/sharedStore";
 import { useCmsStore } from "@/stores/cms";
 import { useEffect, useState, useRef } from "react";
 import AnimatedPreloader from "@/components/shared/AnimatedPreloader";
-
-interface HomeDataProviderProps {
-  children: React.ReactNode;
-  initialData: HomePageData;
-}
 
 /**
  * Provider that hydrates Zustand stores with server-side fetched data

@@ -1,10 +1,6 @@
 import React from "react";
-import { Product } from "@/types/product";
+import { Product, ProductTechnicalPropertiesProps } from "@/types/product";
 import ProductValueCard from "@/components/product/product-detail/ProductValueCard";
-
-interface ProductTechnicalPropertiesProps {
-  product: Product;
-}
 
 const ProductTechnicalProperties: React.FC<ProductTechnicalPropertiesProps> = ({ product }) => {
   return (

@@ -130,3 +130,12 @@ export type TabProps = {
   iconWidth?: string;
   fontSize?: string;  
 };
+
+export interface HomePageClientProps {
+  initialData: HomePageData;
+}
+
+export interface HomeDataProviderProps {
+  children: React.ReactNode;
+  initialData: HomePageData;
+}

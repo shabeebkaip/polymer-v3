@@ -1,6 +1,7 @@
 import React from 'react';
 import Image from 'next/image';
 import { FALLBACK_PRODUCT_IMAGE, FALLBACK_COMPANY_IMAGE, FALLBACK_USER_AVATAR } from './fallbackImages';
+import { ImageWithFallbackProps } from '@/types/shared';
 
 /**
  * Utility function to handle image URLs with fallbacks
@@ -34,19 +35,6 @@ export const handleImageError = (
   const target = event.target as HTMLImageElement;
   target.src = getImageWithFallback(null, fallbackType);
 };
-
-/**
- * Props for images with fallback support
- */
-export interface ImageWithFallbackProps {
-  src: string | null | undefined;
-  alt: string;
-  className?: string;
-  fallbackType?: 'product' | 'company' | 'user';
-  width?: number;
-  height?: number;
-  [key: string]: unknown;
-}
 
 /**
  * Reusable image component with automatic fallback handling
