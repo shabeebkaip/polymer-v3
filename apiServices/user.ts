@@ -490,9 +490,13 @@ export const getPromotionDetail = async (id: string) => {
   }
 }
 
-export const updatePromotion = async (id: string, offerPrice: number) => {
+export const updatePromotion = async (id: string, offerPrice: number, validity?: string) => {
   try {
-    const response = await axiosInstance.put(`/best-deal/edit/${id}`, { offerPrice });
+    const payload: { offerPrice: number; validity?: string } = { offerPrice };
+    if (validity) {
+      payload.validity = validity;
+    }
+    const response = await axiosInstance.put(`/best-deal/edit/${id}`, payload);
     return response.data;
   } catch (error: any) {
     console.error("❌ Error updating promotion:", error);

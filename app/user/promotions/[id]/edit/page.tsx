@@ -28,7 +28,8 @@ const EditPromotion = () => {
   } = usePromotionsStore();
   
   const [formData, setFormData] = useState({
-    offerPrice: ''
+    offerPrice: '',
+    validity: ''
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -49,7 +50,8 @@ const EditPromotion = () => {
   useEffect(() => {
     if (promotionDetail) {
       setFormData({
-        offerPrice: promotionDetail.offerPrice.toString()
+        offerPrice: promotionDetail.offerPrice.toString(),
+        validity: promotionDetail.validUntil ? new Date(promotionDetail.validUntil).toISOString().split('T')[0] : ''
       });
     }
   }, [promotionDetail]);
@@ -79,11 +81,23 @@ const EditPromotion = () => {
       return;
     }
 
+    // Validate validity date if provided
+    if (formData.validity) {
+      const validityDate = new Date(formData.validity);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      if (validityDate < today) {
+        setError('Validity date must be today or in the future');
+        return;
+      }
+    }
+
     try {
       setLoading(true);
       setError(null);
       
-      await updatePromotion(promotionId, offerPrice);
+      await updatePromotion(promotionId, offerPrice, formData.validity || undefined);
       
       setSuccess(true);
       setTimeout(() => {
@@ -313,6 +327,34 @@ const EditPromotion = () => {
                     </span>
                   )}
                 </div>
+              )}
+            </div>
+
+            {/* Validity Date */}
+            <div>
+              <label htmlFor="validity" className="block text-sm font-medium text-gray-700 mb-2">
+                Valid Until (Optional)
+              </label>
+              <input
+                type="date"
+                id="validity"
+                name="validity"
+                value={formData.validity}
+                onChange={handleInputChange}
+                min={new Date().toISOString().split('T')[0]}
+                className="w-full px-4 py-3 bg-white/70 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200"
+              />
+              <p className="text-sm text-gray-500 mt-2">
+                Set an expiration date for this promotion. Leave empty for no expiration.
+              </p>
+              {promotionDetail.validUntil && (
+                <p className="text-sm text-gray-600 mt-1">
+                  Current expiry: {new Date(promotionDetail.validUntil).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  })}
+                </p>
               )}
             </div>
 

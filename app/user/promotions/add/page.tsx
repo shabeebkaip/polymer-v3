@@ -22,7 +22,8 @@ const CreatePromotion = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [formData, setFormData] = useState({
     productId: '',
-    offerPrice: ''
+    offerPrice: '',
+    validity: ''
   });
   const [loading, setLoading] = useState(false);
   const [loadingProducts, setLoadingProducts] = useState(true);
@@ -81,15 +82,37 @@ const CreatePromotion = () => {
       return;
     }
 
+    // Validate validity date if provided
+    if (formData.validity) {
+      const validityDate = new Date(formData.validity);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      if (validityDate < today) {
+        setError("Validity date must be today or in the future");
+        return;
+      }
+    }
+
     try {
       setLoading(true);
       setError(null);
 
-      const promotionData = {
+      const promotionData: {
+        productId: string;
+        sellerId: string;
+        offerPrice: number;
+        validity?: string;
+      } = {
         productId: formData.productId,
-        sellerId: user._id,
+        sellerId: user._id as string,
         offerPrice: offerPrice
       };
+
+      // Add validity if provided
+      if (formData.validity) {
+        promotionData.validity = formData.validity;
+      }
 
       await createPromotion(promotionData);
       setSuccess(true);
@@ -270,6 +293,25 @@ const CreatePromotion = () => {
                   )}
                 </div>
               )}
+            </div>
+
+            {/* Validity Date */}
+            <div>
+              <label htmlFor="validity" className="block text-sm font-semibold text-gray-900 mb-2">
+                Valid Until (Optional)
+              </label>
+              <input
+                type="date"
+                id="validity"
+                name="validity"
+                value={formData.validity}
+                onChange={handleInputChange}
+                min={new Date().toISOString().split('T')[0]}
+                className="w-full px-4 py-3 bg-white/70 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200"
+              />
+              <p className="text-sm text-gray-500 mt-2">
+                Set an expiration date for this promotion. Leave empty for no expiration.
+              </p>
             </div>
 
             {/* Submit Button */}

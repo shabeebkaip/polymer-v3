@@ -12,7 +12,6 @@ import {
   Leaf,
   Sparkles,
   Star,
-  MessageCircle,
 } from 'lucide-react';
 
 const AboutUsPage = () => {
