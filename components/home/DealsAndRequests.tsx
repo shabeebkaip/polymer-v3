@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 import { TrendingUp, ArrowRight, Zap } from 'lucide-react';
+import Link from 'next/link';
 import SpecialDeals from './SpecialDeals';
 import BuyerOpportunities from './BuyerOpportunities';
 import { useUserInfo } from '@/lib/useUserInfo';
@@ -32,19 +33,25 @@ const DealsAndRequests: React.FC = () => {
       <div className="text-center mt-8 md:mt-12">
         <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-2xl mx-auto">
           {(isBuyer || isGuest) && (
-            <button className="bg-primary-500 hover:bg-primary-600 text-white px-8 py-3.5 rounded-xl font-semibold border border-primary-600 hover:border-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-all duration-200 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:scale-[1.02] group">
+            <Link 
+              href="/deals"
+              className="bg-primary-500 hover:bg-primary-600 text-white px-8 py-3.5 rounded-xl font-semibold border border-primary-600 hover:border-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-all duration-200 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:scale-[1.02] group"
+            >
               <Zap className="w-5 h-5 transition-transform duration-200 group-hover:scale-110" />
               <span className="tracking-tight">View All Special Deals</span>
               <ArrowRight className="w-5 h-5 transition-transform duration-200 group-hover:translate-x-1" />
-            </button>
+            </Link>
           )}
 
           {(isSeller || isGuest) && (
-            <button className="bg-primary-500 hover:bg-primary-600 text-white px-8 py-3.5 rounded-xl font-semibold border border-primary-600 hover:border-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-all duration-200 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:scale-[1.02] group">
+            <Link 
+              href="/opportunities/"
+              className="bg-primary-500 hover:bg-primary-600 text-white px-8 py-3.5 rounded-xl font-semibold border border-primary-600 hover:border-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-all duration-200 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:scale-[1.02] group"
+            >
               <TrendingUp className="w-5 h-5 transition-transform duration-200 group-hover:scale-110" />
               <span className="tracking-tight">Browse All Bulk Orders</span>
               <ArrowRight className="w-5 h-5 transition-transform duration-200 group-hover:translate-x-1" />
-            </button>
+            </Link>
           )}
         </div>
       </div>
