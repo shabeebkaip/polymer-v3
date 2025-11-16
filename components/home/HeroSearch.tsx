@@ -27,8 +27,19 @@ const HeroSearch = () => {
     const [loading, setLoading] = useState(false);
     const [highlighted, setHighlighted] = useState(-1);
     const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 300 });
+    const [placeholderIndex, setPlaceholderIndex] = useState(0);
     const inputRef = useRef<HTMLInputElement>(null);
     const resultsRef = useRef<HTMLDivElement>(null);
+    
+    const placeholderTexts = ['polymer', 'type', 'supplier'];
+    
+    // Animate placeholder text
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setPlaceholderIndex((prev) => (prev + 1) % placeholderTexts.length);
+        }, 2000);
+        return () => clearInterval(interval);
+    }, []);
 
     // Debounced fetch function
     const fetchProducts = useCallback(async (query: string) => {
@@ -137,21 +148,28 @@ const HeroSearch = () => {
     return (
         <div className="mt-6 sm:mt-8 lg:mt-10 w-full relative mx-auto">
             <div className="relative drop-shadow-lg w-full max-w-xs sm:max-w-md md:max-w-2xl lg:max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                <input
-                    ref={inputRef}
-                    type="text"
-                    placeholder="Search polymers, compounds, resins..."
-                    className="w-full px-4 sm:px-6 lg:px-8 py-3 sm:py-4 lg:py-6 rounded-full border-2 border-primary-500/30 focus:ring-4 focus:ring-primary-500/30 focus:border-primary-500 shadow-xl transition-all duration-300 pr-12 sm:pr-14 lg:pr-16 text-sm sm:text-base lg:text-lg font-medium placeholder:text-gray-400 bg-white/95 backdrop-blur-sm hover:shadow-2xl"
-                    value={searchQuery}
-                    onChange={(e) => {
-                        setSearchQuery(e.target.value);
-                        setHighlighted(-1);
-                    }}
-                    onFocus={() => {
-                        // Just focus, no additional logic needed
-                    }}
-                    autoComplete="off"
-                />
+                <div className="relative">
+                    <input
+                        ref={inputRef}
+                        type="text"
+                        placeholder={`Search by ${placeholderTexts[placeholderIndex]} name...`}
+                        className="w-full px-4 sm:px-6 lg:px-8 py-3 sm:py-4 lg:py-6 rounded-full border-2 border-primary-500/30 focus:ring-4 focus:ring-primary-500/30 focus:border-primary-500 shadow-xl transition-all duration-300 pr-12 sm:pr-14 lg:pr-16 text-sm sm:text-base lg:text-lg font-medium placeholder:text-gray-400 bg-white/95 backdrop-blur-sm hover:shadow-2xl"
+                        value={searchQuery}
+                        onChange={(e) => {
+                            setSearchQuery(e.target.value);
+                            setHighlighted(-1);
+                        }}
+                        onFocus={() => {
+                            // Just focus, no additional logic needed
+                        }}
+                        autoComplete="off"
+                    />
+                    <style jsx>{`
+                        input::placeholder {
+                            transition: opacity 0.3s ease-in-out;
+                        }
+                    `}</style>
+                </div>
                 <div
                     className="absolute right-6 sm:right-8 lg:right-12 top-1/2 -translate-y-1/2 flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 bg-primary-500 rounded-full shadow-md hover:bg-primary-600 transition-colors duration-200"
                 >
