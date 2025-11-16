@@ -53,11 +53,11 @@ const RequestCard: React.FC<{
     return 'View Request';
   };
   return (
-    <div className="bg-white rounded-xl shadow border hover:shadow-xl transition-all duration-200 overflow-hidden group">
+    <div className="bg-white rounded-xl shadow border hover:shadow-xl transition-all duration-200 overflow-hidden group h-full flex flex-col">
       {/* Header */}
-      <div className="bg-primary-500 text-white px-4 py-2 text-xs font-semibold flex items-center justify-between">
-        <span className="flex items-center gap-2">
-          <Users className="w-4 h-4" />
+      <div className="bg-gray-50 px-4 py-2 text-xs font-semibold flex items-center justify-between border-b">
+        <span className="flex items-center gap-2 text-gray-700">
+          <Users className="w-4 h-4 text-primary-500" />
           BUYER OPPORTUNITY
         </span>
         <span
@@ -67,7 +67,7 @@ const RequestCard: React.FC<{
         </span>
       </div>
 
-      <div className="p-5">
+      <div className="p-5 flex flex-col flex-1">
         {/* Product Request Info */}
         <h4 className="font-bold text-base text-gray-900 mb-1 line-clamp-1">{request.product}</h4>
         <p className="text-gray-700 text-xs mb-3 line-clamp-2">{request.description}</p>
@@ -137,13 +137,15 @@ const RequestCard: React.FC<{
         </div>
 
         {/* Action Button */}
-        <button
-          onClick={handleButtonClick}
-          className="w-full bg-primary-500 text-white py-2 rounded font-medium border border-primary-600 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all duration-200 flex items-center justify-center gap-2 shadow-sm focus:ring-offset-2 group"
-        >
-          <ArrowRight className="w-5 h-5 transition-transform duration-200 group-hover:translate-x-1" />
-          <span className="tracking-tight">{getButtonText()}</span>
-        </button>
+        <div className="mt-auto">
+          <button
+            onClick={handleButtonClick}
+            className="w-full bg-primary-500 text-white py-2 rounded font-medium border border-primary-600 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all duration-200 flex items-center justify-center gap-2 shadow-sm focus:ring-offset-2 group"
+          >
+            <ArrowRight className="w-5 h-5 transition-transform duration-200 group-hover:translate-x-1" />
+            <span className="tracking-tight">{getButtonText()}</span>
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -31,26 +31,6 @@ const FeaturedSuppliers: React.FC = () => {
 
           {/* Enhanced Suppliers Grid */}
           <div className="w-full max-w-6xl">
-            {/* Stats Row - Fully Responsive */}
-            <div className="flex gap-4 mb-8 overflow-x-auto scrollbar-hide md:grid md:grid-cols-4 md:gap-4 md:overflow-visible">
-              <div className="text-center p-4 bg-white/50 rounded-xl border border-primary-500/20 min-w-[140px] flex-shrink-0">
-                <div className="text-2xl font-bold text-primary-500 mb-1">500+</div>
-                <div className="text-sm text-gray-600">Verified Suppliers</div>
-              </div>
-              <div className="text-center p-4 bg-white/50 rounded-xl border border-primary-500/20 min-w-[140px] flex-shrink-0">
-                <div className="text-2xl font-bold text-primary-500 mb-1">50+</div>
-                <div className="text-sm text-gray-600">Countries</div>
-              </div>
-              <div className="text-center p-4 bg-white/50 rounded-xl border border-primary-500/20 min-w-[140px] flex-shrink-0">
-                <div className="text-2xl font-bold text-primary-500 mb-1">24/7</div>
-                <div className="text-sm text-gray-600">Support</div>
-              </div>
-              <div className="text-center p-4 bg-white/50 rounded-xl border border-primary-500/20 min-w-[140px] flex-shrink-0">
-                <div className="text-2xl font-bold text-primary-500 mb-1">99%</div>
-                <div className="text-sm text-gray-600">Satisfaction</div>
-              </div>
-            </div>
-
             {/* Suppliers Showcase */}
             <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-white via-gray-50/50 to-primary-50/30 border border-gray-200 shadow-xl">
               <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>

@@ -3,12 +3,21 @@ import React, { useState } from "react";
 import { ChevronLeft, ChevronRight,  Users  } from "lucide-react";
 import { useSharedState } from "@/stores/sharedStore";
 import { useUserInfo } from "@/lib/useUserInfo";
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Autoplay } from 'swiper/modules';
+import type { Swiper as SwiperType } from 'swiper';
+import { useRouter } from 'next/navigation';
+
+import 'swiper/css';
+import 'swiper/css/navigation';
+
 import RequestCard from "./RequestCard";
 
 
 const BuyerOpportunities: React.FC = () => {
+  const router = useRouter();
   const { buyerOpportunities, buyerOpportunitiesLoading } = useSharedState();
-  const [currentSlide, setCurrentSlide] = useState(0);
+  const [swiperInstance, setSwiperInstance] = useState<SwiperType | null>(null);
   const { user } = useUserInfo();
   const userType = user?.user_type;
   const isGuest = !user; // User is not logged in
@@ -103,22 +112,6 @@ const BuyerOpportunities: React.FC = () => {
     }
   }, [buyerOpportunities]);
 
-  const itemsPerSlide = 3;
-  const slides = Math.ceil(displayRequests.length / itemsPerSlide);
-
-  const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % slides);
-  };
-
-  const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + slides) % slides);
-  };
-
-  const getCurrentRequests = () => {
-    const startIndex = currentSlide * itemsPerSlide;
-    return displayRequests.slice(startIndex, startIndex + itemsPerSlide);
-  };
-
   const getUrgencyColor = (urgency: "low" | "medium" | "high") => {
     switch (urgency) {
       case "high": return "bg-red-100 text-red-800 border-red-200";
@@ -129,6 +122,11 @@ const BuyerOpportunities: React.FC = () => {
 
   // Only show opportunities to sellers and guests, hide from buyers
   if (isBuyer) {
+    return null;
+  }
+
+  // Only show the UI if there's data or if loading with no data yet
+  if (!showLoading && displayRequests.length === 0) {
     return null;
   }
 
@@ -144,31 +142,39 @@ const BuyerOpportunities: React.FC = () => {
             <p className="text-gray-700 text-sm">Active opportunities from verified buyers seeking suppliers</p>
           </div>
         </div>
-        <span className="bg-gray-100 text-primary-600 px-3 py-1 rounded text-xs font-semibold border border-primary-500">
-          {displayRequests.length} Active
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="bg-gray-100 text-primary-600 px-3 py-1 rounded text-xs font-semibold border border-primary-500">
+            {displayRequests.length} Active
+          </span>
+          <button
+            className="ml-2 px-3 py-1 rounded text-xs font-semibold bg-white border border-primary-500 text-primary-600 hover:bg-primary-50 transition"
+            onClick={() => router.push('/opportunities')}
+          >
+            View All
+          </button>
+        </div>
       </div>
 
       <div className="relative">
-        {/* Navigation Buttons - Desktop Only */}
+        {/* Navigation Buttons */}
         <button
-          onClick={prevSlide}
-          className="hidden md:block absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded p-2 shadow border hover:bg-gray-100 transition-all duration-200"
-          disabled={slides <= 1}
+          onClick={() => swiperInstance?.slidePrev()}
+          className="hidden md:flex absolute -left-5 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md border border-gray-200 hover:bg-gray-50 transition-all duration-200 items-center justify-center group hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={!swiperInstance}
         >
-          <ChevronLeft className="w-5 h-5 text-gray-700" />
+          <ChevronLeft className="w-5 h-5 text-gray-600 group-hover:text-gray-900" />
         </button>
 
         <button
-          onClick={nextSlide}
-          className="hidden md:block absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded p-2 shadow border hover:bg-gray-100 transition-all duration-200"
-          disabled={slides <= 1}
+          onClick={() => swiperInstance?.slideNext()}
+          className="hidden md:flex absolute -right-5 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md border border-gray-200 hover:bg-gray-50 transition-all duration-200 items-center justify-center group hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={!swiperInstance}
         >
-          <ChevronRight className="w-5 h-5 text-gray-700" />
+          <ChevronRight className="w-5 h-5 text-gray-600 group-hover:text-gray-900" />
         </button>
 
         {/* Cards Container */}
-        <div className="mx-0 md:mx-12">
+        <div className="px-4 md:px-0">
           {showLoading ? (
             <>
               {/* Mobile Loading - Horizontal Scroll */}
@@ -205,26 +211,38 @@ const BuyerOpportunities: React.FC = () => {
               </div>
             </>
           ) : displayRequests.length > 0 ? (
-            <>
-              {/* Mobile Layout - Horizontal Scroll with 1.1 cards visible */}
-              <div className="md:hidden">
-                <div className="flex gap-4 px-4 overflow-x-auto scrollbar-hide pb-2">
-                  {displayRequests.map((request) => (
-                    <div key={request.id as string} className="flex-shrink-0 w-[calc(90.91%-0.5rem)]">
-                      <RequestCard request={request} getUrgencyColor={getUrgencyColor} isGuest={isGuest} isSeller={isSeller} />
-                    </div>
-                  ))}
-                </div>
-              </div>
-              {/* Desktop Layout - Grid with Pagination */}
-              <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {getCurrentRequests().map((request) => (
-                  <div key={request.id as string} className="group">
-                    <RequestCard request={request} getUrgencyColor={getUrgencyColor} isGuest={isGuest} isSeller={isSeller} />
-                  </div>
-                ))}
-              </div>
-            </>
+            <Swiper
+              modules={[Navigation, Autoplay]}
+              spaceBetween={24}
+              slidesPerView={1.1}
+              onSwiper={setSwiperInstance}
+              autoplay={{
+                delay: 5000,
+                disableOnInteraction: false,
+                pauseOnMouseEnter: true,
+              }}
+              breakpoints={{
+                640: {
+                  slidesPerView: 1.5,
+                  spaceBetween: 20,
+                },
+                768: {
+                  slidesPerView: 2,
+                  spaceBetween: 24,
+                },
+                1024: {
+                  slidesPerView: 3,
+                  spaceBetween: 24,
+                },
+              }}
+              className="opportunities-swiper"
+            >
+              {displayRequests.map((request) => (
+                <SwiperSlide key={request.id as string}>
+                  <RequestCard request={request} getUrgencyColor={getUrgencyColor} isGuest={isGuest} isSeller={isSeller} />
+                </SwiperSlide>
+              ))}
+            </Swiper>
           ) : (
             <div className="text-center py-12">
               <div className="bg-gray-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
@@ -235,23 +253,22 @@ const BuyerOpportunities: React.FC = () => {
             </div>
           )}
         </div>
-
-        {/* Slide Indicators - Desktop Only */}
-        {slides > 1 && (
-          <div className="hidden md:flex justify-center mt-6 gap-2">
-            {Array.from({ length: slides }).map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentSlide(index)}
-                className={`w-3 h-3 rounded-full border border-primary-500 transition-all duration-200 ${currentSlide === index
-                    ? "bg-primary-500 w-6"
-                    : "bg-gray-200 hover:bg-gray-300"
-                  }`}
-              />
-            ))}
-          </div>
-        )}
       </div>
+
+      <style jsx global>{`
+        .opportunities-swiper .swiper-wrapper {
+          align-items: stretch;
+        }
+        .opportunities-swiper .swiper-slide {
+          height: auto;
+          display: flex;
+        }
+        .opportunities-swiper .swiper-slide > div {
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+        }
+      `}</style>
     </div>
   );
 };
