@@ -108,9 +108,17 @@ const Login: React.FC = () => {
 
         {/* Password Field */}
         <div className="space-y-1">
-          <label htmlFor="password" className="text-sm font-medium text-gray-700">
-            Password <span className="text-red-500">*</span>
-          </label>
+          <div className="flex items-center justify-between">
+            <label htmlFor="password" className="text-sm font-medium text-gray-700">
+              Password <span className="text-red-500">*</span>
+            </label>
+            <Link
+              href="/auth/forgot-password"
+              className="text-sm font-medium text-primary-500 hover:text-primary-600 transition-colors hover:underline"
+            >
+              Forgot Password?
+            </Link>
+          </div>
           <div className="relative">
             <Input
               type={showPassword ? "text" : "password"}

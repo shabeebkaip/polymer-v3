@@ -89,12 +89,6 @@ const Hero: React.FC = () => {
                 SASO Compliant
               </span>
             </div>
-            <div className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 bg-gray-50 rounded-full border border-gray-200">
-              <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-gray-500 rounded-full animate-pulse"></div>
-              <span className="text-xs sm:text-sm font-medium text-gray-700 whitespace-nowrap">
-                Secure Payments
-              </span>
-            </div>
             <div className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 bg-primary-50 rounded-full border border-primary-500">
               <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-primary-500 rounded-full animate-pulse"></div>
               <span className="text-xs sm:text-sm font-medium text-primary-600 whitespace-nowrap">

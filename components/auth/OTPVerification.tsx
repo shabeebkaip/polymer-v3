@@ -4,11 +4,11 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import { toast } from 'sonner';
-import { verifyRegistrationOtp, resendRegistrationOtp } from '@/apiServices/auth';
+import { verifyRegistrationOtp, resendRegistrationOtp, verifyPasswordResetOtp, requestPasswordReset } from '@/apiServices/auth';
 import { useUserInfo } from '@/lib/useUserInfo';
 import { OTPVerificationProps } from '@/types/auth';
 
-const OTPVerification: React.FC<OTPVerificationProps> = ({ email, onBack }) => {
+const OTPVerification: React.FC<OTPVerificationProps> = ({ email, onBack, type = 'register' }) => {
   const router = useRouter();
   const { setUser } = useUserInfo();
   const [otp, setOtp] = useState('');
@@ -24,10 +24,16 @@ const OTPVerification: React.FC<OTPVerificationProps> = ({ email, onBack }) => {
 
   const handleResend = async () => {
     if (!email) return;
-    const resp = await resendRegistrationOtp(email);
+    
+    // Use different resend API based on type
+    const resp = type === 'register' 
+      ? await resendRegistrationOtp(email)
+      : await requestPasswordReset(email);
+    
     if (resp?.status) {
       toast.success('Verification code resent');
       setResendTimer(60);
+      setOtp(''); // Clear OTP on resend
     } else {
       toast.error(resp?.message || 'Unable to resend code');
     }
@@ -39,16 +45,28 @@ const OTPVerification: React.FC<OTPVerificationProps> = ({ email, onBack }) => {
       return;
     }
     setVerifyingOtp(true);
-    const resp = await verifyRegistrationOtp(email, otp);
+    
+    // Use different verify API based on type
+    const resp = type === 'register'
+      ? await verifyRegistrationOtp(email, otp)
+      : await verifyPasswordResetOtp(email, otp);
+    
     setVerifyingOtp(false);
+    
     if (resp?.status) {
-      toast.success('Email verified successfully');
-      Cookies.set('token', resp.token);
-      Cookies.set('userInfo', JSON.stringify(resp.userInfo));
-      setUser(resp.userInfo);
-      router.push('/');
+      if (type === 'register') {
+        toast.success('Email verified successfully');
+        Cookies.set('token', resp.token);
+        Cookies.set('userInfo', JSON.stringify(resp.userInfo));
+        setUser(resp.userInfo);
+        router.push('/');
+      } else {
+        toast.success('OTP verified successfully');
+        router.push(`/auth/reset-password?email=${encodeURIComponent(email)}`);
+      }
     } else {
       toast.error(resp?.message || 'Invalid code');
+      setOtp(''); // Clear OTP on error
     }
   };
 
@@ -118,13 +136,15 @@ const OTPVerification: React.FC<OTPVerificationProps> = ({ email, onBack }) => {
         )}
       </button>
 
-      {/* Edit Registration Link */}
-      <button
-        onClick={onBack}
-        className="w-full text-sm text-gray-600 hover:text-gray-700 underline font-medium"
-      >
-        Edit registration details
-      </button>
+      {/* Back Link */}
+      {onBack && (
+        <button
+          onClick={onBack}
+          className="w-full text-sm text-gray-600 hover:text-gray-700 underline font-medium"
+        >
+          {type === 'register' ? 'Edit registration details' : 'Back to forgot password'}
+        </button>
+      )}
     </div>
   );
 };

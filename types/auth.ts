@@ -31,5 +31,6 @@ export interface RegisterData {
 
 export interface OTPVerificationProps {
   email: string;
-  onBack: () => void;
+  onBack?: () => void;
+  type?: 'register' | 'reset';
 }
