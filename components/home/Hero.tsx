@@ -38,7 +38,7 @@ const Hero: React.FC = () => {
               alt="Hero Element 2"
               width={100}
               height={100}
-              className="absolute top-4 sm:top-7 lg:top-0 right-0 w-[25px] sm:w-[40px] md:w-[60px] lg:w-[100px] h-auto lg:h-[300px] animate-float-delayed"
+              className="absolute top-4 sm:top-7 lg:top-0 right-0 w-[25px] sm:w-[40px] md:w-[60px] lg:w-[100px] h-auto lg:h-[300px] animate-float"
             />
             <h1 className="text-xl sm:text-2xl md:text-4xl lg:text-6xl xl:text-[80px] uppercase font-semibold leading-tight animate-fade-in-up px-4 sm:px-8 md:px-12">
               Global <span className={`${gradientTextClass} animate-gradient`}>POLYMER</span>{' '}
