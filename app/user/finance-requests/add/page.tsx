@@ -44,6 +44,7 @@ const CreateFinanceRequest = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loadingProducts, setLoadingProducts] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
   const [formData, setFormData] = useState<FinanceFormData>({
@@ -476,8 +477,8 @@ const CreateFinanceRequest = () => {
                         variant="outline"
                         className="w-full py-6 px-4 justify-start text-left font-normal border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                       >
-                        {formData.deliveryDate ? (
-                          formData.deliveryDate.toLocaleDateString()
+                        {formData.desiredDeliveryDate ? (
+                          formData.desiredDeliveryDate.toLocaleDateString()
                         ) : (
                           <span className="text-gray-500">Select delivery date</span>
                         )}
@@ -486,8 +487,8 @@ const CreateFinanceRequest = () => {
                     <PopoverContent className="w-auto p-0" align="start">
                       <Calendar
                         mode="single"
-                        selected={formData.deliveryDate}
-                        onSelect={(date) => handleInputChange('deliveryDate', date)}
+                        selected={formData.desiredDeliveryDate}
+                        onSelect={(date) => handleInputChange('desiredDeliveryDate', date)}
                         disabled={(date) =>
                           date < new Date() || date < new Date('1900-01-01')
                         }

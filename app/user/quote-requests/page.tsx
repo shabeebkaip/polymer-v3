@@ -29,7 +29,7 @@ import {
   Gift
 } from "lucide-react";
 import { useQuoteRequestsListStore } from "@/stores/user";
-import { ALLOWED_STATUSES, QuoteStatus, QuoteRequestType, QuoteRequestList } from "@/types/quote";
+import { ALLOWED_STATUSES, QuoteStatus, QuoteRequestList } from "@/types/quote";
 
 const QuoteRequests = () => {
   const router = useRouter();
