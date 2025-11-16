@@ -155,7 +155,7 @@ const SupplierDetail = () => {
         {/* About Section */}
         <div className="lg:col-span-2">
           <div className="bg-white rounded-xl shadow-sm border p-6 mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">About {supplier.company}</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">About {supplier.company}</h2>
             <div
               className="text-gray-600 leading-relaxed mb-4"
               dangerouslySetInnerHTML={{
@@ -197,7 +197,7 @@ const SupplierDetail = () => {
         {/* Quick Info Sidebar */}
         <div className="space-y-6">
           <div className="bg-white rounded-xl shadow-sm border p-6">
-            <h3 className="text-xl font-bold text-gray-900 mb-4">Quick Info</h3>
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">Quick Info</h3>
             <div className="space-y-3">
               <div className="flex items-center gap-3">
                 <Building2 className="w-5 h-5 text-gray-400" />
@@ -228,7 +228,7 @@ const SupplierDetail = () => {
           {/* Certifications */}
           {supplier.certifications && supplier.certifications.length > 0 && (
             <div className="bg-white rounded-xl shadow-sm border p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-4">
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">
                 <Award className="w-5 h-5 inline mr-2" />
                 Certifications
               </h3>
@@ -248,7 +248,7 @@ const SupplierDetail = () => {
       {/* Products Section */}
       <div className="bg-white rounded-xl shadow-sm border p-6">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-gray-900">Products & Services</h2>
+          <h2 className="text-3xl font-bold text-gray-900">Products & Services</h2>
           <Badge variant="outline" className="text-sm">
             {supplier?.products.length} Products
           </Badge>
@@ -275,7 +275,7 @@ const SupplierDetail = () => {
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <Building2 className="w-8 h-8 text-gray-400" />
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No Products Available</h3>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">No Products Available</h3>
             <p className="text-gray-600">{"This supplier hasn't added any products yet."}</p>
           </div>
         )}

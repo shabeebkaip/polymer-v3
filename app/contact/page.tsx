@@ -112,7 +112,7 @@ const ContactPage = () => {
               <div className={`w-12 h-12 ${info.color} rounded-xl flex items-center justify-center mb-4`}>
                 <info.icon className="w-6 h-6 text-white" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              <h3 className="text-xl font-bold text-gray-900 mb-2">
                 {info.title}
               </h3>
               {info.details.map((detail, idx) => (
@@ -132,7 +132,7 @@ const ContactPage = () => {
           <div className="lg:col-span-2">
             <div className="bg-white rounded-2xl shadow-xl p-8 md:p-10">
               <div className="mb-8">
-                <h2 className="text-3xl font-bold text-gray-900 mb-2">
+                <h2 className="text-4xl font-bold text-gray-900 mb-2">
                   Send us a Message
                 </h2>
                 <p className="text-gray-600">
@@ -272,7 +272,7 @@ const ContactPage = () => {
           <div className="space-y-6">
             {/* Why Contact Us */}
             <div className="bg-gradient-to-br from-primary-50 to-primary-100 rounded-2xl p-8 shadow-lg">
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">
+              <h3 className="text-3xl font-bold text-gray-900 mb-4">
                 Why Contact Us?
               </h3>
               <ul className="space-y-3">
@@ -331,7 +331,7 @@ const ContactPage = () => {
                 <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Clock className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">
                   Quick Response
                 </h3>
                 <p className="text-gray-700 text-sm">

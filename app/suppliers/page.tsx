@@ -27,7 +27,7 @@ const SuppliersPage: React.FC = () => {
           }
         </p>
         <div className="bg-primary-50 border-l-4 border-primary-500 p-4 mb-6">
-          <h3 className="text-lg font-semibold text-primary-600 mb-2">Why Choose Our Suppliers?</h3>
+          <h3 className="text-xl font-bold text-primary-600 mb-2">Why Choose Our Suppliers?</h3>
           <ul className="text-primary-500 space-y-1">
             <li>• Verified and trusted business partners</li>
             <li>• Competitive pricing and flexible terms</li>

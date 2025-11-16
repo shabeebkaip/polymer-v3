@@ -13,7 +13,7 @@ const BenefitCard: React.FC<BenefitCardProps> = ({
         <h3 className="text-xs font-semibold text-primary-600 uppercase tracking-wide mb-1">
           {subtitle}
         </h3>
-        <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-4 leading-snug">
+        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4 leading-snug">
           {title}
         </h2>
         <ul className="space-y-3">

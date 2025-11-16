@@ -21,7 +21,7 @@ const SupplierCard: React.FC<SupplierCardProps> = ({
           className="w-20 h-20 md:w-24 md:h-24 mr-5 rounded-xl border border-primary-500/20 bg-white object-contain p-2 shadow"
         />
         <div className="flex-1 min-w-0">
-          <h2 className="text-lg md:text-xl font-bold text-gray-900 truncate mb-1 flex items-center gap-2">
+          <h2 className="text-xl md:text-2xl font-bold text-gray-900 truncate mb-1 flex items-center gap-2">
             {name}
           </h2>
           <p className="text-gray-500 text-xs md:text-sm mb-1 flex items-center gap-1">

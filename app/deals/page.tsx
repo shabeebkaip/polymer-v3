@@ -269,7 +269,7 @@ const DealsPage = () => {
             {/* Results Header */}
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h2 className="text-xl font-bold text-gray-900">
+                <h2 className="text-2xl font-bold text-gray-900">
                   {filteredDeals.length} {filteredDeals.length === 1 ? 'Deal' : 'Deals'} Found
                 </h2>
                 {searchQuery && (
@@ -314,7 +314,7 @@ const DealsPage = () => {
                 <div className="bg-gray-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
                   <Package className="w-10 h-10 text-gray-400" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">
                   No Deals Found
                 </h3>
                 <p className="text-gray-600 mb-6">

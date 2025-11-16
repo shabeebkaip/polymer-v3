@@ -8,9 +8,10 @@ const AuthLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const isLoginPage = pathname.includes('login');
 
   return (
-    <div className="min-h-screen bg-[url('/assets/authbg.png')] bg-cover bg-center flex items-center justify-center px-4 py-4 relative">
+    <div className="min-h-screen bg-[url('/assets/authbg.png')] bg-cover bg-no-repeat bg-center flex items-center justify-center px-4 py-4 relative">
       {/* Background overlay with green tints */}
-      <div className="absolute inset-0 bg-gradient-to-br from-green-900/20 via-transparent to-emerald-900/20"></div>
+      <div className="absolute inset-0 bg-white/40"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-green-900/10 via-transparent to-emerald-900/10"></div>
 
       {/* Background decorative elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">

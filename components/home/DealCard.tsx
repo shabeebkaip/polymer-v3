@@ -83,7 +83,7 @@ const DealCard: React.FC<{
             <Package className="w-4 h-4 text-primary-500" />
           </div>
           <div className="flex-1 min-w-0">
-            <h3 className="font-medium text-gray-900 text-sm truncate">{deal.supplier.name}</h3>
+            <h3 className="font-bold text-gray-900 text-base truncate">{deal.supplier.name}</h3>
             <div className="flex items-center gap-2 text-xs text-gray-600">
               <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
               <span>{deal.supplier.rating}</span>

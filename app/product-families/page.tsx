@@ -84,7 +84,7 @@ const Page: React.FC = () => {
 
       {/* Product Families Grid */}
       <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">
+        <h2 className="text-3xl font-bold text-gray-900 mb-4">
           Explore Product Families
         </h2>
         <p className="text-gray-600 mb-8">
@@ -120,7 +120,7 @@ const Page: React.FC = () => {
           <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <Package className="w-8 h-8 text-gray-400" />
           </div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">
+          <h3 className="text-2xl font-bold text-gray-900 mb-2">
             No Product Families Available
           </h3>
           <p className="text-gray-600">
