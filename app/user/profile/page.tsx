@@ -12,6 +12,7 @@ import { Edit2, Save, X, User, Mail, Phone,  MapPin, Globe, Camera, FileText, Lo
 import { editUserProfile } from "@/apiServices/user";
 import { toast } from "sonner";
 import { UserType } from "@/types/user";
+import { postFileUpload } from "@/apiServices/shared";
 
 
 
@@ -23,6 +24,8 @@ const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedUser, setEditedUser] = useState<UserType>({});
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   // Fetch user info from API on mount
   React.useEffect(() => {
@@ -104,12 +107,17 @@ const Profile = () => {
           setIsSaving(false);
           return;
         }
-        if (!user.company_logo) {
+        if (!editedUser.company_logo) {
           toast.error("Company logo is required for sellers");
           setIsSaving(false);
           return;
         }
-        updateData.company_logo = user.company_logo;
+        updateData.company_logo = editedUser.company_logo;
+      }
+
+      // Include avatar if changed
+      if (editedUser.avatar && editedUser.avatar !== user?.avatar) {
+        updateData.avatar = editedUser.avatar;
       }
 
       // Remove undefined or empty values
@@ -150,6 +158,55 @@ const Profile = () => {
       ...prev,
       [field]: value
     }));
+  };
+
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select an image file');
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image size should be less than 5MB');
+      return;
+    }
+
+    setIsUploadingImage(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      // Upload image using postFileUpload
+      const { fileUrl } = await postFileUpload(formData);
+
+      // Update local state with new image URL
+      if (user?.user_type === "seller") {
+        setUser(prev => prev ? { ...prev, company_logo: fileUrl } : null);
+        setEditedUser(prev => ({ ...prev, company_logo: fileUrl }));
+      } else {
+        setUser(prev => prev ? { ...prev, avatar: fileUrl } : null);
+        setEditedUser(prev => ({ ...prev, avatar: fileUrl }));
+      }
+
+      toast.success('Profile picture uploaded! Remember to save changes.');
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      toast.error('Failed to upload image. Please try again.');
+    } finally {
+      setIsUploadingImage(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  const triggerImageUpload = () => {
+    fileInputRef.current?.click();
   };
 
 
@@ -222,12 +279,28 @@ const Profile = () => {
                   </AvatarFallback>
                 </Avatar>
                 {isEditing && (
-                  <Button
-                    size="sm"
-                    className="absolute right-0 bottom-2 translate-x-1/2 w-10 h-10 rounded-full bg-emerald-600 hover:bg-emerald-700 p-0 shadow-lg flex items-center justify-center"
-                  >
-                    <Camera className="w-5 h-5" />
-                  </Button>
+                  <>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                    />
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={triggerImageUpload}
+                      disabled={isUploadingImage}
+                      className="absolute right-0 bottom-2 translate-x-1/2 w-10 h-10 rounded-full bg-emerald-600 hover:bg-emerald-700 p-0 shadow-lg flex items-center justify-center disabled:opacity-50"
+                    >
+                      {isUploadingImage ? (
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                      ) : (
+                        <Camera className="w-5 h-5" />
+                      )}
+                    </Button>
+                  </>
                 )}
               </div>
               <h2 className="text-2xl text-gray-900 font-semibold">
