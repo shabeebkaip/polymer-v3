@@ -30,8 +30,7 @@ const Header: React.FC = () => {
 
   const handleLogout = () => {
     logout();
-    router.refresh();
-    router.push('/');
+    window.location.href = '/';
   };
 
   const handleNavigate = (href: string) => {

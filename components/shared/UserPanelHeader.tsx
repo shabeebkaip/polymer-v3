@@ -18,8 +18,7 @@ const UserPanelHeader = () => {
   const handleLogout = () => {
     Cookies.remove("token");
     Cookies.remove("userInfo");
-    router.refresh();
-    router.push("/");
+    window.location.href = "/";
   };
 
   const handleProfile = () => {

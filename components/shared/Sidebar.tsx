@@ -82,8 +82,7 @@ const Sidebar = () => {
   const handleLogout = () => {
     Cookies.remove("token");
     Cookies.remove("userInfo");
-    router.refresh();
-    router.push("/");
+    window.location.href = "/";
   };
 
   const toggleExpanded = (itemDisplayName: string) => {

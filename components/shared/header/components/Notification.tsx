@@ -11,7 +11,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 const Notification = () => {
-  const { loadUserFromCookies } = useUserInfo(); // ✅ must be at top
+  const { loadUserFromCookies, user } = useUserInfo(); // ✅ must be at top
   const router = useRouter();
   const [isNotificationPopoverOpen, setIsNotificationPopoverOpen] =
     useState(false);
@@ -19,13 +19,23 @@ const Notification = () => {
 
   useEffect(() => {
     loadUserFromCookies(); // hydrate on mount
-    // Fetch notifications (no need to pass user id, token is used)
-    getUserNotifications().then((res) => {
-      if (res.success && Array.isArray(res.data)) {
-        setNotifications(res.data);
-      }
-    });
   }, [loadUserFromCookies]);
+
+  useEffect(() => {
+    // Only fetch notifications if user is logged in
+    if (user) {
+      getUserNotifications().then((res) => {
+        if (res.success && Array.isArray(res.data)) {
+          setNotifications(res.data);
+        }
+      }).catch((error) => {
+        console.error('Error fetching notifications:', error);
+      });
+    } else {
+      // Clear notifications when user logs out
+      setNotifications([]);
+    }
+  }, [user]);
   return (
     <Popover
       open={isNotificationPopoverOpen}
