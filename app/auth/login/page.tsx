@@ -33,8 +33,12 @@ const Login: React.FC = () => {
 
         toast.success("Login successful");
 
+        // Role-based routing
+        const userType = response.userInfo?.user_type;
+        const redirectPath = userType === "seller" ? "/user/products" : "/";
+
         setTimeout(() => {
-          router.push("/");
+          router.push(redirectPath);
         }, 500);
       } else {
         setIsLoading(false);

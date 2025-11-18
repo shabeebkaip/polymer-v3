@@ -78,6 +78,10 @@ const Register: React.FC = () => {
         if (!value.trim()) error = 'Email address is required';
         else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) error = 'Please enter a valid email address';
         break;
+      case 'phone':
+        if (!value.trim()) error = 'Phone number is required';
+        else if (!/^\d+$/.test(value.trim())) error = 'Phone number must contain only digits';
+        break;
       case 'password':
         if (!value) error = 'Password is required';
         else if (value.length < 6) error = 'Password must be at least 6 characters';
@@ -167,7 +171,7 @@ const Register: React.FC = () => {
 
     if (step === 1) {
       // Validate step 1 fields
-      const fields = ['firstName', 'lastName', 'email'];
+      const fields = ['firstName', 'lastName', 'email', 'phone'];
       fields.forEach(field => {
         newTouched[field] = true;
         const value = data[field as keyof RegisterData] as string;
@@ -207,6 +211,7 @@ const Register: React.FC = () => {
       !data.firstName ||
       !data.lastName ||
       !data.email ||
+      !data.phone ||
       !data.password ||
       !data.confirmPassword
     ) {
@@ -386,7 +391,7 @@ const Register: React.FC = () => {
 
                 <div className="space-y-1">
                   <label className="text-sm font-medium text-gray-700">
-                    Phone Number
+                    Phone Number <span className="text-red-500">*</span>
                   </label>
                   <div className="flex gap-2">
                     <select
@@ -407,9 +412,22 @@ const Register: React.FC = () => {
                       placeholder="Phone number"
                       value={data.phone}
                       onChange={onFieldChange}
-                      className="flex-1 px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                      onBlur={() => handleBlur('phone')}
+                      className={`flex-1 px-4 py-2.5 border rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 ${
+                        errors.phone && touched.phone
+                          ? 'border-red-500 focus:ring-red-500'
+                          : 'border-gray-300 focus:ring-primary-500'
+                      }`}
                     />
                   </div>
+                  {errors.phone && touched.phone && (
+                    <p className="text-xs text-red-600 mt-1 flex items-center gap-1">
+                      <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                      </svg>
+                      {errors.phone}
+                    </p>
+                  )}
                 </div>
               </div>
             )}
