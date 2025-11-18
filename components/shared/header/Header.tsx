@@ -12,6 +12,7 @@ import MobileMenuButton from '@/components/shared/header/components/MobileMenuBu
 import MobileMenuOverlay from '@/components/shared/header/components/MobileMenuOverlay';
 import MobileMenu from '@/components/shared/header/components/MobileMenu';
 import SubHeader from '@/components/shared/header/components/SubHeader';
+import AccountVerificationBanner from '@/components/shared/header/components/AccountVerificationBanner';
 
 type Language = 'en' | 'ar' | 'de' | 'zh';
 const Header: React.FC = () => {
@@ -22,12 +23,11 @@ const Header: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
 
   const [language, setLanguage] = useState<Language>('en');
-
+  console.log('user', user);
   // ✅ Safe early return AFTER hooks
   if (pathname.includes('auth')) return null;
 
   const toggleMenu = () => setIsOpen((prev) => !prev);
-
   const handleLogout = () => {
     logout();
     window.location.href = '/';
@@ -100,6 +100,11 @@ const Header: React.FC = () => {
 
   return (
     <>
+      {/* Account Verification Banner */}
+      {user && user.verification === "pending" && (
+        <AccountVerificationBanner />
+      )}
+
       {/* Main Header */}
       <header className="w-full bg-white border-b border-gray-200 sticky top-0 z-30 shadow-sm backdrop-blur-sm">
         <div className="container mx-auto px-4 lg:px-6">

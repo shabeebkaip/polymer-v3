@@ -19,6 +19,7 @@ export type UserType =  {
   company_logo?: string;
   avatar?: string;
   email?: string;
+  emailVerified?: boolean;
 }
 
 export interface UserLayoutProps {
@@ -62,6 +63,7 @@ export interface UserInfo {
   lastName?: string;
   email?: string;
   user_type?: string;
+  emailVerified?: boolean;
   [key: string]: unknown;
 }
 
