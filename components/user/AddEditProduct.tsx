@@ -789,11 +789,6 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
             </Button>
           </div>
         )}
-
-        {/* Note about product name restrictions */}
-        <div className="mt-4 text-center">
-          <p className="text-gray-500 text-xs mt-2">Please avoid using &quot;test&quot; or &quot;sample&quot; in product names for production listings.</p>
-        </div>
       </div>
     </div>
   );

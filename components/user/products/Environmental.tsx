@@ -71,10 +71,10 @@ const Environmental: React.FC<EnvironmentalProps> = ({
               }`}
               onClick={() => onFieldChange(feature.key, !isSelected)}
             >
-              <CardContent className="p-4">
-                <div className="flex items-start space-x-4">
-                  <div className={`p-3 rounded-lg ${feature.bgColor} ${isSelected ? 'ring-2 ring-primary-500/30' : ''}`}>
-                    <Icon className={`w-6 h-6 ${feature.color}`} />
+              <CardContent className="p-5 sm:p-6">
+                <div className="flex items-start space-x-4 sm:space-x-5">
+                  <div className={`p-4 rounded-xl ${feature.bgColor} ${isSelected ? 'ring-2 ring-primary-500/30' : ''}`}>
+                    <Icon className={`w-8 h-8 sm:w-10 sm:h-10 ${feature.color}`} />
                   </div>
                   
                   <div className="flex-1">
@@ -85,21 +85,21 @@ const Environmental: React.FC<EnvironmentalProps> = ({
                         onCheckedChange={(checked) =>
                           onFieldChange(feature.key, Boolean(checked))
                         }
-                        className="data-[state=checked]:bg-primary-500 data-[state=checked]:border-primary-500"
+                        className="data-[state=checked]:bg-primary-500 data-[state=checked]:border-primary-500 w-5 h-5"
                       />
                       <Label 
                         htmlFor={String(feature.key)} 
-                        className="text-base font-semibold text-gray-800 cursor-pointer flex items-center gap-2"
+                        className="text-base sm:text-lg font-semibold text-gray-800 cursor-pointer flex items-center gap-2"
                       >
                         {feature.title}
-                        {isSelected && <CheckCircle2 className="w-4 h-4 text-primary-500" />}
+                        {isSelected && <CheckCircle2 className="w-5 h-5 text-primary-500" />}
                       </Label>
                     </div>
                     
-                    <p className="text-sm text-gray-600 mb-2">{feature.description}</p>
+                    <p className="text-sm sm:text-base text-gray-600 mb-2">{feature.description}</p>
                     
-                    <div className="flex items-center gap-2 text-xs text-gray-500">
-                      <Award className="w-3 h-3" />
+                    <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-500">
+                      <Award className="w-4 h-4" />
                       <span>{feature.benefits}</span>
                     </div>
                   </div>
@@ -115,8 +115,8 @@ const Environmental: React.FC<EnvironmentalProps> = ({
         <Card className="border-primary-500/30 bg-primary-50/30">
           <CardContent className="p-4">
             <div className="flex items-center gap-2 mb-3">
-              <Earth className="w-5 h-5 text-primary-500" />
-              <h6 className="font-medium text-gray-800">Why Environmental Features Matter</h6>
+              <Earth className="w-6 h-6 text-primary-500" />
+              <h6 className="font-medium text-base sm:text-lg text-gray-800">Why Environmental Features Matter</h6>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">
