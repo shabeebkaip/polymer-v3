@@ -211,7 +211,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
         </Label>
         <Input
           id="manufacturingMethod"
-          placeholder="Enter manufacturing method"
+          placeholder="e.g., Injection Molding, Extrusion, Blow Molding"
           value={data.manufacturingMethod || ""}
           onChange={(e) => onFieldChange("manufacturingMethod", e.target.value)}
           className="border-gray-300 focus:border-primary-500 focus:ring-primary-500/30 transition-all duration-200"
@@ -225,7 +225,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
         </Label>
         <Input
           id="countryOfOrigin"
-          placeholder="Enter country of origin"
+          placeholder="e.g., Saudi Arabia, UAE, Germany"
           value={data.countryOfOrigin || ""}
           onChange={(e) => onFieldChange("countryOfOrigin", e.target.value)}
           className="border-gray-300 focus:border-primary-500 focus:ring-primary-500/30 transition-all duration-200"
@@ -239,7 +239,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
         </Label>
         <Input
           id="color"
-          placeholder="Enter color"
+          placeholder="e.g., Natural, White, Black, Transparent"
           value={data.color || ""}
           onChange={(e) => onFieldChange("color", e.target.value)}
           className="border-gray-300 focus:border-primary-500 focus:ring-primary-500/30 transition-all duration-200"

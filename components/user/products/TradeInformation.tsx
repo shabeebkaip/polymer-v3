@@ -66,8 +66,8 @@ const TradeInformation: React.FC<TradeInformationProps> = ({
         <Input
           id="stock"
           type="number"
-          placeholder="Enter stock quantity"
-          value={data.stock ?? ""}
+          placeholder="e.g., 500 (metric tons available)"
+          value={data.stock || ""}
           onChange={(e) => {
             onFieldChange("stock", e.target.value);
             onFieldError("stock");
@@ -126,8 +126,8 @@ const TradeInformation: React.FC<TradeInformationProps> = ({
             id="price"
             type="number"
             step="0.01"
-            placeholder="Enter price per unit"
-            value={data.price ?? ""}
+            placeholder="e.g., 1250 (per metric ton)"
+            value={data.price || ""}
             onChange={(e) => {
               onFieldChange("price", e.target.value);
               onFieldError("price");

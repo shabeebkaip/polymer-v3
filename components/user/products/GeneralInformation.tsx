@@ -29,7 +29,7 @@ const GeneralInformation: React.FC<GeneralInformationProps> = ({
         </Label>
         <Input
           id="productName"
-          placeholder="Enter product name"
+          placeholder="e.g., PP Homo Polymer - Grade 1100N"
           value={data.productName || ""}
           onChange={(e) => onFieldChange("productName", e.target.value)}
           error={error.productName ? true : false}
@@ -50,7 +50,7 @@ const GeneralInformation: React.FC<GeneralInformationProps> = ({
         </Label>
         <Input
           id="chemicalName"
-          placeholder="Enter chemical name"
+          placeholder="e.g., Polypropylene Homopolymer"
           value={data.chemicalName || ""}
           onChange={(e) => onFieldChange("chemicalName", e.target.value)}
           error={error.chemicalName ? true : false}
@@ -71,7 +71,7 @@ const GeneralInformation: React.FC<GeneralInformationProps> = ({
         </Label>
         <Input
           id="tradeName"
-          placeholder="Enter trade name"
+          placeholder="e.g., SABIC PP 1100N"
           value={data.tradeName || ""}
           onChange={(e) => onFieldChange("tradeName", e.target.value)}
           error={error.tradeName ? true : false}
@@ -92,7 +92,7 @@ const GeneralInformation: React.FC<GeneralInformationProps> = ({
         </Label>
         <Textarea
           id="description"
-          placeholder="Provide a detailed description of your product..."
+          placeholder="e.g., High-flow injection molding grade with excellent processability and impact resistance. Suitable for automotive parts, household appliances, and packaging applications..."
           value={data.description || ""}
           onChange={(e) => onFieldChange("description", e.target.value)}
           className="min-h-[80px] sm:min-h-[100px] resize-y border-gray-300 focus:border-primary-500 focus:ring-primary-500/30 transition-all duration-200"

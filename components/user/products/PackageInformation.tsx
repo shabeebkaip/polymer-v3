@@ -61,7 +61,7 @@ const PackageInformation: React.FC<PackageInformationProps> = ({
                     id="packagingWeight"
                     type="number"
                     step="0.1"
-                    placeholder="Enter package weight"
+                    placeholder="e.g., 25 (kg per bag)"
                     value={data.packagingWeight || ""}
                     onChange={(e) => onFieldChange("packagingWeight", e.target.value)}
                     className="pr-12 border-gray-300 focus:border-primary-500 focus:ring-primary-500/30 transition-all duration-200"
@@ -110,7 +110,7 @@ const PackageInformation: React.FC<PackageInformationProps> = ({
                 <div className="relative">
                   <Input
                     id="shelfLife"
-                    placeholder="Enter shelf life"
+                    placeholder="e.g., 24 months from manufacturing date"
                     value={data.shelfLife || ""}
                     onChange={(e) => onFieldChange("shelfLife", e.target.value)}
                     className="pr-20 border-gray-300 focus:border-primary-500 focus:ring-primary-500/30 transition-all duration-200"
