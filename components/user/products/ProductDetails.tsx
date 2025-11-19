@@ -81,7 +81,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
       <div className="space-y-2">
         <Label className="text-sm font-medium text-gray-700 flex items-center gap-1">
           Product Families
-          <span className="text-red-500">*</span>
+          <span className="text-gray-400 text-xs ml-1">(Optional)</span>
         </Label>
         <MultiSelect
           label=""

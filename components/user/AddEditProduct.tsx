@@ -127,9 +127,90 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
   // Navigation helpers
   const nextStep = () => {
     if (currentStep < FORM_STEPS.length) {
+      // Validate current step before moving forward
+      if (!validateCurrentStep()) {
+        toast.error('Please fill in all required fields before proceeding');
+        return;
+      }
       setCompletedSteps(prev => new Set(prev).add(currentStep));
       setCurrentStep(currentStep + 1);
     }
+  };
+
+  const validateCurrentStep = (): boolean => {
+    const currentStepConfig = FORM_STEPS[currentStep - 1];
+    const stepFields = getStepFields(currentStepConfig.component);
+    const stepErrors: ValidationErrors = {};
+
+    stepFields.forEach(field => {
+      const value = data[field];
+      
+      // Check if field is required based on step
+      const isRequired = isFieldRequiredForStep(field, currentStepConfig.component);
+      
+      if (isRequired) {
+        if (
+          value === undefined ||
+          value === null ||
+          value === "" ||
+          (Array.isArray(value) && value.length === 0)
+        ) {
+          stepErrors[field] = `${getFieldLabel(field)} is required`;
+        }
+        
+        // Special validation for productImages - backend requires id, name, type, fileUrl
+        if (field === 'productImages' && Array.isArray(value) && value.length > 0) {
+          const hasInvalidImage = value.some((img: any) => {
+            return !img.id || !img.name || !img.type || !img.fileUrl;
+          });
+          if (hasInvalidImage) {
+            stepErrors[field] = 'Some images are missing required information. Please re-upload.';
+          }
+        }
+      }
+    });
+
+    setError(prev => ({ ...prev, ...stepErrors }));
+    return Object.keys(stepErrors).length === 0;
+  };
+
+  const isFieldRequiredForStep = (field: keyof ProductFormData, stepComponent: string): boolean => {
+    // Define required fields per step (aligned with backend schema)
+    const requiredFieldsByStep: Record<string, (keyof ProductFormData)[]> = {
+      'general': ['productName', 'chemicalName'],
+      'details': ['chemicalFamily', 'polymerType', 'physicalForm', 'industry'],
+      'images': ['productImages'],
+      'trade': ['minimum_order_quantity', 'stock', 'uom', 'price', 'incoterms'],
+      'package': [],
+      'technical': [],
+      'environmental': [],
+      'certification': [],
+      'documents': [],
+    };
+
+    return requiredFieldsByStep[stepComponent]?.includes(field) || false;
+  };
+
+  const getFieldLabel = (field: keyof ProductFormData): string => {
+    const labels: Record<string, string> = {
+      productName: 'Product Name',
+      chemicalName: 'Chemical Name',
+      tradeName: 'Trade Name',
+      chemicalFamily: 'Chemical Family',
+      product_family: 'Product Family',
+      polymerType: 'Polymer Type',
+      physicalForm: 'Physical Form',
+      industry: 'Industry',
+      productImages: 'Product Images',
+      minimum_order_quantity: 'Minimum Order Quantity',
+      stock: 'Stock',
+      uom: 'Unit of Measure',
+      price: 'Price',
+      incoterms: 'Incoterms',
+      paymentTerms: 'Payment Terms',
+      packagingType: 'Packaging Type',
+    };
+    return labels[field as string] || String(field);
   };
 
   const prevStep = () => {
@@ -161,7 +242,7 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
       case 'technical':
         return ['density', 'mfi', 'tensileStrength'];
       case 'trade':
-        return ['minimum_order_quantity', 'stock', 'uom', 'price', 'incoterms', 'paymentTerms'];
+        return ['minimum_order_quantity', 'stock', 'uom', 'price', 'priceTerms', 'incoterms', 'paymentTerms'];
       case 'package':
         return ['packagingType', 'packagingWeight'];
       case 'environmental':
@@ -182,13 +263,11 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
     const validationErrors: ValidationErrors = {};
 
     // For edit mode, only validate required fields if they're completely empty
-    // For create mode, validate all required fields strictly
+    // For create mode, validate all required fields strictly (aligned with backend schema)
     const requiredFields: RequiredField[] = [
       { field: "productName", label: "Product Name" },
       { field: "chemicalName", label: "Chemical Name" },
-      { field: "tradeName", label: "Trade Name" },
       { field: "chemicalFamily", label: "Chemical Family" },
-      { field: "product_family", label: "Product Family" },
       { field: "polymerType", label: "Polymer Type" },
       { field: "physicalForm", label: "Physical Form" },
       { field: "minimum_order_quantity", label: "Minimum Order Quantity" },
@@ -221,13 +300,20 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
 
       if (data.productImages.length === 0) {
         validationErrors.productImages = "At least one product image is required";
+      } else {
+        // Validate productImages internal structure
+        const hasInvalidImage = data.productImages.some((img: any) => {
+          return !img.id || !img.name || !img.type || !img.fileUrl;
+        });
+        if (hasInvalidImage) {
+          validationErrors.productImages = "Some images are missing required information. Please re-upload.";
+        }
       }
     } else {
-      // Smart validation for editing - validate core business fields
+      // Smart validation for editing - validate core business fields (aligned with backend schema)
       const coreRequiredFields = [
         { field: "productName", label: "Product Name" },
         { field: "chemicalName", label: "Chemical Name" },
-        { field: "tradeName", label: "Trade Name" },
         { field: "chemicalFamily", label: "Chemical Family" },
         { field: "polymerType", label: "Polymer Type" },
         { field: "physicalForm", label: "Physical Form" },

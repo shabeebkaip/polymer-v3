@@ -67,7 +67,7 @@ const GeneralInformation: React.FC<GeneralInformationProps> = ({
       <div className="space-y-2">
         <Label htmlFor="tradeName" className="text-sm font-medium text-gray-700 flex items-center gap-1">
           Trade Name
-          <span className="text-red-500">*</span>
+          <span className="text-gray-400 text-xs ml-1">(Optional)</span>
         </Label>
         <Input
           id="tradeName"
