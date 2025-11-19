@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import IndustriesDropdown from './IndustriesDropdown';
@@ -10,6 +10,19 @@ import { useUserInfo } from '@/lib/useUserInfo';
 const SubHeader: React.FC = () => {
   const pathname = usePathname();
   const { user } = useUserInfo();
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // Quick links based on user type
+  const quickLinks = [
+    { href: '/products', label: 'All Products', show: true },
+    { href: '/suppliers', label: 'Find Suppliers', show: isClient && !!user },
+    { href: '/deals', label: 'Special Deals', show: isClient && user?.user_type === 'buyer' },
+    { href: '/opportunities', label: 'Bulk Orders', show: isClient && user?.user_type === 'seller' },
+  ];
 
   // User-specific navigation options
   const userNavLinks =
@@ -45,46 +58,19 @@ const SubHeader: React.FC = () => {
             
             {/* Quick Links */}
             <nav className="hidden md:flex items-center gap-1">
-              <Link
-                href="/products"
-                className={`px-3 py-1.5 text-sm font-semibold rounded-lg transition-all duration-200 ${
-                  pathname === '/products'
-                    ? 'text-primary-500 bg-primary-50'
-                    : 'text-gray-800 hover:text-primary-600 hover:bg-gray-100'
-                }`}
-              >
-                All Products
-              </Link>
-              <Link
-                href="/suppliers"
-                className={`px-3 py-1.5 text-sm font-semibold rounded-lg transition-all duration-200 ${
-                  pathname === '/suppliers'
-                    ? 'text-primary-500 bg-primary-50'
-                    : 'text-gray-800 hover:text-primary-600 hover:bg-gray-100'
-                }`}
-              >
-                Find Suppliers
-              </Link>
-              <Link
-                href="/user/promotions"
-                className={`px-3 py-1.5 text-sm font-semibold rounded-lg transition-all duration-200 ${
-                  pathname === '/user/promotions'
-                    ? 'text-primary-500 bg-primary-50'
-                    : 'text-gray-800 hover:text-primary-600 hover:bg-gray-100'
-                }`}
-              >
-                Special Deals
-              </Link>
-              <Link
-                href="/user/quote-requests"
-                className={`px-3 py-1.5 text-sm font-semibold rounded-lg transition-all duration-200 ${
-                  pathname === '/user/quote-requests'
-                    ? 'text-primary-500 bg-primary-50'
-                    : 'text-gray-800 hover:text-primary-600 hover:bg-gray-100'
-                }`}
-              >
-                Bulk Orders
-              </Link>
+              {quickLinks.filter(link => link.show).map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`px-3 py-1.5 text-sm font-semibold rounded-lg transition-all duration-200 ${
+                    pathname === link.href
+                      ? 'text-primary-500 bg-primary-50'
+                      : 'text-gray-800 hover:text-primary-600 hover:bg-gray-100'
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              ))}
             </nav>
           </div>
 
