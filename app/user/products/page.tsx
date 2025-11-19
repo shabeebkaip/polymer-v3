@@ -124,37 +124,34 @@ const ProductsPage: React.FC = () => {
       ) : (
         /* Actual Content */
         <>
-          {/* Header Section */}
-          <div className="relative mb-8">
-            <div className="absolute inset-0 bg-gradient-to-r from-green-600/5 to-emerald-600/5 rounded-3xl"></div>
-            <div className="relative bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/50 p-8">
-              <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-6">
-                <div className="flex items-center gap-5">
-                  <div className="relative">
-                    <div className="bg-gradient-to-br from-green-600 to-emerald-600 p-4 rounded-2xl shadow-lg">
-                      <Package className="w-7 h-7 text-white" />
+          {/* Header Section - Sticky */}
+          <div className="sticky top-0 z-40 mb-8 -mx-8 px-8 py-4 bg-gray-50/95 backdrop-blur-md">
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-green-600/5 to-emerald-600/5 rounded-2xl"></div>
+              <div className="relative bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50 p-6">
+                <div className="flex items-center justify-between gap-6">
+                  <div className="flex items-center gap-4">
+                    <div className="bg-gradient-to-br from-green-600 to-emerald-600 p-3 rounded-xl shadow-md">
+                      <Package className="w-6 h-6 text-white" />
                     </div>
-                    <div className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-br from-emerald-400 to-green-400 rounded-full animate-pulse"></div>
+                    <div>
+                      <h1 className="text-2xl font-bold text-gray-900">
+                        My Products
+                      </h1>
+                      <p className="text-gray-600 text-sm mt-0.5">
+                        Manage and track your product inventory
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 via-green-800 to-emerald-800 bg-clip-text text-transparent">
-                      My Products
-                    </h1>
-                    <p className="text-gray-600 text-lg mt-2 font-medium">
-                      Manage and track your product inventory
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-3">
+                  
                   <Button
-                    className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-6 shadow-lg"
+                    className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-6 py-2.5 shadow-md hover:shadow-lg transition-all duration-200 font-semibold"
                     onClick={() => {
                       window.location.href = "/user/products/add";
                     }}
                   >
                     <Plus className="w-4 h-4 mr-2" />
-                    Add Product
+                    Add New Product
                   </Button>
                 </div>
               </div>
