@@ -16,6 +16,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
   onFocus,
 }) => {
   const [open, setOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const containerRef = useRef<HTMLDivElement>(null);
 
   const toggleOption = (id: string) => {
@@ -28,6 +29,34 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
   const selectedLabels = options
     .filter((opt) => selected.includes(opt._id))
     .map((opt) => opt.name);
+
+  // Filter and group options alphabetically
+  const filteredAndGroupedOptions = () => {
+    const filtered = searchQuery
+      ? options.filter((opt) =>
+          opt.name.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+      : options;
+
+    // Group by first letter
+    const grouped: Record<string, DropdownItem[]> = {};
+    filtered.forEach((opt) => {
+      const firstLetter = opt.name.charAt(0).toUpperCase();
+      if (!grouped[firstLetter]) {
+        grouped[firstLetter] = [];
+      }
+      grouped[firstLetter].push(opt);
+    });
+
+    // Sort each group alphabetically
+    Object.keys(grouped).forEach((letter) => {
+      grouped[letter].sort((a, b) => a.name.localeCompare(b.name));
+    });
+
+    return grouped;
+  };
+
+  const groupedOptions = filteredAndGroupedOptions();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -71,19 +100,54 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
       </div>
 
       {open && (
-        <div className="absolute z-10 mt-1 max-h-48 w-full overflow-y-auto rounded-md border bg-white p-2 shadow-md">
-          {options.map((opt) => (
-            <label
-              key={opt._id}
-              className="flex items-center gap-2 px-2 py-1 hover:bg-gray-100 rounded cursor-pointer"
-            >
-              <Checkbox
-                checked={selected.includes(opt._id)}
-                onCheckedChange={() => toggleOption(opt._id)}
-              />
-              <span className="text-sm">{opt.name}</span>
-            </label>
-          ))}
+        <div className="absolute z-10 mt-1 max-h-[400px] w-full rounded-md border bg-white shadow-lg">
+          {/* Search Input */}
+          <div className="sticky top-0 p-2 border-b bg-white">
+            <input
+              type="text"
+              placeholder="Search..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full px-3 py-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </div>
+
+          {/* Grouped Options */}
+          <div className="overflow-y-auto max-h-[320px] p-2">
+            {Object.keys(groupedOptions).length === 0 ? (
+              <div className="py-6 text-center text-sm text-gray-500">
+                No options found
+              </div>
+            ) : (
+              Object.keys(groupedOptions)
+                .sort()
+                .map((letter) => (
+                  <div key={letter} className="mb-3">
+                    {/* Letter Header */}
+                    <div className="sticky top-0 bg-gray-100 px-2 py-1 text-xs font-semibold text-gray-600 rounded">
+                      {letter}
+                    </div>
+
+                    {/* Options under this letter */}
+                    <div className="mt-1 space-y-0.5">
+                      {groupedOptions[letter].map((opt) => (
+                        <label
+                          key={opt._id}
+                          className="flex items-center gap-2 px-2 py-1.5 hover:bg-primary-50 rounded cursor-pointer transition-colors"
+                        >
+                          <Checkbox
+                            checked={selected.includes(opt._id)}
+                            onCheckedChange={() => toggleOption(opt._id)}
+                          />
+                          <span className="text-sm">{opt.name}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                ))
+            )}
+          </div>
         </div>
       )}
 

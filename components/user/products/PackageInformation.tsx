@@ -68,7 +68,37 @@ const PackageInformation: React.FC<PackageInformationProps> = ({
                   />
                   <div className="absolute right-3 top-2.5 text-sm text-gray-500 pointer-events-none">kg</div>
                 </div>
-                <p className="text-xs text-gray-500">Standard package weight</p>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  <button
+                    type="button"
+                    onClick={() => onFieldChange("packagingWeight", "25")}
+                    className="px-3 py-1 text-xs bg-gray-100 hover:bg-primary-100 text-gray-700 hover:text-primary-700 rounded-full border border-gray-300 hover:border-primary-300 transition-colors"
+                  >
+                    25 kg (Bag standard)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onFieldChange("packagingWeight", "50")}
+                    className="px-3 py-1 text-xs bg-gray-100 hover:bg-primary-100 text-gray-700 hover:text-primary-700 rounded-full border border-gray-300 hover:border-primary-300 transition-colors"
+                  >
+                    50 kg
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onFieldChange("packagingWeight", "200")}
+                    className="px-3 py-1 text-xs bg-gray-100 hover:bg-primary-100 text-gray-700 hover:text-primary-700 rounded-full border border-gray-300 hover:border-primary-300 transition-colors"
+                  >
+                    200 kg (Drum)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onFieldChange("packagingWeight", "1000")}
+                    className="px-3 py-1 text-xs bg-gray-100 hover:bg-primary-100 text-gray-700 hover:text-primary-700 rounded-full border border-gray-300 hover:border-primary-300 transition-colors"
+                  >
+                    1000 kg (IBC)
+                  </button>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">Click to use common weights or enter custom value</p>
               </div>
             </div>
           </CardContent>

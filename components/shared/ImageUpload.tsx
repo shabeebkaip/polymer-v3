@@ -21,9 +21,19 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 }) => {
   const [loading, setLoading] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const onDrop = useCallback(
-    async (acceptedFiles: File[]) => {
+    async (acceptedFiles: File[], rejectedFiles: any[]) => {
+      // Clear previous error
+      setError(null);
+
+      // Handle rejected files
+      if (rejectedFiles.length > 0) {
+        setError("Only JPG/PNG up to 3MB allowed");
+        return;
+      }
+
       if (!acceptedFiles.length) return;
 
       setLoading(true);
@@ -43,6 +53,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
           });
         } catch (error) {
           console.error("Error uploading file:", error);
+          setError("Failed to upload image. Please try again.");
         }
       }
 
@@ -57,7 +68,11 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: { "image/*": [] },
+    accept: { 
+      "image/jpeg": [".jpg", ".jpeg"],
+      "image/png": [".png"]
+    },
+    maxSize: 3 * 1024 * 1024, // 3MB
     multiple: true,
   });
 
@@ -136,7 +151,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
           </div>
         </ScrollArea>
       ) : (
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col items-center gap-2">
           <Image
             src="/assets/drop.svg"
             alt="upload icon"
@@ -144,6 +159,14 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
             height={30}
           />
           <span className="text-sm font-medium">Upload Images</span>
+          <p className="text-xs text-gray-500 mt-1">Only JPG/PNG up to 3MB allowed</p>
+        </div>
+      )}
+      
+      {/* Error Message */}
+      {error && (
+        <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg">
+          <p className="text-sm text-red-600 font-medium">{error}</p>
         </div>
       )}
       

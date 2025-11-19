@@ -22,6 +22,25 @@ const TradeInformation: React.FC<TradeInformationProps> = ({
   error,
   onFieldError,
 }) => {
+  const [moqError, setMoqError] = React.useState<string>("");
+  const [stockError, setStockError] = React.useState<string>("");
+  const [priceError, setPriceError] = React.useState<string>("");
+
+  const validateNumber = (value: string, fieldName: string): string => {
+    if (!value || value.trim() === "") return "";
+    
+    // Check if it's a valid number
+    if (isNaN(Number(value)) || !/^\d*\.?\d*$/.test(value)) {
+      return `${fieldName} must be a number`;
+    }
+    
+    // Check if it's not negative
+    if (Number(value) < 0) {
+      return `${fieldName} cannot be negative`;
+    }
+    
+    return "";
+  };
 
   return (
     <>
@@ -41,17 +60,23 @@ const TradeInformation: React.FC<TradeInformationProps> = ({
         </Label>
         <Input
           id="minimum_order_quantity"
-          type="number"
+          type="text"
           placeholder="Enter minimum order quantity"
           value={data.minimum_order_quantity ?? ""}
           onChange={(e) => {
-            onFieldChange("minimum_order_quantity", e.target.value);
-            onFieldError("minimum_order_quantity");
+            const value = e.target.value;
+            const validationError = validateNumber(value, "MOQ");
+            setMoqError(validationError);
+            
+            if (!validationError) {
+              onFieldChange("minimum_order_quantity", value);
+              onFieldError("minimum_order_quantity");
+            }
           }}
-          error={error?.minimum_order_quantity ? true : false}
-          helperText={error?.minimum_order_quantity}
+          error={!!(moqError || error?.minimum_order_quantity)}
+          helperText={moqError || error?.minimum_order_quantity}
           className={`transition-all duration-200 ${
-            error?.minimum_order_quantity 
+            (moqError || error?.minimum_order_quantity)
               ? 'border-red-300 focus:border-red-500 focus:ring-red-200' 
               : 'border-gray-300 focus:border-blue-500 focus:ring-blue-200'
           }`}
@@ -65,17 +90,23 @@ const TradeInformation: React.FC<TradeInformationProps> = ({
         </Label>
         <Input
           id="stock"
-          type="number"
+          type="text"
           placeholder="e.g., 500 (metric tons available)"
           value={data.stock || ""}
           onChange={(e) => {
-            onFieldChange("stock", e.target.value);
-            onFieldError("stock");
+            const value = e.target.value;
+            const validationError = validateNumber(value, "Stock");
+            setStockError(validationError);
+            
+            if (!validationError) {
+              onFieldChange("stock", value);
+              onFieldError("stock");
+            }
           }}
-          error={error?.stock ? true : false}
-          helperText={error?.stock}
+          error={!!(stockError || error?.stock)}
+          helperText={stockError || error?.stock}
           className={`transition-all duration-200 ${
-            error?.stock 
+            (stockError || error?.stock)
               ? 'border-red-300 focus:border-red-500 focus:ring-red-200' 
               : 'border-gray-300 focus:border-blue-500 focus:ring-blue-200'
           }`}
@@ -124,18 +155,23 @@ const TradeInformation: React.FC<TradeInformationProps> = ({
         <div className="relative">
           <Input
             id="price"
-            type="number"
-            step="0.01"
+            type="text"
             placeholder="e.g., 1250 (per metric ton)"
             value={data.price || ""}
             onChange={(e) => {
-              onFieldChange("price", e.target.value);
-              onFieldError("price");
+              const value = e.target.value;
+              const validationError = validateNumber(value, "Price");
+              setPriceError(validationError);
+              
+              if (!validationError) {
+                onFieldChange("price", value);
+                onFieldError("price");
+              }
             }}
-            error={error?.price ? true : false}
-            helperText={error?.price}
+            error={!!(priceError || error?.price)}
+            helperText={priceError || error?.price}
             className={`pr-16 sm:pr-20 transition-all duration-200 ${
-              error?.price 
+              (priceError || error?.price)
                 ? 'border-red-300 focus:border-red-500 focus:ring-red-200' 
                 : 'border-gray-300 focus:border-blue-500 focus:ring-blue-200'
             }`}
