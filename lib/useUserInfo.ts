@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import Cookies from 'js-cookie';
-import { UserInfo, UserStore } from '@/types/user';
+import { UserStore } from '@/types/user';
 
 export const useUserInfo = create<UserStore>((set) => ({
   user: null,

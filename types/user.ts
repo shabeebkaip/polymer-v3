@@ -64,6 +64,9 @@ export interface UserInfo {
   email?: string;
   user_type?: string;
   emailVerified?: boolean;
+  company_logo?: string;
+  avatar?: string;
+  verification?: string;
   [key: string]: unknown;
 }
 
