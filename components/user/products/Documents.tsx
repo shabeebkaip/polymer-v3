@@ -16,7 +16,8 @@ const DOCUMENT_TYPES = [
     bgColor: "bg-red-50",
     borderColor: "border-red-200",
     required: false,
-    acceptedFormats: "PDF, DOC, DOCX"
+    acceptedFormats: "PDF only",
+    maxSize: "5MB"
   },
   {
     key: "technical_data_sheet" as keyof ProductFormData,
@@ -27,7 +28,8 @@ const DOCUMENT_TYPES = [
     bgColor: "bg-blue-50",
     borderColor: "border-blue-200",
     required: false,
-    acceptedFormats: "PDF, DOC, DOCX"
+    acceptedFormats: "PDF only",
+    maxSize: "5MB"
   },
   {
     key: "certificate_of_analysis" as keyof ProductFormData,
@@ -38,7 +40,8 @@ const DOCUMENT_TYPES = [
     bgColor: "bg-primary-50",
     borderColor: "border-primary-500/30",
     required: false,
-    acceptedFormats: "PDF, DOC, DOCX"
+    acceptedFormats: "PDF only",
+    maxSize: "5MB"
   }
 ];
 
@@ -77,37 +80,35 @@ const Documents: React.FC<DocumentsProps> = ({ data, onFieldChange }) => {
         const hasFiles = Array.isArray(files) && files.length > 0;
 
         return (
-          <div key={docType.key} className="col-span-full mb-6">
-            <Card className={`transition-all duration-200 hover:shadow-md ${docType.borderColor} ${hasFiles ? 'ring-2 ring-primary-500/30' : ''}`}>
-              <CardHeader className={`${docType.bgColor} pb-3`}>
-                <div className="flex items-start space-x-3">
-                  <div className={`p-2 rounded-lg bg-white ${docType.borderColor} border`}>
-                    <Icon className={`w-5 h-5 ${docType.color}`} />
-                  </div>
-                  <div className="flex-1">
-                    <CardTitle className="text-base font-semibold text-gray-800 flex items-center gap-2">
-                      {docType.title}
-                      {hasFiles && <CheckCircle2 className="w-4 h-4 text-primary-500" />}
-                      {docType.required && <Badge variant="destructive" className="text-xs">Required</Badge>}
-                    </CardTitle>
-                    <p className="text-sm text-gray-600 mt-1">{docType.description}</p>
-                    <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
-                      <span>📁 Accepted: {docType.acceptedFormats}</span>
-                      <span>📏 Max size: 10MB</span>
+          <div key={docType.key} className="col-span-full">
+            <Card className={`${hasFiles ? 'border-primary-500/30 bg-primary-50/20' : 'border-gray-200'}`}>
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <div className={`p-2 rounded-lg ${docType.bgColor}`}>
+                      <Icon className={`w-5 h-5 ${docType.color}`} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="text-sm font-semibold text-gray-800">{docType.title}</h3>
+                        {hasFiles && <CheckCircle2 className="w-4 h-4 text-primary-500 flex-shrink-0" />}
+                      </div>
+                      <p className="text-xs text-gray-500 truncate">{docType.description}</p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-xs text-gray-600">{docType.acceptedFormats}</span>
+                        <span className="text-xs text-gray-400">•</span>
+                        <span className="text-xs text-gray-600">Max {docType.maxSize}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </CardHeader>
-              
-              <CardContent className="p-4">
-                <FileUpload
+                  <FileUpload
                   onFileUpload={(uploadedFiles) => {
                     onFieldChange(docType.key, uploadedFiles);
                   }}
                   buttonText={
                     hasFiles 
-                      ? `Replace ${docType.title}` 
-                      : `Upload ${docType.title}`
+                      ? `Replace` 
+                      : `Upload`
                   }
                   existingFiles={Array.isArray(files) ? files : []}
                   multiple={false}
@@ -115,50 +116,46 @@ const Documents: React.FC<DocumentsProps> = ({ data, onFieldChange }) => {
                     console.log("Cloudinary image URL:", url);
                   }}
                 />
-                
-                {hasFiles && (
-                  <div className="mt-3 p-3 bg-primary-50 border border-primary-500/30 rounded-lg">
-                    <div className="flex items-center gap-2 text-sm text-primary-500">
-                      <CheckCircle2 className="w-4 h-4" />
-                      <span className="font-medium">Document uploaded successfully</span>
-                    </div>
-                    <p className="text-xs text-primary-500 mt-1">
-                      This document will be available to buyers after purchase approval
-                    </p>
-                  </div>
-                )}
+                </div>
               </CardContent>
             </Card>
           </div>
         );
       })}
 
-      {/* Tips and Guidelines */}
+      {/* Upload Instructions */}
       <div className="col-span-full mt-4">
-        <Card className="border-gray-200 bg-gray-50/50">
+        <Card className="border-blue-200 bg-blue-50/30">
           <CardContent className="p-4">
-            <h5 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
-              <Upload className="w-4 h-4" />
-              Document Guidelines
-            </h5>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
-              <div className="space-y-2">
-                <h6 className="font-medium text-gray-700">📋 Best Practices:</h6>
-                <ul className="space-y-1 text-xs">
-                  <li>• Use clear, high-resolution documents</li>
-                  <li>• Ensure all text is readable</li>
-                  <li>• Include latest revision dates</li>
-                  <li>• Use official letterheads when applicable</li>
-                </ul>
+            <div className="flex items-start gap-3">
+              <div className="p-2 rounded-lg bg-blue-100">
+                <Upload className="w-5 h-5 text-blue-600" />
               </div>
-              <div className="space-y-2">
-                <h6 className="font-medium text-gray-700">🔒 Security:</h6>
-                <ul className="space-y-1 text-xs">
-                  <li>• Documents are securely stored</li>
-                  <li>• Only shared with qualified buyers</li>
-                  <li>• Compliance with data protection</li>
-                  <li>• Regular security audits performed</li>
-                </ul>
+              <div className="flex-1">
+                <h5 className="font-semibold text-gray-800 mb-2">Upload Requirements</h5>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs text-gray-600">
+                  <div className="flex items-center gap-2 bg-white rounded-md px-3 py-2 border border-blue-200">
+                    <FileText className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                    <div>
+                      <p className="font-medium text-gray-800">PDF Only</p>
+                      <p className="text-gray-500">No other formats</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 bg-white rounded-md px-3 py-2 border border-blue-200">
+                    <Shield className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                    <div>
+                      <p className="font-medium text-gray-800">Max 5MB</p>
+                      <p className="text-gray-500">Per document</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 bg-white rounded-md px-3 py-2 border border-blue-200">
+                    <CheckCircle2 className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                    <div>
+                      <p className="font-medium text-gray-800">Clear & Legible</p>
+                      <p className="text-gray-500">High quality scans</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </CardContent>

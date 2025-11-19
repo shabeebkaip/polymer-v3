@@ -3,7 +3,7 @@ import { Checkbox } from "../../ui/checkbox";
 import { Label } from "../../ui/label";
 import { Card, CardContent } from "../../ui/card";
 import { Badge } from "../../ui/badge";
-import { Shield, Award, CheckCircle2, Star, Crown, Zap } from "lucide-react";
+import { Shield, Award, CheckCircle2, Star, Crown, Zap, Lock } from "lucide-react";
 import { ProductFormData, CertificationProps } from "@/types/product";
 
 // Certification configuration
@@ -70,43 +70,53 @@ const Certification: React.FC<CertificationProps> = ({
           return (
             <Card 
               key={String(cert.key)} 
-              className={`transition-all duration-200 cursor-pointer hover:shadow-md ${
+              className={`transition-all duration-200 cursor-pointer hover:shadow-md relative ${
                 isSelected ? `ring-2 ring-purple-300 ${cert.borderColor}` : 'border-gray-200'
               }`}
               onClick={() => onFieldChange(cert.key, !isSelected)}
             >
-              <CardContent className="p-4">
-                <div className="flex items-start space-x-4">
-                  <div className={`p-3 rounded-lg ${cert.bgColor} ${isSelected ? 'ring-2 ring-purple-300' : ''}`}>
-                    <Icon className={`w-6 h-6 ${cert.color}`} />
+              {/* Premium Corner Badge */}
+              <div className="absolute top-3 right-3 bg-gradient-to-br from-amber-400 to-yellow-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md flex items-center gap-1">
+                <Lock className="w-3 h-3" />
+                <span>Premium</span>
+              </div>
+              
+              <CardContent className="p-5 sm:p-6">
+                <div className="flex items-start space-x-4 sm:space-x-5">
+                  <div className={`p-4 rounded-xl ${cert.bgColor} ${isSelected ? 'ring-2 ring-purple-300' : ''}`}>
+                    <Icon className={`w-8 h-8 sm:w-10 sm:h-10 ${cert.color}`} />
                   </div>
                   
                   <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
+                    <div className="flex items-center gap-3 mb-2 flex-wrap">
                       <Checkbox
                         id={String(cert.key)}
                         checked={isSelected}
                         onCheckedChange={(checked) =>
                           onFieldChange(cert.key, Boolean(checked))
                         }
-                        className="data-[state=checked]:bg-purple-600 data-[state=checked]:border-purple-600"
+                        className="data-[state=checked]:bg-purple-600 data-[state=checked]:border-purple-600 w-5 h-5"
                       />
                       <Label 
                         htmlFor={String(cert.key)} 
-                        className="text-base font-semibold text-gray-800 cursor-pointer flex items-center gap-2"
+                        className="text-base sm:text-lg font-semibold text-gray-800 cursor-pointer flex items-center gap-2"
                       >
                         {cert.title}
-                        {isSelected && <CheckCircle2 className="w-4 h-4 text-purple-600" />}
+                        {isSelected && <CheckCircle2 className="w-5 h-5 text-purple-600" />}
                       </Label>
-                      <Badge variant="outline" className="text-xs font-medium">
+                      <Badge 
+                        variant="outline" 
+                        className="text-xs font-semibold bg-gradient-to-r from-amber-50 to-yellow-50 border-amber-300 text-amber-700 flex items-center gap-1 px-2 py-0.5"
+                      >
+                        <Lock className="w-3 h-3" />
                         {cert.level}
                       </Badge>
                     </div>
                     
-                    <p className="text-sm text-gray-600 mb-2">{cert.description}</p>
+                    <p className="text-sm sm:text-base text-gray-600 mb-2">{cert.description}</p>
                     
-                    <div className="flex items-center gap-2 text-xs text-gray-500">
-                      <Star className="w-3 h-3" />
+                    <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-500">
+                      <Star className="w-4 h-4 text-amber-500" />
                       <span>{cert.benefits}</span>
                     </div>
                   </div>
@@ -122,7 +132,7 @@ const Certification: React.FC<CertificationProps> = ({
         <Card className="border-dashed border-2 border-gray-300 hover:border-purple-300 transition-colors duration-200">
           <CardContent className="p-4 text-center">
             <div className="flex flex-col items-center gap-2 text-gray-500">
-              <Award className="w-6 h-6" />
+              <Award className="w-7 h-7" />
               <p className="text-sm font-medium">Have other certifications?</p>
               <p className="text-xs">Contact support to add custom certifications to your listing</p>
             </div>
@@ -135,8 +145,8 @@ const Certification: React.FC<CertificationProps> = ({
         <Card className="border-blue-200 bg-blue-50/30">
           <CardContent className="p-4">
             <div className="flex items-center gap-2 mb-3">
-              <Zap className="w-5 h-5 text-blue-600" />
-              <h6 className="font-medium text-gray-800">Certification Benefits</h6>
+              <Zap className="w-6 h-6 text-blue-600" />
+              <h6 className="font-medium text-base sm:text-lg text-gray-800">Certification Benefits</h6>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">
