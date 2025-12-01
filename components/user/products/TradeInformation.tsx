@@ -1,17 +1,11 @@
 import React from "react";
 import { Label } from "../../ui/label";
 import { Input } from "../../ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../../ui/select";
 import { Card, CardContent } from "../../ui/card";
 import { uomDropdown } from "@/lib/utils";
 import { ProductFormData, TradeInformationProps } from "@/types/product";
 import MultiSelect from "@/components/shared/MultiSelect";
+import SearchableSelect from "@/components/shared/SearchableSelect";
 import { DropdownItem } from "@/types/shared";
 
 const TradeInformation: React.FC<TradeInformationProps> = ({
@@ -116,37 +110,19 @@ const TradeInformation: React.FC<TradeInformationProps> = ({
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="uom" className="text-xs font-medium text-gray-700 flex items-center gap-1">
-                  Unit of Measurement
-                  <span className="text-red-500">*</span>
-                </Label>
-                <Select
+                <SearchableSelect
+                  label="Unit of Measurement"
+                  placeholder="Select Unit"
+                  options={uomDropdown.map(uom => ({ _id: uom, name: uom }))}
                   value={data.uom}
-                  onValueChange={(val) => {
+                  onChange={(val) => {
                     onFieldChange("uom", val);
                     onFieldError("uom");
                   }}
-                >
-                  <SelectTrigger 
-                    className={`h-9 text-sm ${
-                      error?.uom 
-                        ? 'border-red-300' 
-                        : ''
-                    }`}
-                  >
-                    <SelectValue placeholder="Select Unit" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {uomDropdown.map((uom: string) => (
-                      <SelectItem key={uom} value={uom}>
-                        {uom}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {error?.uom && (
-                  <p className="text-xs text-red-600 mt-1">{error.uom}</p>
-                )}
+                  error={!!error?.uom}
+                  helperText={error?.uom}
+                  onFocus={() => onFieldError("uom")}
+                />
               </div>
 
               <div className="space-y-1.5">
@@ -205,46 +181,28 @@ const TradeInformation: React.FC<TradeInformationProps> = ({
               </div>
 
               <div className="space-y-1.5">
-                <Label className="text-xs font-medium text-gray-700">
-                  Payment Terms
-                  <span className="text-gray-400 text-xs ml-1">(Optional)</span>
-                </Label>
-                <Select
+                <SearchableSelect
+                  label="Payment Terms"
+                  placeholder="Select Payment Terms"
+                  options={paymentTerms}
                   value={typeof data.paymentTerms === 'string' ? data.paymentTerms : ''}
-                  onValueChange={(val) => onFieldChange("paymentTerms", val)}
-                >
-                  <SelectTrigger className="h-9 text-sm">
-                    <SelectValue placeholder="Select Payment Terms" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {paymentTerms.map((term) => (
-                      <SelectItem key={term._id} value={term._id}>
-                        {term.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  onChange={(val) => onFieldChange("paymentTerms", val)}
+                />
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="priceTerms" className="text-xs font-medium text-gray-700">
-                  Price Terms
-                  <span className="text-gray-400 text-xs ml-1">(Optional)</span>
-                </Label>
-                <Select
+                <SearchableSelect
+                  label="Price Terms"
+                  placeholder="Select Price Terms"
+                  options={[
+                    { _id: "fixed", name: "Fixed" },
+                    { _id: "negotiable", name: "Negotiable" }
+                  ]}
                   value={data.priceTerms}
-                  onValueChange={(val) =>
+                  onChange={(val) =>
                     onFieldChange("priceTerms", val as "fixed" | "negotiable")
                   }
-                >
-                  <SelectTrigger className="h-9 text-sm">
-                    <SelectValue placeholder="Select Price Terms" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="fixed">Fixed</SelectItem>
-                    <SelectItem value="negotiable">Negotiable</SelectItem>
-                  </SelectContent>
-                </Select>
+                />
               </div>
 
               <div className="space-y-1.5">

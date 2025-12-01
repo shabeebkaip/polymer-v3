@@ -1,16 +1,10 @@
 import React from "react";
 import { Label } from "../../ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../../ui/select";
 import { Input } from "../../ui/input";
 import { Card, CardContent } from "../../ui/card";
 import { ProductFormData, ProductDetailsProps } from "@/types/product";
 import MultiSelect from "@/components/shared/MultiSelect";
+import SearchableSelect from "@/components/shared/SearchableSelect";
 import { DropdownItem } from "@/types/shared";
 
 const ProductDetails: React.FC<ProductDetailsProps> = ({
@@ -26,224 +20,173 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
 }) => {
   return (
     <>
-      <div className="col-span-full mb-4 sm:mb-6">
-        <Card className="border-primary-500/30 bg-primary-50/50">
-          <CardContent className="p-3 sm:p-4">
-            <h4 className="text-base sm:text-lg font-semibold text-primary-500 mb-2">Technical Specifications</h4>
-            <p className="text-xs sm:text-sm text-primary-500">Define the technical characteristics and categories</p>
+      <div className="col-span-full">
+        <Card className="border-gray-200 bg-white">
+          <CardContent className="p-4 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+              <div>
+                <h4 className="text-sm font-semibold text-gray-900">Technical Specifications</h4>
+                <p className="text-xs text-gray-500 mt-0.5">Define the technical characteristics and categories</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <SearchableSelect
+                  label="Chemical Family"
+                  placeholder="Select Chemical Family"
+                  options={[...chemicalFamilies, { _id: "other", name: "Other" }]}
+                  value={data.chemicalFamily || ""}
+                  onChange={(val) => {
+                    onFieldChange("chemicalFamily", val);
+                    onFieldError("chemicalFamily");
+                  }}
+                  error={!!error.chemicalFamily}
+                  helperText={error.chemicalFamily}
+                  onFocus={() => onFieldError("chemicalFamily")}
+                />
+                {data.chemicalFamily === "other" && (
+                  <Input
+                    placeholder="Specify chemical family"
+                    value={data.chemicalFamilyOther || ""}
+                    onChange={e => onFieldChange("chemicalFamilyOther", e.target.value)}
+                    className="mt-2 h-9 text-sm"
+                  />
+                )}
+              </div>
+
+              <div className="space-y-1.5">
+                <SearchableSelect
+                  label="Polymer Type"
+                  placeholder="Select Polymer Type"
+                  options={[...polymersTypes, { _id: "other", name: "Other" }]}
+                  value={data.polymerType || ""}
+                  onChange={(val) => {
+                    onFieldChange("polymerType", val);
+                    onFieldError("polymerType");
+                  }}
+                  error={!!error.polymerType}
+                  helperText={error.polymerType}
+                  onFocus={() => onFieldError("polymerType")}
+                />
+                {data.polymerType === "other" && (
+                  <Input
+                    placeholder="Specify polymer type"
+                    value={data.polymerTypeOther || ""}
+                    onChange={e => onFieldChange("polymerTypeOther", e.target.value)}
+                    className="mt-2 h-9 text-sm"
+                  />
+                )}
+              </div>
+
+              <div className="space-y-1.5">
+                <SearchableSelect
+                  label="Physical Form"
+                  placeholder="Select Physical Form"
+                  options={[...physicalForms, { _id: "other", name: "Other" }]}
+                  value={data.physicalForm || ""}
+                  onChange={(val) => {
+                    onFieldChange("physicalForm", val);
+                    onFieldError("physicalForm");
+                  }}
+                  error={!!error.physicalForm}
+                  helperText={error.physicalForm}
+                  onFocus={() => onFieldError("physicalForm")}
+                />
+                {data.physicalForm === "other" && (
+                  <Input
+                    placeholder="Specify physical form"
+                    value={data.physicalFormOther || ""}
+                    onChange={e => onFieldChange("physicalFormOther", e.target.value)}
+                    className="mt-2 h-9 text-sm"
+                  />
+                )}
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium text-gray-700 flex items-center gap-1">
+                  Industries
+                  <span className="text-red-500">*</span>
+                </Label>
+                <MultiSelect
+                  label=""
+                  placeholder="Select Industries"
+                  options={industry}
+                  selected={data.industry || []}
+                  onChange={(selected) => {
+                    onFieldChange("industry", selected);
+                    onFieldError("industry");
+                  }}
+                />
+                {error.industry && (
+                  <p className="text-xs text-red-600 mt-1">{error.industry}</p>
+                )}
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium text-gray-700">
+                  Product Families
+                  <span className="text-gray-400 text-xs ml-1">(Optional)</span>
+                </Label>
+                <MultiSelect
+                  label=""
+                  placeholder="Select Product Families"
+                  options={productFamilies}
+                  selected={data.product_family || []}
+                  onChange={(selected) => {
+                    onFieldChange("product_family", selected);
+                    onFieldError("product_family");
+                  }}
+                />
+                {error.product_family && (
+                  <p className="text-xs text-red-600 mt-1">{error.product_family}</p>
+                )}
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="manufacturingMethod" className="text-xs font-medium text-gray-700">
+                  Manufacturing Method
+                  <span className="text-gray-400 text-xs ml-1">(Optional)</span>
+                </Label>
+                <Input
+                  id="manufacturingMethod"
+                  placeholder="e.g., Injection Molding"
+                  value={data.manufacturingMethod || ""}
+                  onChange={(e) => onFieldChange("manufacturingMethod", e.target.value)}
+                  className="h-9 text-sm"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="countryOfOrigin" className="text-xs font-medium text-gray-700">
+                  Country of Origin
+                  <span className="text-gray-400 text-xs ml-1">(Optional)</span>
+                </Label>
+                <Input
+                  id="countryOfOrigin"
+                  placeholder="e.g., Saudi Arabia"
+                  value={data.countryOfOrigin || ""}
+                  onChange={(e) => onFieldChange("countryOfOrigin", e.target.value)}
+                  className="h-9 text-sm"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="color" className="text-xs font-medium text-gray-700">
+                  Color
+                  <span className="text-gray-400 text-xs ml-1">(Optional)</span>
+                </Label>
+                <Input
+                  id="color"
+                  placeholder="e.g., Natural, White"
+                  value={data.color || ""}
+                  onChange={(e) => onFieldChange("color", e.target.value)}
+                  className="h-9 text-sm"
+                />
+              </div>
+            </div>
           </CardContent>
         </Card>
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="chemicalFamily" className="text-sm font-medium text-gray-700 flex items-center gap-1">
-          Chemical Family
-          <span className="text-red-500">*</span>
-        </Label>
-        <Select
-          value={data.chemicalFamily || ""}
-          onValueChange={(val) => {
-            onFieldChange("chemicalFamily", val);
-            onFieldError("chemicalFamily");
-          }}
-        >
-          <SelectTrigger 
-            className={`transition-all duration-200 ${
-              error.chemicalFamily 
-                ? 'border-red-300 focus:border-red-500 focus:ring-red-200' 
-                : 'border-gray-300 focus:border-primary-500 focus:ring-primary-500/30'
-            }`}
-          >
-            <SelectValue placeholder="Select Chemical Family" />
-          </SelectTrigger>
-          <SelectContent>
-            {chemicalFamilies.map((family: DropdownItem) => (
-              <SelectItem key={family._id} value={family._id}>
-                {family.name}
-              </SelectItem>
-            ))}
-            <SelectItem key="other" value="other">Other</SelectItem>
-          </SelectContent>
-        </Select>
-        {data.chemicalFamily === "other" && (
-          <Input
-            placeholder="Please specify other chemical family"
-            value={data.chemicalFamilyOther || ""}
-            onChange={e => onFieldChange("chemicalFamilyOther", e.target.value)}
-            className="mt-2 border-gray-300 focus:border-primary-500 focus:ring-primary-500/30"
-          />
-        )}
-        {error.chemicalFamily && (
-          <p className="text-xs text-red-600 mt-1">{error.chemicalFamily}</p>
-        )}
-      </div>
-
-      <div className="space-y-2">
-        <Label className="text-sm font-medium text-gray-700 flex items-center gap-1">
-          Product Families
-          <span className="text-gray-400 text-xs ml-1">(Optional)</span>
-        </Label>
-        <MultiSelect
-          label=""
-          placeholder="Select Product Families"
-          options={productFamilies}
-          selected={data.product_family || []}
-          onChange={(selected) => {
-            onFieldChange("product_family", selected);
-            onFieldError("product_family");
-          }}
-        />
-        {error.product_family && (
-          <p className="text-xs text-red-600 mt-1">{error.product_family}</p>
-        )}
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="polymerType" className="text-sm font-medium text-gray-700 flex items-center gap-1">
-          Polymer Type
-          <span className="text-red-500">*</span>
-        </Label>
-        <Select
-          value={data.polymerType || ""}
-          onValueChange={(val) => {
-            onFieldChange("polymerType", val);
-            onFieldError("polymerType");
-          }}
-        >
-          <SelectTrigger 
-            className={`transition-all duration-200 ${
-              error.polymerType 
-                ? 'border-red-300 focus:border-red-500 focus:ring-red-200' 
-                : 'border-gray-300 focus:border-primary-500 focus:ring-primary-500/30'
-            }`}
-          >
-            <SelectValue placeholder="Select Polymer Type" />
-          </SelectTrigger>
-          <SelectContent>
-            {polymersTypes.map((polymer: DropdownItem) => (
-              <SelectItem key={polymer._id} value={polymer._id}>
-                {polymer.name}
-              </SelectItem>
-            ))}
-            <SelectItem key="other" value="other">Other</SelectItem>
-          </SelectContent>
-        </Select>
-        {data.polymerType === "other" && (
-          <Input
-            placeholder="Please specify other polymer type"
-            value={data.polymerTypeOther || ""}
-            onChange={e => onFieldChange("polymerTypeOther", e.target.value)}
-            className="mt-2 border-gray-300 focus:border-primary-500 focus:ring-primary-500/30"
-          />
-        )}
-        {error.polymerType && (
-          <p className="text-xs text-red-600 mt-1">{error.polymerType}</p>
-        )}
-      </div>
-
-      <div className="space-y-2">
-        <Label className="text-sm font-medium text-gray-700 flex items-center gap-1">
-          Industries
-          <span className="text-red-500">*</span>
-        </Label>
-        <MultiSelect
-          label=""
-          placeholder="Select Industries"
-          options={industry}
-          selected={data.industry || []}
-          onChange={(selected) => {
-            onFieldChange("industry", selected);
-            onFieldError("industry");
-          }}
-        />
-        {error.industry && (
-          <p className="text-xs text-red-600 mt-1">{error.industry}</p>
-        )}
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="physicalForm" className="text-sm font-medium text-gray-700 flex items-center gap-1">
-          Physical Form
-          <span className="text-red-500">*</span>
-        </Label>
-        <Select
-          value={data.physicalForm || ""}
-          onValueChange={(val) => {
-            onFieldChange("physicalForm", val);
-            onFieldError("physicalForm");
-          }}
-        >
-          <SelectTrigger 
-            className={`transition-all duration-200 ${
-              error.physicalForm 
-                ? 'border-red-300 focus:border-red-500 focus:ring-red-200' 
-                : 'border-gray-300 focus:border-primary-500 focus:ring-primary-500/30'
-            }`}
-          >
-            <SelectValue placeholder="Select Physical Form" />
-          </SelectTrigger>
-          <SelectContent>
-            {physicalForms.map((form: DropdownItem) => (
-              <SelectItem key={form._id} value={form._id}>
-                {form.name}
-              </SelectItem>
-            ))}
-            <SelectItem key="other" value="other">Other</SelectItem>
-          </SelectContent>
-        </Select>
-        {data.physicalForm === "other" && (
-          <Input
-            placeholder="Please specify other physical form"
-            value={data.physicalFormOther || ""}
-            onChange={e => onFieldChange("physicalFormOther", e.target.value)}
-            className="mt-2 border-gray-300 focus:border-primary-500 focus:ring-primary-500/30"
-          />
-        )}
-        {error.physicalForm && (
-          <p className="text-xs text-red-600 mt-1">{error.physicalForm}</p>
-        )}
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="manufacturingMethod" className="text-sm font-medium text-gray-700">
-          Manufacturing Method
-          <span className="text-gray-400 text-xs ml-1">(Optional)</span>
-        </Label>
-        <Input
-          id="manufacturingMethod"
-          placeholder="e.g., Injection Molding, Extrusion, Blow Molding"
-          value={data.manufacturingMethod || ""}
-          onChange={(e) => onFieldChange("manufacturingMethod", e.target.value)}
-          className="border-gray-300 focus:border-primary-500 focus:ring-primary-500/30 transition-all duration-200"
-        />
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="countryOfOrigin" className="text-sm font-medium text-gray-700">
-          Country of Origin
-          <span className="text-gray-400 text-xs ml-1">(Optional)</span>
-        </Label>
-        <Input
-          id="countryOfOrigin"
-          placeholder="e.g., Saudi Arabia, UAE, Germany"
-          value={data.countryOfOrigin || ""}
-          onChange={(e) => onFieldChange("countryOfOrigin", e.target.value)}
-          className="border-gray-300 focus:border-primary-500 focus:ring-primary-500/30 transition-all duration-200"
-        />
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="color" className="text-sm font-medium text-gray-700">
-          Color
-          <span className="text-gray-400 text-xs ml-1">(Optional)</span>
-        </Label>
-        <Input
-          id="color"
-          placeholder="e.g., Natural, White, Black, Transparent"
-          value={data.color || ""}
-          onChange={(e) => onFieldChange("color", e.target.value)}
-          className="border-gray-300 focus:border-primary-500 focus:ring-primary-500/30 transition-all duration-200"
-        />
       </div>
     </>
   );
