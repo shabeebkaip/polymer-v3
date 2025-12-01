@@ -75,7 +75,10 @@ const ProductDetailClient: React.FC<ProductDetailClientProps> = ({ product }) =>
         {/* Documents & Certificates */}
         {(product.safety_data_sheet ||
           product.technical_data_sheet ||
-          product.certificate_of_analysis) && <ProductDocumentDetails product={product} />}
+          product.certificate_of_analysis ||
+          (product.fdaApproved && product.fdaCertificate && product.fdaCertificate.id) ||
+          (product.medicalGrade && product.medicalCertificate && product.medicalCertificate.id) ||
+          (product.certificates && product.certificates.length > 0)) && <ProductDocumentDetails product={product} />}
 
         {/* Company Details Card - Moved down */}
         {product.createdBy && (

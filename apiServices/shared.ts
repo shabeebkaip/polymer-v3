@@ -1,4 +1,5 @@
 import axiosInstance from "@/lib/axiosInstance";
+import { UploadedFile } from "@/types/shared";
 
 // 🛠️ Reusable function for dropdown API calls with timeout handling
 const fetchDropdownData = async (endpoint: string, entityName: string) => {
@@ -23,14 +24,6 @@ const fetchDropdownData = async (endpoint: string, entityName: string) => {
     throw error;
   }
 };
-
-
-export interface UploadedFile {
-  id: string;
-  fileUrl: string;
-  type?: string;
-  name?: string;
-}
 
 // ✅ SSR-friendly API using fetch with revalidate
 export const getIndustryList = async () => {
@@ -103,7 +96,15 @@ export const getPaymentTerms = async () => {
 
 export const postFileUpload = async (data: FormData): Promise<UploadedFile> => {
   try {
-    const response = await axiosInstance.post<{ fileUrl: string; id: string }>(
+    const response = await axiosInstance.post<{
+      fileUrl: string;
+      id: string;
+      originalFilename: string;
+      format: string;
+      resourceType: string;
+      viewUrl?: string;  // Only for raw files
+      downloadUrl?: string;
+    }>(
       "/file/upload",
       data,
       {
@@ -112,7 +113,19 @@ export const postFileUpload = async (data: FormData): Promise<UploadedFile> => {
         },
       }
     );
-    return response.data;
+    
+    // Map backend response to match UploadedFile interface
+    return {
+      fileUrl: response.data.fileUrl,
+      id: response.data.id,
+      name: response.data.originalFilename,  // Map for backward compatibility
+      type: response.data.format,  // Map format to type
+      originalFilename: response.data.originalFilename,
+      format: response.data.format,
+      resourceType: response.data.resourceType,
+      viewUrl: response.data.viewUrl,  // Relative URL for inline preview
+      downloadUrl: response.data.downloadUrl,  // URL for forced downloads
+    };
   } catch (error) {
     console.error("Error uploading:", error);
     throw error;

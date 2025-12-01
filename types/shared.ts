@@ -18,10 +18,15 @@ export interface FileUploadProps {
 }
 
 export interface UploadedFile {
-  id: string;
   fileUrl: string;
-  type?: string;
-  name?: string;
+  id: string;
+  name?: string;  // Keep for backward compatibility
+  type?: string;  // Keep for backward compatibility
+  originalFilename?: string;  // NEW: from backend
+  format?: string;  // NEW: from backend (jpg, pdf, png, xlsx, etc.)
+  resourceType?: string;  // NEW: from backend (image, raw)
+  viewUrl?: string;  // NEW: relative URL for inline preview (raw files only)
+  downloadUrl?: string;  // NEW: URL for forced downloads
 }
 
 export interface PreviewFile {

@@ -39,7 +39,10 @@ export const initialFormData: ProductFormData = {
   recyclable: false,
   bioDegradable: false,
   fdaApproved: false,
+  fdaCertificate: {},
   medicalGrade: false,
+  medicalCertificate: {},
+  certificates: [],
   createdBy: "",
   product_family: [],
 };

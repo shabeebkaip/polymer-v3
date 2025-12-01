@@ -9,6 +9,7 @@ import {
   FileAudio,
   FileVideo,
   FileText,
+  Download,
 } from "lucide-react";
 import { postFileUpload } from "@/apiServices/shared";
 import { Button } from "@/components/ui/button";
@@ -17,6 +18,55 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { FileUploadProps, UploadedFile } from "@/types/shared";
+
+// Helper to construct full viewUrl from relative path
+const getFullViewUrl = (file: UploadedFile): string => {
+  console.log("getFullViewUrl called with file:", { 
+    viewUrl: file.viewUrl, 
+    id: file.id, 
+    resourceType: file.resourceType,
+    format: file.format,
+    type: file.type
+  });
+  
+  // If viewUrl exists, use it (it's relative, e.g., /api/files/view/...)
+  if (file.viewUrl) {
+    // If already absolute, return as-is
+    if (file.viewUrl.startsWith("http")) {
+      console.log("Using absolute viewUrl:", file.viewUrl);
+      return file.viewUrl;
+    }
+    
+    // Prefix with API base URL (without trailing /api since viewUrl includes it)
+    const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+    const baseWithoutApi = apiBase.replace(/\/api$/, "");
+    const fullUrl = `${baseWithoutApi}${file.viewUrl}`;
+    console.log("Constructed full viewUrl:", fullUrl);
+    return fullUrl;
+  }
+  
+  // Fallback: construct viewUrl from file.id if viewUrl is missing
+  if (file.id) {
+    const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+    const baseWithoutApi = apiBase.replace(/\/api$/, "");
+    
+    // Determine resourceType from available fields
+    // Check if it's an image type, otherwise default to raw
+    const isImage = file.resourceType === "image" || 
+                    file.type?.startsWith("image/") || 
+                    file.format?.startsWith("image/") ||
+                    ["jpg", "jpeg", "png", "gif", "webp"].includes(file.format?.toLowerCase() || "");
+    const resourceType = isImage ? "image" : "raw";
+    
+    const constructedUrl = `${baseWithoutApi}/api/files/view/${encodeURIComponent(file.id)}?resourceType=${resourceType}`;
+    console.log("Constructed fallback URL:", constructedUrl);
+    return constructedUrl;
+  }
+  
+  // Last resort: return fileUrl (will force download)
+  console.log("Falling back to fileUrl:", file.fileUrl);
+  return file.fileUrl;
+};
 
 const FileUpload: React.FC<FileUploadProps> = ({
   onFileUpload,
@@ -42,11 +92,8 @@ const FileUpload: React.FC<FileUploadProps> = ({
         const formData = new FormData();
         formData.append("file", file);
         try {
-          const { fileUrl, id } = await postFileUpload(formData);
-          const uploadedFile: UploadedFile = {
-            fileUrl,
-            id,
-          };
+          const uploadedFile = await postFileUpload(formData);
+          // postFileUpload now returns complete UploadedFile with all fields
           newFiles.push(uploadedFile);
         } catch (error) {
           console.error("Error uploading file:", error);
@@ -64,7 +111,9 @@ const FileUpload: React.FC<FileUploadProps> = ({
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: { "application/pdf": [".pdf"] },
+    accept: { 
+      "application/pdf": [".pdf"]
+    },
     multiple,
   });
 
@@ -73,12 +122,13 @@ const FileUpload: React.FC<FileUploadProps> = ({
     if (setCloudinaryImage) setCloudinaryImage("");
   };
 
-  const getFileIcon = (type: string | undefined) => {
-    if (!type) return <FileImage className="w-6 h-6" />;
-    if (type.includes("pdf")) return <FileText className="w-6 h-6" />;
-    if (type.includes("mp4") || type.includes("video"))
+  const getFileIcon = (file: UploadedFile) => {
+    const format = file.format || file.type;
+    if (!format) return <FileImage className="w-6 h-6" />;
+    if (format.includes("pdf")) return <FileText className="w-6 h-6" />;
+    if (format.includes("mp4") || format.includes("video"))
       return <FileVideo className="w-6 h-6" />;
-    if (type.includes("mp3") || type.includes("audio"))
+    if (format.includes("mp3") || format.includes("audio"))
       return <FileAudio className="w-6 h-6" />;
     return <FileImage className="w-6 h-6" />;
   };
@@ -112,9 +162,9 @@ const FileUpload: React.FC<FileUploadProps> = ({
             className="relative flex flex-col items-center border rounded-md p-2 w-28 text-center"
             onClick={() => setPreviewFile(file)}
           >
-            {getFileIcon(file.type)}
-            <span className="truncate text-xs w-full mt-1">
-              view
+            {getFileIcon(file)}
+            <span className="truncate text-xs w-full mt-1" title={file.originalFilename || file.name}>
+              {file.originalFilename || file.name || "view"}
             </span>
             <Button
               size="icon"
@@ -133,37 +183,56 @@ const FileUpload: React.FC<FileUploadProps> = ({
 
       <Dialog open={!!previewFile} onOpenChange={() => setPreviewFile(null)}>
         {previewFile && (
-          <DialogContent className="w-full max-w-4xl h-[80vh] flex flex-col items-center justify-center">
-            <DialogTitle className="sr-only">File Preview</DialogTitle>
+          <DialogContent className="w-full max-w-7xl h-[80vh] flex flex-col">
+            <DialogTitle className="flex justify-between items-center">
+              <span>{previewFile.originalFilename || previewFile.name || "File Preview"}</span>
+              {previewFile.resourceType === "raw" && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => window.open(previewFile.downloadUrl || previewFile.fileUrl, "_blank")}
+                  className="ml-auto"
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  Download
+                </Button>
+              )}
+            </DialogTitle>
 
-            {/* Enhanced PDF detection for Cloudinary/raw URLs */}
-            {(
-              (previewFile.type && previewFile.type.includes("pdf")) ||
-              (previewFile.fileUrl && previewFile.fileUrl.includes("/raw/")) ||
-              (previewFile.name && previewFile.name.endsWith(".pdf"))
-            ) ? (
-              <iframe
-                src={previewFile.fileUrl}
-                title="PDF Preview"
-                className="w-full h-full border-none"
-              />
-            ) : previewFile.type?.includes("video") ? (
-              <video
-                src={previewFile.fileUrl}
-                controls
-                className="max-w-full max-h-full"
-              />
-            ) : previewFile.type?.includes("audio") ? (
-              <audio src={previewFile.fileUrl} controls className="w-full" />
-            ) : (
-              <Image
-                src={previewFile.fileUrl}
-                alt="Preview"
-                width={600}
-                height={400}
-                className="max-w-full max-h-full object-contain"
-              />
-            )}
+            <div className="flex-1 flex items-center justify-center overflow-hidden">
+              {/* Use viewUrl for raw files (PDFs, docs), fileUrl for images */}
+              {(previewFile.resourceType === "raw" || 
+                previewFile.format === "pdf" || 
+                previewFile.type === "pdf" ||
+                previewFile.type === "application/pdf") ? (
+                <iframe
+                  src={getFullViewUrl(previewFile)}
+                  title="Document Preview"
+                  className="w-full h-full border-none"
+                  onError={(e) => {
+                    // Fallback to download if inline preview fails
+                    console.error("Preview failed, falling back to download link");
+                    window.open(previewFile.downloadUrl || previewFile.fileUrl, "_blank");
+                  }}
+                />
+              ) : (previewFile.format?.includes("video") || previewFile.type?.includes("video")) ? (
+                <video
+                  src={previewFile.fileUrl}
+                  controls
+                  className="max-w-full max-h-full"
+                />
+              ) : (previewFile.format?.includes("audio") || previewFile.type?.includes("audio")) ? (
+                <audio src={previewFile.fileUrl} controls className="w-full" />
+              ) : (
+                <Image
+                  src={previewFile.fileUrl}
+                  alt="Preview"
+                  width={600}
+                  height={400}
+                  className="max-w-full max-h-full object-contain"
+                />
+              )}
+            </div>
           </DialogContent>
         )}
       </Dialog>

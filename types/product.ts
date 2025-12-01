@@ -1,10 +1,4 @@
-export interface UploadedFile {
-  id: string;
-  fileUrl: string;
-  type?: string;
-  name?: string;
-  [key: string]: any; // fallback for dynamic keys
-}
+import { UploadedFile } from './shared';
 
 export interface ProductImage {
   fileUrl: string;
@@ -69,7 +63,29 @@ export interface Product {
   recyclable?: boolean;
   bioDegradable?: boolean;
   fdaApproved?: boolean;
+  fdaCertificate?: {
+    fileUrl: string;
+    id: string;
+    name?: string;
+    type?: string;
+    originalFilename?: string;
+    format?: string;
+    resourceType?: string;
+    viewUrl?: string;
+    downloadUrl?: string;
+  };
   medicalGrade?: boolean;
+  medicalCertificate?: {
+    fileUrl: string;
+    id: string;
+    name?: string;
+    type?: string;
+    originalFilename?: string;
+    format?: string;
+    resourceType?: string;
+    viewUrl?: string;
+    downloadUrl?: string;
+  };
   leadTime?: string;
   paymentTerms?: NamedObject;
   priceTerms?: string;
@@ -82,19 +98,56 @@ export interface Product {
   }>;
   safety_data_sheet?: {
     fileUrl: string;
-    name: string;
-    type: string;
+    id: string;
+    name?: string;
+    type?: string;
+    originalFilename?: string;
+    format?: string;
+    resourceType?: string;
+    viewUrl?: string;
+    downloadUrl?: string;
   };
   technical_data_sheet?: {
     fileUrl: string;
-    name: string;
-    type: string;
+    id: string;
+    name?: string;
+    type?: string;
+    originalFilename?: string;
+    format?: string;
+    resourceType?: string;
+    viewUrl?: string;
+    downloadUrl?: string;
   };
   certificate_of_analysis?: {
     fileUrl: string;
-    name: string;
-    type: string;
+    id: string;
+    name?: string;
+    type?: string;
+    originalFilename?: string;
+    format?: string;
+    resourceType?: string;
+    viewUrl?: string;
+    downloadUrl?: string;
   };
+  certificates?: Array<{
+    name: string;
+    issuingAuthority: string;
+    certificateNumber: string;
+    issueDate: string;
+    expiryDate: string;
+    document: {
+      fileUrl: string;
+      id: string;
+      name?: string;
+      type?: string;
+      originalFilename?: string;
+      format?: string;
+      resourceType?: string;
+      viewUrl?: string;
+      downloadUrl?: string;
+    };
+    description: string;
+  }>;
   [key: string]: any;
 }
 
@@ -159,7 +212,19 @@ export interface ProductFormData {
   recyclable: boolean;
   bioDegradable: boolean;
   fdaApproved: boolean;
+  fdaCertificate: Record<string, any>;
   medicalGrade: boolean;
+  medicalCertificate: Record<string, any>;
+
+  certificates: Array<{
+    name: string;
+    issuingAuthority: string;
+    certificateNumber: string;
+    issueDate: string;
+    expiryDate: string;
+    document: any;
+    description: string;
+  }>;
 
   product_family: string[]; // Array of family IDs
 
@@ -378,7 +443,7 @@ export interface UserProductCardProps {
 
 export interface CertificationProps {
   data: ProductFormData;
-  onFieldChange: (field: keyof ProductFormData, value: boolean) => void;
+  onFieldChange: (field: keyof ProductFormData, value: boolean | any[] | Record<string, any>) => void;
 }
 
 export interface DocumentsProps {

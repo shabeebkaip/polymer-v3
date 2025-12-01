@@ -11,7 +11,7 @@ import Environmental from "./products/Environmental";
 import Certification from "./products/Certifications";
 import Documents from "./products/Documents";
 import { ProductFormData, ValidationErrors, RequiredField, AddEditProductProps } from "@/types/product";
-import type { UploadedFile } from "@/types/product";
+import type { UploadedFile } from "@/types/shared";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Badge } from "../ui/badge";
@@ -111,7 +111,7 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
 
-  const onFieldChange = (key: keyof ProductFormData, value: string | number | boolean | UploadedFile[] | undefined) => {
+  const onFieldChange = (key: keyof ProductFormData, value: string | number | boolean | UploadedFile[] | Record<string, any> | undefined) => {
     setData((prev) => ({
       ...prev,
       [key]: value,
@@ -334,6 +334,21 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
       }
     }
 
+    // Validate FDA and Medical Grade certificates
+    if (data.fdaApproved) {
+      const cert = data.fdaCertificate;
+      if (!cert || !cert.id || !cert.fileUrl) {
+        validationErrors.fdaCertificate = "FDA Approval certificate is required when FDA Approved is enabled";
+      }
+    }
+
+    if (data.medicalGrade) {
+      const cert = data.medicalCertificate;
+      if (!cert || !cert.id || !cert.fileUrl) {
+        validationErrors.medicalCertificate = "Medical Grade certificate is required when Medical Grade is enabled";
+      }
+    }
+
     if (Object.keys(validationErrors).length > 0) {
       console.warn("Validation errors:", validationErrors);
       
@@ -459,8 +474,31 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
         delete formatted[field];
       });
 
+      // Always include certificates array (even if empty) to properly handle deletions
+      formatted.certificates = formData.certificates || [];
+
+      // Handle FDA certificate - send null when toggle is off, otherwise include certificate object
+      if (!formData.fdaApproved) {
+        formatted.fdaCertificate = null;
+      } else if (formData.fdaCertificate && Object.keys(formData.fdaCertificate).length > 0) {
+        formatted.fdaCertificate = formData.fdaCertificate;
+      }
+
+      // Handle Medical certificate - send null when toggle is off, otherwise include certificate object
+      if (!formData.medicalGrade) {
+        formatted.medicalCertificate = null;
+      } else if (formData.medicalCertificate && Object.keys(formData.medicalCertificate).length > 0) {
+        formatted.medicalCertificate = formData.medicalCertificate;
+      }
+
       // Remove empty strings, null, and undefined values
+      // Preserve certificates array and certificate objects (including null) for proper backend handling
       Object.keys(formatted).forEach(key => {
+        // Skip certificates-related fields - they need explicit values (including empty arrays and null)
+        if (key === 'certificates' || key === 'fdaCertificate' || key === 'medicalCertificate') {
+          return;
+        }
+        
         const value = formatted[key];
         if (value === '' || value === null || value === undefined || 
             (Array.isArray(value) && value.length === 0)) {
