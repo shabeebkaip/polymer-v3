@@ -2,24 +2,44 @@ import React from "react";
 import { Label } from "../../ui/label";
 import { Input } from "../../ui/input";
 import { Card, CardContent } from "../../ui/card";
-import { Badge } from "../../ui/badge";
-import { Gauge, FileText } from "lucide-react";
+import { Gauge, Layers, Thermometer } from "lucide-react";
 import { ProductFormData, TechnicalPropertiesProps } from "@/types/product";
 import MultiSelect from "@/components/shared/MultiSelect";
 
 // Technical property categories based on backend schema
 const PROPERTY_CATEGORIES = [
   {
+    id: "physical",
     title: "Physical Properties",
     icon: Gauge,
+    description: "Base material characteristics and flow behavior",
     fields: [
       { key: "density", label: "Density", unit: "g/cm³", placeholder: "Enter density value" },
       { key: "mfi", label: "Melt Flow Index (MFI)", unit: "g/10 min", placeholder: "Enter MFI value" },
-      { key: "tensileStrength", label: "Tensile Strength", unit: "MPa", placeholder: "Enter tensile strength" },
-      { key: "elongationAtBreak", label: "Elongation at Break", unit: "%", placeholder: "Enter elongation at break" },
-      { key: "flexuralModulus", label: "Flexural Modulus", unit: "%", placeholder: "Enter Flexural Modulus" },
-      { key: "shoreHardness", label: "Shore Hardness", unit: "Shore A/D", placeholder: "Enter shore hardness" },
       { key: "waterAbsorption", label: "Water Absorption", unit: "%", placeholder: "Enter water absorption" },
+    ]
+  },
+  {
+    id: "mechanical",
+    title: "Mechanical Properties",
+    icon: Layers,
+    description: "Strength, stiffness, and deformation data",
+    fields: [
+      { key: "tensileStrength", label: "Tensile Strength", unit: "MPa", placeholder: "Enter tensile strength" },
+      { key: "elongationAtBreak", label: "Elongation at Break", unit: "%", placeholder: "Enter elongation" },
+      { key: "flexuralModulus", label: "Flexural Modulus", unit: "MPa", placeholder: "Enter flexural modulus" },
+      { key: "shoreHardness", label: "Shore Hardness", unit: "Shore A/D", placeholder: "Enter shore hardness" },
+    ]
+  },
+  {
+    id: "thermal",
+    title: "Thermal Properties",
+    icon: Thermometer,
+    description: "Temperature limits and thermal stability",
+    fields: [
+      { key: "meltingPoint", label: "Melting Point", unit: "°C", placeholder: "Enter melting point" },
+      { key: "glassTransitionTemperature", label: "Glass Transition Temp.", unit: "°C", placeholder: "Enter Tg" },
+      { key: "heatDeflectionTemperature", label: "Heat Deflection Temp.", unit: "°C", placeholder: "Enter HDT" },
     ]
   }
 ];
@@ -60,12 +80,19 @@ const TechnicalProperties: React.FC<TechnicalPropertiesProps> = ({
           <div key={category.title} className="col-span-full">
             <Card className="border-gray-200 bg-white">
               <CardContent className="p-4">
-                <div className="flex items-center gap-2 mb-3 pb-3 border-b border-gray-100">
-                  <Icon className="w-4 h-4 text-gray-700" />
-                  <h5 className="text-sm font-semibold text-gray-900">{category.title}</h5>
-                  <span className="ml-auto px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs font-medium">Optional</span>
+                <div className="flex items-start gap-3 mb-4">
+                  <div className="flex items-center justify-center w-9 h-9 rounded-full bg-gray-100">
+                    <Icon className="w-4 h-4 text-gray-700" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <h5 className="text-sm font-semibold text-gray-900">{category.title}</h5>
+                      <span className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs font-medium">Optional</span>
+                    </div>
+                    <p className="text-xs text-gray-500">{category.description}</p>
+                  </div>
                 </div>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {category.fields.map((field) => (
                     <div key={field.key} className="space-y-1.5">
