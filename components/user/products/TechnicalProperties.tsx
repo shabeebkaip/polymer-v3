@@ -6,15 +6,12 @@ import { Badge } from "../../ui/badge";
 import { Gauge, FileText } from "lucide-react";
 import { ProductFormData, TechnicalPropertiesProps } from "@/types/product";
 import MultiSelect from "@/components/shared/MultiSelect";
-import { DropdownItem } from "@/types/shared";
 
 // Technical property categories based on backend schema
 const PROPERTY_CATEGORIES = [
   {
     title: "Physical Properties",
     icon: Gauge,
-    color: "text-blue-600",
-    bgColor: "bg-blue-50",
     fields: [
       { key: "density", label: "Density", unit: "g/cm³", placeholder: "Enter density value" },
       { key: "mfi", label: "Melt Flow Index (MFI)", unit: "g/10 min", placeholder: "Enter MFI value" },
@@ -34,51 +31,45 @@ const TechnicalProperties: React.FC<TechnicalPropertiesProps> = ({
 }) => {
   return (
     <>
-      <div className="col-span-full mb-6">
-        <Card className="border-indigo-200 bg-indigo-50/50">
+      {/* Grades Selection */}
+      <div className="col-span-full">
+        <Card className="border-gray-200 bg-white">
           <CardContent className="p-4">
-            <h4 className="text-lg font-semibold text-indigo-800 mb-2">Technical Properties</h4>
-            <p className="text-sm text-indigo-600">Define material characteristics and performance data</p>
-            <Badge variant="secondary" className="mt-2 text-xs">Optional - Enhance product credibility</Badge>
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <h4 className="text-sm font-semibold text-gray-900">Product Grades</h4>
+                <p className="text-xs text-gray-500 mt-0.5">Select all grades that apply to this product</p>
+              </div>
+              <span className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs font-medium">Optional</span>
+            </div>
+            <MultiSelect
+              label=""
+              placeholder="Select applicable grades"
+              options={grades}
+              selected={data.grade || []}
+              onChange={(selected) => onFieldChange("grade", selected)}
+            />
           </CardContent>
         </Card>
-      </div>
-
-      {/* Grades Selection */}
-      <div className="col-span-full mb-6">
-        <div className="space-y-2">
-          <Label className="text-sm font-medium text-gray-700 flex items-center gap-2">
-            <FileText className="w-4 h-4" />
-            Product Grades
-            <span className="text-gray-400 text-xs">(Optional)</span>
-          </Label>
-          <MultiSelect
-            label=""
-            placeholder="Select applicable grades"
-            options={grades}
-            selected={data.grade || []}
-            onChange={(selected) => onFieldChange("grade", selected)}
-          />
-          <p className="text-xs text-gray-500">Select all grades that apply to this product</p>
-        </div>
       </div>
 
       {/* Technical Property Categories */}
       {PROPERTY_CATEGORIES.map((category) => {
         const Icon = category.icon;
         return (
-          <div key={category.title} className="col-span-full mb-6">
-            <Card className="border-gray-200 hover:shadow-md transition-shadow duration-200">
+          <div key={category.title} className="col-span-full">
+            <Card className="border-gray-200 bg-white">
               <CardContent className="p-4">
-                <div className={`flex items-center gap-2 mb-4 p-2 rounded-lg ${category.bgColor}`}>
-                  <Icon className={`w-5 h-5 ${category.color}`} />
-                  <h5 className="font-semibold text-gray-800">{category.title}</h5>
+                <div className="flex items-center gap-2 mb-3 pb-3 border-b border-gray-100">
+                  <Icon className="w-4 h-4 text-gray-700" />
+                  <h5 className="text-sm font-semibold text-gray-900">{category.title}</h5>
+                  <span className="ml-auto px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs font-medium">Optional</span>
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {category.fields.map((field) => (
-                    <div key={field.key} className="space-y-2">
-                      <Label htmlFor={field.key} className="text-sm font-medium text-gray-700">
+                    <div key={field.key} className="space-y-1.5">
+                      <Label htmlFor={field.key} className="text-xs font-medium text-gray-700">
                         {field.label}
                         <span className="text-gray-400 text-xs ml-1">({field.unit})</span>
                       </Label>
@@ -90,9 +81,9 @@ const TechnicalProperties: React.FC<TechnicalPropertiesProps> = ({
                           placeholder={field.placeholder}
                           value={(data as Record<string, unknown>)?.[field.key] as string || ""}
                           onChange={(e) => onFieldChange(field.key as keyof ProductFormData, e.target.value)}
-                          className="pr-16 border-gray-300 focus:border-indigo-500 focus:ring-indigo-200 transition-all duration-200"
+                          className="pr-16 h-9 text-sm"
                         />
-                        <div className="absolute right-3 top-2.5 text-sm text-gray-500 pointer-events-none">
+                        <div className="absolute right-3 top-2 text-xs text-gray-500 pointer-events-none">
                           {field.unit}
                         </div>
                       </div>

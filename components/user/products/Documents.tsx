@@ -1,48 +1,48 @@
-import React from "react";
-import FileUpload from "@/components/shared/FileUpload";
-import { Card, CardContent, CardHeader, CardTitle } from "../../ui/card";
-import { Badge } from "../../ui/badge";
-import { FileText, Shield, AlertTriangle, CheckCircle2, Upload } from "lucide-react";
-import { UploadedFile, ProductFormData, DocumentsProps } from "@/types/product";
+import React from 'react';
+import FileUpload from '@/components/shared/FileUpload';
+import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
+import { Badge } from '../../ui/badge';
+import { FileText, Shield, AlertTriangle, CheckCircle2, Upload } from 'lucide-react';
+import { ProductFormData, DocumentsProps } from '@/types/product';
 
 // Document type configurations
 const DOCUMENT_TYPES = [
   {
-    key: "safety_data_sheet" as keyof ProductFormData,
-    title: "Safety Data Sheet (SDS)",
-    description: "Essential safety information and handling procedures",
+    key: 'safety_data_sheet' as keyof ProductFormData,
+    title: 'Safety Data Sheet (SDS)',
+    description: 'Essential safety information and handling procedures',
     icon: AlertTriangle,
-    color: "text-red-600",
-    bgColor: "bg-red-50",
-    borderColor: "border-red-200",
+    color: 'text-red-600',
+    bgColor: 'bg-red-50',
+    borderColor: 'border-red-200',
     required: false,
-    acceptedFormats: "PDF only",
-    maxSize: "5MB"
+    acceptedFormats: 'PDF only',
+    maxSize: '5MB',
   },
   {
-    key: "technical_data_sheet" as keyof ProductFormData,
-    title: "Technical Data Sheet (TDS)",
-    description: "Detailed technical specifications and properties",
+    key: 'technical_data_sheet' as keyof ProductFormData,
+    title: 'Technical Data Sheet (TDS)',
+    description: 'Detailed technical specifications and properties',
     icon: FileText,
-    color: "text-blue-600",
-    bgColor: "bg-blue-50",
-    borderColor: "border-blue-200",
+    color: 'text-blue-600',
+    bgColor: 'bg-blue-50',
+    borderColor: 'border-blue-200',
     required: false,
-    acceptedFormats: "PDF only",
-    maxSize: "5MB"
+    acceptedFormats: 'PDF only',
+    maxSize: '5MB',
   },
   {
-    key: "certificate_of_analysis" as keyof ProductFormData,
-    title: "Certificate of Analysis (COA)",
-    description: "Quality assurance and testing results",
+    key: 'certificate_of_analysis' as keyof ProductFormData,
+    title: 'Certificate of Analysis (COA)',
+    description: 'Quality assurance and testing results',
     icon: Shield,
-    color: "text-primary-500",
-    bgColor: "bg-primary-50",
-    borderColor: "border-primary-500/30",
+    color: 'text-primary-500',
+    bgColor: 'bg-primary-50',
+    borderColor: 'border-primary-500/30',
     required: false,
-    acceptedFormats: "PDF only",
-    maxSize: "5MB"
-  }
+    acceptedFormats: 'PDF only',
+    maxSize: '5MB',
+  },
 ];
 
 const Documents: React.FC<DocumentsProps> = ({ data, onFieldChange }) => {
@@ -61,10 +61,15 @@ const Documents: React.FC<DocumentsProps> = ({ data, onFieldChange }) => {
             <div className="flex items-center justify-between">
               <div>
                 <h4 className="text-lg font-semibold text-orange-800 mb-2">Supporting Documents</h4>
-                <p className="text-sm text-orange-600">Upload certificates and technical documentation</p>
+                <p className="text-sm text-orange-600">
+                  Upload certificates and technical documentation
+                </p>
               </div>
               <div className="text-right">
-                <Badge variant="outline" className="bg-orange-100 text-orange-700 border-orange-300">
+                <Badge
+                  variant="outline"
+                  className="bg-orange-100 text-orange-700 border-orange-300"
+                >
                   {getTotalUploaded()} / {DOCUMENT_TYPES.length} Uploaded
                 </Badge>
                 <p className="text-xs text-orange-600 mt-1">All documents are optional</p>
@@ -81,7 +86,9 @@ const Documents: React.FC<DocumentsProps> = ({ data, onFieldChange }) => {
 
         return (
           <div key={docType.key} className="col-span-full">
-            <Card className={`${hasFiles ? 'border-primary-500/30 bg-primary-50/20' : 'border-gray-200'}`}>
+            <Card
+              className={`${hasFiles ? 'border-primary-500/30 bg-primary-50/20' : 'border-gray-200'}`}
+            >
               <CardContent className="p-4">
                 <div className="flex items-center justify-between gap-4">
                   <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -91,7 +98,9 @@ const Documents: React.FC<DocumentsProps> = ({ data, onFieldChange }) => {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
                         <h3 className="text-sm font-semibold text-gray-800">{docType.title}</h3>
-                        {hasFiles && <CheckCircle2 className="w-4 h-4 text-primary-500 flex-shrink-0" />}
+                        {hasFiles && (
+                          <CheckCircle2 className="w-4 h-4 text-primary-500 flex-shrink-0" />
+                        )}
                       </div>
                       <p className="text-xs text-gray-500 truncate">{docType.description}</p>
                       <div className="flex items-center gap-2 mt-1">
@@ -102,20 +111,16 @@ const Documents: React.FC<DocumentsProps> = ({ data, onFieldChange }) => {
                     </div>
                   </div>
                   <FileUpload
-                  onFileUpload={(uploadedFiles) => {
-                    onFieldChange(docType.key, uploadedFiles);
-                  }}
-                  buttonText={
-                    hasFiles 
-                      ? `Replace` 
-                      : `Upload`
-                  }
-                  existingFiles={Array.isArray(files) ? files : []}
-                  multiple={false}
-                  setCloudinaryImage={(url) => {
-                    console.log("Cloudinary image URL:", url);
-                  }}
-                />
+                    onFileUpload={(uploadedFiles) => {
+                      onFieldChange(docType.key, uploadedFiles);
+                    }}
+                    buttonText={hasFiles ? `Replace` : `Upload`}
+                    existingFiles={Array.isArray(files) ? files : []}
+                    multiple={false}
+                    setCloudinaryImage={(url) => {
+                      console.log('Cloudinary image URL:', url);
+                    }}
+                  />
                 </div>
               </CardContent>
             </Card>
