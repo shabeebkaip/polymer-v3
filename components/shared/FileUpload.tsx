@@ -18,6 +18,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { FileUploadProps, UploadedFile } from "@/types/shared";
+import { toast } from "sonner";
 
 // Helper to construct full viewUrl from relative path
 const getFullViewUrl = (file: UploadedFile): string => {
@@ -68,6 +69,8 @@ const getFullViewUrl = (file: UploadedFile): string => {
   return file.fileUrl;
 };
 
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB limit
+
 const FileUpload: React.FC<FileUploadProps> = ({
   onFileUpload,
   existingFiles = [],
@@ -78,6 +81,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
   const [files, setFiles] = useState<UploadedFile[]>(existingFiles);
   const [loading, setLoading] = useState<boolean>(false);
   const [previewFile, setPreviewFile] = useState<UploadedFile | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   useEffect(() => {
     setFiles(existingFiles);
@@ -86,9 +90,25 @@ const FileUpload: React.FC<FileUploadProps> = ({
   const onDrop = useCallback(
     async (acceptedFiles: File[]) => {
       setLoading(true);
+      setErrorMessage("");
+
+      const validFiles = acceptedFiles.filter((file) => file.size <= MAX_FILE_SIZE);
+      const invalidCount = acceptedFiles.length - validFiles.length;
+
+      if (invalidCount > 0) {
+        const message = "Files must be 5MB or smaller";
+        setErrorMessage(message);
+        toast.error(message);
+      }
+
+      if (!validFiles.length) {
+        setLoading(false);
+        return;
+      }
+
       const newFiles: UploadedFile[] = [];
 
-      for (const file of acceptedFiles) {
+      for (const file of validFiles) {
         const formData = new FormData();
         formData.append("file", file);
         try {
@@ -115,6 +135,12 @@ const FileUpload: React.FC<FileUploadProps> = ({
       "application/pdf": [".pdf"]
     },
     multiple,
+    maxSize: MAX_FILE_SIZE,
+    onDropRejected: () => {
+      const message = "Files must be 5MB or smaller";
+      setErrorMessage(message);
+      toast.error(message);
+    },
   });
 
   const handleRemoveFile = (fileId: string) => {
@@ -154,6 +180,10 @@ const FileUpload: React.FC<FileUploadProps> = ({
           )}
         </div>
       </div>
+
+      {errorMessage && (
+        <p className="text-xs text-red-600">{errorMessage}</p>
+      )}
 
       <ScrollArea className="flex gap-4 flex-wrap max-h-[200px]">
         {files.map((file, index) => (

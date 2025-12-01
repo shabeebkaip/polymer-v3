@@ -12,18 +12,21 @@ const DOCUMENT_TYPES = [
     title: 'Safety Data Sheet (SDS)',
     description: 'Essential safety information and handling procedures',
     icon: AlertTriangle,
+    required: false,
   },
   {
     key: 'technical_data_sheet' as keyof ProductFormData,
     title: 'Technical Data Sheet (TDS)',
     description: 'Detailed technical specifications and properties',
     icon: FileText,
+    required: false,
   },
   {
     key: 'certificate_of_analysis' as keyof ProductFormData,
     title: 'Certificate of Analysis (COA)',
     description: 'Quality assurance and testing results',
     icon: Shield,
+    required: false,
   },
 ];
 
@@ -66,6 +69,15 @@ const Documents: React.FC<DocumentsProps> = ({ data, onFieldChange }) => {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
                           <h3 className="text-sm font-medium text-gray-900">{docType.title}</h3>
+                          <span
+                            className={`px-2 py-0.5 rounded text-[11px] font-medium ${
+                              docType.required
+                                ? 'bg-red-50 text-red-600'
+                                : 'bg-gray-100 text-gray-600'
+                            }`}
+                          >
+                            {docType.required ? 'Required' : 'Optional'}
+                          </span>
                           {hasDoc && (
                             <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0" />
                           )}
