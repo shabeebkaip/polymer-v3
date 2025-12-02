@@ -6,7 +6,6 @@ import { Deal, ApiDeal } from '@/types/home';
 import { FALLBACK_COMPANY_IMAGE } from '@/lib/fallbackImages';
 import DealCard from '@/components/home/DealCard';
 import { 
-  Filter, 
   Search, 
   SlidersHorizontal, 
   Package,
@@ -153,7 +152,7 @@ const DealsPage = () => {
         month: '2-digit',
         day: '2-digit',
       });
-    } catch (error) {
+    } catch {
       return 'Invalid Date';
     }
   };
