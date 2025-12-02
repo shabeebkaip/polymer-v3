@@ -95,7 +95,7 @@ const ContactPage = () => {
               Get in Touch
             </h1>
             <p className="text-xl text-primary-100 leading-relaxed">
-              We're here to help and answer any questions you might have. We look forward to hearing from you.
+             {"We're here to help and answer any questions you might have. We look forward to hearing from you."}
             </p>
           </div>
         </div>
@@ -144,7 +144,7 @@ const ContactPage = () => {
                 <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl flex items-center gap-3">
                   <CheckCircle2 className="w-5 h-5 text-green-600" />
                   <p className="text-green-800 font-medium">
-                    Message sent successfully! We'll get back to you soon.
+                    {"Message sent successfully! We'll get back to you soon."}
                   </p>
                 </div>
               )}

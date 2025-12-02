@@ -89,7 +89,7 @@ const ForgotPasswordPage = () => {
             </div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Forgot Password?</h1>
             <p className="text-gray-600">
-              No worries! Enter your email and we'll send you a reset code.
+              {` No worries! Enter your email and we'll send you a reset code.`}
             </p>
           </div>
 
@@ -145,8 +145,9 @@ const ForgotPasswordPage = () => {
         {/* Info Box */}
         <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
           <p className="text-sm text-blue-800">
-            <strong>Note:</strong> The reset code will be valid for 10 minutes. Please check your
-            spam folder if you don't receive it.
+            <strong>Note:</strong> 
+            {`The reset code will be valid for 10 minutes. Please check your
+            spam folder if you don't receive it.`}
           </p>
         </div>
       </div>

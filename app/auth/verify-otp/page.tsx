@@ -58,7 +58,7 @@ const VerifyOTPContent = () => {
               Verify Your Email
             </h1>
             <p className="text-gray-600">
-              We've sent a 6-digit code to
+              {"We've sent a 6-digit code to"}
             </p>
             <p className="text-primary-600 font-semibold mt-1 flex items-center justify-center gap-2">
               <Mail className="w-4 h-4" />
