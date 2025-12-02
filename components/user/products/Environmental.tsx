@@ -1,35 +1,27 @@
-import React from "react";
-import { Checkbox } from "../../ui/checkbox";
-import { Label } from "../../ui/label";
-import { Card, CardContent } from "../../ui/card";
-import { Badge } from "../../ui/badge";
-import { Recycle, TreePine, Earth, Award, CheckCircle2 } from "lucide-react";
-import { ProductFormData, EnvironmentalProps } from "@/types/product";
+import React from 'react';
+import { Checkbox } from '../../ui/checkbox';
+import { Label } from '../../ui/label';
+import { Card, CardContent } from '../../ui/card';
+import { Recycle, TreePine } from 'lucide-react';
+import { ProductFormData, EnvironmentalProps } from '@/types/product';
 
 // Environmental features configuration
 const ENVIRONMENTAL_FEATURES = [
   {
-    key: "recyclable" as keyof ProductFormData,
-    title: "Recyclable",
-    description: "Material can be recycled after use",
-    icon: Recycle
+    key: 'recyclable' as keyof ProductFormData,
+    title: 'Recyclable',
+    description: 'Material can be recycled after use',
+    icon: Recycle,
   },
   {
-    key: "bioDegradable" as keyof ProductFormData,
-    title: "Bio-Degradable", 
-    description: "Material naturally decomposes over time",
-    icon: TreePine
-  }
+    key: 'bioDegradable' as keyof ProductFormData,
+    title: 'Bio-Degradable',
+    description: 'Material naturally decomposes over time',
+    icon: TreePine,
+  },
 ];
 
-const Environmental: React.FC<EnvironmentalProps> = ({
-  data,
-  onFieldChange,
-}) => {
-  const getSelectedCount = () => {
-    return ENVIRONMENTAL_FEATURES.filter(feature => data[feature.key]).length;
-  };
-
+const Environmental: React.FC<EnvironmentalProps> = ({ data, onFieldChange }) => {
   return (
     <>
       <div className="col-span-full">
@@ -38,9 +30,13 @@ const Environmental: React.FC<EnvironmentalProps> = ({
             <div className="flex items-center justify-between mb-3 pb-3 border-b border-gray-100">
               <div>
                 <h4 className="text-sm font-semibold text-gray-900">Environmental Impact</h4>
-                <p className="text-xs text-gray-500 mt-0.5">Highlight eco-friendly properties and sustainability features</p>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  Highlight eco-friendly properties and sustainability features
+                </p>
               </div>
-              <span className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs font-medium">Optional</span>
+              <span className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs font-medium">
+                Optional
+              </span>
             </div>
 
             {/* Environmental Features */}
@@ -60,9 +56,7 @@ const Environmental: React.FC<EnvironmentalProps> = ({
                     <Checkbox
                       id={String(feature.key)}
                       checked={isSelected}
-                      onCheckedChange={(checked) =>
-                        onFieldChange(feature.key, Boolean(checked))
-                      }
+                      onCheckedChange={(checked) => onFieldChange(feature.key, Boolean(checked))}
                       className="w-4 h-4"
                     />
                     <Icon className="w-5 h-5 text-gray-700 flex-shrink-0" />

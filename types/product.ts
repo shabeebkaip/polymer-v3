@@ -29,6 +29,16 @@ export interface NamedObject {
   cn_name?: string;
 }
 
+export interface ProductCertificate {
+  name: string;
+  issuingAuthority: string;
+  certificateNumber: string;
+  issueDate: string;
+  expiryDate: string;
+  document?: UploadedFile | null;
+  description: string;
+}
+
 export interface Product {
   _id: string;
   productName: string;
@@ -129,25 +139,7 @@ export interface Product {
     viewUrl?: string;
     downloadUrl?: string;
   };
-  certificates?: Array<{
-    name: string;
-    issuingAuthority: string;
-    certificateNumber: string;
-    issueDate: string;
-    expiryDate: string;
-    document: {
-      fileUrl: string;
-      id: string;
-      name?: string;
-      type?: string;
-      originalFilename?: string;
-      format?: string;
-      resourceType?: string;
-      viewUrl?: string;
-      downloadUrl?: string;
-    };
-    description: string;
-  }>;
+  certificates?: ProductCertificate[];
   [key: string]: any;
 }
 
@@ -216,15 +208,7 @@ export interface ProductFormData {
   medicalGrade: boolean;
   medicalCertificate: Record<string, any>;
 
-  certificates: Array<{
-    name: string;
-    issuingAuthority: string;
-    certificateNumber: string;
-    issueDate: string;
-    expiryDate: string;
-    document: any;
-    description: string;
-  }>;
+  certificates: ProductCertificate[];
 
   product_family: string[]; // Array of family IDs
 

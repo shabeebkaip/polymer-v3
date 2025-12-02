@@ -1,8 +1,7 @@
 import React from 'react';
 import FileUpload from '@/components/shared/FileUpload';
-import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
-import { Badge } from '../../ui/badge';
-import { FileText, Shield, AlertTriangle, CheckCircle2, Upload } from 'lucide-react';
+import { Card, CardContent } from '../../ui/card';
+import { FileText, Shield, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { ProductFormData, DocumentsProps } from '@/types/product';
 
 // Document type configurations
@@ -31,13 +30,6 @@ const DOCUMENT_TYPES = [
 ];
 
 const Documents: React.FC<DocumentsProps> = ({ data, onFieldChange }) => {
-  const getTotalUploaded = () => {
-    return DOCUMENT_TYPES.reduce((count, docType) => {
-      const doc = data[docType.key];
-      return count + (doc && typeof doc === 'object' && Object.keys(doc).length > 0 ? 1 : 0);
-    }, 0);
-  };
-
   return (
     <>
       <div className="col-span-full">
@@ -46,9 +38,13 @@ const Documents: React.FC<DocumentsProps> = ({ data, onFieldChange }) => {
             <div className="flex items-center justify-between mb-3 pb-3 border-b border-gray-100">
               <div>
                 <h4 className="text-sm font-semibold text-gray-900">Supporting Documents</h4>
-                <p className="text-xs text-gray-500 mt-0.5">Upload certificates and technical documentation</p>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  Upload certificates and technical documentation
+                </p>
               </div>
-              <span className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs font-medium">Optional</span>
+              <span className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs font-medium">
+                Optional
+              </span>
             </div>
 
             <div className="space-y-3">
