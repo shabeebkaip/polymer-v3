@@ -2,12 +2,9 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getSocialLinks } from "@/apiServices/cms";
-import { SocialLink } from "@/types/shared";
 
 const Footer: React.FC = () => {
   const router = useRouter();
-  const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]);
   const [mounted, setMounted] = useState(false);
 
   const socials = [
@@ -35,9 +32,6 @@ const Footer: React.FC = () => {
 
   useEffect(() => {
     setMounted(true);
-    getSocialLinks().then((response) => {
-      setSocialLinks(response?.data);
-    });
   }, []);
 
   const navigateTo = (path: string) => {

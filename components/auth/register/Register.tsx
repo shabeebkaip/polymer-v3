@@ -304,7 +304,7 @@ const Register: React.FC = () => {
               <div className="space-y-4">
                 <div className="text-center pb-2">
                   <h2 className="text-xl font-semibold text-gray-800">Personal Information</h2>
-                  <p className="text-sm text-gray-600 mt-1">Let's start with your basic details</p>
+                  <p className="text-sm text-gray-600 mt-1">Let&apos;s start with your basic details</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -385,7 +385,7 @@ const Register: React.FC = () => {
                       {errors.email}
                     </p>
                   ) : (
-                    <p className="text-xs text-gray-500 mt-1">We'll send a verification code to this email</p>
+                    <p className="text-xs text-gray-500 mt-1">We&apos;ll send a verification code to this email</p>
                   )}
                 </div>
 

@@ -5,7 +5,7 @@ import VisitShopButton from '@/components/suppliers/VisitShopButton';
 import { Badge } from '@/components/ui/badge';
 import { FALLBACK_COMPANY_IMAGE } from '@/lib/fallbackImages';
 import { useChatUserStore } from '@/stores/chatUser';
-import { Product, CompanyDetailsProps } from '@/types/product';
+import { CompanyDetailsProps } from '@/types/product';
 import { useRouter } from 'next/navigation';
 import { useUserInfo } from '@/lib/useUserInfo';
 

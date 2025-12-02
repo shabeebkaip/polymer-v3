@@ -1,10 +1,12 @@
 import React from "react";
 import { Award, FileText, Eye, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Product, ProductDocumentDetailsProps } from "@/types/product";
+import { ProductDocumentDetailsProps } from "@/types/product";
+import { UploadedFile } from "@/types/shared";
 
 // Helper to get view URL for inline preview
-const getViewUrl = (document: any): string => {
+const getViewUrl = (document: UploadedFile | null | undefined): string => {
+  if (!document) return "";
   // If viewUrl exists, use it
   if (document.viewUrl) {
     // If already absolute, return as-is

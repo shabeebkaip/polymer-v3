@@ -1,4 +1,4 @@
-import { Product, ProductCertificationsProps } from '@/types/product';
+import { ProductCertificationsProps } from '@/types/product';
 import React from 'react';
 import ProductValueCard from '@/components/product/product-detail/ProductValueCard';
 

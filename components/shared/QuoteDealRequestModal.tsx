@@ -153,22 +153,6 @@ const QuoteDealRequestModal = ({
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const validationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Update helper with debounced validation
-  const updateField = useCallback(<T extends object>(field: keyof T, value: T[keyof T]) => {
-    dataRef.current = { ...dataRef.current, [field]: value };
-    setData(prev => ({ ...prev, [field]: value }));
-    
-    // Clear existing timeout
-    if (validationTimeoutRef.current) {
-      clearTimeout(validationTimeoutRef.current);
-    }
-    
-    // Set new timeout for validation
-    validationTimeoutRef.current = setTimeout(() => {
-      validateForm();
-    }, 300);
-  }, []);
-
   // Validation logic
   const validateForm = useCallback(() => {
     const errors: string[] = [];
@@ -195,6 +179,22 @@ const QuoteDealRequestModal = ({
     setValidationErrors(errors);
     return errors.length === 0;
   }, []);
+
+  // Update helper with debounced validation
+  const updateField = useCallback(<T extends object>(field: keyof T, value: T[keyof T]) => {
+    dataRef.current = { ...dataRef.current, [field]: value };
+    setData(prev => ({ ...prev, [field]: value }));
+    
+    // Clear existing timeout
+    if (validationTimeoutRef.current) {
+      clearTimeout(validationTimeoutRef.current);
+    }
+    
+    // Set new timeout for validation
+    validationTimeoutRef.current = setTimeout(() => {
+      validateForm();
+    }, 300);
+  }, [validateForm]);
 
   // Format date for display
   const formatDate = useCallback((date: Date | undefined) => {
@@ -255,7 +255,7 @@ const QuoteDealRequestModal = ({
     } finally {
       setIsSubmitting(false);
     }
-  }, [validateForm, validationErrors, initialData, token, router]);
+  }, [validateForm, initialData, token, router]);
 
   // Cleanup timeout on unmount
   useEffect(() => {

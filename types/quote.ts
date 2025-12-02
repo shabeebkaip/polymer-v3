@@ -82,11 +82,31 @@ export interface QuoteRequestResponse {
 export interface QuoteEnquiryProduct {
   productName?: string;
   sku?: string;
+  description?: string;
+  chemicalName?: string;
+  tradeName?: string;
+  countryOfOrigin?: string;
+  color?: string;
+  productImages?: Array<{ fileUrl: string; [key: string]: unknown }>;
+  density?: string;
+  mfi?: string | number;
+  createdBy?: {
+    firstName?: string;
+    lastName?: string;
+    company?: string;
+    email?: string;
+    phone?: string;
+    address?: string;
+    [key: string]: unknown;
+  };
 }
 
 export interface QuoteEnquiryUser {
   email?: string;
   name?: string;
+  company?: string;
+  phone?: string;
+  address?: string;
 }
 
 export interface QuoteEnquiryGrade {
@@ -119,10 +139,21 @@ export interface QuoteEnquiry {
   status: string;
   createdAt: string;
   updatedAt?: string;
+  destination?: string;
+  city?: string;
+  country?: string;
+  postCode?: string;
+  application?: string;
+  open_request?: boolean;
   orderDetails?: {
     quantity: number;
     uom: string;
     incoterm: string | { name?: string };
+    deliveryDate?: string;
+    pricing?: string | number;
+    packagingType?: { name?: string };
+    packagingSize?: string;
+    expectedAnnualVolume?: number;
   };
 }
 

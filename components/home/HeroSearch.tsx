@@ -39,7 +39,7 @@ const HeroSearch = () => {
             setPlaceholderIndex((prev) => (prev + 1) % placeholderTexts.length);
         }, 2000);
         return () => clearInterval(interval);
-    }, []);
+    }, [placeholderTexts.length]);
 
     // Debounced fetch function
     const fetchProducts = useCallback(async (query: string) => {

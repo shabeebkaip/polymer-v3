@@ -3,7 +3,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import QuoteRequestModal from "../shared/QuoteRequestModal";
 import SampleRequestModal from "../shared/SampleRequestModal";
-import { ProductCardTypes, ProductCardProps } from "@/types/product";
+import { ProductCardProps } from "@/types/product";
 import { FALLBACK_PRODUCT_IMAGE, FALLBACK_COMPANY_IMAGE } from "@/lib/fallbackImages";
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, userType }) => {

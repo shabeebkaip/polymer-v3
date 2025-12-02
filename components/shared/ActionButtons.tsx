@@ -5,7 +5,7 @@ import { ShoppingCart, FileText } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import QuoteRequestModal from './QuoteRequestModal';
 import SampleRequestModal from './SampleRequestModal';
-import { UserType, ActionButtonsProps } from '@/types/user';
+import { ActionButtonsProps } from '@/types/user';
 
 const ActionButtons: React.FC<ActionButtonsProps> = ({
   productId,

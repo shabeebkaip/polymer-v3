@@ -1,4 +1,4 @@
-import { Product, ProductTradeInformationProps } from "@/types/product";
+import { ProductTradeInformationProps } from "@/types/product";
 import ProductValueCard from "@/components/product/product-detail/ProductValueCard";
 import { Badge } from "@/components/ui/badge";
 import React from "react";

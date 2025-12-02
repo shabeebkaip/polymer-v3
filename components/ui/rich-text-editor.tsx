@@ -56,6 +56,13 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
     }
   }, [onChange, maxLength]);
 
+  const execCommand = useCallback((command: string, value?: string) => {
+    if (readOnly) return;
+    document.execCommand(command, false, value);
+    editorRef.current?.focus();
+    handleInput();
+  }, [readOnly, handleInput]);
+
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     // Handle keyboard shortcuts
     if (e.ctrlKey || e.metaKey) {
@@ -74,14 +81,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
           break;
       }
     }
-  }, []);
-
-  const execCommand = useCallback((command: string, value?: string) => {
-    if (readOnly) return;
-    document.execCommand(command, false, value);
-    editorRef.current?.focus();
-    handleInput();
-  }, [readOnly, handleInput]);
+  }, [execCommand]);
 
   const formatText = useCallback((format: string) => {
     if (readOnly) return;

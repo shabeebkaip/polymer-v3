@@ -1,5 +1,5 @@
 import React from "react";
-import { Product, ProductBasicInformationProps } from "@/types/product";
+import { ProductBasicInformationProps } from "@/types/product";
 import ProductValueCard from "@/components/product/product-detail/ProductValueCard";
 
 const ProductBasicInformation: React.FC<ProductBasicInformationProps> = ({ product }) => (

@@ -1,7 +1,8 @@
 
 // components/chat/ChatMessage.tsx
 import React from 'react';
-import { Message, ChatMessageProps } from '@/types/chat';
+import Image from 'next/image';
+import { ChatMessageProps } from '@/types/chat';
 
 export const ChatMessage: React.FC<ChatMessageProps> = ({
   message,
@@ -29,9 +30,11 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
         {!isCurrentUser && (
           <div className="flex items-center mb-1">
             {message.senderImage && (
-              <img
+              <Image
                 src={message.senderImage}
                 alt={message.senderName}
+                width={24}
+                height={24}
                 className="w-6 h-6 rounded-full mr-2"
               />
             )}

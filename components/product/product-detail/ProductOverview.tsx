@@ -1,5 +1,5 @@
-import React from "react";
-import { Product, ProductOverviewProps } from "@/types/product";
+import React from 'react';
+import { ProductOverviewProps } from '@/types/product';
 
 const ProductOverview: React.FC<ProductOverviewProps> = ({ product }) => {
   return (
@@ -16,9 +16,7 @@ const ProductOverview: React.FC<ProductOverviewProps> = ({ product }) => {
 
         {product.additionalInfo && product.additionalInfo.length > 0 ? (
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Additional Information
-            </h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Additional Information</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {product.additionalInfo.map((info, index) => (
                 <div
@@ -29,9 +27,7 @@ const ProductOverview: React.FC<ProductOverviewProps> = ({ product }) => {
                     <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
                     {info.title}
                   </h4>
-                  <p className="text-blue-800 leading-relaxed">
-                    {info.description}
-                  </p>
+                  <p className="text-blue-800 leading-relaxed">{info.description}</p>
                 </div>
               ))}
             </div>

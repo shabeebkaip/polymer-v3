@@ -5,7 +5,6 @@ import { useUserInfo } from '@/lib/useUserInfo';
 import { Request } from '@/types/home';
 import RequestCard from '@/components/home/RequestCard';
 import { 
-  Filter, 
   Search, 
   SlidersHorizontal, 
   Users,

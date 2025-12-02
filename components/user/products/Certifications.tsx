@@ -8,6 +8,7 @@ import { Card, CardContent } from '../../ui/card';
 import { Badge } from '../../ui/badge';
 import { Shield, CheckCircle2, Crown, Plus, Trash2, GripVertical } from 'lucide-react';
 import { ProductFormData, CertificationProps, ProductCertificate } from '@/types/product';
+import { UploadedFile } from '@/types/shared';
 import FileUpload from '@/components/shared/FileUpload';
 
 // Certification configuration
@@ -101,8 +102,11 @@ const Certification: React.FC<CertificationProps> = ({ data, onFieldChange }) =>
           const isSelected = data[cert.key];
           const certificateFieldKey =
             cert.key === 'fdaApproved' ? 'fdaCertificate' : 'medicalCertificate';
-          const certificateData = data[certificateFieldKey];
-          const hasCertificate = certificateData && Object.keys(certificateData).length > 0;
+          const certificateData = data[certificateFieldKey] as Record<string, unknown> | undefined;
+          const hasCertificate = certificateData && 
+            typeof certificateData === 'object' && 
+            'id' in certificateData && 
+            'fileUrl' in certificateData;
 
           return (
             <Card
@@ -187,7 +191,7 @@ const Certification: React.FC<CertificationProps> = ({ data, onFieldChange }) =>
                               }}
                               buttonText={hasCertificate ? 'Replace' : 'Upload PDF'}
                               existingFiles={
-                                hasCertificate && certificateData.id ? [certificateData as any] : []
+                                hasCertificate && certificateData ? [certificateData as unknown as UploadedFile] : []
                               }
                               multiple={false}
                               setCloudinaryImage={(url) => console.log(url)}

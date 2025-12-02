@@ -52,51 +52,6 @@ const Header: React.FC = () => {
     {href: '/about-us', label: 'About Us' },
   ];
 
-  // User-specific navigation options for mobile menu
-  const navOptions =
-    user?.user_type === 'buyer'
-      ? [
-          {
-            href: '/user/profile',
-            label: 'Profile',
-            icon: '👤',
-            id: 'profile',
-          },
-          {
-            href: '/user/finance-requests/add',
-            label: 'Request Finance',
-            icon: '💰',
-            id: 'finance',
-          },
-          {
-            href: '/user/product-requests/add',
-            label: 'Request Product',
-            icon: '📦',
-            id: 'product-request',
-          },
-        ]
-      : user
-      ? [
-          {
-            href: '/user/profile',
-            label: 'Profile',
-            icon: '👤',
-            id: 'profile',
-          },
-          {
-            href: '/user/products',
-            label: 'My Products',
-            icon: '📦',
-            id: 'products',
-          },
-          {
-            href: '/user/promotions/add',
-            label: 'Post Offers',
-            icon: '📝',
-            id: 'offers',
-          },
-        ]
-      : [];
 
   return (
     <>

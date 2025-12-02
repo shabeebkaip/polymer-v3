@@ -35,7 +35,8 @@ import { Badge } from "@/components/ui/badge";
 
 import { useUserInfo } from "@/lib/useUserInfo";
 import { sellerSubmitOffer } from "@/apiServices/user";
-import { getIncoterms, postFileUpload, type UploadedFile } from "@/apiServices/shared";
+import { getIncoterms, postFileUpload } from "@/apiServices/shared";
+import { UploadedFile } from "@/types/shared";
 import { getBuyerOpportunities } from "@/apiServices/dealsAndRequests";
 import { BulkOrder } from "@/types/user";
 

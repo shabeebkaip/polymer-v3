@@ -141,7 +141,7 @@ const QuoteEnquiryDetails = () => {
   }, [fetchEnquiryDetail, clearEnquiryDetail]);
 
   const handleStatusChange = async () => {
-    if (!selectedStatus || !enquiryDetail) return;
+    if (!selectedStatus || !enquiryDetail || !enquiryDetail._id) return;
 
     try {
       setLocalUpdating(true);
@@ -258,7 +258,7 @@ const QuoteEnquiryDetails = () => {
                     Quote Enquiry Details
                   </h1>
                   <p className="text-gray-600 text-lg mt-2 font-medium">
-                    Enquiry ID: #{enquiryDetail._id.slice(-8).toUpperCase()}
+                    Enquiry ID: #{enquiryDetail._id?.slice(-8).toUpperCase() || 'N/A'}
                   </p>
                 </div>
               </div>
@@ -352,7 +352,7 @@ const QuoteEnquiryDetails = () => {
                         <p className="text-sm text-gray-600 mb-3">Product Image</p>
                         <Image
                           src={enquiryDetail.product.productImages[0].fileUrl}
-                          alt={enquiryDetail.product.productName}
+                          alt={enquiryDetail.product.productName || 'Product'}
                           width={400}
                           height={128}
                           className="w-full h-32 object-cover rounded-lg"
@@ -420,7 +420,7 @@ const QuoteEnquiryDetails = () => {
                     <h3 className="font-semibold text-gray-900">Pricing</h3>
                   </div>
                   <p className="text-sm font-medium text-purple-600">
-                    {enquiryDetail?.orderDetails.pricing || 'Quote Required'}
+                    {enquiryDetail?.orderDetails?.pricing || 'Quote Required'}
                   </p>
                 </div>
               </div>
@@ -446,7 +446,9 @@ const QuoteEnquiryDetails = () => {
                   <div className="bg-gray-50 rounded-xl p-4">
                     <p className="text-sm text-gray-600 mb-1">Incoterm</p>
                     <p className="font-semibold text-gray-900">
-                      {enquiryDetail?.orderDetails?.incoterm?.name || 'N/A'}
+                      {typeof enquiryDetail?.orderDetails?.incoterm === 'string' 
+                        ? enquiryDetail.orderDetails.incoterm 
+                        : enquiryDetail?.orderDetails?.incoterm?.name || 'N/A'}
                     </p>
                   </div>
 
@@ -659,7 +661,7 @@ const QuoteEnquiryDetails = () => {
                 <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
                   <span className="text-gray-600 font-medium">Last Updated:</span>
                   <span className="text-gray-900 font-medium">
-                    {formatDate(enquiryDetail.updatedAt)}
+                    {enquiryDetail.updatedAt ? formatDate(enquiryDetail.updatedAt) : 'N/A'}
                   </span>
                 </div>
 

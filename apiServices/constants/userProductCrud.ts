@@ -1,4 +1,5 @@
-import { ProductFormData, UploadedFile } from "@/types/product";
+import { ProductFormData } from "@/types/product";
+import { UploadedFile } from "@/types/shared";
 
 export const initialFormData: ProductFormData = {
   productName: "",

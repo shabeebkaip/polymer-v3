@@ -1,45 +1,19 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { Check, ChevronsUpDown, X, Search } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Input } from "@/components/ui/input";
-
-export interface DropdownOption {
-  _id: string;
-  name: string;
-  disabled?: boolean;
-  [key: string]: any;
-}
-
-interface SearchableDropdownProps {
-  options: DropdownOption[];
-  value?: string;
-  onValueChange: (value: string) => void;
-  placeholder?: string;
-  searchPlaceholder?: string;
-  emptyText?: string;
-  disabled?: boolean;
-  className?: string;
-  allowClear?: boolean;
-  loading?: boolean;
-  error?: boolean;
-  helperText?: string;
-}
+import * as React from 'react';
+import { Check, ChevronsUpDown, X, Search } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { SearchableDropdownProps } from '@/types/shared';
 
 export function SearchableDropdown({
   options = [],
   value,
   onValueChange,
-  placeholder = "Select option...",
-  searchPlaceholder = "Search...",
-  emptyText = "No option found.",
+  placeholder = 'Select option...',
+  searchPlaceholder = 'Search...',
+  emptyText = 'No option found.',
   disabled = false,
   className,
   allowClear = true,
@@ -48,7 +22,7 @@ export function SearchableDropdown({
   helperText,
 }: SearchableDropdownProps) {
   const [open, setOpen] = React.useState(false);
-  const [searchQuery, setSearchQuery] = React.useState("");
+  const [searchQuery, setSearchQuery] = React.useState('');
   const [highlightedIndex, setHighlightedIndex] = React.useState(0);
   const inputRef = React.useRef<HTMLInputElement>(null);
   const listRef = React.useRef<HTMLDivElement>(null);
@@ -62,11 +36,9 @@ export function SearchableDropdown({
   // Filter options based on search query
   const filteredOptions = React.useMemo(() => {
     if (!searchQuery) return options;
-    
+
     const query = searchQuery.toLowerCase();
-    return options.filter((option) =>
-      option.name.toLowerCase().includes(query)
-    );
+    return options.filter((option) => option.name.toLowerCase().includes(query));
   }, [options, searchQuery]);
 
   // Reset highlighted index when filtered options change
@@ -79,7 +51,7 @@ export function SearchableDropdown({
     if (open) {
       setTimeout(() => inputRef.current?.focus(), 0);
     } else {
-      setSearchQuery("");
+      setSearchQuery('');
     }
   }, [open]);
 
@@ -88,11 +60,11 @@ export function SearchableDropdown({
     if (open && listRef.current && filteredOptions.length > 0) {
       const listContainer = listRef.current;
       const highlightedElement = listContainer.children[highlightedIndex] as HTMLElement;
-      
+
       if (highlightedElement) {
         const containerRect = listContainer.getBoundingClientRect();
         const elementRect = highlightedElement.getBoundingClientRect();
-        
+
         if (elementRect.bottom > containerRect.bottom) {
           highlightedElement.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
         } else if (elementRect.top < containerRect.top) {
@@ -105,13 +77,13 @@ export function SearchableDropdown({
   const handleSelect = (selectedValue: string) => {
     onValueChange(selectedValue);
     setOpen(false);
-    setSearchQuery("");
+    setSearchQuery('');
     setHighlightedIndex(0);
   };
 
   const handleClear = (e: React.MouseEvent) => {
     e.stopPropagation();
-    onValueChange("");
+    onValueChange('');
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -126,9 +98,7 @@ export function SearchableDropdown({
     switch (e.key) {
       case 'ArrowDown':
         e.preventDefault();
-        setHighlightedIndex((prev) => 
-          prev < filteredOptions.length - 1 ? prev + 1 : prev
-        );
+        setHighlightedIndex((prev) => (prev < filteredOptions.length - 1 ? prev + 1 : prev));
         break;
       case 'ArrowUp':
         e.preventDefault();
@@ -143,12 +113,12 @@ export function SearchableDropdown({
       case 'Escape':
         e.preventDefault();
         setOpen(false);
-        setSearchQuery("");
+        setSearchQuery('');
         setHighlightedIndex(0);
         break;
       case 'Tab':
         setOpen(false);
-        setSearchQuery("");
+        setSearchQuery('');
         setHighlightedIndex(0);
         break;
     }
@@ -164,20 +134,16 @@ export function SearchableDropdown({
             aria-expanded={open}
             onKeyDown={handleKeyDown}
             className={cn(
-              "w-full justify-between transition-all duration-200",
-              !value && "text-muted-foreground",
-              error && "border-red-300 focus:border-red-500 focus:ring-red-200",
-              !error && "border-gray-300 focus:border-primary-500 focus:ring-primary-500/30",
+              'w-full justify-between transition-all duration-200',
+              !value && 'text-muted-foreground',
+              error && 'border-red-300 focus:border-red-500 focus:ring-red-200',
+              !error && 'border-gray-300 focus:border-primary-500 focus:ring-primary-500/30',
               className
             )}
             disabled={disabled || loading}
           >
             <span className="truncate text-left">
-              {loading
-                ? "Loading..."
-                : selectedOption
-                ? selectedOption.name
-                : placeholder}
+              {loading ? 'Loading...' : selectedOption ? selectedOption.name : placeholder}
             </span>
             <div className="flex items-center gap-1 flex-shrink-0 ml-2">
               {allowClear && value && !disabled && (
@@ -190,8 +156,8 @@ export function SearchableDropdown({
             </div>
           </Button>
         </PopoverTrigger>
-        <PopoverContent 
-          className="w-[var(--radix-popover-trigger-width)] p-0" 
+        <PopoverContent
+          className="w-[var(--radix-popover-trigger-width)] p-0"
           align="start"
           sideOffset={4}
         >
@@ -209,20 +175,15 @@ export function SearchableDropdown({
             {searchQuery && (
               <X
                 className="h-4 w-4 shrink-0 opacity-50 hover:opacity-100 cursor-pointer transition-opacity"
-                onClick={() => setSearchQuery("")}
+                onClick={() => setSearchQuery('')}
               />
             )}
           </div>
 
           {/* Scrollable Options List */}
-          <div 
-            ref={listRef}
-            className="max-h-[300px] overflow-y-auto overflow-x-hidden p-1"
-          >
+          <div ref={listRef} className="max-h-[300px] overflow-y-auto overflow-x-hidden p-1">
             {filteredOptions.length === 0 ? (
-              <div className="py-6 text-center text-sm text-muted-foreground">
-                {emptyText}
-              </div>
+              <div className="py-6 text-center text-sm text-muted-foreground">{emptyText}</div>
             ) : (
               filteredOptions.map((option, index) => (
                 <div
@@ -230,18 +191,18 @@ export function SearchableDropdown({
                   onClick={() => !option.disabled && handleSelect(option._id)}
                   onMouseEnter={() => setHighlightedIndex(index)}
                   className={cn(
-                    "relative flex cursor-pointer select-none items-center rounded-sm px-2 py-2 text-sm outline-none transition-colors",
+                    'relative flex cursor-pointer select-none items-center rounded-sm px-2 py-2 text-sm outline-none transition-colors',
                     option.disabled
-                      ? "pointer-events-none opacity-50"
-                      : "hover:bg-primary-50 hover:text-primary-900",
-                    value === option._id && "bg-primary-100 text-primary-900 font-medium",
-                    highlightedIndex === index && value !== option._id && "bg-gray-100"
+                      ? 'pointer-events-none opacity-50'
+                      : 'hover:bg-primary-50 hover:text-primary-900',
+                    value === option._id && 'bg-primary-100 text-primary-900 font-medium',
+                    highlightedIndex === index && value !== option._id && 'bg-gray-100'
                   )}
                 >
                   <Check
                     className={cn(
-                      "mr-2 h-4 w-4 flex-shrink-0",
-                      value === option._id ? "opacity-100 text-primary-500" : "opacity-0"
+                      'mr-2 h-4 w-4 flex-shrink-0',
+                      value === option._id ? 'opacity-100 text-primary-500' : 'opacity-0'
                     )}
                   />
                   <span className="truncate">{option.name}</span>
@@ -251,15 +212,10 @@ export function SearchableDropdown({
           </div>
         </PopoverContent>
       </Popover>
-      
+
       {/* Helper Text / Error Message */}
       {helperText && (
-        <p className={cn(
-          "text-xs mt-1",
-          error ? "text-red-600" : "text-gray-500"
-        )}>
-          {helperText}
-        </p>
+        <p className={cn('text-xs mt-1', error ? 'text-red-600' : 'text-gray-500')}>{helperText}</p>
       )}
     </div>
   );

@@ -239,7 +239,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
                   src={getFullViewUrl(previewFile)}
                   title="Document Preview"
                   className="w-full h-full border-none"
-                  onError={(e) => {
+                  onError={() => {
                     // Fallback to download if inline preview fails
                     console.error("Preview failed, falling back to download link");
                     window.open(previewFile.downloadUrl || previewFile.fileUrl, "_blank");

@@ -10,12 +10,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { ImageUploadProps, UploadedFile } from "@/types/shared";
+import { FileRejection } from "react-dropzone";
 
 const ImageUpload: React.FC<ImageUploadProps> = ({
   onFilesUpload,
   previews = [],
   setPreviews,
-  onImageClick,
   width = "100%",
   height = "150px",
 }) => {
@@ -24,7 +24,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   const [error, setError] = useState<string | null>(null);
 
   const onDrop = useCallback(
-    async (acceptedFiles: File[], rejectedFiles: any[]) => {
+    async (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
       // Clear previous error
       setError(null);
 

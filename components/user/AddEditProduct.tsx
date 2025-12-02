@@ -111,7 +111,7 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
 
-  const onFieldChange = (key: keyof ProductFormData, value: string | number | boolean | UploadedFile[] | Record<string, any> | undefined) => {
+  const onFieldChange = (key: keyof ProductFormData, value: string | number | boolean | UploadedFile[] | Record<string, unknown> | undefined) => {
     setData((prev) => ({
       ...prev,
       [key]: value,
@@ -160,7 +160,7 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
         
         // Special validation for productImages - backend requires id, name, type, fileUrl
         if (field === 'productImages' && Array.isArray(value) && value.length > 0) {
-          const hasInvalidImage = value.some((img: any) => {
+          const hasInvalidImage = value.some((img: UploadedFile) => {
             return !img.id || !img.name || !img.type || !img.fileUrl;
           });
           if (hasInvalidImage) {
@@ -302,7 +302,7 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
         validationErrors.productImages = "At least one product image is required";
       } else {
         // Validate productImages internal structure
-        const hasInvalidImage = data.productImages.some((img: any) => {
+        const hasInvalidImage = data.productImages.some((img: UploadedFile) => {
           return !img.id || !img.name || !img.type || !img.fileUrl;
         });
         if (hasInvalidImage) {

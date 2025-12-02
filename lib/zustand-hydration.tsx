@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react';
 
 // Custom hook to handle Zustand SSR hydration
 export function useIsomorphicLayoutEffect(effect: () => void, deps?: React.DependencyList) {
-  useEffect(effect, deps);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => effect(), deps);
 }
 
 // Hook to ensure component only renders on client

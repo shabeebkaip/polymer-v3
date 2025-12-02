@@ -2,7 +2,7 @@
 import React from "react";
 import ProductCard from "@/components/product/ProductCard";
 import ProductCardSkeleton from "../shared/ProductCardSkeleton";
-import { ProductCardTypes, ProductsListProps } from "@/types/product";
+import { ProductsListProps } from "@/types/product";
 
 // --- Component ---
 const ProductsList: React.FC<ProductsListProps> = ({
