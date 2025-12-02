@@ -76,7 +76,7 @@ const VerifyOTPContent = () => {
           {/* Info Box */}
           <div className="mt-6 bg-amber-50 border border-amber-200 rounded-lg p-4">
             <p className="text-sm text-amber-800">
-              <strong>Tip:</strong> Check your spam folder if you don't see the email. The code expires in 10 minutes.
+              <strong>Tip:</strong> {"Check your spam folder if you don't see the email. The code expires in 10 minutes."}
             </p>
           </div>
         </div>
