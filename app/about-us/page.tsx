@@ -81,9 +81,9 @@ const AboutUsPage = () => {
             </div>
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Vision</h2>
             <p className="text-gray-700 text-lg leading-relaxed">
-              To be the world's most trusted and innovative digital marketplace for polymers, enabling
+              { `To be the world's most trusted and innovative digital marketplace for polymers, enabling
               sustainable growth and global collaboration. We envision a future where every business
-              can access quality materials and opportunities with confidence.
+              can access quality materials and opportunities with confidence.` }
             </p>
           </div>
           <div className="bg-primary-50 rounded-3xl p-8 md:p-10 border border-primary-500/20">
@@ -92,9 +92,9 @@ const AboutUsPage = () => {
             </div>
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Mission</h2>
             <p className="text-gray-700 text-lg leading-relaxed">
-              To revolutionize the polymer industry by providing a transparent, secure, and efficient
+              {` To revolutionize the polymer industry by providing a transparent, secure, and efficient
               platform connecting buyers and suppliers worldwide. Based in Riyadh, we empower businesses
-              with technology, expertise, and a global network.
+              with technology, expertise, and a global network.`}
             </p>
           </div>
         </div>
@@ -251,8 +251,8 @@ const AboutUsPage = () => {
                 ))}
               </div>
               <p className="text-gray-700 text-base leading-relaxed mb-6 italic">
-                "Polymers Hub made sourcing raw materials so much easier and more reliable. The
-                support team is fantastic!"
+                {`"Polymers Hub made sourcing raw materials so much easier and more reliable. The
+                support team is fantastic!"`}
               </p>
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-primary-50 rounded-full flex items-center justify-center">
@@ -271,8 +271,8 @@ const AboutUsPage = () => {
                 ))}
               </div>
               <p className="text-gray-700 text-base leading-relaxed mb-6 italic">
-                "We expanded our business to new countries thanks to the global reach of this
-                platform. Game changer for us!"
+                {`"We expanded our business to new countries thanks to the global reach of this
+                platform. Game changer for us!"`}
               </p>
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-primary-50 rounded-full flex items-center justify-center">
@@ -291,8 +291,8 @@ const AboutUsPage = () => {
                 ))}
               </div>
               <p className="text-gray-700 text-base leading-relaxed mb-6 italic">
-                "The transaction process is secure and transparent. Highly recommended for anyone in
-                the polymer industry."
+                {`"The transaction process is secure and transparent. Highly recommended for anyone in
+                the polymer industry."`}
               </p>
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-primary-50 rounded-full flex items-center justify-center">
@@ -313,24 +313,24 @@ const AboutUsPage = () => {
           <div className="bg-white/80 border border-primary-500/20 rounded-2xl p-6 shadow-lg flex flex-col items-center gap-3 backdrop-blur-md">
             <User className="w-8 h-8 text-primary-500 mb-1" />
             <p className="text-gray-700 text-base italic">
-              "Polymers Hub made sourcing raw materials so much easier and more reliable. The
-              support team is fantastic!"
+              {`"Polymers Hub made sourcing raw materials so much easier and more reliable. The
+              support team is fantastic!"`}
             </p>
             <span className="text-primary-500 font-semibold mt-2">- S. Kumar, Buyer</span>
           </div>
           <div className="bg-white/80 border border-primary-500/20 rounded-2xl p-6 shadow-lg flex flex-col items-center gap-3 backdrop-blur-md">
             <User className="w-8 h-8 text-primary-500 mb-1" />
             <p className="text-gray-700 text-base italic">
-              "We expanded our business to new countries thanks to the global reach of this
-              platform."
+              {`"We expanded our business to new countries thanks to the global reach of this
+              platform."`}
             </p>
             <span className="text-primary-500 font-semibold mt-2">- L. Chen, Supplier</span>
           </div>
           <div className="bg-white/80 border border-primary-500/20 rounded-2xl p-6 shadow-lg flex flex-col items-center gap-3 backdrop-blur-md">
             <User className="w-8 h-8 text-primary-500 mb-1" />
             <p className="text-gray-700 text-base italic">
-              "The transaction process is secure and transparent. Highly recommended for anyone in
-              the polymer industry."
+              {`"The transaction process is secure and transparent. Highly recommended for anyone in
+              the polymer industry."`}
             </p>
             <span className="text-primary-500 font-semibold mt-2">- M. Singh, Distributor</span>
           </div>
@@ -343,7 +343,7 @@ const AboutUsPage = () => {
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Get in Touch</h2>
             <p className="text-lg text-gray-600">
-              Have questions? We're here to help you succeed
+              {`Have questions? We're here to help you succeed`}
             </p>
           </div>
           <div className="bg-primary-500 rounded-3xl p-8 md:p-12 text-white">
