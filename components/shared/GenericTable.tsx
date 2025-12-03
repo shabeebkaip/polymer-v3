@@ -50,36 +50,40 @@ export function GenericTable<T>({
 }: GenericTableProps<T>) {
   if (loading) {
     return (
-      <div className="p-12 text-center">
-        <div className="relative mx-auto mb-4 w-10 h-10">
-          <div className="absolute inset-0 rounded-full border-3 border-green-200"></div>
-          <div className="absolute inset-0 rounded-full border-3 border-transparent border-t-green-600 animate-spin"></div>
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+        <div className="p-12 text-center">
+          <div className="relative mx-auto mb-4 w-10 h-10">
+            <div className="absolute inset-0 rounded-full border-3 border-green-200"></div>
+            <div className="absolute inset-0 rounded-full border-3 border-transparent border-t-green-600 animate-spin"></div>
+          </div>
+          <p className="text-sm font-medium text-gray-900 mb-1">Loading...</p>
+          <p className="text-xs text-gray-600">Please wait</p>
         </div>
-        <p className="text-sm font-medium text-gray-900 mb-1">Loading...</p>
-        <p className="text-xs text-gray-600">Please wait</p>
       </div>
     );
   }
 
   if (data.length === 0 && emptyState) {
     return (
-      <div className="p-12 text-center">
-        <div className="mx-auto mb-4 w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-          {emptyState.icon}
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+        <div className="p-12 text-center">
+          <div className="mx-auto mb-4 w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+            {emptyState.icon}
+          </div>
+          <h3 className="text-base font-semibold text-gray-900 mb-2">
+            {emptyState.title}
+          </h3>
+          <p className="text-sm text-gray-600 mb-4 max-w-md mx-auto">
+            {emptyState.description}
+          </p>
+          {emptyState.action}
         </div>
-        <h3 className="text-base font-semibold text-gray-900 mb-2">
-          {emptyState.title}
-        </h3>
-        <p className="text-sm text-gray-600 mb-4 max-w-md mx-auto">
-          {emptyState.description}
-        </p>
-        {emptyState.action}
       </div>
     );
   }
 
   return (
-    <>
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
       {/* Results Header */}
       {resultsHeader && data.length > 0 && (
         <div className="border-b border-gray-200 px-4 py-3 bg-gray-50">
@@ -129,14 +133,15 @@ export function GenericTable<T>({
       </Table>
 
       {/* Pagination */}
-      {pagination && pagination.totalPages > 1 && (
+      {pagination && pagination.totalItems > 0 && (
         <div className="border-t border-gray-200 bg-white px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="text-xs text-gray-600">
               Showing <span className="font-semibold text-gray-900">{((pagination.currentPage - 1) * pagination.pageSize) + 1}</span> to <span className="font-semibold text-gray-900">{Math.min(pagination.currentPage * pagination.pageSize, pagination.totalItems)}</span> of <span className="font-semibold text-gray-900">{pagination.totalItems}</span>
             </div>
             
-            <div className="flex items-center gap-2">
+            {pagination.totalPages > 1 && (
+              <div className="flex items-center gap-2">
               {/* Previous Button */}
               <button
                 onClick={() => pagination.onPageChange(pagination.currentPage - 1)}
@@ -195,9 +200,10 @@ export function GenericTable<T>({
                 <ChevronRight className="w-3 h-3" />
               </button>
             </div>
+            )}
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }

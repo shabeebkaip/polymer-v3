@@ -623,7 +623,7 @@ export const useProductRequestsListStore = create<ProductRequestsListStore>((set
       console.log("🔍 Fetching product requests from store with params:", actualParams);
       
       const { getBuyerProductRequests } = await import("@/apiServices/user");
-      const response: ProductRequestsListResponse = await getBuyerProductRequests();
+      const response: ProductRequestsListResponse = await getBuyerProductRequests(actualParams);
 
       if (response && response.success && response.data && Array.isArray(response.data)) {
         const pagination = response.meta?.pagination;

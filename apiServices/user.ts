@@ -385,9 +385,9 @@ export const createBuyerProductRequest = async (data: any) => {
   }
 };
 
-export const getBuyerProductRequests = async () => {
+export const getBuyerProductRequests = async (params?: { page?: number; limit?: number; search?: string; status?: string }) => {
   try {
-    const response = await axiosInstance.get("/bulk-order/user-list");
+    const response = await axiosInstance.get("/bulk-order/user-list", { params });
     return response.data;
   } catch (error) {
     console.error("Error fetching buyer product requests:", error);
