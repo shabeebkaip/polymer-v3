@@ -21,6 +21,7 @@ import {
 import { Button } from "../ui/button";
 import { toast } from "sonner";
 import { Calendar as CalendarIcon, MapPin, Package, Truck, Clock, Gift } from "lucide-react";
+import { SearchableDropdown } from "./SearchableDropdown";
 import { createDealQuoteRequest } from "@/apiServices/user";
 import { useRouter } from "next/navigation";
 import { DealQuoteRequest } from "@/types/quote";
@@ -118,6 +119,7 @@ const QuoteDealRequestModal = ({
   dealId,
   dealProduct,
   dealSupplier,
+  dealSellerId, // Add sellerId prop
   dealMinQuantity,
   dealPrice,
   buttonText = "Grab This Deal",
@@ -129,21 +131,32 @@ const QuoteDealRequestModal = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [calendarOpen, setCalendarOpen] = useState(false);
   
-  // Get countries list
+  // Get countries list and convert to DropdownOption format
   const countries = useMemo(() => getCountryList(), []);
+  const countryOptions = useMemo(() => 
+    countries.map(country => ({
+      _id: country.code,
+      name: country.name
+    })), 
+  [countries]);
+  
+  const paymentTermsOptions = useMemo(() => 
+    PAYMENT_TERMS.map((term, index) => ({
+      _id: `payment-${index}`,
+      name: term
+    })), 
+  []);
   
   // Initial form data
   const initialData = useMemo(() => ({
-    requestType: "deal_quote" as const,
     bestDealId: dealId,
+    sellerId: dealSellerId,
     desiredQuantity: 0,
     shippingCountry: "",
     paymentTerms: "",
     deliveryDeadline: undefined as Date | undefined,
     message: "",
-    open_request: false,
-    sourceSection: "special_offers" as const,
-  }), [dealId]);
+  }), [dealId, dealSellerId]);
 
   // Form state
   const [data, setData] = useState(initialData);
@@ -180,21 +193,11 @@ const QuoteDealRequestModal = ({
     return errors.length === 0;
   }, []);
 
-  // Update helper with debounced validation
+  // Update helper - just update data without validation
   const updateField = useCallback(<T extends object>(field: keyof T, value: T[keyof T]) => {
     dataRef.current = { ...dataRef.current, [field]: value };
     setData(prev => ({ ...prev, [field]: value }));
-    
-    // Clear existing timeout
-    if (validationTimeoutRef.current) {
-      clearTimeout(validationTimeoutRef.current);
-    }
-    
-    // Set new timeout for validation
-    validationTimeoutRef.current = setTimeout(() => {
-      validateForm();
-    }, 300);
-  }, [validateForm]);
+  }, []);
 
   // Format date for display
   const formatDate = useCallback((date: Date | undefined) => {
@@ -224,18 +227,22 @@ const QuoteDealRequestModal = ({
     const toastId = toast.loading("Creating deal quote request...");
 
     try {
-      // Prepare submission data with conditional fields
-      const submitData: DealQuoteRequest = {
-        requestType: "deal_quote",
+      // Format delivery deadline as YYYY-MM-DD string as per API docs
+      const deadline = dataRef.current.deliveryDeadline!;
+      const deliveryDeadline = deadline instanceof Date 
+        ? deadline.toISOString().split('T')[0] 
+        : deadline;
+      
+      // Prepare submission data matching API documentation
+      const submitData: any = {
         bestDealId: dataRef.current.bestDealId!,
+        sellerId: dataRef.current.sellerId!,
         desiredQuantity: dataRef.current.desiredQuantity!,
         shippingCountry: dataRef.current.shippingCountry!,
         paymentTerms: dataRef.current.paymentTerms!,
-        deliveryDeadline: dataRef.current.deliveryDeadline!,
+        deliveryDeadline, // YYYY-MM-DD string format
         // Optional fields - only include if they have values
         ...(dataRef.current.message && dataRef.current.message.trim() && { message: dataRef.current.message }),
-        open_request: dataRef.current.open_request || false,
-        sourceSection: "special_offers" as const,
       };
       
       await createDealQuoteRequest(submitData);
@@ -266,10 +273,11 @@ const QuoteDealRequestModal = ({
     };
   }, []);
 
-  // Sync dataRef with initial data when modal opens
+  // Sync dataRef with initial data when modal opens and clear validation errors
   useEffect(() => {
     if (open) {
       dataRef.current = { ...data };
+      setValidationErrors([]); // Clear errors when opening modal
     }
   }, [open, data]);
 
@@ -368,10 +376,13 @@ const QuoteDealRequestModal = ({
                 <MapPin className="w-4 h-4" />
                 Shipping Country <span className="text-red-500">*</span>
               </label>
-              <MemoizedSelect
+              <SearchableDropdown
+                options={countryOptions}
                 value={data.shippingCountry}
                 onValueChange={(value: string) => updateField("shippingCountry", value)}
-                options={countries.map(country => country.name)}
+                placeholder="Select shipping country"
+                searchPlaceholder="Search countries..."
+                emptyText="No countries found"
                 className="w-full"
               />
             </div>
@@ -382,10 +393,13 @@ const QuoteDealRequestModal = ({
                 <Truck className="w-4 h-4" />
                 Payment Terms <span className="text-red-500">*</span>
               </label>
-              <MemoizedSelect
+              <SearchableDropdown
+                options={paymentTermsOptions}
                 value={data.paymentTerms}
                 onValueChange={(value: string) => updateField("paymentTerms", value)}
-                options={PAYMENT_TERMS}
+                placeholder="Select payment terms"
+                searchPlaceholder="Search payment terms..."
+                emptyText="No payment terms found"
                 className="w-full"
               />
             </div>

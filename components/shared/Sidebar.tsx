@@ -196,7 +196,7 @@ const Sidebar = () => {
           },
           {
             displayName: "Deal Quote Request",
-            route: "/user/deal-quote-requests",
+            route: "/user/quote-requests/deal",
             name: "deal-quote-request",
             icon: "DollarSign",
           },

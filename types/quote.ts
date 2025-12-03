@@ -34,10 +34,11 @@ export interface ProductQuoteRequest extends QuoteRequestBase {
 export interface DealQuoteRequest extends QuoteRequestBase {
   requestType: "deal_quote";
   bestDealId: string; // Deal/Promotion ID
+  sellerId: string; // Required: Seller/Supplier ID
   desiredQuantity: number;
   shippingCountry: string;
   paymentTerms: string;
-  deliveryDeadline: Date;
+  deliveryDeadline: Date | string; // Can be Date object or YYYY-MM-DD string
 }
 
 export type QuoteRequest = ProductQuoteRequest | DealQuoteRequest;

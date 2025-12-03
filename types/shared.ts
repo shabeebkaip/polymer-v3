@@ -181,6 +181,7 @@ export interface QuoteDealRequestModalProps {
   dealId: string;
   dealProduct: string;
   dealSupplier: string;
+  dealSellerId: string; // Required by API
   dealMinQuantity: string;
   dealPrice: number;
   buttonText?: string;

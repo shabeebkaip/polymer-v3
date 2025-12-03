@@ -514,7 +514,7 @@ export const updatePromotion = async (id: string, offerPrice: number, validity?:
 }
 export const createDealQuoteRequest = async (data: DealQuoteRequest) => {
   try {
-    const response = await axiosInstance.post("/best-deal/buyer-deal-quote", data);
+    const response = await axiosInstance.post("/deal-quote-request/create", data);
     return response.data;
   } catch (error: any) {  
     console.error("❌ Error creating deal quote request:", error);
@@ -527,6 +527,21 @@ export const createDealQuoteRequest = async (data: DealQuoteRequest) => {
     } else {
       console.error("Error setting up request:", error.message);
     }
+    throw error;
+  }
+}
+
+export const getBuyerDealQuoteRequests = async (params?: {
+  page?: number;
+  limit?: number;
+  status?: string;
+  sort?: string;
+}) => {
+  try {
+    const response = await axiosInstance.get("/deal-quote-request/buyer", { params });
+    return response.data;
+  } catch (error: any) {
+    console.error("❌ Error fetching buyer deal quote requests:", error);
     throw error;
   }
 }
