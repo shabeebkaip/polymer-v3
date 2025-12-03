@@ -195,9 +195,15 @@ const Sidebar = () => {
             icon: "Flask",
           },
           {
-            displayName: "Quote Request",
+            displayName: "Deal Quote Request",
+            route: "/user/deal-quote-requests",
+            name: "deal-quote-request",
+            icon: "DollarSign",
+          },
+          {
+            displayName: "Product Quote Request",
             route: "/user/quote-requests",
-            name: "quote-request",
+            name: "product-quote-request",
             icon: "DollarSign",
           },
           {
