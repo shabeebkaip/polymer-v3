@@ -546,6 +546,16 @@ export const getBuyerDealQuoteRequests = async (params?: {
   }
 }
 
+export const getDealQuoteRequestDetail = async (id: string) => {
+  try {
+    const response = await axiosInstance.get(`/deal-quote-request/${id}`);
+    return response.data;
+  } catch (error: any) {
+    console.error("❌ Error fetching deal quote request detail:", error);
+    throw error;
+  }
+}
+
 // ============================================================================
 // UTILITY & DEBUG FUNCTIONS
 // ============================================================================

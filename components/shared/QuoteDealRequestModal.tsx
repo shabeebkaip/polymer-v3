@@ -315,7 +315,7 @@ const QuoteDealRequestModal = ({
       )}
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-[600px] max-h-[85vh] flex flex-col">
+        <DialogContent className="sm:max-w-[650px] max-h-[90vh] flex flex-col">
           <DialogHeader className="space-y-3 flex-shrink-0">
             <DialogTitle className="text-xl font-semibold text-gray-900">
               Request Deal Quote
@@ -419,9 +419,14 @@ const QuoteDealRequestModal = ({
                   onFocus={() => setCalendarOpen(true)}
                   className="calendar-input bg-white border-gray-200 focus:border-primary-500 focus:ring-primary-500 transition-all duration-200 cursor-pointer pr-10"
                 />
-                <CalendarIcon className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <CalendarIcon className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                 {calendarOpen && (
-                  <div className="calendar-container absolute z-50 top-full mt-2 bg-white shadow-xl rounded-xl border border-gray-200 p-4">
+                  <div className="calendar-container fixed z-[100] mt-2 bg-white shadow-2xl rounded-xl border border-gray-200 p-3" 
+                    style={{
+                      top: 'auto',
+                      left: '50%',
+                      transform: 'translateX(-50%)'
+                    }}>
                     <Calendar
                       mode="single"
                       selected={data.deliveryDeadline}

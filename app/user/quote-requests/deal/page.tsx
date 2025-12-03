@@ -11,7 +11,7 @@ import { toast } from 'sonner';
 
 interface DealQuoteRequest {
   _id: string;
-  currentStatus: string;
+  status: string;
   message?: string;
   createdAt: string;
   updatedAt: string;
@@ -41,7 +41,7 @@ interface DealQuoteRequest {
     respondedAt?: string;
     quotationDocument?: any;
   };
-  status: Array<{
+  statusHistory: Array<{
     status: string;
     message: string;
     date: string;
@@ -170,14 +170,14 @@ const DealQuoteRequests = () => {
 
   const stats = useMemo(() => ({
     total: totalRequests,
-    pending: requests.filter(req => req.currentStatus === 'pending').length,
-    accepted: requests.filter(req => req.currentStatus === 'accepted').length,
-    in_progress: requests.filter(req => req.currentStatus === 'in_progress').length,
-    shipped: requests.filter(req => req.currentStatus === 'shipped').length,
-    delivered: requests.filter(req => req.currentStatus === 'delivered').length,
-    completed: requests.filter(req => req.currentStatus === 'completed').length,
-    rejected: requests.filter(req => req.currentStatus === 'rejected').length,
-    cancelled: requests.filter(req => req.currentStatus === 'cancelled').length,
+    pending: requests.filter(req => req.status === 'pending').length,
+    accepted: requests.filter(req => req.status === 'accepted').length,
+    in_progress: requests.filter(req => req.status === 'in_progress').length,
+    shipped: requests.filter(req => req.status === 'shipped').length,
+    delivered: requests.filter(req => req.status === 'delivered').length,
+    completed: requests.filter(req => req.status === 'completed').length,
+    rejected: requests.filter(req => req.status === 'rejected').length,
+    cancelled: requests.filter(req => req.status === 'cancelled').length,
   }), [totalRequests, requests]);
 
   const statusOptions = [
@@ -334,8 +334,8 @@ const DealQuoteRequests = () => {
       key: 'status',
       label: 'Status',
       render: (request) => (
-        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${getStatusBadge(request.currentStatus)}`}>
-          {getStatusText(request.currentStatus)}
+        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${getStatusBadge(request.status)}`}>
+          {getStatusText(request.status)}
         </span>
       ),
     },

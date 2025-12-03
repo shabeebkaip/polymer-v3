@@ -1,1 +1,13 @@
 export { DealQuoteRequestsHeader } from './DealQuoteRequestsHeader';
+export { DealQuoteRequestHeader } from './DealQuoteRequestHeader';
+export { DealInformation } from './DealInformation';
+export { OrderDetails } from './OrderDetails';
+export { SellerResponse } from './SellerResponse';
+export { SupplierInformation } from './SupplierInformation';
+export { StatusTimeline } from './StatusTimeline';
+export { CommentSection } from './CommentSection';
+export { CommentBadge } from './CommentBadge';
+export { CommentBadgeWithCount } from './CommentBadgeWithCount';
+export { CommentIndicator } from './CommentIndicator';
+export { CommentInput } from './CommentInput';
+export { CommentItem } from './CommentItem';
