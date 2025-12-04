@@ -12,17 +12,10 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Calendar } from '@/components/ui/calendar';
-import {
-  Select,
-  SelectTrigger,
-  SelectContent,
-  SelectItem,
-  SelectValue,
-} from '@/components/ui/select';
 import { getGrades, getIncoterms, getPackagingTypes } from '@/apiServices/shared';
 import { Button } from '../ui/button';
 import { toast } from 'sonner';
-import { Calendar as CalendarIcon, MapPin, Package, Truck, Clock } from 'lucide-react';
+import { Calendar as CalendarIcon, Package, Truck, Clock } from 'lucide-react';
 import { createQuoteRequest } from '@/apiServices/user';
 import { useRouter } from 'next/navigation';
 import { ProductQuoteRequest } from '@/types/quote';
@@ -45,49 +38,25 @@ const QuoteRequestModal = ({
   const [dropdownsLoaded, setDropdownsLoaded] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Use refs for immediate updates without triggering re-renders
-  const dataRef = useRef<Partial<ProductQuoteRequest>>({
-    productId: productId,
-    desiredQuantity: 0,
-    uom: uom,
-    gradeId: '',
-    incotermId: '',
-    shippingCountry: '',
-    shippingAddress: '',
-    shippingCity: '',
-    shippingState: '',
-    shippingPincode: '',
-    packagingTypeId: '',
-    deliveryDeadline: undefined,
-    paymentTerms: '',
-    application: '',
-    additionalRequirements: '',
-    open_request: false,
-  });
-
-  // Memoized initial data to prevent recreating on every render
+  // Memoized initial data
   const initialData = useMemo(
     () => ({
-      productId: productId,
+      productId,
       desiredQuantity: 0,
-      uom: uom,
+      uom,
       gradeId: '',
       incotermId: '',
       shippingCountry: '',
       shippingAddress: '',
-      shippingCity: '',
-      shippingState: '',
-      shippingPincode: '',
       packagingTypeId: '',
       deliveryDeadline: undefined,
-      paymentTerms: '',
       application: '',
       additionalRequirements: '',
-      open_request: false,
     }),
     [productId, uom]
   );
 
+  const dataRef = useRef<Partial<ProductQuoteRequest>>(initialData);
   const [data, setData] = useState(initialData);
   const [grades, setGrades] = useState<Grade[]>([]);
   const [incoterms, setIncoterms] = useState<Incoterm[]>([]);
@@ -95,34 +64,15 @@ const QuoteRequestModal = ({
   const [countries, setCountries] = useState<Country[]>([]);
   const [calendarOpen, setCalendarOpen] = useState(false);
 
-  // Debounced validation - only check on submit or when form is complete
-  const [validationErrors, setValidationErrors] = useState<string[]>([]);
-  const validationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Simplified validation - only check required fields per backend schema
+  // Simple validation - only check required fields on submit
   const validateForm = useCallback(() => {
     const currentData = dataRef.current;
-    const errors: string[] = [];
-
-    if (!currentData.productId) errors.push('Product ID is required');
-    if (!currentData.desiredQuantity || currentData.desiredQuantity <= 0)
-      errors.push('Please enter a valid quantity');
-
-    setValidationErrors(errors);
-    return errors.length === 0;
-  }, []);
-
-  // Debounced validation trigger
-  const triggerValidation = useCallback(() => {
-    if (validationTimeoutRef.current) {
-      clearTimeout(validationTimeoutRef.current);
+    if (!currentData.productId || !currentData.desiredQuantity || currentData.desiredQuantity <= 0) {
+      toast.error('Please enter a valid quantity');
+      return false;
     }
-    validationTimeoutRef.current = setTimeout(() => {
-      validateForm();
-    }, 500); // Only validate after 500ms of inactivity
-  }, [validateForm]);
-
-  const isFormValid = validationErrors.length === 0;
+    return true;
+  }, []);
 
   // Load all dropdown options
   const loadDropdowns = useCallback(async () => {
@@ -139,7 +89,7 @@ const QuoteRequestModal = ({
       setGrades(gradesRes.data);
       setIncoterms(incotermsRes.data);
       setPackagingTypes(packagingRes.data);
-      setCountries(getCountryList());
+      setCountries(getCountryList().sort((a, b) => a.name.localeCompare(b.name)));
       setDropdownsLoaded(true);
     } catch (err) {
       console.error('Error fetching dropdowns', err);
@@ -159,37 +109,22 @@ const QuoteRequestModal = ({
     }
   }, [token, loadDropdowns, router]);
 
-  // Simplified field change handler
+  // Field change handler
   const onFieldChange = useCallback((field: string, value: string | number | Date | undefined) => {
-    let processedValue: string | number | Date | undefined = value;
+    const processedValue = field === 'desiredQuantity' && typeof value === 'string' 
+      ? parseFloat(value) || 0 
+      : value;
 
-    // Handle numeric fields
-    if (field === 'desiredQuantity') {
-      processedValue = value && typeof value === 'string' ? parseFloat(value) || 0 : value;
-    }
-
-    // Update both ref and state
     dataRef.current = { ...dataRef.current, [field]: processedValue };
     setData((prev) => ({ ...prev, [field]: processedValue }));
-
-    // Validate only required fields
-    if (['productId', 'desiredQuantity'].includes(field)) {
-      triggerValidation();
-    }
-  }, [triggerValidation]);
+  }, []);
 
   const handleSubmit = useCallback(async () => {
-    setIsSubmitting(true);
-
-    // Force immediate validation on submit
-    const isValid = validateForm();
-
-    if (!isValid) {
-      validationErrors.forEach((err) => toast.error(err));
-      setIsSubmitting(false);
+    if (!validateForm()) {
       return;
     }
 
+    setIsSubmitting(true);
     const toastId = toast.loading('Creating Quote Request...');
 
     try {
@@ -216,13 +151,11 @@ const QuoteRequestModal = ({
       await createQuoteRequest(payload as ProductQuoteRequest);
       toast.dismiss(toastId);
       toast.success('Quote request created successfully!');
+      
+      // Reset form
+      dataRef.current = initialData;
+      setData(initialData);
       setOpen(false);
-
-      // Reset form on success
-      const resetData = { ...initialData };
-      dataRef.current = resetData;
-      setData(resetData);
-      setValidationErrors([]);
     } catch (error) {
       toast.dismiss(toastId);
       toast.error('Failed to create quote request. Please try again.');
@@ -230,23 +163,15 @@ const QuoteRequestModal = ({
     } finally {
       setIsSubmitting(false);
     }
-  }, [validateForm, validationErrors, initialData]);
+  }, [validateForm, initialData]);
 
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (validationTimeoutRef.current) {
-        clearTimeout(validationTimeoutRef.current);
-      }
-    };
-  }, []);
-
-  // Sync dataRef with initial data when modal opens
+  // Reset form when modal opens
   useEffect(() => {
     if (open) {
-      dataRef.current = { ...data };
+      dataRef.current = initialData;
+      setData(initialData);
     }
-  }, [open, data]);
+  }, [open, initialData]);
 
   return (
     <>
@@ -483,7 +408,7 @@ const QuoteRequestModal = ({
             <Button
               type="submit"
               onClick={handleSubmit}
-              disabled={!isFormValid || loading || isSubmitting}
+              disabled={loading || isSubmitting}
               className="bg-primary-500 hover:bg-primary-600 text-white px-8 py-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
             >
               {isSubmitting ? (
