@@ -42,7 +42,7 @@ export const getSidebarList = async () => {
 
 export const createQuoteRequest = async (data: QuoteRequest) => {
   try {
-    const response = await axiosInstance.post("/quote-request/create", data);
+    const response = await axiosInstance.post("/quote/product-quotes", data);
     return response.data;
   } catch (error) {
     console.error("Error creating quote request:", error);

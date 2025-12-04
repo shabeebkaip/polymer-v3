@@ -188,17 +188,17 @@ export interface QuoteDealRequestModalProps {
   children?: React.ReactNode;
 }
 
-export interface Grade {
+export interface Grade extends DropdownOption {
   _id: string;
   name: string;
 }
 
-export interface Incoterm {
+export interface Incoterm extends DropdownOption {
   _id: string;
   name: string;
 }
 
-export interface PackagingType {
+export interface PackagingType extends DropdownOption {
   _id: string;
   name: string;
 }

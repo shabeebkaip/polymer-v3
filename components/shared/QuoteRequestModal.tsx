@@ -27,90 +27,9 @@ import { createQuoteRequest } from '@/apiServices/user';
 import { useRouter } from 'next/navigation';
 import { ProductQuoteRequest } from '@/types/quote';
 import Cookies from 'js-cookie';
-import { Grade, Incoterm, PackagingType, QuoteRequestModalProps } from '@/types/shared';
-
-// Memoized input components to prevent unnecessary re-renders
-const MemoizedInput = React.memo(
-  ({
-    placeholder,
-    className,
-    type = 'text',
-    onChange,
-    value,
-    min,
-    ...props
-  }: {
-    placeholder: string;
-    className?: string;
-    type?: string;
-    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    value: string | number;
-    min?: number | string;
-    [key: string]: unknown;
-  }) => (
-    <Input
-      placeholder={placeholder}
-      className={className}
-      type={type}
-      onChange={onChange}
-      value={value}
-      min={min}
-      {...props}
-    />
-  )
-);
-
-const MemoizedTextarea = React.memo(
-  ({
-    placeholder,
-    className,
-    onChange,
-    value,
-    ...props
-  }: {
-    placeholder: string;
-    className?: string;
-    onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
-    value: string;
-    [key: string]: unknown;
-  }) => (
-    <Textarea
-      placeholder={placeholder}
-      className={className}
-      onChange={onChange}
-      value={value}
-      {...props}
-    />
-  )
-);
-
-const MemoizedSelect = React.memo(
-  ({
-    value,
-    onValueChange,
-    placeholder,
-    className,
-    children,
-  }: {
-    value: string;
-    onValueChange: (value: string) => void;
-    placeholder?: string;
-    className?: string;
-    children: React.ReactNode;
-    [key: string]: unknown;
-  }) => (
-    <Select value={value} onValueChange={onValueChange}>
-      <SelectTrigger className={className}>
-        <SelectValue placeholder={placeholder} />
-      </SelectTrigger>
-      <SelectContent>{children}</SelectContent>
-    </Select>
-  )
-);
-
-MemoizedInput.displayName = 'MemoizedInput';
-MemoizedTextarea.displayName = 'MemoizedTextarea';
-MemoizedSelect.displayName = 'MemoizedSelect';
+import { Grade, Incoterm, PackagingType, QuoteRequestModalProps, Country } from '@/types/shared';
+import { getCountryList } from '@/lib/useCountries';
+import { SearchableDropdown } from './SearchableDropdown';
 
 const QuoteRequestModal = ({
   className,
@@ -128,42 +47,42 @@ const QuoteRequestModal = ({
 
   // Use refs for immediate updates without triggering re-renders
   const dataRef = useRef<Partial<ProductQuoteRequest>>({
-    requestType: 'product_quote',
-    product: productId,
-    quantity: 0,
+    productId: productId,
+    desiredQuantity: 0,
     uom: uom,
-    grade: '',
-    incoterm: '',
-    country: '',
-    destination: '',
-    packagingType: '',
-    packaging_size: '',
-    expected_annual_volume: undefined,
-    delivery_date: undefined,
+    gradeId: '',
+    incotermId: '',
+    shippingCountry: '',
+    shippingAddress: '',
+    shippingCity: '',
+    shippingState: '',
+    shippingPincode: '',
+    packagingTypeId: '',
+    deliveryDeadline: undefined,
+    paymentTerms: '',
     application: '',
-    message: '',
-    request_document: '',
+    additionalRequirements: '',
     open_request: false,
   });
 
   // Memoized initial data to prevent recreating on every render
   const initialData = useMemo(
     () => ({
-      requestType: 'product_quote' as const,
-      product: productId,
-      quantity: 0,
+      productId: productId,
+      desiredQuantity: 0,
       uom: uom,
-      grade: '',
-      incoterm: '',
-      country: '',
-      destination: '',
-      packagingType: '',
-      packaging_size: '',
-      expected_annual_volume: undefined,
-      delivery_date: undefined,
+      gradeId: '',
+      incotermId: '',
+      shippingCountry: '',
+      shippingAddress: '',
+      shippingCity: '',
+      shippingState: '',
+      shippingPincode: '',
+      packagingTypeId: '',
+      deliveryDeadline: undefined,
+      paymentTerms: '',
       application: '',
-      message: '',
-      request_document: '',
+      additionalRequirements: '',
       open_request: false,
     }),
     [productId, uom]
@@ -173,25 +92,21 @@ const QuoteRequestModal = ({
   const [grades, setGrades] = useState<Grade[]>([]);
   const [incoterms, setIncoterms] = useState<Incoterm[]>([]);
   const [packagingTypes, setPackagingTypes] = useState<PackagingType[]>([]);
+  const [countries, setCountries] = useState<Country[]>([]);
   const [calendarOpen, setCalendarOpen] = useState(false);
 
   // Debounced validation - only check on submit or when form is complete
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const validationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Optimized validation function
+  // Simplified validation - only check required fields per backend schema
   const validateForm = useCallback(() => {
     const currentData = dataRef.current;
     const errors: string[] = [];
 
-    if (!currentData.quantity || currentData.quantity <= 0)
+    if (!currentData.productId) errors.push('Product ID is required');
+    if (!currentData.desiredQuantity || currentData.desiredQuantity <= 0)
       errors.push('Please enter a valid quantity');
-    if (!currentData.grade) errors.push('Please select the grade');
-    if (!currentData.incoterm) errors.push('Please select the incoterm');
-    if (!currentData.country) errors.push('Please enter the country');
-    if (!currentData.destination) errors.push('Please enter the destination');
-    if (!currentData.packaging_size) errors.push('Please enter the packaging size');
-    if (!currentData.delivery_date) errors.push('Please select the delivery date');
 
     setValidationErrors(errors);
     return errors.length === 0;
@@ -209,7 +124,7 @@ const QuoteRequestModal = ({
 
   const isFormValid = validationErrors.length === 0;
 
-  // Memoized dropdown loading function
+  // Load all dropdown options
   const loadDropdowns = useCallback(async () => {
     if (dropdownsLoaded) return;
 
@@ -224,6 +139,7 @@ const QuoteRequestModal = ({
       setGrades(gradesRes.data);
       setIncoterms(incotermsRes.data);
       setPackagingTypes(packagingRes.data);
+      setCountries(getCountryList());
       setDropdownsLoaded(true);
     } catch (err) {
       console.error('Error fetching dropdowns', err);
@@ -243,45 +159,24 @@ const QuoteRequestModal = ({
     }
   }, [token, loadDropdowns, router]);
 
-  // Optimized field change handler with immediate UI updates
-  const onFieldChange = useCallback(
-    (field: string, value: string | number | Date | undefined) => {
-      let processedValue: string | number | Date | undefined = value;
+  // Simplified field change handler
+  const onFieldChange = useCallback((field: string, value: string | number | Date | undefined) => {
+    let processedValue: string | number | Date | undefined = value;
 
-      // Handle numeric fields
-      if (field === 'quantity' || field === 'expected_annual_volume') {
-        processedValue = value && typeof value === 'string' ? parseFloat(value) || 0 : value;
-      }
+    // Handle numeric fields
+    if (field === 'desiredQuantity') {
+      processedValue = value && typeof value === 'string' ? parseFloat(value) || 0 : value;
+    }
 
-      // Update ref immediately for internal tracking
-      dataRef.current = {
-        ...dataRef.current,
-        [field]: processedValue,
-      };
+    // Update both ref and state
+    dataRef.current = { ...dataRef.current, [field]: processedValue };
+    setData((prev) => ({ ...prev, [field]: processedValue }));
 
-      // Update state for UI reactivity (batched by React)
-      setData((prev) => ({
-        ...prev,
-        [field]: processedValue,
-      }));
-
-      // Only trigger validation for critical fields or after delay
-      if (
-        [
-          'quantity',
-          'grade',
-          'incoterm',
-          'country',
-          'destination',
-          'packaging_size',
-          'delivery_date',
-        ].includes(field)
-      ) {
-        triggerValidation();
-      }
-    },
-    [triggerValidation]
-  );
+    // Validate only required fields
+    if (['productId', 'desiredQuantity'].includes(field)) {
+      triggerValidation();
+    }
+  }, [triggerValidation]);
 
   const handleSubmit = useCallback(async () => {
     setIsSubmitting(true);
@@ -298,40 +193,27 @@ const QuoteRequestModal = ({
     const toastId = toast.loading('Creating Quote Request...');
 
     try {
-      // Prepare data according to unified schema for product_quote
-      const submitData: ProductQuoteRequest = {
-        requestType: 'product_quote',
-        product: dataRef.current.product!,
-        quantity: dataRef.current.quantity || 0,
-        uom: dataRef.current.uom!,
-        country: dataRef.current.country!,
-        destination: dataRef.current.destination!,
-        packaging_size: dataRef.current.packaging_size!,
-        delivery_date: dataRef.current.delivery_date!,
-        // Only include ObjectId fields if they have valid values
-        ...(dataRef.current.grade &&
-          dataRef.current.grade.trim() && { grade: dataRef.current.grade }),
-        ...(dataRef.current.incoterm &&
-          dataRef.current.incoterm.trim() && { incoterm: dataRef.current.incoterm }),
-        ...(dataRef.current.packagingType &&
-          dataRef.current.packagingType.trim() && { packagingType: dataRef.current.packagingType }),
-        // Include other optional fields only if they have values
-        ...(dataRef.current.expected_annual_volume && {
-          expected_annual_volume: dataRef.current.expected_annual_volume,
-        }),
-        ...(dataRef.current.application &&
-          dataRef.current.application.trim() && { application: dataRef.current.application }),
-        ...(dataRef.current.message &&
-          dataRef.current.message.trim() && { message: dataRef.current.message }),
-        ...(dataRef.current.request_document &&
-          dataRef.current.request_document.trim() && {
-            request_document: dataRef.current.request_document,
-          }),
-        open_request: dataRef.current.open_request || false,
-        sourceSection: 'product_detail',
+      // Build clean payload with only non-empty values
+      const payload: Partial<ProductQuoteRequest> = {
+        productId: dataRef.current.productId!,
+        desiredQuantity: dataRef.current.desiredQuantity || 0,
       };
 
-      await createQuoteRequest(submitData);
+      // Add optional fields if they have values
+      const optionalFields: (keyof ProductQuoteRequest)[] = [
+        'uom', 'shippingCountry', 'shippingAddress', 'shippingCity', 
+        'shippingState', 'shippingPincode', 'deliveryDeadline', 'paymentTerms',
+        'gradeId', 'incotermId', 'packagingTypeId', 'application', 'additionalRequirements'
+      ];
+
+      optionalFields.forEach(field => {
+        const value = dataRef.current[field];
+        if (value && (typeof value !== 'string' || value.trim())) {
+          payload[field] = value as any;
+        }
+      });
+
+      await createQuoteRequest(payload as ProductQuoteRequest);
       toast.dismiss(toastId);
       toast.success('Quote request created successfully!');
       setOpen(false);
@@ -414,15 +296,13 @@ const QuoteRequestModal = ({
                     <div className="space-y-2">
                       <label className="text-sm font-medium text-gray-700">Quantity *</label>
                       <div className="relative">
-                        <MemoizedInput
+                        <Input
                           placeholder="Enter quantity"
                           className="pr-20 bg-white border-gray-200 focus:border-primary-500 focus:ring-primary-500 transition-all duration-200"
                           type="number"
                           min="1"
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                            onFieldChange('quantity', e.target.value)
-                          }
-                          value={data?.quantity || ''}
+                          onChange={(e) => onFieldChange('desiredQuantity', e.target.value)}
+                          value={data?.desiredQuantity || ''}
                         />
                         <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-medium text-primary-500 border-l border-gray-200 pl-3">
                           {data?.uom}
@@ -431,19 +311,16 @@ const QuoteRequestModal = ({
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-gray-700">Grade *</label>
-                      <MemoizedSelect
-                        value={data.grade}
-                        onValueChange={(value: string) => onFieldChange('grade', value)}
+                      <label className="text-sm font-medium text-gray-700">Grade</label>
+                      <SearchableDropdown
+                        options={grades}
+                        value={data.gradeId || ''}
+                        onValueChange={(value) => onFieldChange('gradeId', value)}
                         placeholder="Select product grade"
-                        className="bg-white border-gray-200 focus:border-primary-500 focus:ring-primary-500 transition-all duration-200"
-                      >
-                        {grades.map((grade) => (
-                          <SelectItem key={grade._id} value={grade._id}>
-                            {grade.name}
-                          </SelectItem>
-                        ))}
-                      </MemoizedSelect>
+                        searchPlaceholder="Search grade..."
+                        emptyText="No grade found"
+                        className="bg-white"
+                      />
                     </div>
                   </div>
                 </div>
@@ -456,49 +333,41 @@ const QuoteRequestModal = ({
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-gray-700">Incoterm *</label>
-                      <MemoizedSelect
-                        value={data.incoterm}
-                        onValueChange={(value: string) => onFieldChange('incoterm', value)}
+                      <label className="text-sm font-medium text-gray-700">Incoterm</label>
+                      <SearchableDropdown
+                        options={incoterms}
+                        value={data.incotermId || ''}
+                        onValueChange={(value) => onFieldChange('incotermId', value)}
                         placeholder="Select shipping terms"
-                        className="bg-white border-gray-200 focus:border-primary-500 focus:ring-primary-500 transition-all duration-200"
-                      >
-                        {incoterms.map((incoterm) => (
-                          <SelectItem key={incoterm._id} value={incoterm._id}>
-                            {incoterm.name}
-                          </SelectItem>
-                        ))}
-                      </MemoizedSelect>
+                        searchPlaceholder="Search incoterm..."
+                        emptyText="No incoterm found"
+                        className="bg-white"
+                      />
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-gray-700">Country *</label>
-                      <div className="relative">
-                        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                        <MemoizedInput
-                          placeholder="Enter destination country"
-                          className="pl-10 bg-white border-gray-200 focus:border-primary-500 focus:ring-primary-500 transition-all duration-200"
-                          type="text"
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                            onFieldChange('country', e.target.value)
-                          }
-                          value={data?.country}
-                        />
-                      </div>
+                      <label className="text-sm font-medium text-gray-700">Country</label>
+                      <SearchableDropdown
+                        options={countries.map(c => ({ _id: c.name, name: c.name }))} 
+                        value={data.shippingCountry || ''}
+                        onValueChange={(value) => onFieldChange('shippingCountry', value)}
+                        placeholder="Select destination country"
+                        searchPlaceholder="Search country..."
+                        emptyText="No country found"
+                        className="bg-white"
+                      />
                     </div>
                   </div>
 
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-gray-700">
-                      Full Destination Address *
+                      Full Destination Address
                     </label>
-                    <MemoizedTextarea
+                    <Textarea
                       placeholder="Enter complete shipping address including city, postal code, and any specific delivery instructions"
                       className="bg-white border-gray-200 focus:border-primary-500 focus:ring-primary-500 transition-all duration-200 min-h-[80px]"
-                      onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-                        onFieldChange('destination', e.target.value)
-                      }
-                      value={data?.destination}
+                      onChange={(e) => onFieldChange('shippingAddress', e.target.value)}
+                      value={data?.shippingAddress || ''}
                     />
                   </div>
                 </div>
@@ -512,92 +381,60 @@ const QuoteRequestModal = ({
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <label className="text-sm font-medium text-gray-700">Packaging Type</label>
-                      <MemoizedSelect
-                        value={data.packagingType}
-                        onValueChange={(value: string) => onFieldChange('packagingType', value)}
+                      <SearchableDropdown
+                        options={packagingTypes}
+                        value={data.packagingTypeId || ''}
+                        onValueChange={(value) => onFieldChange('packagingTypeId', value)}
                         placeholder="Select packaging type"
-                        className="bg-white border-gray-200 focus:border-primary-500 focus:ring-primary-500 transition-all duration-200"
-                      >
-                        {packagingTypes.map((packagingType) => (
-                          <SelectItem key={packagingType._id} value={packagingType._id}>
-                            {packagingType.name}
-                          </SelectItem>
-                        ))}
-                      </MemoizedSelect>
-                    </div>
-
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium text-gray-700">Packaging Size *</label>
-                      <MemoizedInput
-                        placeholder="e.g., 25kg bags, 1000kg big bags"
-                        className="bg-white border-gray-200 focus:border-primary-500 focus:ring-primary-500 transition-all duration-200"
-                        type="text"
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                          onFieldChange('packaging_size', e.target.value)
-                        }
-                        value={data?.packaging_size}
+                        searchPlaceholder="Search packaging type..."
+                        emptyText="No packaging type found"
+                        className="bg-white"
                       />
                     </div>
+
                   </div>
                 </div>
 
-                {/* Timeline & Volume Section */}
+                {/* Delivery Date Section */}
                 <div className="space-y-4">
                   <div className="flex items-center gap-2 text-lg font-semibold text-gray-800">
                     <Clock className="w-5 h-5 text-primary-500" />
-                    Timeline & Volume
+                    Delivery Timeline
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium text-gray-700">
-                        Expected Annual Volume
-                      </label>
-                      <MemoizedInput
-                        placeholder="Annual quantity requirement"
-                        className="bg-white border-gray-200 focus:border-primary-500 focus:ring-primary-500 transition-all duration-200"
-                        type="number"
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                          onFieldChange('expected_annual_volume', e.target.value)
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-700">Delivery Date</label>
+                    <div className="relative">
+                      <Input
+                        readOnly
+                        value={
+                          data?.deliveryDeadline
+                            ? new Date(data?.deliveryDeadline).toLocaleDateString('en-US', {
+                                weekday: 'short',
+                                year: 'numeric',
+                                month: 'short',
+                                day: 'numeric',
+                              })
+                            : ''
                         }
-                        value={data?.expected_annual_volume || ''}
+                        placeholder="Select delivery date"
+                        onFocus={() => setCalendarOpen(true)}
+                        className="bg-white border-gray-200 focus:border-primary-500 focus:ring-primary-500 transition-all duration-200 cursor-pointer pr-10"
                       />
-                    </div>
-
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium text-gray-700">Delivery Date *</label>
-                      <div className="relative">
-                        <MemoizedInput
-                          readOnly
-                          value={
-                            data?.delivery_date
-                              ? new Date(data?.delivery_date).toLocaleDateString('en-US', {
-                                  weekday: 'short',
-                                  year: 'numeric',
-                                  month: 'short',
-                                  day: 'numeric',
-                                })
-                              : ''
-                          }
-                          placeholder="Select delivery date"
-                          onFocus={() => setCalendarOpen(true)}
-                          className="bg-white border-gray-200 focus:border-primary-500 focus:ring-primary-500 transition-all duration-200 cursor-pointer pr-10"
-                        />
-                        <CalendarIcon className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                        {calendarOpen && (
-                          <div className="absolute z-50 top-full mt-2 bg-white shadow-xl rounded-xl border border-gray-200 p-4">
-                            <Calendar
-                              mode="single"
-                              selected={data?.delivery_date}
-                              onSelect={(date) => {
-                                onFieldChange('delivery_date', date);
-                                setCalendarOpen(false);
-                              }}
-                              disabled={(date) => date < new Date()}
-                              className="rounded-md"
-                            />
-                          </div>
-                        )}
-                      </div>
+                      <CalendarIcon className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      {calendarOpen && (
+                        <div className="absolute z-50 top-full mt-2 bg-white shadow-xl rounded-xl border border-gray-200 p-4">
+                          <Calendar
+                            mode="single"
+                            selected={data?.deliveryDeadline}
+                            onSelect={(date) => {
+                              onFieldChange('deliveryDeadline', date);
+                              setCalendarOpen(false);
+                            }}
+                            disabled={(date) => date < new Date()}
+                            className="rounded-md"
+                          />
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -610,25 +447,21 @@ const QuoteRequestModal = ({
                       <label className="text-sm font-medium text-gray-700">
                         Application/Use Case
                       </label>
-                      <MemoizedTextarea
+                      <Textarea
                         placeholder="What will this product be used for? (e.g., automotive parts, packaging, construction)"
                         className="bg-white border-gray-200 focus:border-primary-500 focus:ring-primary-500 transition-all duration-200 min-h-[80px]"
-                        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-                          onFieldChange('application', e.target.value)
-                        }
-                        value={data?.application}
+                        onChange={(e) => onFieldChange('application', e.target.value)}
+                        value={data?.application || ''}
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-gray-700">Additional Notes</label>
-                      <MemoizedTextarea
+                      <label className="text-sm font-medium text-gray-700">Additional Requirements</label>
+                      <Textarea
                         placeholder="Any special requirements, certifications needed, or additional information for the supplier"
                         className="bg-white border-gray-200 focus:border-primary-500 focus:ring-primary-500 transition-all duration-200 min-h-[100px]"
-                        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-                          onFieldChange('message', e.target.value)
-                        }
-                        value={data?.message}
+                        onChange={(e) => onFieldChange('additionalRequirements', e.target.value)}
+                        value={data?.additionalRequirements || ''}
                       />
                     </div>
                   </div>

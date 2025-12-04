@@ -1,7 +1,6 @@
 // Quote Request Types for the unified schema
 
 export interface QuoteRequestBase {
-  requestType: "product_quote" | "deal_quote";
   message?: string;
   request_document?: string;
   open_request?: boolean;
@@ -12,27 +11,25 @@ export interface QuoteRequestBase {
 }
 
 export interface ProductQuoteRequest extends QuoteRequestBase {
-  requestType: "product_quote";
-  product: string; // Product ID
-  quantity: number;
-  uom: string;
-  country: string;
-  destination: string;
-  delivery_date: Date;
-  // Optional fields for product quotes
-  grade?: string;
-  incoterm?: string;
-  packagingType?: string;
-  packaging_size: string;
-  expected_annual_volume?: number;
+  productId: string; // Product ID - required
+  desiredQuantity: number; // Required
+  uom?: string; // Now optional
+  shippingCountry?: string; // Changed from 'country' to 'shippingCountry'
+  shippingAddress?: string; // Changed from 'destination' to 'shippingAddress'
+  shippingCity?: string;
+  shippingState?: string;
+  shippingPincode?: string;
+  deliveryDeadline?: Date | string; // Changed from 'delivery_date' to 'deliveryDeadline'
+  paymentTerms?: string;
+  additionalRequirements?: string; // Changed from 'message'
   application?: string;
-  price?: string;
-  lead_time?: string;
-  terms?: string;
+  gradeId?: string; // Changed from 'grade' to 'gradeId'
+  incotermId?: string; // Changed from 'incoterm' to 'incotermId'
+  packagingTypeId?: string; // Changed from 'packagingType' to 'packagingTypeId'
+  // Removed: packaging_size, expected_annual_volume, price, lead_time, terms
 }
 
 export interface DealQuoteRequest extends QuoteRequestBase {
-  requestType: "deal_quote";
   bestDealId: string; // Deal/Promotion ID
   sellerId: string; // Required: Seller/Supplier ID
   desiredQuantity: number;
