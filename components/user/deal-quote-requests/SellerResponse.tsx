@@ -71,8 +71,8 @@ export const SellerResponse: React.FC<SellerResponseProps> = ({ request, sellerR
 
       const response = await postFileUpload(formData);
       
-      if (response && response.length > 0) {
-        setUploadedDocument(response[0]);
+      if (response) {
+        setUploadedDocument(response);
         toast.success('Quotation document uploaded successfully');
       }
     } catch (error) {
