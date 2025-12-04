@@ -248,3 +248,109 @@ export interface QuoteRequestDetailPageProps {
     id: string;
   }>;
 }
+
+// Deal Quote Requests by Deal ID (Supplier endpoint)
+export interface DealQuoteRequestBuyer {
+  _id: string;
+  name: string;
+  email: string;
+  phone: string | number; // Can be string or number
+  company: string;
+  location?: string; // Optional for list endpoint
+  address?: string; // Used in detail endpoint
+}
+
+export interface DealQuoteRequestProduct {
+  _id: string;
+  productName: string;
+  chemicalName?: string;
+  tradeName?: string;
+  productImages?: Array<{
+    _id: string;
+    id: string;
+    name: string;
+    type: string;
+    fileUrl: string;
+  }>;
+  countryOfOrigin?: string;
+  color?: string;
+  density?: number;
+  mfi?: number;
+}
+
+export interface DealQuoteRequestDeal {
+  _id: string;
+  title?: string; // Optional - not always in response
+  description?: string; // Optional - not always in response
+  dealPrice?: number; // Optional - not always in response
+  productName?: string; // For list endpoint
+  productImage?: string | null; // For list endpoint
+  product?: DealQuoteRequestProduct; // For detail endpoint
+}
+
+export interface DealQuoteRequestOrderDetails {
+  quantity: number;
+  shippingCountry: string;
+  paymentTerms: string | null;
+  deliveryDeadline: string | null;
+}
+
+export interface QuotationDocument {
+  id: string;
+  name: string;
+  type: string;
+  fileUrl: string;
+  viewUrl: string;
+  uploadedAt: string;
+}
+
+export interface DealQuoteRequestSellerResponse {
+  message?: string;
+  quotedPrice?: number;
+  quotedQuantity?: number;
+  estimatedDelivery?: string;
+  respondedAt?: string;
+  quotationDocument?: QuotationDocument | Record<string, never>; // Can be empty object {}
+}
+
+export interface DealQuoteRequestSeller {
+  _id: string;
+  name: string;
+  email: string;
+  phone: string | number;
+  company: string;
+}
+
+export interface DealQuoteRequestStatusHistory {
+  _id: string;
+  status: string;
+  message: string;
+  date: string;
+  updatedBy: string;
+  id: string;
+}
+
+export interface DealQuoteRequestByDealId {
+  _id: string;
+  status: "pending" | "responded" | "accepted" | "rejected" | "cancelled";
+  message?: string;
+  createdAt: string;
+  updatedAt: string;
+  buyer: DealQuoteRequestBuyer;
+  seller?: DealQuoteRequestSeller; // For detail endpoint
+  sellerId?: string; // For list endpoint
+  deal: DealQuoteRequestDeal;
+  orderDetails: DealQuoteRequestOrderDetails;
+  sellerResponse: DealQuoteRequestSellerResponse | null;
+  statusHistory?: DealQuoteRequestStatusHistory[]; // For detail endpoint
+}
+
+export interface DealQuoteRequestsByDealIdResponse {
+  success: boolean;
+  message: string;
+  data: DealQuoteRequestByDealId[];
+  meta: {
+    total: number;
+    dealId: string;
+  };
+}

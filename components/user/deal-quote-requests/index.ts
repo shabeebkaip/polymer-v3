@@ -11,3 +11,4 @@ export { CommentBadgeWithCount } from './CommentBadgeWithCount';
 export { CommentIndicator } from './CommentIndicator';
 export { CommentInput } from './CommentInput';
 export { CommentItem } from './CommentItem';
+export { DealQuoteRequestCount } from './DealQuoteRequestCount';

@@ -25,6 +25,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { DealQuoteRequestCount } from '@/components/user/deal-quote-requests';
 
 const Promotions = () => {
   const router = useRouter();
@@ -321,6 +322,7 @@ const Promotions = () => {
                   <TableHead className="font-bold text-gray-900 py-4">SL NO</TableHead>
                   <TableHead className="font-bold text-gray-900 py-4">Product</TableHead>
                   <TableHead className="font-bold text-gray-900 py-4">Offer Price</TableHead>
+                  <TableHead className="font-bold text-gray-900 py-4">Quote Requests</TableHead>
                   <TableHead className="font-bold text-gray-900 py-4">Status</TableHead>
                   <TableHead className="font-bold text-gray-900 py-4">Created</TableHead>
                   <TableHead className="font-bold text-gray-900 py-4">Updated</TableHead>
@@ -365,6 +367,9 @@ const Promotions = () => {
                         <div className="font-bold text-lg text-green-700">
                           {formatCurrency(promotion.offerPrice)}
                         </div>
+                      </TableCell>
+                      <TableCell className="py-4">
+                        <DealQuoteRequestCount dealId={promotion.id} />
                       </TableCell>
                       <TableCell className="py-4">
                         <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold ${statusConfig.bg} ${statusConfig.color} ${statusConfig.border} border`}>

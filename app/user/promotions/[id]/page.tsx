@@ -26,6 +26,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Image from 'next/image';
+import { DealQuoteRequestCount } from '@/components/user/deal-quote-requests';
 
 const PromotionDetail = () => {
   const params = useParams();
@@ -558,6 +559,30 @@ const PromotionDetail = () => {
                       </div>
                     </div>
                   )}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Quote Requests */}
+            <Card className="bg-white/80 backdrop-blur-sm shadow-lg border border-gray-200/50">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-green-800">
+                  <Activity className="h-5 w-5" />
+                  Quote Requests
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-200">
+                    <DealQuoteRequestCount dealId={promotionId} className="w-full justify-center" />
+                  </div>
+                  <button
+                    onClick={() => router.push(`/user/promotions/${promotionId}/quote-requests`)}
+                    className="w-full px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl transition-colors duration-200 font-medium flex items-center justify-center gap-2"
+                  >
+                    <Eye className="w-4 h-4" />
+                    View All Requests
+                  </button>
                 </div>
               </CardContent>
             </Card>

@@ -556,6 +556,34 @@ export const getDealQuoteRequestDetail = async (id: string) => {
   }
 }
 
+export const updateDealQuoteRequestStatus = async (id: string, status: string, message?: string) => {
+  try {
+    const payload: { status: string; message?: string } = { status };
+    if (message) {
+      payload.message = message;
+    }
+    const response = await axiosInstance.patch(`/deal-quote-request/${id}/status`, payload);
+    return response.data;
+  } catch (error: any) {
+    console.error("❌ Error updating deal quote request status:", error);
+    throw error;
+  }
+}
+
+export const getDealQuoteRequestsByDealId = async (dealId: string) => {
+  try {
+    const response = await axiosInstance.get(`/deal-quote-request/deal/${dealId}`);
+    return response.data;
+  } catch (error: any) {
+    console.error("❌ Error fetching deal quote requests by deal ID:", error);
+    if (error.response) {
+      console.error("Response data:", error.response.data);
+      console.error("Response status:", error.response.status);
+    }
+    throw error;
+  }
+}
+
 // ============================================================================
 // UTILITY & DEBUG FUNCTIONS
 // ============================================================================
