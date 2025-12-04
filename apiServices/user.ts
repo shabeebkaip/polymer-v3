@@ -64,6 +64,16 @@ export const getBuyerProductQuotes = async (params?: {
   }
 };
 
+export const getProductQuoteRequestDetail = async (id: string) => {
+  try {
+    const response = await axiosInstance.get(`/quote/product-quotes/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching product quote request detail:', error);
+    throw error;
+  }
+};
+
 export const getUserQuoteRequests = async (params?: {
   page?: number;
   limit?: number;

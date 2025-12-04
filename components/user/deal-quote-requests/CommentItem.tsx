@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Edit2, Trash2, Save, X, Paperclip, Download, Eye } from 'lucide-react';
+import { Edit2, Trash2, Save, X, Paperclip, Download } from 'lucide-react';
 import type { DealQuoteComment } from '@/types/comment';
 
 interface CommentItemProps {
@@ -108,13 +108,15 @@ export const CommentItem: React.FC<CommentItemProps> = ({
               <span className="font-semibold text-gray-900">
                 {comment.userId.name || comment.userId.email}
               </span>
-              <span
-                className={`text-xs px-2 py-0.5 rounded-full border font-medium ${getRoleBadgeColor(
-                  comment.userRole
-                )}`}
-              >
-                {comment.userRole.toUpperCase()}
-              </span>
+              {comment.userRole && (
+                <span
+                  className={`text-xs px-2 py-0.5 rounded-full border font-medium ${getRoleBadgeColor(
+                    comment.userRole
+                  )}`}
+                >
+                  {comment.userRole.toUpperCase()}
+                </span>
+              )}
             </div>
             <div className="flex items-center gap-2 text-sm text-gray-500 mt-0.5">
               <span>{formatDate(comment.createdAt)}</span>
@@ -212,15 +214,6 @@ export const CommentItem: React.FC<CommentItemProps> = ({
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <a
-                      href={attachment.viewUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="p-1.5 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
-                      title="View"
-                    >
-                      <Eye className="w-4 h-4" />
-                    </a>
                     <a
                       href={attachment.fileUrl}
                       download={attachment.name}

@@ -59,6 +59,7 @@ export interface ActionButtonsProps {
 }
 
 export interface UserInfo {
+  _id?: string;
   firstName?: string;
   lastName?: string;
   email?: string;

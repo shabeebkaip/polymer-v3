@@ -245,7 +245,7 @@ const Sidebar = () => {
           },
           {
             displayName: "Product Quote Request",
-            route: "/user/quote-requests",
+            route: "/user/quote-requests/product",
             name: "product-quote-request",
             icon: "DollarSign",
           },

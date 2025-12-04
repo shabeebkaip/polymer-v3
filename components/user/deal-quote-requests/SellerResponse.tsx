@@ -27,9 +27,10 @@ interface SellerResponseProps {
     respondedAt?: string;
   };
   onResponseSubmitted?: () => void;
+  currentUserRole?: 'buyer' | 'seller' | 'admin';
 }
 
-export const SellerResponse: React.FC<SellerResponseProps> = ({ request, sellerResponse, onResponseSubmitted }) => {
+export const SellerResponse: React.FC<SellerResponseProps> = ({ request, sellerResponse, onResponseSubmitted, currentUserRole }) => {
   const [isResponding, setIsResponding] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({
@@ -169,14 +170,19 @@ export const SellerResponse: React.FC<SellerResponseProps> = ({ request, sellerR
             <h2 className="text-lg font-semibold text-gray-900">Seller Response</h2>
           </div>
         </div>
-        <p className="text-sm text-gray-500 italic mb-4">You haven't responded to this quote request yet.</p>
-        <Button
-          onClick={() => setIsResponding(true)}
-          className="w-full bg-green-600 hover:bg-green-700 text-white"
-        >
-          <Send className="w-4 h-4 mr-2" />
-          Respond to Request
-        </Button>
+        
+        <p className="text-sm text-gray-500 italic mb-4">
+          {currentUserRole === 'seller' ? "You haven't responded to this quote request yet." : "Seller hasn't responded yet."}
+        </p>
+        {currentUserRole === 'seller' && (
+          <Button
+            onClick={() => setIsResponding(true)}
+            className="w-full bg-green-600 hover:bg-green-700 text-white"
+          >
+            <Send className="w-4 h-4 mr-2" />
+            Respond to Request
+          </Button>
+        )}
       </div>
     );
   }

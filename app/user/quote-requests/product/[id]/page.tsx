@@ -2,111 +2,36 @@
 
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { getDealQuoteRequestDetail } from '@/apiServices/user';
+import { getProductQuoteRequestDetail } from '@/apiServices/user';
 import { 
   CheckCircle, 
   XCircle, 
   Clock, 
   AlertCircle,
-  Truck,
+  ArrowLeft,
   Package,
   TrendingUp,
-  Loader2,
-  ArrowLeft
+  Loader2
 } from "lucide-react";
+import type { 
+  ProductQuoteRequestDetail,
+  ProductQuoteRequestDetailApiResponse 
+} from '@/types/productQuote';
+import { useUserInfo } from '@/lib/useUserInfo';
 import {
-  DealQuoteRequestHeader,
-  DealInformation,
+  ProductQuoteRequestHeader,
+  ProductInformation,
   OrderDetails,
   SellerResponse,
   SupplierInformation,
   StatusTimeline
-} from '@/components/user/deal-quote-requests';
+} from '@/components/user/product-quote-requests';
 import { GenericCommentSection } from '@/components/shared/GenericCommentSection';
-import { useUserInfo } from '@/lib/useUserInfo';
 
-interface StatusHistoryItem {
-  status: string;
-  message: string;
-  date: string;
-  updatedBy: string;
-  _id: string;
-}
-
-interface SellerResponse {
-  message?: string;
-  quotedPrice?: number;
-  quotedQuantity?: string;
-  estimatedDelivery?: string;
-  quotationDocument?: {
-    id: string;
-    name: string;
-    type: string;
-    fileUrl: string;
-    viewUrl: string;
-    uploadedAt: string;
-  };
-  respondedAt?: string;
-}
-
-interface DealQuoteRequestDetail {
-  _id: string;
-  status: string;
-  message?: string;
-  createdAt: string;
-  updatedAt: string;
-  buyer: {
-    _id: string;
-    name: string;
-    email: string;
-    phone?: number;
-    company?: string;
-    address?: string;
-  };
-  seller: {
-    _id: string;
-    name: string;
-    email: string;
-    phone?: number;
-    company?: string;
-  };
-  deal: {
-    _id: string;
-    product: {
-      _id: string;
-      productName?: string;
-      chemicalName?: string;
-      tradeName?: string;
-      description?: string;
-      productImages?: Array<{
-        id: string;
-        name: string;
-        type: string;
-        fileUrl: string;
-        _id: string;
-      }>;
-      countryOfOrigin?: string;
-      color?: string;
-      density?: number;
-      mfi?: number;
-      manufacturingMethod?: string;
-    };
-  };
-  orderDetails: {
-    quantity: number;
-    shippingCountry: string;
-    paymentTerms: string;
-    deliveryDeadline: string;
-  };
-  sellerResponse?: SellerResponse;
-  statusHistory: StatusHistoryItem[];
-}
-
-const DealQuoteRequestDetailPage = () => {
-  const router = useRouter();
+const ProductQuoteRequestDetailPage = () => {
   const params = useParams();
   const { user } = useUserInfo();
-  const [requestDetail, setRequestDetail] = useState<DealQuoteRequestDetail | null>(null);
+  const [requestDetail, setRequestDetail] = useState<ProductQuoteRequestDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -118,14 +43,14 @@ const DealQuoteRequestDetailPage = () => {
       setError(null);
       
       try {
-        const response = await getDealQuoteRequestDetail(params.id);
+        const response: ProductQuoteRequestDetailApiResponse = await getProductQuoteRequestDetail(params.id);
         if (response.success && response.data) {
           setRequestDetail(response.data);
         } else {
-          setError(response.message || 'Failed to fetch request details');
+          setError('Failed to fetch request details');
         }
       } catch (err: any) {
-        console.error('Error fetching deal quote request detail:', err);
+        console.error('Error fetching product quote request detail:', err);
         setError(err?.response?.data?.message || 'Failed to fetch request details');
       } finally {
         setLoading(false);
@@ -140,12 +65,8 @@ const DealQuoteRequestDetailPage = () => {
     
     switch (status) {
       case "pending": return `${baseClasses} bg-amber-100 text-amber-700 border border-amber-200`;
-      case "quoted": return `${baseClasses} bg-blue-100 text-blue-700 border border-blue-200`;
+      case "responded": return `${baseClasses} bg-primary-50 text-primary-600 border border-primary-500/30`;
       case "accepted": return `${baseClasses} bg-emerald-100 text-emerald-700 border border-emerald-200`;
-      case "in_progress": return `${baseClasses} bg-teal-100 text-teal-700 border border-teal-200`;
-      case "shipped": return `${baseClasses} bg-green-100 text-green-700 border border-green-200`;
-      case "delivered": return `${baseClasses} bg-emerald-100 text-emerald-700 border border-emerald-200`;
-      case "completed": return `${baseClasses} bg-green-100 text-green-700 border border-green-200`;
       case "rejected": return `${baseClasses} bg-red-100 text-red-700 border border-red-200`;
       case "cancelled": return `${baseClasses} bg-gray-100 text-gray-700 border border-gray-200`;
       default: return `${baseClasses} bg-gray-100 text-gray-700 border border-gray-200`;
@@ -155,13 +76,10 @@ const DealQuoteRequestDetailPage = () => {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "pending": return <Clock className="w-4 h-4 text-amber-600" />;
-      case "quoted": return <CheckCircle className="w-4 h-4 text-blue-600" />;
+      case "responded": return <CheckCircle className="w-4 h-4 text-primary-600" />;
       case "accepted": return <CheckCircle className="w-4 h-4 text-emerald-600" />;
       case "rejected": return <XCircle className="w-4 h-4 text-red-600" />;
-      case "in_progress": return <TrendingUp className="w-4 h-4 text-teal-600" />;
-      case "shipped": return <Truck className="w-4 h-4 text-green-600" />;
-      case "delivered": return <Package className="w-4 h-4 text-emerald-600" />;
-      case "completed": return <CheckCircle className="w-4 h-4 text-green-600" />;
+      case "cancelled": return <XCircle className="w-4 h-4 text-gray-600" />;
       default: return <AlertCircle className="w-4 h-4 text-gray-600" />;
     }
   };
@@ -169,12 +87,8 @@ const DealQuoteRequestDetailPage = () => {
   const getStatusText = (status: string) => {
     switch (status) {
       case "pending": return "Pending";
-      case "quoted": return "Quoted";
+      case "responded": return "Responded";
       case "accepted": return "Accepted";
-      case "in_progress": return "In Progress";
-      case "shipped": return "Shipped";
-      case "delivered": return "Delivered";
-      case "completed": return "Completed";
       case "rejected": return "Rejected";
       case "cancelled": return "Cancelled";
       default: return "Unknown";
@@ -206,7 +120,7 @@ const DealQuoteRequestDetailPage = () => {
           <h3 className="text-base font-semibold text-gray-900 mb-2">Error Loading Details</h3>
           <p className="text-sm text-gray-600 mb-4">{error || "Request details not found"}</p>
           <button
-            onClick={() => router.push('/user/quote-requests/deal')}
+            onClick={() => window.location.href = '/user/quote-requests/product'}
             className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white text-sm rounded-lg hover:bg-primary-700 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -219,10 +133,10 @@ const DealQuoteRequestDetailPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-6 ">
-        <DealQuoteRequestHeader
+      <div className="container mx-auto px-4 py-6">
+        <ProductQuoteRequestHeader
           requestId={requestDetail._id}
-          status={requestDetail.status}
+          status={requestDetail.currentStatus}
           createdAt={requestDetail.createdAt}
           getStatusBadge={getStatusBadge}
           getStatusIcon={getStatusIcon}
@@ -232,24 +146,41 @@ const DealQuoteRequestDetailPage = () => {
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
           {/* Main Content */}
           <div className="xl:col-span-2 space-y-6">
-            <DealInformation deal={requestDetail.deal} />
+            <ProductInformation product={requestDetail.productId} />
             <OrderDetails 
-              orderDetails={requestDetail.orderDetails} 
-              message={requestDetail.message} 
+              orderDetails={{
+                quantity: requestDetail.desiredQuantity,
+                uom: requestDetail.uom,
+                gradeId: requestDetail.gradeId ? {
+                  _id: requestDetail.gradeId._id,
+                  gradeName: requestDetail.gradeId.name,
+                  name: requestDetail.gradeId.name
+                } : undefined,
+                shippingCountry: requestDetail.shippingCountry || '',
+                deliveryDeadline: requestDetail.deliveryDeadline || '',
+                incotermId: requestDetail.incotermId,
+                packagingTypeId: requestDetail.packagingTypeId,
+                paymentTerms: requestDetail.paymentTerms || '',
+                application: requestDetail.application,
+                shippingAddress: requestDetail.shippingAddress ? {
+                  address: requestDetail.shippingAddress,
+                  city: requestDetail.shippingCity || '',
+                  state: requestDetail.shippingState || '',
+                  country: requestDetail.shippingCountry || '',
+                  pincode: requestDetail.shippingPincode || ''
+                } : undefined,
+                additionalRequirements: requestDetail.additionalRequirements
+              }}
             />
-            <SellerResponse 
-              sellerResponse={requestDetail.sellerResponse}
-              request={requestDetail}
-              currentUserRole={user && 'user_type' in user ? user.user_type as 'buyer' | 'seller' | 'admin' : undefined}
-            />
+            <SellerResponse sellerResponse={requestDetail.sellerResponse} />
             
             {/* Comment Section */}
-            {user && '_id' in user && 'user_type' in user && (
+            {user?._id && (
               <GenericCommentSection
                 quoteRequestId={requestDetail._id}
-                currentUserId={user._id as string}
-                commentType="deal-quote"
-                userRole={user.user_type as 'buyer' | 'seller' | 'admin'}
+                currentUserId={user._id}
+                commentType="product-quote"
+                userRole={(user as any).user_type as 'buyer' | 'seller' | 'admin'}
               />
             )}
           </div>
@@ -257,12 +188,18 @@ const DealQuoteRequestDetailPage = () => {
           {/* Sidebar */}
           <div className="space-y-6">
             <StatusTimeline 
-              statusHistory={requestDetail.statusHistory}
+              statusHistory={requestDetail.status}
               createdAt={requestDetail.createdAt}
               updatedAt={requestDetail.updatedAt}
               getStatusIcon={getStatusIcon}
             />
-            <SupplierInformation seller={requestDetail.seller} />
+            <SupplierInformation seller={{
+              _id: requestDetail.sellerId._id,
+              name: `${requestDetail.sellerId.firstName} ${requestDetail.sellerId.lastName}`,
+              email: requestDetail.sellerId.email,
+              phone: requestDetail.sellerId.phone,
+              company: requestDetail.sellerId.company
+            }} />
           </div>
         </div>
       </div>
@@ -270,4 +207,4 @@ const DealQuoteRequestDetailPage = () => {
   );
 };
 
-export default DealQuoteRequestDetailPage;
+export default ProductQuoteRequestDetailPage;
