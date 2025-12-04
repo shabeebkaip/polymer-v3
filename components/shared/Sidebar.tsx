@@ -60,7 +60,20 @@ const Sidebar = () => {
   const pathname = usePathname();
   const router = useRouter();
   const { user, isInitialized, loadUserFromCookies } = useUserInfo();
-  const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
+  const [expandedItems, setExpandedItems] = useState<Set<string>>(() => {
+    // Initialize from localStorage
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('sidebarExpandedItems');
+      if (stored) {
+        try {
+          return new Set(JSON.parse(stored));
+        } catch (e) {
+          return new Set();
+        }
+      }
+    }
+    return new Set();
+  });
 
   // Initialize user data from cookies on mount
   useEffect(() => {
@@ -78,6 +91,36 @@ const Sidebar = () => {
       loadUserFromCookies();
     }
   }, [isInitialized, loadUserFromCookies, router]);
+
+  // Auto-expand parent items based on current route
+  useEffect(() => {
+    const sidebarList = getFallbackSidebarList(user?.user_type);
+    
+    sidebarList.forEach((item) => {
+      if (item.subItems && item.subItems.length > 0) {
+        const hasActiveChild = item.subItems.some((subItem) => 
+          pathname === subItem.route || pathname.startsWith(subItem.route + "/")
+        );
+        
+        if (hasActiveChild) {
+          setExpandedItems((prev) => {
+            const newSet = new Set(prev);
+            newSet.add(item.displayName);
+            // Persist to localStorage
+            localStorage.setItem('sidebarExpandedItems', JSON.stringify(Array.from(newSet)));
+            return newSet;
+          });
+        }
+      }
+    });
+  }, [pathname, user?.user_type]);
+
+  // Persist expandedItems to localStorage whenever it changes
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('sidebarExpandedItems', JSON.stringify(Array.from(expandedItems)));
+    }
+  }, [expandedItems]);
 
   const handleLogout = () => {
     Cookies.remove("token");
