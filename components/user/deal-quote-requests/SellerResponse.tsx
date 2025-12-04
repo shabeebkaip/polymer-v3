@@ -379,7 +379,7 @@ export const SellerResponse: React.FC<SellerResponseProps> = ({ request, sellerR
       </div>
 
       <div className="grid grid-cols-2 gap-3 mb-4">
-        {sellerResponse.quotedPrice && (
+        {sellerResponse?.quotedPrice && (
           <div className="bg-green-50 rounded-lg p-4 border border-green-200">
             <div className="flex items-center gap-2 mb-1">
               <DollarSign className="w-4 h-4 text-green-600" />
@@ -391,7 +391,7 @@ export const SellerResponse: React.FC<SellerResponseProps> = ({ request, sellerR
           </div>
         )}
 
-        {sellerResponse.quotedQuantity && (
+        {sellerResponse?.quotedQuantity && (
           <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
             <div className="flex items-center gap-2 mb-1">
               <Package className="w-4 h-4 text-blue-600" />
@@ -401,7 +401,7 @@ export const SellerResponse: React.FC<SellerResponseProps> = ({ request, sellerR
           </div>
         )}
 
-        {sellerResponse.estimatedDelivery && (
+        {sellerResponse?.estimatedDelivery && (
           <div className="bg-purple-50 rounded-lg p-4 border border-purple-200 col-span-2">
             <div className="flex items-center gap-2 mb-1">
               <Truck className="w-4 h-4 text-purple-600" />
@@ -418,7 +418,7 @@ export const SellerResponse: React.FC<SellerResponseProps> = ({ request, sellerR
         )}
       </div>
 
-      {sellerResponse.message && (
+      {sellerResponse?.message && (
         <div className="mb-4">
           <h4 className="text-sm font-medium text-gray-900 mb-2 flex items-center gap-2">
             <FileText className="w-4 h-4 text-gray-600" />
@@ -428,7 +428,7 @@ export const SellerResponse: React.FC<SellerResponseProps> = ({ request, sellerR
         </div>
       )}
 
-      {sellerResponse.quotationDocument && sellerResponse.quotationDocument.fileUrl && (
+      {sellerResponse?.quotationDocument?.fileUrl && (
         <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -444,10 +444,12 @@ export const SellerResponse: React.FC<SellerResponseProps> = ({ request, sellerR
               variant="ghost"
               size="sm"
               onClick={() => {
-                const link = document.createElement('a');
-                link.href = sellerResponse.quotationDocument!.fileUrl;
-                link.download = sellerResponse.quotationDocument!.name;
-                link.click();
+                if (sellerResponse?.quotationDocument) {
+                  const link = document.createElement('a');
+                  link.href = sellerResponse.quotationDocument.fileUrl;
+                  link.download = sellerResponse.quotationDocument.name;
+                  link.click();
+                }
               }}
               className="h-8 px-2 text-blue-600 hover:bg-blue-100"
             >
@@ -457,7 +459,7 @@ export const SellerResponse: React.FC<SellerResponseProps> = ({ request, sellerR
         </div>
       )}
 
-      {sellerResponse.respondedAt && (
+      {sellerResponse?.respondedAt && (
         <p className="text-xs text-gray-500 mt-3">
           Responded on {new Date(sellerResponse.respondedAt).toLocaleDateString('en-US', {
             month: 'long',
