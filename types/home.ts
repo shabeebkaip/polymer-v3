@@ -77,6 +77,7 @@ export type Deal = {
   type: "special-deal";
   title: string;
   supplier: {
+    id: string;
     name: string;
     logo: string;
     rating: number;

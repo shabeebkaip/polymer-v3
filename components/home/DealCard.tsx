@@ -38,6 +38,7 @@ const DealCard: React.FC<{
           dealId={deal.id}
           dealProduct={deal.product}
           dealSupplier={deal.supplier.name}
+          dealSellerId={deal.supplier.id}
           dealMinQuantity={deal.minQuantity}
           dealPrice={deal.discountedPrice}
           buttonText={getButtonText()}
