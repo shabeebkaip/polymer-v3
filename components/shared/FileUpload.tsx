@@ -213,7 +213,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
 
       <Dialog open={!!previewFile} onOpenChange={() => setPreviewFile(null)}>
         {previewFile && (
-          <DialogContent className="w-full max-w-7xl h-[80vh] flex flex-col">
+          <DialogContent className="w-full  h-[80vh] flex flex-col">
             <DialogTitle className="flex justify-between items-center">
               <span>{previewFile.originalFilename || previewFile.name || "File Preview"}</span>
               {previewFile.resourceType === "raw" && (

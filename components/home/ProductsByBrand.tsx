@@ -240,7 +240,7 @@ const ProductsByBrand: React.FC = () => {
 
           {/* Enhanced Product Grid with Modern Cards */}
           <div className="w-full">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6  mx-auto">
               {sellersLoading &&
                 Array.from({ length: 4 }).map((_, index) => (
                   <div key={index} className="transform transition-all duration-300 hover:scale-105">

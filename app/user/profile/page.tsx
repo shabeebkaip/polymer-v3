@@ -211,7 +211,7 @@ const Profile = () => {
 
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 max-w-7xl">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 ">
       {/* Header Section */}
       <div className="mb-10">
         <div className="flex items-center justify-between">

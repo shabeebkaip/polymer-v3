@@ -155,7 +155,7 @@ const DealQuoteRequestsPage = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <div className="container mx-auto px-4 py-6 max-w-7xl">
+        <div className="container mx-auto px-4 py-6 ">
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
             <div className="flex items-center justify-center py-12">
               <div className="text-center">
@@ -178,7 +178,7 @@ const DealQuoteRequestsPage = () => {
   if (error || !data) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <div className="container mx-auto px-4 py-6 max-w-7xl">
+        <div className="container mx-auto px-4 py-6 ">
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
             <div className="flex items-center justify-center py-12">
               <div className="text-center">
@@ -221,7 +221,7 @@ const DealQuoteRequestsPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-6 max-w-7xl">
+      <div className="container mx-auto px-4 py-6 ">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
           {/* Back Button */}

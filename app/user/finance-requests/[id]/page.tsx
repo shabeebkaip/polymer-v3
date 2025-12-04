@@ -208,7 +208,7 @@ const FinanceRequestDetail = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-6 max-w-7xl">
+      <div className="container mx-auto px-4 py-6 ">
         <FinanceRequestHeader
           requestId={financeRequest._id}
           status={financeRequest.status}

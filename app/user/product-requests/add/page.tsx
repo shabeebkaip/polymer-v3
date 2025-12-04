@@ -225,7 +225,7 @@ const CreateProductRequest = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-green-50/20 to-emerald-50/30">
-      <div className="container mx-auto px-6 py-8 max-w-7xl">
+      <div className="container mx-auto px-6 py-8 ">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
           <Button

@@ -46,7 +46,7 @@ const ProductsPage: React.FC = () => {
   );
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-green-50/30 to-emerald-50/40">
-      <div className="max-w-[calc(100vw-2rem)] sm:max-w-[calc(100vw-4rem)] lg:max-w-[calc(100vw-12rem)] xl:max-w-7xl mx-auto px-4 py-8">
+      <div className="max-w-[calc(100vw-2rem)] sm:max-w-[calc(100vw-4rem)] lg:max-w-[calc(100vw-12rem)] xl: mx-auto px-4 py-8">
       {loading ? (
         /* Full Page Loader */
         <div className="space-y-8">

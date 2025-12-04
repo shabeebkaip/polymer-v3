@@ -29,7 +29,7 @@ const Benefits: React.FC = () => {
           </div>
 
           {/* Enhanced Benefits Grid */}
-          <div className="w-full max-w-7xl">
+          <div className="w-full ">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
               <div className="group ">
                 <BenefitCard

@@ -29,7 +29,7 @@ const UserLayout: React.FC<UserLayoutProps> = ({ children }) => {
             
             {/* Main Content */}
             <main className="flex-1 p-8 overflow-y-auto">
-              <div className="max-w-7xl mx-auto">
+              <div className="container mx-auto">
                 {children}
               </div>
             </main>

@@ -137,11 +137,8 @@ const DealQuoteRequests = () => {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "pending": return "bg-amber-100 text-amber-700 border border-amber-200";
+      case "responded": return "bg-primary-50 text-primary-600 border border-primary-500/30";
       case "accepted": return "bg-emerald-100 text-emerald-700 border border-emerald-200";
-      case "in_progress": return "bg-teal-100 text-teal-700 border border-teal-200";
-      case "shipped": return "bg-green-100 text-green-700 border border-green-200";
-      case "delivered": return "bg-emerald-100 text-emerald-700 border border-emerald-200";
-      case "completed": return "bg-green-100 text-green-700 border border-green-200";
       case "rejected": return "bg-red-100 text-red-700 border border-red-200";
       case "cancelled": return "bg-gray-100 text-gray-700 border border-gray-200";
       default: return "bg-gray-100 text-gray-700 border border-gray-200";
@@ -151,11 +148,8 @@ const DealQuoteRequests = () => {
   const getStatusText = (status: string) => {
     switch (status) {
       case "pending": return "Pending";
+      case "responded": return "Responded";
       case "accepted": return "Accepted";
-      case "in_progress": return "In Progress";
-      case "shipped": return "Shipped";
-      case "delivered": return "Delivered";
-      case "completed": return "Completed";
       case "rejected": return "Rejected";
       case "cancelled": return "Cancelled";
       default: return "Unknown";
@@ -171,11 +165,8 @@ const DealQuoteRequests = () => {
   const stats = useMemo(() => ({
     total: totalRequests,
     pending: requests.filter(req => req.status === 'pending').length,
+    responded: requests.filter(req => req.status === 'responded').length,
     accepted: requests.filter(req => req.status === 'accepted').length,
-    in_progress: requests.filter(req => req.status === 'in_progress').length,
-    shipped: requests.filter(req => req.status === 'shipped').length,
-    delivered: requests.filter(req => req.status === 'delivered').length,
-    completed: requests.filter(req => req.status === 'completed').length,
     rejected: requests.filter(req => req.status === 'rejected').length,
     cancelled: requests.filter(req => req.status === 'cancelled').length,
   }), [totalRequests, requests]);
@@ -183,11 +174,8 @@ const DealQuoteRequests = () => {
   const statusOptions = [
     { value: "all", label: "All Requests" },
     { value: "pending", label: "Pending" },
+    { value: "responded", label: "Responded" },
     { value: "accepted", label: "Accepted" },
-    { value: "in_progress", label: "In Progress" },
-    { value: "shipped", label: "Shipped" },
-    { value: "delivered", label: "Delivered" },
-    { value: "completed", label: "Completed" },
     { value: "rejected", label: "Rejected" },
     { value: "cancelled", label: "Cancelled" },
   ];
@@ -324,12 +312,12 @@ const DealQuoteRequests = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-6 max-w-7xl">
+      <div className="container mx-auto px-4 py-6 ">
         <DealQuoteRequestsHeader
           totalRequests={totalRequests}
           pendingCount={stats.pending}
+          respondedCount={stats.responded}
           acceptedCount={stats.accepted}
-          completedCount={stats.completed}
         />
 
         <FilterBar

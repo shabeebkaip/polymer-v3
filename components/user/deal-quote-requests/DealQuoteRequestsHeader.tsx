@@ -1,18 +1,18 @@
 import React from 'react';
-import { Gift, Clock, CheckCircle, TrendingUp } from 'lucide-react';
+import { Gift, Clock, CheckCircle, MessageSquare } from 'lucide-react';
 
 interface DealQuoteRequestsHeaderProps {
   totalRequests: number;
   pendingCount: number;
+  respondedCount: number;
   acceptedCount: number;
-  completedCount: number;
 }
 
 export const DealQuoteRequestsHeader: React.FC<DealQuoteRequestsHeaderProps> = ({
   totalRequests,
   pendingCount,
-  acceptedCount,
-  completedCount
+  respondedCount,
+  acceptedCount
 }) => {
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
@@ -70,11 +70,11 @@ export const DealQuoteRequestsHeader: React.FC<DealQuoteRequestsHeaderProps> = (
         <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-600 text-xs font-medium mb-1">Completed</p>
-              <p className="text-2xl font-semibold text-gray-900">{completedCount}</p>
+              <p className="text-gray-600 text-xs font-medium mb-1">Responded</p>
+              <p className="text-2xl font-semibold text-gray-900">{respondedCount}</p>
             </div>
-            <div className="bg-green-100 p-2 rounded-lg">
-              <TrendingUp className="w-5 h-5 text-green-600" />
+            <div className="bg-primary-100 p-2 rounded-lg">
+              <MessageSquare className="w-5 h-5 text-primary-600" />
             </div>
           </div>
         </div>
