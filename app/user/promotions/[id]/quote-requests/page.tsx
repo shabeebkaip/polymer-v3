@@ -6,7 +6,6 @@ import { DealQuoteRequestByDealId, DealQuoteRequestsByDealIdResponse } from '@/t
 import {
   ArrowLeft,
   Package,
-  DollarSign,
   Calendar,
   CheckCircle,
   XCircle,
@@ -18,13 +17,10 @@ import {
   MapPin,
   Eye,
   MessageSquare,
-  TrendingUp,
   Users,
   FileText,
   Download
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 
 const DealQuoteRequestsPage = () => {
   const params = useParams();
