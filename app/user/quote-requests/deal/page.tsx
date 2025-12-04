@@ -289,48 +289,6 @@ const DealQuoteRequests = () => {
       ),
     },
     {
-      key: 'sellerResponse',
-      label: 'Seller Response',
-      render: (request) => {
-        const hasResponse = request.sellerResponse && (
-          request.sellerResponse.quotedPrice || 
-          request.sellerResponse.quotedQuantity || 
-          request.sellerResponse.message
-        );
-        
-        return hasResponse ? (
-          <div className="space-y-1">
-            {request.sellerResponse!.quotedPrice && (
-              <div className="flex items-center gap-2 text-sm">
-                <DollarSign className="w-4 h-4 text-green-600" />
-                <span className="text-gray-700 font-medium">
-                  ${request.sellerResponse!.quotedPrice.toLocaleString()}
-                </span>
-              </div>
-            )}
-            {request.sellerResponse!.quotedQuantity && (
-              <div className="flex items-center gap-2 text-sm">
-                <Package className="w-4 h-4 text-gray-400" />
-                <span className="text-gray-700">
-                  {request.sellerResponse!.quotedQuantity.toLocaleString()} units
-                </span>
-              </div>
-            )}
-            {request.sellerResponse!.estimatedDelivery && (
-              <p className="text-xs text-gray-500 mt-1">
-                Est: {formatDate(request.sellerResponse!.estimatedDelivery)}
-              </p>
-            )}
-            {request.sellerResponse!.message && !request.sellerResponse!.quotedPrice && (
-              <p className="text-xs text-gray-600">{request.sellerResponse!.message}</p>
-            )}
-          </div>
-        ) : (
-          <span className="text-sm text-gray-400 italic">Pending</span>
-        );
-      },
-    },
-    {
       key: 'status',
       label: 'Status',
       render: (request) => (

@@ -379,7 +379,11 @@ const QuoteDealRequestModal = ({
               <SearchableDropdown
                 options={countryOptions}
                 value={data.shippingCountry}
-                onValueChange={(value: string) => updateField("shippingCountry", value)}
+                onValueChange={(value: string) => {
+                  // Find the actual country name from the code (_id)
+                  const selectedOption = countryOptions.find(opt => opt._id === value);
+                  updateField("shippingCountry", selectedOption?.name || value);
+                }}
                 placeholder="Select shipping country"
                 searchPlaceholder="Search countries..."
                 emptyText="No countries found"
@@ -396,7 +400,11 @@ const QuoteDealRequestModal = ({
               <SearchableDropdown
                 options={paymentTermsOptions}
                 value={data.paymentTerms}
-                onValueChange={(value: string) => updateField("paymentTerms", value)}
+                onValueChange={(value: string) => {
+                  // Find the actual payment term name from the _id
+                  const selectedOption = paymentTermsOptions.find(opt => opt._id === value);
+                  updateField("paymentTerms", selectedOption?.name || value);
+                }}
                 placeholder="Select payment terms"
                 searchPlaceholder="Search payment terms..."
                 emptyText="No payment terms found"
