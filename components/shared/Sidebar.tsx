@@ -163,28 +163,48 @@ const Sidebar = () => {
     } else if (userType === "seller") {
       sidebarItems.push(
         {
-          displayName: "Product",
+          displayName: "Products",
           route: "/user/products",
-          name: "product",
+          name: "products",
           icon: "Package",
           subItems: [],
         },
         {
-          displayName: "Procurement",
-          route: "/enquiries",
+          displayName: "Promotions",
+          route: "/user/promotions",
+          name: "promotions",
+          icon: "ShoppingCart",
+          subItems: [
+            {
+              displayName: "All Promotions",
+              route: "/user/promotions",
+              name: "all-promotions",
+              icon: "ShoppingCart",
+            },
+            {
+              displayName: "Promotion Enquiries",
+              route: "/user/promotion-quote-enquiries",
+              name: "promotion-quote-enquiries",
+              icon: "DollarSign",
+            },
+          ],
+        },
+        {
+          displayName: "Enquiries",
+          route: "/user/enquiries",
           name: "enquiries",
           icon: "ClipboardList",
           subItems: [
             {
-              displayName: "Sample Request Enquiries",
+              displayName: "Sample Requests",
               route: "/user/sample-enquiries",
-              name: "sample-request-enquiries",
+              name: "sample-enquiries",
               icon: "Flask",
             },
             {
-              displayName: "Quote Request Enquiries",
-              route: "/user/quote-enquiries",
-              name: "quote-request-enquiries",
+              displayName: "Product Quote Requests",
+              route: "/user/product-quote-enquiries",
+              name: "product-quote-enquiries",
               icon: "DollarSign",
             },
           ],
@@ -194,19 +214,6 @@ const Sidebar = () => {
           route: "/user/submitted-offers",
           name: "submitted-offers",
           icon: "Send",
-          subItems: [],
-        },
-        {
-          displayName: "Promotions",
-          route: "/user/promotions",
-          name: "promotions",
-          icon: "ShoppingCart",
-        }, 
-        {
-          displayName: "Experts",
-          route: "/user/experts",
-          name: "experts",
-          icon: "Users",
           subItems: [],
         },
         // {
@@ -225,44 +232,55 @@ const Sidebar = () => {
         // }
       );
     } else if (userType === "buyer") {
-      sidebarItems.push({
-        displayName: "Procurement",
-        route: "/procurement",
-        name: "procurement",
-        icon: "ClipboardList",
-        subItems: [
-          {
-            displayName: "Sample Request",
-            route: "/user/sample-requests",
-            name: "sample-request",
-            icon: "Flask",
-          },
-          {
-            displayName: "Deal Quote Request",
-            route: "/user/quote-requests/deal",
-            name: "deal-quote-request",
-            icon: "DollarSign",
-          },
-          {
-            displayName: "Product Quote Request",
-            route: "/user/quote-requests/product",
-            name: "product-quote-request",
-            icon: "DollarSign",
-          },
-          {
-            displayName: "Finance Request",
-            route: "/user/finance-requests",
-            name: "finance-request",
-            icon: "CreditCard",
-          },
-          {
-            displayName: "Sourcing Requests",
-            route: "/user/product-requests",
-            name: "sourcing-requests",
-            icon: "Truck",
-          },
-        ],
-      });
+      sidebarItems.push(
+        {
+          displayName: "My Requests",
+          route: "/user/requests",
+          name: "requests",
+          icon: "ClipboardList",
+          subItems: [
+            {
+              displayName: "Sample Requests",
+              route: "/user/sample-requests",
+              name: "sample-requests",
+              icon: "Flask",
+            },
+            {
+              displayName: "Product Sourcing",
+              route: "/user/product-requests",
+              name: "product-requests",
+              icon: "Truck",
+            },
+          ],
+        },
+        {
+          displayName: "Quote Requests",
+          route: "/user/quote-requests",
+          name: "quote-requests",
+          icon: "DollarSign",
+          subItems: [
+            {
+              displayName: "Deal Quotes",
+              route: "/user/quote-requests/deal",
+              name: "deal-quote-request",
+              icon: "DollarSign",
+            },
+            {
+              displayName: "Product Quotes",
+              route: "/user/quote-requests/product",
+              name: "product-quote-request",
+              icon: "DollarSign",
+            },
+          ],
+        },
+        {
+          displayName: "Finance Requests",
+          route: "/user/finance-requests",
+          name: "finance-requests",
+          icon: "CreditCard",
+          subItems: [],
+        }
+      );
     }
 
     // Add common items for all user types
