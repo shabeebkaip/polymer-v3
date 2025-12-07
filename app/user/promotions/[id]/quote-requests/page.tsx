@@ -4,14 +4,10 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { getDealQuoteRequestsByDealId } from '@/apiServices/user';
 import { DealQuoteRequestByDealId, DealQuoteRequestsByDealIdResponse } from '@/types/quote';
+import { formatCurrency, formatDate } from '@/lib/utils';
+import { getStatusConfig } from '@/lib/config/status.config';
 import {
   ArrowLeft,
-  Package,
-  Calendar,
-  CheckCircle,
-  XCircle,
-  Clock,
-  AlertTriangle,
   Building2,
   Phone,
   Mail,
@@ -20,7 +16,12 @@ import {
   MessageSquare,
   Users,
   FileText,
-  Download
+  Download,
+  Package,
+  Calendar,
+  CheckCircle,
+  Clock,
+  XCircle
 } from 'lucide-react';
 
 const DealQuoteRequestsPage = () => {
@@ -51,105 +52,6 @@ const DealQuoteRequestsPage = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  // Status configuration
-  const getStatusConfig = (status: string) => {
-    switch (status?.toLowerCase()) {
-      case 'pending':
-        return {
-          icon: Clock,
-          text: 'Pending',
-          bgColor: 'bg-yellow-100',
-          textColor: 'text-yellow-800',
-          borderColor: 'border-yellow-200'
-        };
-      case 'accepted':
-        return {
-          icon: CheckCircle,
-          text: 'Accepted',
-          bgColor: 'bg-green-100',
-          textColor: 'text-green-800',
-          borderColor: 'border-green-200'
-        };
-      case 'responded':
-        return {
-          icon: MessageSquare,
-          text: 'Responded',
-          bgColor: 'bg-primary-50',
-          textColor: 'text-primary-600',
-          borderColor: 'border-primary-500/30'
-        };
-      case 'shipped':
-        return {
-          icon: Package,
-          text: 'Shipped',
-          bgColor: 'bg-purple-100',
-          textColor: 'text-purple-800',
-          borderColor: 'border-purple-200'
-        };
-      case 'delivered':
-        return {
-          icon: CheckCircle,
-          text: 'Delivered',
-          bgColor: 'bg-teal-100',
-          textColor: 'text-teal-800',
-          borderColor: 'border-teal-200'
-        };
-      case 'completed':
-        return {
-          icon: CheckCircle,
-          text: 'Completed',
-          bgColor: 'bg-green-100',
-          textColor: 'text-green-800',
-          borderColor: 'border-green-200'
-        };
-      case 'rejected':
-        return {
-          icon: XCircle,
-          text: 'Rejected',
-          bgColor: 'bg-red-100',
-          textColor: 'text-red-800',
-          borderColor: 'border-red-200'
-        };
-      case 'cancelled':
-        return {
-          icon: XCircle,
-          text: 'Cancelled',
-          bgColor: 'bg-gray-100',
-          textColor: 'text-gray-800',
-          borderColor: 'border-gray-200'
-        };
-      default:
-        return {
-          icon: AlertTriangle,
-          text: status || 'Unknown',
-          bgColor: 'bg-gray-100',
-          textColor: 'text-gray-800',
-          borderColor: 'border-gray-200'
-        };
-    }
-  };
-
-  // Format currency
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(amount);
-  };
-
-  // Format date
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
   };
 
   // Loading state

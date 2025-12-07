@@ -17,10 +17,6 @@ import {
   Package,
   Calendar,
   Building2,
-  AlertCircle,
-  CheckCircle,
-  XCircle,
-  Clock,
   Search,
   Filter,
   ChevronLeft,
@@ -35,6 +31,8 @@ import {
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSubmittedOffersStore } from "@/stores/submittedOffersStore";
+import { getStatusConfig } from "@/lib/config/status.config";
+import { formatCurrency, formatDate } from "@/lib/utils";
 
 const statusOptions = [
   { label: "All", value: "all" },
@@ -93,59 +91,8 @@ const SubmittedOffers = () => {
     setCurrentPage(1);
   };
 
-  // Get status icon and color
-  const getStatusInfo = (status: string) => {
-    switch (status?.toLowerCase()) {
-      case "pending":
-        return {
-          icon: Clock,
-          color: "bg-yellow-500",
-          textColor: "text-yellow-700",
-          bgColor: "bg-yellow-50",
-        };
-      case "approved":
-        return {
-          icon: CheckCircle,
-          color: "bg-green-500",
-          textColor: "text-green-700",
-          bgColor: "bg-green-50",
-        };
-      case "rejected":
-        return {
-          icon: XCircle,
-          color: "bg-red-500",
-          textColor: "text-red-700",
-          bgColor: "bg-red-50",
-        };
-      case "completed":
-        return {
-          icon: CheckCircle,
-          color: "bg-emerald-500",
-          textColor: "text-emerald-700",
-          bgColor: "bg-emerald-50",
-        };
-      default:
-        return {
-          icon: AlertCircle,
-          color: "bg-gray-500",
-          textColor: "text-gray-700",
-          bgColor: "bg-gray-50",
-        };
-    }
-  };
-
-  // Format currency
-  const formatCurrency = (amount: number, currency: string = "USD") => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: currency,
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(amount);
-  };
-
-  // Format date
-  const formatDate = (dateString: string) => {
+  // Format date helper for display
+  const formatDateDisplay = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",
@@ -515,8 +462,8 @@ const SubmittedOffers = () => {
                 <div className="p-4 sm:p-6 pt-0">
                   <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                     {currentOffers.map((offer) => {
-                      const statusInfo = getStatusInfo(offer.status);
-                      const StatusIcon = statusInfo.icon;
+                      const statusConfig = getStatusConfig(offer.status);
+                      const StatusIcon = statusConfig.icon;
 
                       return (
                         <Card
@@ -536,10 +483,10 @@ const SubmittedOffers = () => {
                                 </p>
                               </div>
                               <Badge
-                                className={`${statusInfo.bgColor} ${statusInfo.textColor} border-0 ml-2`}
+                                className={`${statusConfig.bgColor} ${statusConfig.textColor} border-0 ml-2`}
                               >
                                 <StatusIcon className="h-3 w-3 mr-1" />
-                                {offer.status}
+                                {statusConfig.text}
                               </Badge>
                             </div>
                           </CardHeader>
@@ -595,7 +542,7 @@ const SubmittedOffers = () => {
                             <div className="flex items-center gap-2 pt-2 border-t border-gray-200/50">
                               <Calendar className="h-4 w-4 text-gray-400" />
                               <span className="text-sm text-gray-600">
-                                Submitted on {formatDate(offer.createdAt)}
+                                Submitted on {formatDateDisplay(offer.createdAt)}
                               </span>
                             </div>
 

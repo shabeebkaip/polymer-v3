@@ -2,15 +2,13 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { usePromotionsStore } from '@/stores/promotionsStore';
+import { getStatusConfig } from '@/lib/config/status.config';
+import { formatCurrency, formatDate } from '@/lib/utils';
 import {
   ArrowLeft,
   Package,
   DollarSign,
   Calendar,
-  CheckCircle,
-  XCircle,
-  Clock,
-  AlertTriangle,
   Building2,
   Phone,
   Mail,
@@ -21,6 +19,9 @@ import {
   Award,
   Zap,
   Activity,
+  XCircle,
+  Clock,
+  CheckCircle,
   Image as ImageIcon
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -52,66 +53,6 @@ const PromotionDetail = () => {
       clearPromotionDetail();
     };
   }, [promotionId, fetchPromotionDetail, clearPromotionDetail]);
-
-  // Status configuration
-  const getStatusConfig = (status: string) => {
-    switch (status?.toLowerCase()) {
-      case 'approved':
-      case 'active':
-        return {
-          icon: CheckCircle,
-          text: 'Active',
-          bgColor: 'bg-green-100',
-          textColor: 'text-green-800',
-          borderColor: 'border-green-200'
-        };
-      case 'pending':
-        return {
-          icon: Clock,
-          text: 'Pending Review',
-          bgColor: 'bg-yellow-100',
-          textColor: 'text-yellow-800',
-          borderColor: 'border-yellow-200'
-        };
-      case 'rejected':
-        return {
-          icon: XCircle,
-          text: 'Rejected',
-          bgColor: 'bg-red-100',
-          textColor: 'text-red-800',
-          borderColor: 'border-red-200'
-        };
-      default:
-        return {
-          icon: AlertTriangle,
-          text: status || 'Unknown',
-          bgColor: 'bg-gray-100',
-          textColor: 'text-gray-800',
-          borderColor: 'border-gray-200'
-        };
-    }
-  };
-
-  // Format currency
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(amount);
-  };
-
-  // Format date
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
 
   // Calculate discount percentage
   const getDiscountInfo = () => {

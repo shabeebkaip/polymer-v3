@@ -1,11 +1,13 @@
 "use client";
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { usePromotionsStore } from '@/stores/promotionsStore';
-import { Package, Eye, Edit, CheckCircle, XCircle, Clock, AlertTriangle, Plus } from 'lucide-react';
+import { Package, Eye, Edit, Plus, XCircle,   } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { DealQuoteRequestCount } from '@/components/user/deal-quote-requests';
 import { GenericTable, Column } from '@/components/shared/GenericTable';
 import { FilterBar } from '@/components/shared/FilterBar';
+import { getStatusConfig } from '@/lib/config/status.config';
+import { formatCurrency } from '@/lib/utils';
 
 interface Promotion {
   id: string;
@@ -67,46 +69,6 @@ const Promotions = () => {
   const paginatedPromotions = getPaginatedPromotions();
   const filteredPromotions = getFilteredPromotions();
   const totalPages = getTotalPages();
-
-  const getStatusBadge = (status: string) => {
-    switch (status.toLowerCase()) {
-      case 'approved':
-      case 'active':
-        return 'bg-green-100 text-green-700 border border-green-200';
-      case 'pending':
-        return 'bg-amber-100 text-amber-700 border border-amber-200';
-      case 'rejected':
-      case 'expired':
-        return 'bg-red-100 text-red-700 border border-red-200';
-      default:
-        return 'bg-gray-100 text-gray-700 border border-gray-200';
-    }
-  };
-
-  const getStatusText = (status: string) => {
-    switch (status.toLowerCase()) {
-      case 'approved':
-      case 'active':
-        return 'Active';
-      case 'pending':
-        return 'Pending';
-      case 'rejected':
-        return 'Rejected';
-      case 'expired':
-        return 'Expired';
-      default:
-        return status;
-    }
-  };
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    }).format(amount);
-  };
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -170,18 +132,21 @@ const Promotions = () => {
     {
       key: 'status',
       label: 'Status',
-      render: (promotion) => (
-        <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getStatusBadge(promotion.status)}`}>
-          {getStatusText(promotion.status)}
-        </span>
-      )
+      render: (promotion) => {
+        const statusConfig = getStatusConfig(promotion.status);
+        return (
+          <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${statusConfig.bgColor} ${statusConfig.textColor} ${statusConfig.borderColor} border`}>
+            {statusConfig.text}
+          </span>
+        );
+      }
     },
     {
       key: 'createdAt',
       label: 'Created',
       render: (promotion) => (
         <span className="text-gray-900 text-sm">
-          {formatDate(promotion.createdAt)}
+          {new Date(promotion.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
         </span>
       )
     },
@@ -190,7 +155,7 @@ const Promotions = () => {
       label: 'Updated',
       render: (promotion) => (
         <span className="text-gray-900 text-sm">
-          {formatDate(promotion.updatedAt)}
+          {new Date(promotion.updatedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
         </span>
       )
     },

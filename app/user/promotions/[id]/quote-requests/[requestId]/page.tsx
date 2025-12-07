@@ -1,15 +1,19 @@
-'use client';
+"use client";
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { getDealQuoteRequestDetail, updateDealQuoteRequestStatus } from '@/apiServices/user';
-import { SellerResponse, CommentSection } from '@/components/user/deal-quote-requests';
+import { 
+  SellerResponse,
+  CommentSection
+} from '@/components/user/deal-quote-requests';
 import { getStatusConfig } from '@/lib/config/status.config';
-import { formatDate } from '@/lib/utils';
+import { formatCurrency, formatDate } from '@/lib/utils';
 import {
   ArrowLeft,
   Loader2,
   AlertCircle,
   Package,
+  DollarSign,
   Calendar,
   Building2,
   Phone,
@@ -22,7 +26,7 @@ import {
   Tags,
   RefreshCw,
   Clock,
-  CheckCircle,
+  CheckCircle
 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
@@ -38,7 +42,8 @@ import { Button } from '@/components/ui/button';
 const DealQuoteRequestDetailPage = () => {
   const params = useParams();
   const router = useRouter();
-  const requestId = params?.id as string; // Request ID from /promotion-quote-enquiries/[id]
+  const dealId = params?.id as string; // Deal ID from /promotions/[id]
+  const requestId = params?.requestId as string; // Request ID from /quote-requests/[requestId]
 
   const [request, setRequest] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -63,7 +68,7 @@ const DealQuoteRequestDetailPage = () => {
   const fetchRequestDetail = async () => {
     setLoading(true);
     setError(null);
-
+    
     try {
       const response = await getDealQuoteRequestDetail(requestId);
       if (response.success) {
@@ -95,9 +100,9 @@ const DealQuoteRequestDetailPage = () => {
       toast.info('Please select a different status');
       return;
     }
-
+    
     setUpdatingStatus(true);
-
+    
     try {
       const message = statusMessage.trim() || undefined;
       const response = await updateDealQuoteRequestStatus(requestId, selectedStatus, message);
@@ -150,11 +155,11 @@ const DealQuoteRequestDetailPage = () => {
               {error || 'Unable to load the deal quote request details.'}
             </p>
             <button
-              onClick={() => router.push('/user/promotion-quote-enquiries')}
+              onClick={() => router.push(`/user/promotions/${dealId}/quote-requests`)}
               className="px-6 py-3 bg-primary-500 hover:bg-primary-600 text-white rounded-xl font-medium transition-colors duration-200 flex items-center gap-2"
             >
               <ArrowLeft className="w-4 h-4" />
-              Back to Quote Enquiries
+              Back to Quote Requests
             </button>
           </div>
         </div>
@@ -171,7 +176,7 @@ const DealQuoteRequestDetailPage = () => {
         {/* Header */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-6">
           <button
-            onClick={() => router.push('/user/promotion-quote-enquiries')}
+            onClick={() => router.push(`/user/promotions/${dealId}/quote-requests`)}
             className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -185,16 +190,12 @@ const DealQuoteRequestDetailPage = () => {
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">Deal Quote Request Details</h1>
-                <p className="text-sm text-gray-500 mt-1">
-                  Request ID: #{requestId.slice(-8).toUpperCase()}
-                </p>
+                <p className="text-sm text-gray-500 mt-1">Request ID: #{requestId.slice(-8).toUpperCase()}</p>
               </div>
             </div>
-
+            
             <div className="flex items-center gap-3">
-              <div
-                className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium ${statusConfig.bgColor} ${statusConfig.textColor}`}
-              >
+              <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium ${statusConfig.bgColor} ${statusConfig.textColor}`}>
                 <StatusIcon className="w-4 h-4" />
                 {statusConfig.text}
               </div>
@@ -211,11 +212,13 @@ const DealQuoteRequestDetailPage = () => {
 
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          
           {/* Main Content - Left Side */}
           <div className="lg:col-span-2 space-y-6">
+            
             {/* Product Information */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-              <div className="flex items-center gap-3 mb-4">
+              <div className="flex items-center gap-3 mb-5">
                 <div className="w-10 h-10 bg-primary-50 rounded-lg flex items-center justify-center">
                   <Package className="w-5 h-5 text-primary-500" />
                 </div>
@@ -224,8 +227,8 @@ const DealQuoteRequestDetailPage = () => {
 
               {request.deal?.product && (
                 <div>
-                  <div className="mb-4">
-                    <h3 className="text-lg font-bold text-gray-900 mb-0.5">
+                  <div className="mb-6">
+                    <h3 className="text-xl font-bold text-gray-900 mb-1">
                       {request.deal.product.productName}
                     </h3>
                     {request.deal.product.tradeName && (
@@ -233,79 +236,64 @@ const DealQuoteRequestDetailPage = () => {
                     )}
                   </div>
 
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                     {request.deal.product.chemicalName && (
-                      <div className="bg-gray-50 rounded-lg p-3">
-                        <label className="text-xs text-gray-600">Chemical Name</label>
-                        <p className="font-semibold text-gray-900 text-sm mt-0.5">
-                          {request.deal.product.chemicalName}
-                        </p>
+                      <div>
+                        <label className="text-sm text-gray-600">Chemical Name</label>
+                        <p className="font-semibold text-gray-900">{request.deal.product.chemicalName}</p>
                       </div>
                     )}
                     {request.deal.product.tradeName && (
-                      <div className="bg-gray-50 rounded-lg p-3">
-                        <label className="text-xs text-gray-600">Trade Name</label>
-                        <p className="font-semibold text-gray-900 text-sm mt-0.5">
-                          {request.deal.product.tradeName}
-                        </p>
+                      <div>
+                        <label className="text-sm text-gray-600">Trade Name</label>
+                        <p className="font-semibold text-gray-900">{request.deal.product.tradeName}</p>
                       </div>
                     )}
                     {request.deal.product.color && (
-                      <div className="bg-gray-50 rounded-lg p-3">
-                        <label className="text-xs text-gray-600">Color</label>
-                        <p className="font-semibold text-gray-900 text-sm mt-0.5">
-                          {request.deal.product.color}
-                        </p>
+                      <div>
+                        <label className="text-sm text-gray-600">Color</label>
+                        <p className="font-semibold text-gray-900">{request.deal.product.color}</p>
                       </div>
                     )}
                     {request.deal.product.countryOfOrigin && (
-                      <div className="bg-gray-50 rounded-lg p-3">
-                        <label className="text-xs text-gray-600">Country of Origin</label>
-                        <p className="font-semibold text-gray-900 text-sm mt-0.5">
-                          {request.deal.product.countryOfOrigin}
-                        </p>
+                      <div>
+                        <label className="text-sm text-gray-600">Country of Origin</label>
+                        <p className="font-semibold text-gray-900">{request.deal.product.countryOfOrigin}</p>
                       </div>
                     )}
                     {request.deal.product.density && (
-                      <div className="bg-gray-50 rounded-lg p-3">
-                        <label className="text-xs text-gray-600">Density</label>
-                        <p className="font-semibold text-gray-900 text-sm mt-0.5">
-                          {request.deal.product.density}
-                        </p>
+                      <div>
+                        <label className="text-sm text-gray-600">Density</label>
+                        <p className="font-semibold text-gray-900">{request.deal.product.density}</p>
                       </div>
                     )}
                     {request.deal.product.mfi && (
-                      <div className="bg-gray-50 rounded-lg p-3">
-                        <label className="text-xs text-gray-600">MFI</label>
-                        <p className="font-semibold text-gray-900 text-sm mt-0.5">
-                          {request.deal.product.mfi}
-                        </p>
+                      <div>
+                        <label className="text-sm text-gray-600">MFI</label>
+                        <p className="font-semibold text-gray-900">{request.deal.product.mfi}</p>
                       </div>
                     )}
                   </div>
 
-                  {request.deal.product.productImages &&
-                    request.deal.product.productImages.length > 0 && (
-                      <div>
-                        <div className="flex items-center gap-2 mb-2">
-                          <Gift className="w-4 h-4 text-gray-400" />
-                          <label className="text-xs font-semibold text-gray-900">
-                            Product Images
-                          </label>
-                        </div>
-                        <div className="flex gap-2 overflow-x-auto pb-2">
-                          {request.deal.product.productImages.map((image: any) => (
-                            <div key={image._id || image.id} className="flex-shrink-0">
-                              <img
-                                src={image.fileUrl}
-                                alt={image.name || request.deal.product.productName}
-                                className="w-28 h-20 object-cover rounded-lg border border-gray-200"
-                              />
-                            </div>
-                          ))}
-                        </div>
+                  {request.deal.product.productImages && request.deal.product.productImages.length > 0 && (
+                    <div>
+                      <div className="flex items-center gap-2 mb-3">
+                        <Gift className="w-4 h-4 text-gray-400" />
+                        <label className="text-sm font-semibold text-gray-900">Product Images</label>
                       </div>
-                    )}
+                      <div className="flex gap-3 overflow-x-auto pb-2">
+                        {request.deal.product.productImages.map((image: any) => (
+                          <div key={image._id || image.id} className="flex-shrink-0">
+                            <img 
+                              src={image.fileUrl} 
+                              alt={image.name || request.deal.product.productName}
+                              className="w-32 h-24 object-cover rounded-lg border border-gray-200"
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -350,7 +338,7 @@ const DealQuoteRequestDetailPage = () => {
                       {new Date(request.orderDetails.deliveryDeadline).toLocaleDateString('en-US', {
                         month: 'short',
                         day: 'numeric',
-                        year: 'numeric',
+                        year: 'numeric'
                       })}
                     </p>
                   </div>
@@ -363,9 +351,7 @@ const DealQuoteRequestDetailPage = () => {
                     <Truck className="w-4 h-4 text-gray-400" />
                     <label className="text-xs text-gray-600">Shipping Country</label>
                   </div>
-                  <p className="font-semibold text-gray-900">
-                    {request.orderDetails.shippingCountry}
-                  </p>
+                  <p className="font-semibold text-gray-900">{request.orderDetails.shippingCountry}</p>
                 </div>
               )}
 
@@ -396,10 +382,7 @@ const DealQuoteRequestDetailPage = () => {
                 <div className="space-y-4 py-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Current Status:{' '}
-                      <span className="font-bold text-gray-900">
-                        {getStatusConfig(request.status).text}
-                      </span>
+                      Current Status: <span className="font-bold text-gray-900">{getStatusConfig(request.status).text}</span>
                     </label>
                     <select
                       value={selectedStatus}
@@ -462,14 +445,14 @@ const DealQuoteRequestDetailPage = () => {
             </Dialog>
 
             {/* Seller Response - Response Form or View Response */}
-            <SellerResponse
+            <SellerResponse 
               request={request}
               sellerResponse={request.sellerResponse}
               onResponseSubmitted={handleResponseSubmitted}
             />
 
             {/* Comments Section */}
-            <CommentSection
+            <CommentSection 
               dealQuoteRequestId={requestId}
               currentUserId={request.seller?._id || ''}
               userRole="seller"
@@ -478,6 +461,7 @@ const DealQuoteRequestDetailPage = () => {
 
           {/* Sidebar - Right Side */}
           <div className="space-y-6">
+            
             {/* Requested By */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
               <div className="flex items-center gap-3 mb-5">
@@ -508,14 +492,12 @@ const DealQuoteRequestDetailPage = () => {
                       <p className="text-sm">{String(request.buyer.phone)}</p>
                     </div>
                   )}
-                  {request.buyer?.address &&
-                    typeof request.buyer.address === 'string' &&
-                    request.buyer.address.trim() && (
-                      <div className="flex items-start gap-2.5 text-gray-700">
-                        <MapPin className="w-4 h-4 text-gray-400 flex-shrink-0 mt-0.5" />
-                        <p className="text-sm">{request.buyer.address}</p>
-                      </div>
-                    )}
+                  {request.buyer?.address && typeof request.buyer.address === 'string' && request.buyer.address.trim() && (
+                    <div className="flex items-start gap-2.5 text-gray-700">
+                      <MapPin className="w-4 h-4 text-gray-400 flex-shrink-0 mt-0.5" />
+                      <p className="text-sm">{request.buyer.address}</p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -534,15 +516,12 @@ const DealQuoteRequestDetailPage = () => {
                     <Clock className="w-4 h-4 text-primary-500" />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-gray-900">
-                      {getStatusConfig(request.status).text}
-                    </p>
+                    <p className="text-sm font-semibold text-gray-900">{getStatusConfig(request.status).text}</p>
                     <p className="text-xs text-gray-500">Current</p>
                   </div>
                 </div>
 
-                {request.statusHistory &&
-                  request.statusHistory.length > 0 &&
+                {request.statusHistory && request.statusHistory.length > 0 && 
                   request.statusHistory
                     .filter((history: any) => history.status !== request.status)
                     .reverse()
@@ -552,13 +531,12 @@ const DealQuoteRequestDetailPage = () => {
                           <CheckCircle className="w-4 h-4 text-gray-500" />
                         </div>
                         <div>
-                          <p className="text-sm font-semibold text-gray-900">
-                            {getStatusConfig(history.status).text}
-                          </p>
+                          <p className="text-sm font-semibold text-gray-900">{getStatusConfig(history.status).text}</p>
                           <p className="text-xs text-gray-500">{formatDate(history.date)}</p>
                         </div>
                       </div>
-                    ))}
+                    ))
+                }
               </div>
             </div>
           </div>

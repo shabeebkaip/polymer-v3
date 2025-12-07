@@ -10,10 +10,6 @@ import {
   Package,
   Calendar,
   Building2,
-  AlertCircle,
-  CheckCircle,
-  XCircle,
-  Clock,
   DollarSign,
   MapPin,
   Truck,
@@ -22,11 +18,14 @@ import {
   Phone,
   RefreshCcw,
   Copy,
+  AlertCircle,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useSubmittedOffersStore } from "@/stores/submittedOffersStore";
 import { toast } from "sonner";
+import { getStatusConfig } from "@/lib/config/status.config";
+import { formatCurrency, formatDate } from "@/lib/utils";
 
 const SubmittedOfferDetail = () => {
   const router = useRouter();
@@ -50,73 +49,6 @@ const SubmittedOfferDetail = () => {
       clearOfferDetail();
     };
   }, [offerId, fetchOfferDetail, clearOfferDetail]);
-
-  // Get status info
-  const getStatusInfo = (status: string) => {
-    switch (status?.toLowerCase()) {
-      case "pending":
-        return { 
-          icon: Clock, 
-          color: "bg-yellow-500", 
-          textColor: "text-yellow-700", 
-          bgColor: "bg-yellow-50",
-          borderColor: "border-yellow-200"
-        };
-      case "approved":
-        return { 
-          icon: CheckCircle, 
-          color: "bg-green-500", 
-          textColor: "text-green-700", 
-          bgColor: "bg-green-50",
-          borderColor: "border-green-200"
-        };
-      case "rejected":
-        return { 
-          icon: XCircle, 
-          color: "bg-red-500", 
-          textColor: "text-red-700", 
-          bgColor: "bg-red-50",
-          borderColor: "border-red-200"
-        };
-      case "completed":
-        return { 
-          icon: CheckCircle, 
-          color: "bg-emerald-500", 
-          textColor: "text-emerald-700", 
-          bgColor: "bg-emerald-50",
-          borderColor: "border-emerald-200"
-        };
-      default:
-        return { 
-          icon: AlertCircle, 
-          color: "bg-gray-500", 
-          textColor: "text-gray-700", 
-          bgColor: "bg-gray-50",
-          borderColor: "border-gray-200"
-        };
-    }
-  };
-
-  // Format currency
-  const formatCurrency = (amount: number, currency: string = "USD") => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency,
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(amount);
-  };
-
-  // Format date
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
 
   // Copy to clipboard
   const copyToClipboard = (text: string, label: string) => {
@@ -205,8 +137,8 @@ const SubmittedOfferDetail = () => {
     );
   }
 
-  const statusInfo = getStatusInfo(detailedOffer.status);
-  const StatusIcon = statusInfo.icon;
+  const statusConfig = getStatusConfig(detailedOffer.status);
+  const StatusIcon = statusConfig.icon;
   const totalValue = detailedOffer.pricePerUnit * detailedOffer.bulkOrderId.quantity;
 
   return (
@@ -248,10 +180,10 @@ const SubmittedOfferDetail = () => {
               </div>
               
               <Badge 
-                className={`${statusInfo.bgColor} ${statusInfo.textColor} border-0 px-3 py-2 text-sm font-medium`}
+                className={`${statusConfig.bgColor} ${statusConfig.textColor} border-0 px-3 py-2 text-sm font-medium`}
               >
                 <StatusIcon className="h-4 w-4 mr-2" />
-                {detailedOffer.status}
+                {statusConfig.text}
               </Badge>
             </div>
           </div>
@@ -423,16 +355,16 @@ const SubmittedOfferDetail = () => {
         {/* Sidebar */}
         <div className="space-y-6">
           {/* Status Card */}
-          <Card className={`${statusInfo.borderColor} border-2`}>
+          <Card className={`${statusConfig.borderColor} border-2`}>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <StatusIcon className={`h-5 w-5 ${statusInfo.textColor}`} />
+                <StatusIcon className={`h-5 w-5 ${statusConfig.textColor}`} />
                 Status
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className={`${statusInfo.bgColor} ${statusInfo.textColor} p-4 rounded-lg text-center`}>
-                <p className="font-semibold text-lg">{detailedOffer.status}</p>
+              <div className={`${statusConfig.bgColor} ${statusConfig.textColor} p-4 rounded-lg text-center`}>
+                <p className="font-semibold text-lg">{statusConfig.text}</p>
                 <p className="text-sm opacity-75 mt-1">
                   Submitted on {formatDate(detailedOffer.createdAt)}
                 </p>
