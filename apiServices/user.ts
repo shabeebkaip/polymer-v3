@@ -608,6 +608,59 @@ export const getDealQuoteRequestsByDealId = async (dealId: string) => {
   }
 }
 
+// Seller: Get all deal quote enquiries
+export const getSellerDealQuoteEnquiries = async (params?: {
+  page?: number;
+  limit?: number;
+  status?: string;
+  search?: string;
+  sortBy?: string;
+  sortOrder?: string;
+  startDate?: string;
+  endDate?: string;
+}) => {
+  try {
+    const response = await axiosInstance.get("/deal-quote-request/seller", { params });
+    return response.data;
+  } catch (error: any) {
+    console.error("❌ Error fetching seller deal quote enquiries:", error);
+    throw error;
+  }
+}
+
+// Seller: Get deal quote enquiry detail (for seller side)
+export const getSellerDealQuoteEnquiryDetail = async (dealId: string) => {
+  try {
+    const response = await axiosInstance.get(`/deal-quote-request/${dealId}`);
+    return response.data;
+  } catch (error: any) {
+    console.error("❌ Error fetching seller deal quote enquiry detail:", error);
+    throw error;
+  }
+}
+
+// Seller: Respond to a deal quote request
+export const respondToDealQuoteRequest = async (id: string, data: {
+  message?: string;
+  quotedPrice?: number;
+  quotedQuantity?: number;
+  estimatedDelivery?: string | Date;
+  status: string;
+  quotationDocument?: {
+    fileName?: string;
+    fileUrl?: string;
+    fileType?: string;
+  };
+}) => {
+  try {
+    const response = await axiosInstance.post(`/deal-quote-request/${id}/respond`, data);
+    return response.data;
+  } catch (error: any) {
+    console.error("❌ Error responding to deal quote request:", error);
+    throw error;
+  }
+}
+
 // ============================================================================
 // UTILITY & DEBUG FUNCTIONS
 // ============================================================================

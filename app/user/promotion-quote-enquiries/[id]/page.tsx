@@ -42,8 +42,7 @@ import { Button } from '@/components/ui/button';
 const DealQuoteRequestDetailPage = () => {
   const params = useParams();
   const router = useRouter();
-  const dealId = params?.id as string; // Deal ID from /promotions/[id]
-  const requestId = params?.requestId as string; // Request ID from /quote-requests/[requestId]
+  const requestId = params?.id as string; // Request ID from /promotion-quote-enquiries/[id]
 
   const [request, setRequest] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -192,11 +191,11 @@ const DealQuoteRequestDetailPage = () => {
               {error || 'Unable to load the deal quote request details.'}
             </p>
             <button
-              onClick={() => router.push(`/user/promotions/${dealId}/quote-requests`)}
+              onClick={() => router.push('/user/promotion-quote-enquiries')}
               className="px-6 py-3 bg-primary-500 hover:bg-primary-600 text-white rounded-xl font-medium transition-colors duration-200 flex items-center gap-2"
             >
               <ArrowLeft className="w-4 h-4" />
-              Back to Quote Requests
+              Back to Quote Enquiries
             </button>
           </div>
         </div>
@@ -213,7 +212,7 @@ const DealQuoteRequestDetailPage = () => {
         {/* Header */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-6">
           <button
-            onClick={() => router.push(`/user/promotions/${dealId}/quote-requests`)}
+            onClick={() => router.push('/user/promotion-quote-enquiries')}
             className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />

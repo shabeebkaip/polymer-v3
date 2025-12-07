@@ -298,7 +298,7 @@ const DealQuoteRequestsPage = () => {
                         {statusConfig.text}
                       </div>
                       <button
-                        onClick={() => router.push(`/user/promotions/${dealId}/quote-requests/${request._id}`)}
+                        onClick={() => router.push(`/user/promotion-quote-enquiries/${request._id}`)}
                         className="px-4 py-2 bg-primary-500 text-white hover:bg-primary-600 rounded-lg transition-colors font-medium flex items-center gap-2"
                       >
                         <Eye className="w-4 h-4" />
