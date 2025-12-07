@@ -254,7 +254,7 @@ const DealQuoteRequestDetailPage = () => {
             
             {/* Product Information */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-              <div className="flex items-center gap-3 mb-5">
+              <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 bg-primary-50 rounded-lg flex items-center justify-center">
                   <Package className="w-5 h-5 text-primary-500" />
                 </div>
@@ -263,8 +263,8 @@ const DealQuoteRequestDetailPage = () => {
 
               {request.deal?.product && (
                 <div>
-                  <div className="mb-6">
-                    <h3 className="text-xl font-bold text-gray-900 mb-1">
+                  <div className="mb-4">
+                    <h3 className="text-lg font-bold text-gray-900 mb-0.5">
                       {request.deal.product.productName}
                     </h3>
                     {request.deal.product.tradeName && (
@@ -272,58 +272,58 @@ const DealQuoteRequestDetailPage = () => {
                     )}
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
                     {request.deal.product.chemicalName && (
-                      <div>
-                        <label className="text-sm text-gray-600">Chemical Name</label>
-                        <p className="font-semibold text-gray-900">{request.deal.product.chemicalName}</p>
+                      <div className="bg-gray-50 rounded-lg p-3">
+                        <label className="text-xs text-gray-600">Chemical Name</label>
+                        <p className="font-semibold text-gray-900 text-sm mt-0.5">{request.deal.product.chemicalName}</p>
                       </div>
                     )}
                     {request.deal.product.tradeName && (
-                      <div>
-                        <label className="text-sm text-gray-600">Trade Name</label>
-                        <p className="font-semibold text-gray-900">{request.deal.product.tradeName}</p>
+                      <div className="bg-gray-50 rounded-lg p-3">
+                        <label className="text-xs text-gray-600">Trade Name</label>
+                        <p className="font-semibold text-gray-900 text-sm mt-0.5">{request.deal.product.tradeName}</p>
                       </div>
                     )}
                     {request.deal.product.color && (
-                      <div>
-                        <label className="text-sm text-gray-600">Color</label>
-                        <p className="font-semibold text-gray-900">{request.deal.product.color}</p>
+                      <div className="bg-gray-50 rounded-lg p-3">
+                        <label className="text-xs text-gray-600">Color</label>
+                        <p className="font-semibold text-gray-900 text-sm mt-0.5">{request.deal.product.color}</p>
                       </div>
                     )}
                     {request.deal.product.countryOfOrigin && (
-                      <div>
-                        <label className="text-sm text-gray-600">Country of Origin</label>
-                        <p className="font-semibold text-gray-900">{request.deal.product.countryOfOrigin}</p>
+                      <div className="bg-gray-50 rounded-lg p-3">
+                        <label className="text-xs text-gray-600">Country of Origin</label>
+                        <p className="font-semibold text-gray-900 text-sm mt-0.5">{request.deal.product.countryOfOrigin}</p>
                       </div>
                     )}
                     {request.deal.product.density && (
-                      <div>
-                        <label className="text-sm text-gray-600">Density</label>
-                        <p className="font-semibold text-gray-900">{request.deal.product.density}</p>
+                      <div className="bg-gray-50 rounded-lg p-3">
+                        <label className="text-xs text-gray-600">Density</label>
+                        <p className="font-semibold text-gray-900 text-sm mt-0.5">{request.deal.product.density}</p>
                       </div>
                     )}
                     {request.deal.product.mfi && (
-                      <div>
-                        <label className="text-sm text-gray-600">MFI</label>
-                        <p className="font-semibold text-gray-900">{request.deal.product.mfi}</p>
+                      <div className="bg-gray-50 rounded-lg p-3">
+                        <label className="text-xs text-gray-600">MFI</label>
+                        <p className="font-semibold text-gray-900 text-sm mt-0.5">{request.deal.product.mfi}</p>
                       </div>
                     )}
                   </div>
 
                   {request.deal.product.productImages && request.deal.product.productImages.length > 0 && (
                     <div>
-                      <div className="flex items-center gap-2 mb-3">
+                      <div className="flex items-center gap-2 mb-2">
                         <Gift className="w-4 h-4 text-gray-400" />
-                        <label className="text-sm font-semibold text-gray-900">Product Images</label>
+                        <label className="text-xs font-semibold text-gray-900">Product Images</label>
                       </div>
-                      <div className="flex gap-3 overflow-x-auto pb-2">
+                      <div className="flex gap-2 overflow-x-auto pb-2">
                         {request.deal.product.productImages.map((image: any) => (
                           <div key={image._id || image.id} className="flex-shrink-0">
                             <img 
                               src={image.fileUrl} 
                               alt={image.name || request.deal.product.productName}
-                              className="w-32 h-24 object-cover rounded-lg border border-gray-200"
+                              className="w-28 h-20 object-cover rounded-lg border border-gray-200"
                             />
                           </div>
                         ))}
