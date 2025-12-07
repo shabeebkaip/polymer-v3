@@ -4,3 +4,4 @@ export { OrderDetails } from './OrderDetails';
 export { SellerResponse } from './SellerResponse';
 export { SupplierInformation } from './SupplierInformation';
 export { StatusTimeline } from './StatusTimeline';
+export { ProductQuoteSellerResponse } from './ProductQuoteSellerResponse';

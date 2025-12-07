@@ -16,11 +16,10 @@ interface GenericComment {
   userRole?: 'buyer' | 'seller' | 'admin';
   comment: string;
   attachments?: Array<{
-    id: string;
-    name: string;
-    type: string;
+    fileName: string;
     fileUrl: string;
-    uploadedAt: string;
+    fileType: string;
+    uploadedAt?: string;
   }>;
   isDeleted: boolean;
   isEdited?: boolean;
@@ -49,15 +48,19 @@ interface GenericCommentResponse {
 interface AddCommentRequest {
   comment: string;
   attachments?: Array<{
-    id: string;
-    name: string;
-    type: string;
+    fileName: string;
     fileUrl: string;
+    fileType: string;
   }>;
 }
 
 interface UpdateCommentRequest {
   comment: string;
+  attachments?: Array<{
+    fileName: string;
+    fileUrl: string;
+    fileType: string;
+  }>;
 }
 
 const getBaseUrl = (type: CommentType): string => {

@@ -75,9 +75,23 @@ export const GenericCommentSection: React.FC<GenericCommentSectionProps> = ({
     attachments: any[]
   ) => {
     try {
+      // Transform attachments to match API format
+      const transformedAttachments = attachments.map(att => {
+        const fileName = att.fileName || att.name || att.fileUrl?.split('/').pop()?.split('?')[0] || 'Attachment';
+        const fileType = att.fileType || att.type || 'application/octet-stream';
+        
+        return {
+          fileName,
+          fileUrl: att.fileUrl,
+          fileType,
+        };
+      });
+
+      console.log('Sending attachments:', transformedAttachments);
+
       await genericCommentService.addComment(commentType, quoteRequestId, {
         comment,
-        attachments: attachments.length > 0 ? attachments : undefined,
+        attachments: transformedAttachments.length > 0 ? transformedAttachments : undefined,
       });
       
       // Refresh comments to show the new one

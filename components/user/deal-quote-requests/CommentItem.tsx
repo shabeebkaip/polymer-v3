@@ -199,32 +199,43 @@ export const CommentItem: React.FC<CommentItemProps> = ({
           {/* Attachments */}
           {comment.attachments && comment.attachments.length > 0 && (
             <div className="mt-3 space-y-2">
-              {comment.attachments.map((attachment) => (
-                <div
-                  key={attachment.id}
-                  className="flex items-center justify-between bg-gray-50 rounded-lg p-3 border border-gray-200"
-                >
-                  <div className="flex items-center gap-2">
-                    <Paperclip className="w-4 h-4 text-gray-600" />
-                    <div>
-                      <p className="text-sm font-medium text-gray-900">
-                        {attachment.name}
-                      </p>
-                      <p className="text-xs text-gray-500">{attachment.type}</p>
+              {comment.attachments.map((attachment, index) => {
+                const fileName = (attachment as any).fileName || (attachment as any).name || 'Attachment';
+                const fileType = (attachment as any).fileType || (attachment as any).type || 'file';
+                const attachmentId = (attachment as any)._id || (attachment as any).id || `attachment-${index}`;
+                
+                // Extract filename from URL if fileName is still empty
+                const displayName = fileName === 'Attachment' && attachment.fileUrl 
+                  ? attachment.fileUrl.split('/').pop()?.split('?')[0] || 'Attachment'
+                  : fileName;
+                
+                return (
+                  <div
+                    key={attachmentId}
+                    className="flex items-center justify-between bg-gray-50 rounded-lg p-3 border border-gray-200"
+                  >
+                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                      <Paperclip className="w-4 h-4 text-gray-600 flex-shrink-0" />
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium text-gray-900 truncate">
+                          {displayName}
+                        </p>
+                        {fileType && <p className="text-xs text-gray-500">{fileType}</p>}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <a
+                        href={attachment.fileUrl}
+                        download={displayName}
+                        className="p-1.5 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded transition-colors"
+                        title="Download"
+                      >
+                        <Download className="w-4 h-4" />
+                      </a>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <a
-                      href={attachment.fileUrl}
-                      download={attachment.name}
-                      className="p-1.5 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded transition-colors"
-                      title="Download"
-                    >
-                      <Download className="w-4 h-4" />
-                    </a>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </>

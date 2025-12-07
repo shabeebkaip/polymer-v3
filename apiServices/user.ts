@@ -608,6 +608,37 @@ export const getDealQuoteRequestsByDealId = async (dealId: string) => {
   }
 }
 
+// Seller: Get all product quote requests
+export const getSellerProductQuoteRequests = async (params?: {
+  page?: number;
+  limit?: number;
+  status?: string;
+  search?: string;
+  sortBy?: string;
+  sortOrder?: string;
+  startDate?: string;
+  endDate?: string;
+}) => {
+  try {
+    const response = await axiosInstance.get("/quote/product-quotes/seller", { params });
+    return response.data;
+  } catch (error: any) {
+    console.error("❌ Error fetching seller product quote requests:", error);
+    throw error;
+  }
+}
+
+// Seller: Get quote requests by product ID
+export const getProductQuoteRequestsByProductId = async (productId: string) => {
+  try {
+    const response = await axiosInstance.get(`/quote/product-quotes/product/${productId}`);
+    return response.data;
+  } catch (error: any) {
+    console.error("❌ Error fetching product quote requests by product ID:", error);
+    throw error;
+  }
+}
+
 // Seller: Get all deal quote enquiries
 export const getSellerDealQuoteEnquiries = async (params?: {
   page?: number;
@@ -635,6 +666,42 @@ export const getSellerDealQuoteEnquiryDetail = async (dealId: string) => {
     return response.data;
   } catch (error: any) {
     console.error("❌ Error fetching seller deal quote enquiry detail:", error);
+    throw error;
+  }
+}
+
+// Seller: Respond to a product quote request
+export const respondToProductQuoteRequest = async (id: string, data: {
+  message?: string;
+  quotedPrice?: number;
+  quotedQuantity?: number;
+  estimatedDelivery?: string | Date;
+  status?: string;
+  quotationDocument?: {
+    fileName?: string;
+    fileUrl?: string;
+    fileType?: string;
+  };
+}) => {
+  try {
+    const response = await axiosInstance.patch(`/quote/product-quotes/${id}/respond`, data);
+    return response.data;
+  } catch (error: any) {
+    console.error("❌ Error responding to product quote request:", error);
+    throw error;
+  }
+}
+
+export const updateProductQuoteRequestStatus = async (id: string, status: string, message?: string) => {
+  try {
+    const payload: { status: string; message?: string } = { status };
+    if (message) {
+      payload.message = message;
+    }
+    const response = await axiosInstance.patch(`/quote/product-quotes/${id}/status`, payload);
+    return response.data;
+  } catch (error: any) {
+    console.error("❌ Error updating product quote request status:", error);
     throw error;
   }
 }

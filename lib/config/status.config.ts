@@ -113,8 +113,15 @@ const DEFAULT_STATUS_CONFIG: StatusConfig = {
   borderColor: 'border-gray-200',
 };
 
-export const getStatusConfig = (status: string): StatusConfig => {
-  const normalizedStatus = status?.toLowerCase().trim();
+export const getStatusConfig = (status: string | undefined | null): StatusConfig => {
+  if (!status || typeof status !== 'string') {
+    return {
+      ...DEFAULT_STATUS_CONFIG,
+      text: 'Unknown',
+    };
+  }
+  
+  const normalizedStatus = status.toLowerCase().trim();
   return STATUS_CONFIGS[normalizedStatus] || {
     ...DEFAULT_STATUS_CONFIG,
     text: status || 'Unknown',
