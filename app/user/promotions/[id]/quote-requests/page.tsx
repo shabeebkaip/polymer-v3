@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { getDealQuoteRequestsByDealId } from '@/apiServices/user';
 import { DealQuoteRequestByDealId, DealQuoteRequestsByDealIdResponse } from '@/types/quote';
 import {
@@ -297,13 +298,12 @@ const DealQuoteRequestsPage = () => {
                         <StatusIcon className="w-4 h-4" />
                         {statusConfig.text}
                       </div>
-                      <button
-                        onClick={() => router.push(`/user/promotion-quote-enquiries/${request._id}`)}
-                        className="px-4 py-2 bg-primary-500 text-white hover:bg-primary-600 rounded-lg transition-colors font-medium flex items-center gap-2"
-                      >
-                        <Eye className="w-4 h-4" />
-                        View
-                      </button>
+                      <Link href={`/user/promotion-quote-enquiries/${request._id}`}>
+                        <button className="px-4 py-2 bg-primary-500 text-white hover:bg-primary-600 rounded-lg transition-colors font-medium flex items-center gap-2">
+                          <Eye className="w-4 h-4" />
+                          View
+                        </button>
+                      </Link>
                     </div>
                   </div>
                   <div>
