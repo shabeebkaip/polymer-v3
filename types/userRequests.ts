@@ -51,23 +51,71 @@ export interface Product {
 // Sample Request Types
 export interface SampleRequestDetail {
   _id: string;
-  user: User;
-  product: Product;
-  grade: Grade;
+  status: string;
   quantity: number;
+  sampleSize: string;
   uom: string;
-  phone: string;
+  message?: string;
+  application?: string;
+  expectedAnnualVolume?: number;
   address: string;
   country: string;
-  application: string;
-  expected_annual_volume: number;
-  orderDate: string;
-  neededBy: string;
-  message: string;
-  request_document?: string;
-  status: string;
   createdAt: string;
   updatedAt: string;
+  orderDate?: string;
+  neededBy?: string;
+  requestDocument?: string;
+  request_document?: string; // Backward compatibility
+  buyer: {
+    _id: string;
+    name: string;
+    email: string;
+    phone: number;
+    company: string;
+    address: string;
+  };
+  seller: {
+    _id: string;
+    name: string;
+    email: string;
+    phone: number;
+    company: string;
+    address: string;
+  };
+  product: {
+    _id: string;
+    productName: string;
+    chemicalName: string;
+    tradeName: string;
+    description?: string;
+    productImages?: Array<{
+      id: string;
+      name: string;
+      type: string;
+      fileUrl: string;
+      _id: string;
+    }>;
+    countryOfOrigin?: string;
+    color?: string;
+    density?: number;
+    mfi?: number;
+    tensileStrength?: number;
+    elongationAtBreak?: number;
+    shoreHardness?: number;
+    waterAbsorption?: number;
+    manufacturingMethod?: string;
+  };
+  grade?: {
+    _id: string;
+    name: string;
+    description?: string;
+  };
+  statusMessage?: Array<{
+    status: string;
+    message: string;
+    date: string;
+    _id: string;
+  }>;
 }
 
 export interface SampleRequestStore {
@@ -82,35 +130,37 @@ export interface SampleRequestStore {
 
 export interface SampleRequestListItem {
   _id: string;
-  user: string;
-  product?: {
+  status: string;
+  quantity: number;
+  sampleSize: string;
+  uom: string;
+  message?: string;
+  application?: string;
+  expectedAnnualVolume?: number;
+  address: string;
+  country: string;
+  createdAt: string;
+  updatedAt: string;
+  seller: {
+    _id: string;
+    name: string;
+    email: string;
+    phone: number;
+    company: string;
+  };
+  product: {
     _id: string;
     productName: string;
-    createdBy?: {
-      _id: string;
-      firstName: string;
-      lastName: string;
-      company: string;
-      email: string;
-    };
+    chemicalName: string;
+    tradeName: string;
+    productImage: string;
   };
-  quantity: number;
-  uom?: string;
-  address?: string;
-  country?: string;
   grade?: {
     _id: string;
     name: string;
   };
-  application?: string;
-  expected_annual_volume?: number;
   orderDate?: string;
   neededBy?: string;
-  message?: string;
-  request_document?: string;
-  status: string;
-  createdAt: string;
-  updatedAt: string;
   __v?: number;
   statusMessage?: Array<{
     status: string;
@@ -139,6 +189,10 @@ export interface SampleRequestsListStore {
     limit?: number;
     search?: string;
     status?: string;
+    sortBy?: string;
+    sortOrder?: 'asc' | 'desc';
+    startDate?: string;
+    endDate?: string;
     forceRefresh?: boolean;
   }) => Promise<void>;
   clearFilters: () => void;

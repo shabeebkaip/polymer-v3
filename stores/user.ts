@@ -208,7 +208,11 @@ export const useSampleRequestsListStore = create<SampleRequestsListStore>((set, 
       page: params.page ?? state.currentPage,
       limit: params.limit ?? state.pageSize,
       ...(params.search && { search: params.search }),
-      ...(params.status && params.status !== "all" && { status: params.status })
+      ...(params.status && params.status !== "all" && { status: params.status }),
+      ...(params.sortBy && { sortBy: params.sortBy }),
+      ...(params.sortOrder && { sortOrder: params.sortOrder }),
+      ...(params.startDate && { startDate: params.startDate }),
+      ...(params.endDate && { endDate: params.endDate })
     };
 
     // Create a cache key to prevent duplicate calls

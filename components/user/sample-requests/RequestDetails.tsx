@@ -3,23 +3,32 @@ import { Package, Target, Calendar, Factory, FileText, Download } from 'lucide-r
 
 interface RequestDetailsProps {
   quantity: number;
+  sampleSize: string;
   uom: string;
-  expected_annual_volume: number;
-  neededBy: string;
-  application: string;
-  message: string;
+  expectedAnnualVolume?: number;
+  orderDate?: string;
+  neededBy?: string;
+  application?: string;
+  message?: string;
   request_document?: string;
+  // Keep old prop name for backward compatibility
+  expected_annual_volume?: number;
 }
 
 export const RequestDetails: React.FC<RequestDetailsProps> = ({
   quantity,
+  sampleSize,
   uom,
+  expectedAnnualVolume,
   expected_annual_volume,
+  orderDate,
   neededBy,
   application,
   message,
   request_document,
 }) => {
+  const annualVolume = expectedAnnualVolume || expected_annual_volume;
+  
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
       <div className="flex items-center gap-2 mb-4">
@@ -29,7 +38,7 @@ export const RequestDetails: React.FC<RequestDetailsProps> = ({
         <h2 className="text-lg font-semibold text-gray-900">Request Details</h2>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-gray-50 rounded-lg p-3">
           <div className="flex items-center gap-2 mb-1">
             <Package className="w-4 h-4 text-gray-400" />
@@ -40,43 +49,75 @@ export const RequestDetails: React.FC<RequestDetailsProps> = ({
 
         <div className="bg-gray-50 rounded-lg p-3">
           <div className="flex items-center gap-2 mb-1">
-            <Target className="w-4 h-4 text-gray-400" />
-            <p className="text-xs text-gray-600">Annual Volume</p>
+            <Package className="w-4 h-4 text-gray-400" />
+            <p className="text-xs text-gray-600">Sample Size</p>
           </div>
-          <p className="font-semibold text-base text-gray-900">{expected_annual_volume.toLocaleString()} {uom}</p>
+          <p className="font-semibold text-base text-gray-900">{sampleSize}</p>
         </div>
 
-        <div className="bg-gray-50 rounded-lg p-3">
-          <div className="flex items-center gap-2 mb-1">
-            <Calendar className="w-4 h-4 text-gray-400" />
-            <p className="text-xs text-gray-600">Needed By</p>
+        {annualVolume && (
+          <div className="bg-gray-50 rounded-lg p-3">
+            <div className="flex items-center gap-2 mb-1">
+              <Target className="w-4 h-4 text-gray-400" />
+              <p className="text-xs text-gray-600">Annual Volume</p>
+            </div>
+            <p className="font-semibold text-base text-gray-900">{annualVolume.toLocaleString()} {uom}</p>
           </div>
-          <p className="text-sm font-medium text-gray-900">
-            {new Date(neededBy).toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'short',
-              day: 'numeric'
-            })}
-          </p>
-        </div>
+        )}
+
+        {orderDate && (
+          <div className="bg-gray-50 rounded-lg p-3">
+            <div className="flex items-center gap-2 mb-1">
+              <Calendar className="w-4 h-4 text-gray-400" />
+              <p className="text-xs text-gray-600">Expected Order Date</p>
+            </div>
+            <p className="text-sm font-medium text-gray-900">
+              {new Date(orderDate).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+              })}
+            </p>
+          </div>
+        )}
+
+        {neededBy && (
+          <div className="bg-gray-50 rounded-lg p-3">
+            <div className="flex items-center gap-2 mb-1">
+              <Calendar className="w-4 h-4 text-gray-400" />
+              <p className="text-xs text-gray-600">Needed By</p>
+            </div>
+            <p className="text-sm font-medium text-gray-900">
+              {new Date(neededBy).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+              })}
+            </p>
+          </div>
+        )}
       </div>
 
       <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <h4 className="text-sm font-semibold text-gray-900 mb-2 flex items-center gap-2">
-            <Factory className="w-4 h-4 text-gray-400" />
-            Application
-          </h4>
-          <p className="text-sm text-gray-700 bg-gray-50 rounded-lg p-3">{application}</p>
-        </div>
+        {application && (
+          <div>
+            <h4 className="text-sm font-semibold text-gray-900 mb-2 flex items-center gap-2">
+              <Factory className="w-4 h-4 text-gray-400" />
+              Application
+            </h4>
+            <p className="text-sm text-gray-700 bg-gray-50 rounded-lg p-3">{application}</p>
+          </div>
+        )}
 
-        <div>
-          <h4 className="text-sm font-semibold text-gray-900 mb-2 flex items-center gap-2">
-            <FileText className="w-4 h-4 text-gray-400" />
-            Message
-          </h4>
-          <p className="text-sm text-gray-700 bg-gray-50 rounded-lg p-3">{message}</p>
-        </div>
+        {message && (
+          <div>
+            <h4 className="text-sm font-semibold text-gray-900 mb-2 flex items-center gap-2">
+              <FileText className="w-4 h-4 text-gray-400" />
+              Message
+            </h4>
+            <p className="text-sm text-gray-700 bg-gray-50 rounded-lg p-3">{message}</p>
+          </div>
+        )}
       </div>
 
       {request_document && (

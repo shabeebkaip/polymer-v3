@@ -6,3 +6,4 @@ export { UserInformation } from './UserInformation';
 export { SupplierInformation } from './SupplierInformation';
 export { StatusTimeline } from './StatusTimeline';
 export { SampleRequestsHeader } from './SampleRequestsHeader';
+export { InfoItem } from './InfoItem';

@@ -5,21 +5,24 @@ import { Package, Beaker, Layers } from 'lucide-react';
 interface ProductInformationProps {
   product: {
     productName: string;
-    description: string;
+    description?: string;
     chemicalName: string;
     tradeName: string;
-    color: string;
-    countryOfOrigin: string;
-    manufacturingMethod: string;
+    color?: string;
+    countryOfOrigin?: string;
+    manufacturingMethod?: string;
+    productImage?: string;
     productImages?: Array<{
       id: string;
       fileUrl: string;
       name: string;
+      type?: string;
+      _id?: string;
     }>;
   };
-  grade: {
+  grade?: {
     name: string;
-    description: string;
+    description?: string;
   };
 }
 
@@ -40,7 +43,7 @@ export const ProductInformation: React.FC<ProductInformationProps> = ({
         <div className="space-y-3">
           <div>
             <h3 className="text-base font-semibold text-gray-900 mb-1">{product.productName}</h3>
-            <p className="text-sm text-gray-600">{product.description}</p>
+            {product.description && <p className="text-sm text-gray-600">{product.description}</p>}
           </div>
 
           <div className="grid grid-cols-2 gap-3">
@@ -52,29 +55,37 @@ export const ProductInformation: React.FC<ProductInformationProps> = ({
               <p className="text-xs text-gray-600 mb-1">Trade Name</p>
               <p className="text-sm font-medium text-gray-900">{product.tradeName}</p>
             </div>
-            <div className="bg-gray-50 rounded-lg p-3">
-              <p className="text-xs text-gray-600 mb-1">Color</p>
-              <p className="text-sm font-medium text-gray-900">{product.color}</p>
-            </div>
-            <div className="bg-gray-50 rounded-lg p-3">
-              <p className="text-xs text-gray-600 mb-1">Country of Origin</p>
-              <p className="text-sm font-medium text-gray-900">{product.countryOfOrigin}</p>
-            </div>
-            <div className="bg-gray-50 rounded-lg p-3 col-span-2">
-              <p className="text-xs text-gray-600 mb-1">Manufacturing Method</p>
-              <p className="text-sm font-medium text-gray-900">{product.manufacturingMethod}</p>
-            </div>
+            {product.color && (
+              <div className="bg-gray-50 rounded-lg p-3">
+                <p className="text-xs text-gray-600 mb-1">Color</p>
+                <p className="text-sm font-medium text-gray-900">{product.color}</p>
+              </div>
+            )}
+            {product.countryOfOrigin && (
+              <div className="bg-gray-50 rounded-lg p-3">
+                <p className="text-xs text-gray-600 mb-1">Country of Origin</p>
+                <p className="text-sm font-medium text-gray-900">{product.countryOfOrigin}</p>
+              </div>
+            )}
+            {product.manufacturingMethod && (
+              <div className="bg-gray-50 rounded-lg p-3 col-span-2">
+                <p className="text-xs text-gray-600 mb-1">Manufacturing Method</p>
+                <p className="text-sm font-medium text-gray-900">{product.manufacturingMethod}</p>
+              </div>
+            )}
           </div>
         </div>
 
         <div className="space-y-3">
-          <div className="bg-green-50 rounded-lg p-4 border border-green-200">
-            <h4 className="text-sm font-semibold text-green-900 mb-2 flex items-center gap-2">
-              <Beaker className="w-4 h-4" />
-              Grade: {grade.name}
-            </h4>
-            <p className="text-xs text-green-700">{grade.description}</p>
-          </div>
+          {grade && (
+            <div className="bg-green-50 rounded-lg p-4 border border-green-200">
+              <h4 className="text-sm font-semibold text-green-900 mb-2 flex items-center gap-2">
+                <Beaker className="w-4 h-4" />
+                Grade: {grade.name}
+              </h4>
+              {grade.description && <p className="text-xs text-green-700">{grade.description}</p>}
+            </div>
+          )}
 
           {product.productImages && product.productImages.length > 0 && (
             <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">

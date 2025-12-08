@@ -1,9 +1,16 @@
 // Sample Enquiry Types
+import { StatusConfig } from '@/lib/config/status.config';
 
 export interface StatusOption {
   value: string;
   label: string;
   description: string;
+}
+
+export interface SampleRequestHeaderProps {
+  requestId: string;
+  status: string;
+  statusConfig: StatusConfig;
 }
 
 export interface ProductImage {

@@ -3,14 +3,9 @@
 import React, { useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useSampleRequestStore } from '@/stores/user';
-import { 
-  CheckCircle, 
-  XCircle, 
-  Clock, 
-  AlertCircle,
-  Package,
-  ArrowLeft
-} from "lucide-react";
+import { useUserInfo } from '@/lib/useUserInfo';
+import { ArrowLeft, XCircle } from "lucide-react";
+import { getStatusConfig } from '@/lib/config/status.config';
 import {
   SampleRequestHeader,
   ProductInformation,
@@ -18,12 +13,14 @@ import {
   TechnicalProperties,
   UserInformation,
   SupplierInformation,
-  StatusTimeline
+  StatusTimeline,
+  InfoItem
 } from '@/components/user/sample-requests';
 
 const SampleRequestDetail = () => {
   const router = useRouter();
   const params = useParams();
+  const { user } = useUserInfo();
   const { sampleRequestDetail, loading, error, fetchSampleRequestDetail, clearSampleRequestDetail } = useSampleRequestStore();
 
   useEffect(() => {
@@ -36,73 +33,21 @@ const SampleRequestDetail = () => {
     };
   }, [params.id, fetchSampleRequestDetail, clearSampleRequestDetail]);
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "approved":
-        return <CheckCircle className="w-5 h-5 text-green-500" />;
-      case "rejected":
-        return <XCircle className="w-5 h-5 text-red-500" />;
-      case "cancelled":
-        return <XCircle className="w-5 h-5 text-gray-500" />;
-      case "delivered":
-        return <CheckCircle className="w-5 h-5 text-blue-500" />;
-      case "sent":
-        return <Package className="w-5 h-5 text-purple-500" />;
-      case "responded":
-        return <AlertCircle className="w-5 h-5 text-orange-500" />;
-      case "pending":
-      default:
-        return <Clock className="w-5 h-5 text-yellow-500" />;
-    }
-  };
-
-  const getStatusBadge = (status: string) => {
-    const baseClasses = "inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium";
-    
-    switch (status) {
-      case "approved":
-        return `${baseClasses} bg-green-100 text-green-700 border border-green-200`;
-      case "rejected":
-        return `${baseClasses} bg-red-100 text-red-700 border border-red-200`;
-      case "cancelled":
-        return `${baseClasses} bg-gray-100 text-gray-700 border border-gray-200`;
-      case "delivered":
-        return `${baseClasses} bg-blue-100 text-blue-700 border border-blue-200`;
-      case "sent":
-        return `${baseClasses} bg-purple-100 text-purple-700 border border-purple-200`;
-      case "responded":
-        return `${baseClasses} bg-orange-100 text-orange-700 border border-orange-200`;
-      case "pending":
-        return `${baseClasses} bg-yellow-100 text-yellow-700 border border-yellow-200`;
-      default:
-        return `${baseClasses} bg-gray-100 text-gray-700 border border-gray-200`;
-    }
-  };
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case "pending": return "Pending";
-      case "responded": return "Responded";
-      case "sent": return "Sent";
-      case "delivered": return "Delivered";
-      case "approved": return "Approved";
-      case "rejected": return "Rejected";
-      case "cancelled": return "Cancelled";
-      default: return "Unknown";
-    }
-  };
-
   const getStatusTimeline = () => {
     const statusOrder = ['pending', 'responded', 'sent', 'delivered', 'approved', 'rejected', 'cancelled'];
     const currentStatusIndex = statusOrder.indexOf(sampleRequestDetail?.status || '');
     
-    return statusOrder.map((status, index) => ({
-      status,
-      label: getStatusText(status),
-      completed: index <= currentStatusIndex && !['rejected', 'cancelled'].includes(sampleRequestDetail?.status || ''),
-      current: status === sampleRequestDetail?.status,
-      icon: getStatusIcon(status)
-    }));
+    return statusOrder.map((status, index) => {
+      const statusConfig = getStatusConfig(status);
+      const StatusIcon = statusConfig.icon;
+      return {
+        status,
+        label: statusConfig.text,
+        completed: index <= currentStatusIndex && !['rejected', 'cancelled'].includes(sampleRequestDetail?.status || ''),
+        current: status === sampleRequestDetail?.status,
+        icon: <StatusIcon className="w-5 h-5" />
+      };
+    });
   };
 
   if (loading) {
@@ -147,9 +92,7 @@ const SampleRequestDetail = () => {
         <SampleRequestHeader
           requestId={sampleRequestDetail._id}
           status={sampleRequestDetail.status}
-          getStatusBadge={getStatusBadge}
-          getStatusIcon={getStatusIcon}
-          getStatusText={getStatusText}
+          statusConfig={getStatusConfig(sampleRequestDetail.status)}
         />
 
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
@@ -162,38 +105,67 @@ const SampleRequestDetail = () => {
 
             <RequestDetails
               quantity={sampleRequestDetail.quantity}
+              sampleSize={sampleRequestDetail.sampleSize}
               uom={sampleRequestDetail.uom}
-              expected_annual_volume={sampleRequestDetail.expected_annual_volume}
+              expectedAnnualVolume={sampleRequestDetail.expectedAnnualVolume}
+              orderDate={sampleRequestDetail.orderDate}
               neededBy={sampleRequestDetail.neededBy}
               application={sampleRequestDetail.application}
               message={sampleRequestDetail.message}
-              request_document={sampleRequestDetail.request_document}
+              request_document={sampleRequestDetail.requestDocument || sampleRequestDetail.request_document}
             />
 
-            <TechnicalProperties
-              product={{
-                density: String(sampleRequestDetail.product.density),
-                mfi: String(sampleRequestDetail.product.mfi),
-                tensileStrength: String(sampleRequestDetail.product.tensileStrength),
-                elongationAtBreak: String(sampleRequestDetail.product.elongationAtBreak),
-                shoreHardness: String(sampleRequestDetail.product.shoreHardness),
-                waterAbsorption: String(sampleRequestDetail.product.waterAbsorption)
-              }}
-            />
+            {/* Technical Properties - Only show if product has these fields */}
+            {sampleRequestDetail.product.density && (
+              <TechnicalProperties
+                product={{
+                  density: String(sampleRequestDetail.product.density || ''),
+                  mfi: String(sampleRequestDetail.product.mfi || ''),
+                  tensileStrength: String(sampleRequestDetail.product.tensileStrength || ''),
+                  elongationAtBreak: String(sampleRequestDetail.product.elongationAtBreak || ''),
+                  shoreHardness: String(sampleRequestDetail.product.shoreHardness || ''),
+                  waterAbsorption: String(sampleRequestDetail.product.waterAbsorption || '')
+                }}
+              />
+            )}
           </div>
 
           {/* Sidebar - Right Side */}
           <div className="space-y-6">
-            <UserInformation
-              user={sampleRequestDetail.user}
-              phone={sampleRequestDetail.phone}
-              address={sampleRequestDetail.address}
-              country={sampleRequestDetail.country}
-            />
+            {/* Buyer Information - Only show for sellers */}
+            {user?.user_type !== 'buyer' && (
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Buyer Information</h3>
+                <div className="space-y-3">
+                  <InfoItem label="Company" value={sampleRequestDetail.buyer.company} valueClassName="font-medium text-gray-900" />
+                  <InfoItem label="Contact Person" value={sampleRequestDetail.buyer.name} valueClassName="font-medium text-gray-900" />
+                  <InfoItem label="Email" value={sampleRequestDetail.buyer.email} />
+                  <InfoItem label="Phone" value={sampleRequestDetail.buyer.phone} />
+                  <InfoItem label="Address" value={sampleRequestDetail.buyer.address} />
+                </div>
+              </div>
+            )}
 
-            <SupplierInformation
-              supplier={sampleRequestDetail.product.createdBy}
-            />
+            {/* Seller Information */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Seller Information</h3>
+              <div className="space-y-3">
+                <InfoItem label="Company" value={sampleRequestDetail.seller.company} valueClassName="font-medium text-gray-900" />
+                <InfoItem label="Contact Person" value={sampleRequestDetail.seller.name} valueClassName="font-medium text-gray-900" />
+                <InfoItem label="Email" value={sampleRequestDetail.seller.email} />
+                <InfoItem label="Phone" value={sampleRequestDetail.seller.phone} />
+                <InfoItem label="Address" value={sampleRequestDetail.seller.address} />
+              </div>
+            </div>
+
+            {/* Shipping Information */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Shipping Information</h3>
+              <div className="space-y-3">
+                <InfoItem label="Country" value={sampleRequestDetail.country} valueClassName="font-medium text-gray-900" />
+                <InfoItem label="Address" value={sampleRequestDetail.address} />
+              </div>
+            </div>
 
             <StatusTimeline
               currentStatus={sampleRequestDetail.status}

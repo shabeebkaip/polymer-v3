@@ -1,9 +1,10 @@
 "use client";
 
-import { Package, Calendar, Building2, AlertCircle, CheckCircle, XCircle, Clock, Search, Eye } from "lucide-react";
+import { Package, Calendar, Building2, Search, Eye, XCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSampleRequestsListStore } from "@/stores/user";
+import { getStatusConfig } from "@/lib/config/status.config";
 import { GenericTable, Column } from "@/components/shared/GenericTable";
 import { FilterBar, FilterOption, ActiveFilter } from "@/components/shared/FilterBar";
 import { SampleRequestsHeader } from "@/components/user/sample-requests";
@@ -88,70 +89,6 @@ const SampleRequest = () => {
   const handleClearFilters = () => {
     clearFilters();
   };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "approved":
-        return <CheckCircle className="w-4 h-4 text-green-500" />;
-      case "rejected":
-        return <XCircle className="w-4 h-4 text-red-500" />;
-      case "cancelled":
-        return <XCircle className="w-4 h-4 text-gray-500" />;
-      case "delivered":
-        return <CheckCircle className="w-4 h-4 text-blue-500" />;
-      case "sent":
-        return <Package className="w-4 h-4 text-purple-500" />;
-      case "responded":
-        return <AlertCircle className="w-4 h-4 text-orange-500" />;
-      case "pending":
-      default:
-        return <Clock className="w-4 h-4 text-yellow-500" />;
-    }
-  };
-
-  const getStatusBadge = (status: string) => {
-    const baseClasses = "inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium";
-    
-    switch (status) {
-      case "approved":
-        return `${baseClasses} bg-green-100 text-green-700 border border-green-200`;
-      case "rejected":
-        return `${baseClasses} bg-red-100 text-red-700 border border-red-200`;
-      case "cancelled":
-        return `${baseClasses} bg-gray-100 text-gray-700 border border-gray-200`;
-      case "delivered":
-        return `${baseClasses} bg-blue-100 text-blue-700 border border-blue-200`;
-      case "sent":
-        return `${baseClasses} bg-purple-100 text-purple-700 border border-purple-200`;
-      case "responded":
-        return `${baseClasses} bg-orange-100 text-orange-700 border border-orange-200`;
-      case "pending":
-        return `${baseClasses} bg-yellow-100 text-yellow-700 border border-yellow-200`;
-      default:
-        return `${baseClasses} bg-gray-100 text-gray-700 border border-gray-200`;
-    }
-  };
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case "pending":
-        return "Pending";
-      case "responded":
-        return "Responded";
-      case "sent":
-        return "Sent";
-      case "delivered":
-        return "Delivered";
-      case "approved":
-        return "Approved";
-      case "rejected":
-        return "Rejected";
-      case "cancelled":
-        return "Cancelled";
-      default:
-        return "Unknown";
-    }
-  };
   // Define status options for filter
   const statusOptions: FilterOption[] = [
     { value: "all", label: "All Status" },
@@ -175,9 +112,10 @@ const SampleRequest = () => {
     });
   }
   if (statusFilter !== "all") {
+    const statusConfig = getStatusConfig(statusFilter);
     activeFilters.push({
       type: 'status',
-      label: getStatusText(statusFilter),
+      label: statusConfig.text,
       value: statusFilter,
       onRemove: () => setStatusFilter("all")
     });
@@ -186,12 +124,19 @@ const SampleRequest = () => {
   // Define table columns
   interface SampleRequestItem {
     _id: string;
-    product?: { productName?: string; createdBy?: { company?: string } };
-    grade?: { name?: string };
-    quantity?: number;
-    uom?: string;
-    createdAt?: string;
+    product: { productName: string; productImage: string; chemicalName: string; tradeName: string };
+    seller: { name: string; company: string; email: string; phone: number };
+    grade?: { name: string };
+    quantity: number;
+    sampleSize: string;
+    uom: string;
+    createdAt: string;
     status: string;
+    application?: string;
+    expectedAnnualVolume?: number;
+    address: string;
+    country: string;
+    message?: string;
   }
 
   const columns: Column<SampleRequestItem>[] = [
@@ -209,15 +154,25 @@ const SampleRequest = () => {
       label: "Product",
       render: (item) => (
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-            <Package className="w-4 h-4 text-green-600" />
+          <div className="w-10 h-10 bg-gray-100 rounded-lg overflow-hidden">
+            {item.product?.productImage ? (
+              <img 
+                src={item.product.productImage} 
+                alt={item.product.productName}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-green-100">
+                <Package className="w-5 h-5 text-green-600" />
+              </div>
+            )}
           </div>
           <div>
             <p className="font-medium text-gray-900 text-sm line-clamp-1">
               {item.product?.productName || "N/A"}
             </p>
             <p className="text-xs text-gray-600 mt-0.5">
-              {item.grade?.name || "N/A"}
+              {item.grade?.name || "No Grade"}
             </p>
           </div>
         </div>
@@ -227,27 +182,35 @@ const SampleRequest = () => {
       key: "quantity",
       label: "Quantity",
       render: (item) => (
-        <div className="flex items-center gap-2">
-          <span className="font-medium text-gray-900 text-sm">
-            {item.quantity || "N/A"}
-          </span>
-          {item.uom && (
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <span className="font-medium text-gray-900 text-sm">
+              {item.quantity}
+            </span>
             <span className="text-xs text-gray-600 bg-gray-100 px-2 py-0.5 rounded">
               {item.uom}
             </span>
-          )}
+          </div>
+          <p className="text-xs text-gray-500">
+            Sample: {item.sampleSize}
+          </p>
         </div>
       ),
     },
     {
-      key: "company",
-      label: "Company",
+      key: "seller",
+      label: "Seller",
       render: (item) => (
-        <div className="flex items-center gap-2">
-          <Building2 className="w-4 h-4 text-gray-400" />
-          <span className="text-gray-900 text-sm">
-            {item.product?.createdBy?.company || "N/A"}
-          </span>
+        <div>
+          <div className="flex items-center gap-2">
+            <Building2 className="w-4 h-4 text-gray-400" />
+            <span className="text-gray-900 text-sm font-medium">
+              {item.seller?.company || "N/A"}
+            </span>
+          </div>
+          <p className="text-xs text-gray-500 mt-1">
+            {item.seller?.name || "N/A"}
+          </p>
         </div>
       ),
     },
@@ -272,12 +235,16 @@ const SampleRequest = () => {
     {
       key: "status",
       label: "Status",
-      render: (item) => (
-        <span className={getStatusBadge(item.status)}>
-          {getStatusIcon(item.status)}
-          {getStatusText(item.status)}
-        </span>
-      ),
+      render: (item) => {
+        const statusConfig = getStatusConfig(item.status);
+        const StatusIcon = statusConfig.icon;
+        return (
+          <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${statusConfig.bgColor} ${statusConfig.textColor} border ${statusConfig.borderColor}`}>
+            <StatusIcon className="w-4 h-4" />
+            {statusConfig.text}
+          </span>
+        );
+      },
     },
     {
       key: "actions",

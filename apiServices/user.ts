@@ -202,6 +202,10 @@ export const getUserSampleRequests = async (params?: {
   limit?: number;
   search?: string;
   status?: string;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+  startDate?: string;
+  endDate?: string;
 }) => {
   try {
     const queryParams = new URLSearchParams();
@@ -210,8 +214,12 @@ export const getUserSampleRequests = async (params?: {
     if (params?.limit) queryParams.append("limit", params.limit.toString());
     if (params?.search) queryParams.append("search", params.search);
     if (params?.status) queryParams.append("status", params.status);
+    if (params?.sortBy) queryParams.append("sortBy", params.sortBy);
+    if (params?.sortOrder) queryParams.append("sortOrder", params.sortOrder);
+    if (params?.startDate) queryParams.append("startDate", params.startDate);
+    if (params?.endDate) queryParams.append("endDate", params.endDate);
 
-    const url = `/sample-request/history${
+    const url = `/sample-requests/buyer${
       queryParams.toString() ? `?${queryParams.toString()}` : ""
     }`;
     const response = await axiosInstance.get(url);
@@ -224,7 +232,7 @@ export const getUserSampleRequests = async (params?: {
 
 export const getSampleRequestDetail = async (id: string) => {
   try {
-    const response = await axiosInstance.get(`/sample-request/history/${id}`);
+    const response = await axiosInstance.get(`/sample-requests/${id}`);
     return response.data;
   } catch (error) {
     console.error("Error fetching sample request detail:", error);
@@ -248,7 +256,7 @@ export const updateSampleRequestStatus = async (
 ) => {
   try {
     const response = await axiosInstance.patch(
-      `/sample-request/status/${id}`,
+      `/sample-requests/${id}/status`,
       data
     );
     return response.data;
