@@ -219,6 +219,33 @@ export interface SampleRequestModalProps {
   children?: React.ReactNode;
 }
 
+export interface SampleRequestInputProps {
+  placeholder: string;
+  className?: string;
+  type?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  value: string | number;
+  min?: number | string;
+  readOnly?: boolean;
+  onFocus?: () => void;
+}
+
+export interface SampleRequestTextareaProps {
+  placeholder: string;
+  className?: string;
+  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  value: string;
+  rows?: number;
+}
+
+export interface SampleRequestDropdownProps {
+  value: string;
+  onValueChange: (value: string) => void;
+  placeholder?: string;
+  className?: string;
+  options: Grade[];
+}
+
 export interface SidebarSubItem {
   displayName: string;
   route: string;

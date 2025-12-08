@@ -189,7 +189,7 @@ export const getReceivedQuoteEnquiryDetail = async (id: string) => {
 
 export const createSampleRequest = async (data: any) => {
   try {
-    const response = await axiosInstance.post("/sample-request/create", data);
+    const response = await axiosInstance.post("/sample-requests/create", data);
     return response.data;
   } catch (error) {
     console.error("Error creating sample request:", error);

@@ -2,9 +2,7 @@
 import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import Cookies from 'js-cookie';
 import { toast } from 'sonner';
-import { Input } from '@/components/ui/input';
 import { Button } from '../ui/button';
-import { Textarea } from '@/components/ui/textarea';
 import { Calendar } from '@/components/ui/calendar';
 import { getGrades } from '@/apiServices/shared';
 import { createSampleRequest } from '@/apiServices/user';
@@ -19,104 +17,9 @@ import {
   DialogDescription,
   DialogClose,
 } from '@/components/ui/dialog';
-import {
-  Select,
-  SelectTrigger,
-  SelectContent,
-  SelectItem,
-  SelectValue,
-} from '@/components/ui/select';
-
-// Memoized input components to prevent unnecessary re-renders
-const MemoizedInput = React.memo(
-  ({
-    placeholder,
-    className,
-    type = 'text',
-    onChange,
-    value,
-    min,
-    readOnly,
-    onFocus,
-    ...props
-  }: {
-    placeholder: string;
-    className?: string;
-    type?: string;
-    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    value: string | number;
-    min?: number | string;
-    readOnly?: boolean;
-    onFocus?: () => void;
-    [key: string]: unknown;
-  }) => (
-    <Input
-      placeholder={placeholder}
-      className={className}
-      type={type}
-      onChange={onChange}
-      value={value}
-      min={min}
-      readOnly={readOnly}
-      onFocus={onFocus}
-      {...props}
-    />
-  )
-);
-
-const MemoizedTextarea = React.memo(
-  ({
-    placeholder,
-    className,
-    onChange,
-    value,
-    ...props
-  }: {
-    placeholder: string;
-    className?: string;
-    onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
-    value: string;
-    [key: string]: unknown;
-  }) => (
-    <Textarea
-      placeholder={placeholder}
-      className={className}
-      onChange={onChange}
-      value={value}
-      {...props}
-    />
-  )
-);
-
-const MemoizedSelect = React.memo(
-  ({
-    value,
-    onValueChange,
-    placeholder,
-    className,
-    children,
-  }: {
-    value: string;
-    onValueChange: (value: string) => void;
-    placeholder?: string;
-    className?: string;
-    children: React.ReactNode;
-    [key: string]: unknown;
-  }) => (
-    <Select value={value} onValueChange={onValueChange}>
-      <SelectTrigger className={className}>
-        <SelectValue placeholder={placeholder} />
-      </SelectTrigger>
-      <SelectContent>{children}</SelectContent>
-    </Select>
-  )
-);
-
-MemoizedInput.displayName = 'MemoizedInput';
-MemoizedTextarea.displayName = 'MemoizedTextarea';
-MemoizedSelect.displayName = 'MemoizedSelect';
-
-import { Grade, SampleRequestModalProps } from '@/types/shared';
+import { Grade, SampleRequestModalProps, Country } from '@/types/shared';
+import { MemoizedInput, MemoizedTextarea, MemoizedSearchableDropdown } from '@/components/shared/MemoizedFormComponents';
+import { getCountryList } from '@/lib/useCountries';
 
 const SampleRequestModal = ({
   className,
@@ -132,31 +35,12 @@ const SampleRequestModal = ({
   const [dropdownsLoaded, setDropdownsLoaded] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Use refs for immediate updates without triggering re-renders
-  const dataRef = useRef({
-    product: productId,
-    quantity: '',
-    uom: uom,
-    streetName: '',
-    address: '',
-    postCode: '',
-    country: '',
-    grade: '',
-    application: '',
-    expected_annual_volume: '',
-    orderDate: undefined as Date | undefined,
-    neededBy: undefined as Date | undefined,
-    samplePrice: '',
-    forFree: false,
-    message: '',
-    request_document: '',
-  });
-
   // Memoized initial data to prevent recreating on every render
   const initialData = useMemo(
     () => ({
       product: productId,
       quantity: '',
+      sampleSize: '',
       uom: uom,
       streetName: '',
       address: '',
@@ -176,38 +60,35 @@ const SampleRequestModal = ({
   );
 
   const [data, setData] = useState(initialData);
+  
+  // Use ref to track latest data for submission without causing re-renders
+  const dataRef = useRef(data);
+  
+  // Keep ref in sync with state
+  useEffect(() => {
+    dataRef.current = data;
+  }, [data]);
   const [grades, setGrades] = useState<Grade[]>([]);
+  const [countries, setCountries] = useState<Country[]>([]);
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [calendarOpen2, setCalendarOpen2] = useState(false);
 
-  // Debounced validation - only check on submit or when form is complete
-  const [validationErrors, setValidationErrors] = useState<string[]>([]);
-  const validationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  // Refs for calendar containers to detect outside clicks
+  const calendarRef = useRef<HTMLDivElement>(null);
+  const calendarRef2 = useRef<HTMLDivElement>(null);
 
-  // Optimized validation function
+  // Validation function - runs on submit
   const validateForm = useCallback(() => {
-    const currentData = dataRef.current;
     const errors: string[] = [];
 
-    if (!currentData.quantity) errors.push('Please enter the quantity');
-    if (!currentData.address) errors.push('Please enter the address');
-    if (!currentData.country) errors.push('Please enter the country');
+    if (!dataRef.current.quantity) errors.push('Please enter the quantity');
+    if (!dataRef.current.sampleSize) errors.push('Please enter the sample size');
+    if (!dataRef.current.uom) errors.push('Please enter the unit of measurement');
+    if (!dataRef.current.address) errors.push('Please enter the address');
+    if (!dataRef.current.country) errors.push('Please enter the country');
 
-    setValidationErrors(errors);
-    return errors.length === 0;
+    return { isValid: errors.length === 0, errors };
   }, []);
-
-  // Debounced validation trigger
-  const triggerValidation = useCallback(() => {
-    if (validationTimeoutRef.current) {
-      clearTimeout(validationTimeoutRef.current);
-    }
-    validationTimeoutRef.current = setTimeout(() => {
-      validateForm();
-    }, 500); // Only validate after 500ms of inactivity
-  }, [validateForm]);
-
-  const isFormValid = validationErrors.length === 0;
 
   // Memoized dropdown loading function
   const loadDropdowns = useCallback(async () => {
@@ -217,6 +98,7 @@ const SampleRequestModal = ({
       setLoading(true);
       const gradesRes = await getGrades();
       setGrades(gradesRes.data);
+      setCountries(getCountryList().sort((a, b) => a.name.localeCompare(b.name)));
       setDropdownsLoaded(true);
     } catch (err) {
       console.error('Error fetching dropdowns', err);
@@ -236,39 +118,25 @@ const SampleRequestModal = ({
     }
   }, [token, loadDropdowns, router]);
 
-  // Optimized field change handler with immediate UI updates
+  // Optimized field change handler using functional updates
   const onFieldChange = useCallback(
     (field: string, value: string | Date | undefined) => {
-      const processedValue = value instanceof Date ? value : value || '';
-
-      // Update ref immediately for internal tracking
-      dataRef.current = {
-        ...dataRef.current,
-        [field]: processedValue,
-      };
-
-      // Update state for UI reactivity (batched by React)
       setData((prev) => ({
         ...prev,
-        [field]: processedValue,
+        [field]: value instanceof Date ? value : value || '',
       }));
-
-      // Only trigger validation for critical fields or after delay
-      if (['quantity', 'address', 'country'].includes(field)) {
-        triggerValidation();
-      }
     },
-    [triggerValidation]
+    []
   );
 
   const handleSubmit = useCallback(async () => {
     setIsSubmitting(true);
 
-    // Force immediate validation on submit
-    const isValid = validateForm();
+    // Validate form on submit
+    const { isValid, errors } = validateForm();
 
     if (!isValid) {
-      validationErrors.forEach((err) => toast.error(err));
+      errors.forEach((err: string) => toast.error(err));
       setIsSubmitting(false);
       return;
     }
@@ -276,17 +144,13 @@ const SampleRequestModal = ({
     const toastId = toast.loading('Creating Sample Request...');
 
     try {
-      // Use the current data from ref for submission
       await createSampleRequest(dataRef.current);
       toast.dismiss(toastId);
       toast.success('Sample request created successfully!');
       setOpen(false);
 
       // Reset form on success
-      const resetData = { ...initialData };
-      dataRef.current = resetData;
-      setData(resetData);
-      setValidationErrors([]);
+      setData(initialData);
     } catch (error) {
       toast.dismiss(toastId);
       toast.error('Failed to create sample request. Please try again.');
@@ -294,23 +158,37 @@ const SampleRequestModal = ({
     } finally {
       setIsSubmitting(false);
     }
-  }, [validateForm, validationErrors, initialData]);
+  }, [validateForm, initialData]);
 
-  // Cleanup timeout on unmount
+  // Handle click outside calendars to close them
   useEffect(() => {
-    return () => {
-      if (validationTimeoutRef.current) {
-        clearTimeout(validationTimeoutRef.current);
+    const handleClickOutside = (event: MouseEvent) => {
+      if (calendarRef.current && !calendarRef.current.contains(event.target as Node)) {
+        setCalendarOpen(false);
+      }
+      if (calendarRef2.current && !calendarRef2.current.contains(event.target as Node)) {
+        setCalendarOpen2(false);
       }
     };
-  }, []);
 
-  // Sync dataRef with initial data when modal opens
-  useEffect(() => {
-    if (open) {
-      dataRef.current = { ...data };
+    if (calendarOpen || calendarOpen2) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
     }
-  }, [open, data]);
+  }, [calendarOpen, calendarOpen2]);
+
+  // Helper function for date formatting
+  const formatDateDisplay = useCallback((date: Date | undefined) => {
+    if (!date) return '';
+    return new Date(date).toLocaleDateString('en-US', {
+      weekday: 'short',
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
+  }, []);
 
   return (
     <>
@@ -377,19 +255,27 @@ const SampleRequestModal = ({
                     </div>
 
                     <div className="space-y-2">
+                      <label className="text-sm font-medium text-gray-700">Sample Size *</label>
+                      <MemoizedInput
+                        placeholder="Enter sample size (e.g., 5kg, 100g)"
+                        className="bg-white border-gray-200 focus:border-primary-500 focus:ring-primary-500 transition-all duration-200"
+                        type="text"
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                          onFieldChange('sampleSize', e.target.value)
+                        }
+                        value={data?.sampleSize}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
                       <label className="text-sm font-medium text-gray-700">Grade</label>
-                      <MemoizedSelect
+                      <MemoizedSearchableDropdown
                         value={data.grade}
                         onValueChange={(value: string) => onFieldChange('grade', value)}
                         placeholder="Select product grade"
+                        options={grades}
                         className="bg-white border-gray-200 focus:border-primary-500 focus:ring-primary-500 transition-all duration-200"
-                      >
-                        {grades.map((grade) => (
-                          <SelectItem key={grade._id} value={grade._id}>
-                            {grade.name}
-                          </SelectItem>
-                        ))}
-                      </MemoizedSelect>
+                      />
                     </div>
 
                     <div className="space-y-2">
@@ -435,23 +321,14 @@ const SampleRequestModal = ({
                       <div className="relative">
                         <MemoizedInput
                           readOnly
-                          value={
-                            data?.neededBy
-                              ? new Date(data?.neededBy).toLocaleDateString('en-US', {
-                                  weekday: 'short',
-                                  year: 'numeric',
-                                  month: 'short',
-                                  day: 'numeric',
-                                })
-                              : ''
-                          }
+                          value={data?.neededBy ? formatDateDisplay(data.neededBy) : ''}
                           placeholder="When do you need this sample?"
                           onFocus={() => setCalendarOpen2(true)}
                           className="bg-white border-gray-200 focus:border-primary-500 focus:ring-primary-500 transition-all duration-200 cursor-pointer pr-10"
                         />
                         <CalendarIcon className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                         {calendarOpen2 && (
-                          <div className="absolute z-50 top-full mt-2 bg-white shadow-xl rounded-xl border border-gray-200 p-4">
+                          <div ref={calendarRef2} className="absolute z-50 top-full mt-2 bg-white shadow-xl rounded-xl border border-gray-200 p-4">
                             <Calendar
                               mode="single"
                               selected={data?.neededBy ? new Date(data.neededBy) : undefined}
@@ -474,23 +351,14 @@ const SampleRequestModal = ({
                       <div className="relative">
                         <MemoizedInput
                           readOnly
-                          value={
-                            data?.orderDate
-                              ? new Date(data?.orderDate).toLocaleDateString('en-US', {
-                                  weekday: 'short',
-                                  year: 'numeric',
-                                  month: 'short',
-                                  day: 'numeric',
-                                })
-                              : ''
-                          }
+                          value={data?.orderDate ? formatDateDisplay(data.orderDate) : ''}
                           placeholder="When might you place an order?"
                           onFocus={() => setCalendarOpen(true)}
                           className="bg-white border-gray-200 focus:border-primary-500 focus:ring-primary-500 transition-all duration-200 cursor-pointer pr-10"
                         />
                         <CalendarIcon className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                         {calendarOpen && (
-                          <div className="absolute z-50 top-full mt-2 bg-white shadow-xl rounded-xl border border-gray-200 p-4">
+                          <div ref={calendarRef} className="absolute z-50 top-full mt-2 bg-white shadow-xl rounded-xl border border-gray-200 p-4">
                             <Calendar
                               mode="single"
                               selected={data?.orderDate ? new Date(data.orderDate) : undefined}
@@ -514,22 +382,15 @@ const SampleRequestModal = ({
                     <MapPin className="w-5 h-5 text-primary-500" />
                     Shipping Address
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium text-gray-700">Country *</label>
-                      <div className="relative">
-                        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                        <MemoizedInput
-                          placeholder="Enter country"
-                          className="pl-10 bg-white border-gray-200 focus:border-primary-500 focus:ring-primary-500 transition-all duration-200"
-                          type="text"
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                            onFieldChange('country', e.target.value)
-                          }
-                          value={data?.country}
-                        />
-                      </div>
-                    </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-700">Country *</label>
+                    <MemoizedSearchableDropdown
+                      options={countries.map(c => ({ _id: c.name, name: c.name }))}
+                      value={data.country || ''}
+                      onValueChange={(value: string) => onFieldChange('country', value)}
+                      placeholder="Select destination country"
+                      className="bg-white border-gray-200 focus:border-primary-500 focus:ring-primary-500 transition-all duration-200"
+                    />
                   </div>
 
                   <div className="space-y-2">
@@ -581,7 +442,7 @@ const SampleRequestModal = ({
             <Button
               type="submit"
               onClick={handleSubmit}
-              disabled={!isFormValid || loading || isSubmitting}
+              disabled={loading || isSubmitting}
               className="bg-primary-500 hover:bg-primary-600 text-white px-8 py-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
             >
               {isSubmitting ? (
