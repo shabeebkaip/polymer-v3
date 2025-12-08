@@ -62,3 +62,43 @@ export interface CommentResponse {
   message: string;
   data: DealQuoteComment;
 }
+
+// Sample Request Comment Types
+
+export interface SampleRequestComment {
+  _id: string;
+  sampleRequestId: string;
+  userId: {
+    _id: string;
+    email: string;
+    user_type: 'buyer' | 'seller' | 'admin';
+    name?: string;
+    companyName?: string;
+  };
+  userRole: 'buyer' | 'seller' | 'admin';
+  comment: string;
+  attachments: CommentAttachment[];
+  isEdited: boolean;
+  editedAt?: string;
+  isDeleted: boolean;
+  deletedAt?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SampleRequestCommentsPaginationResponse {
+  success: boolean;
+  data: SampleRequestComment[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+export interface SampleRequestCommentResponse {
+  success: boolean;
+  message: string;
+  data: SampleRequestComment;
+}

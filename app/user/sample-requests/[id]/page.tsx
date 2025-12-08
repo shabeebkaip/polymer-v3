@@ -6,6 +6,7 @@ import { useSampleRequestStore } from '@/stores/user';
 import { useUserInfo } from '@/lib/useUserInfo';
 import { ArrowLeft, XCircle } from "lucide-react";
 import { getStatusConfig } from '@/lib/config/status.config';
+import { GenericCommentSection } from '@/components/shared/GenericCommentSection';
 import {
   SampleRequestHeader,
   ProductInformation,
@@ -126,6 +127,16 @@ const SampleRequestDetail = () => {
                   shoreHardness: String(sampleRequestDetail.product.shoreHardness || ''),
                   waterAbsorption: String(sampleRequestDetail.product.waterAbsorption || '')
                 }}
+              />
+            )}
+
+            {/* Comments Section */}
+            {user?._id && (
+              <GenericCommentSection
+                quoteRequestId={sampleRequestDetail._id}
+                currentUserId={user._id}
+                commentType="sample-request"
+                userRole={user.user_type as 'buyer' | 'seller' | 'admin'}
               />
             )}
           </div>

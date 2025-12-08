@@ -1,6 +1,6 @@
 import axiosInstance from '@/lib/axiosInstance';
 
-export type CommentType = 'deal-quote' | 'product-quote';
+export type CommentType = 'deal-quote' | 'product-quote' | 'sample-request';
 
 interface GenericComment {
   _id: string;
@@ -64,9 +64,9 @@ interface UpdateCommentRequest {
 }
 
 const getBaseUrl = (type: CommentType): string => {
-  return type === 'deal-quote' 
-    ? '/deal-quote-comment' 
-    : '/quote/product-quotes/comments';
+  if (type === 'deal-quote') return '/deal-quote-comment';
+  if (type === 'sample-request') return '/sample-request-comment';
+  return '/quote/product-quotes/comments';
 };
 
 export const genericCommentService = {
@@ -79,11 +79,11 @@ export const genericCommentService = {
     data: AddCommentRequest
   ): Promise<GenericCommentResponse> => {
     const baseUrl = getBaseUrl(type);
-    const url = type === 'deal-quote' 
+    const url = (type === 'deal-quote' || type === 'sample-request')
       ? `${baseUrl}/${quoteRequestId}`
       : baseUrl;
     
-    const payload = type === 'deal-quote' 
+    const payload = (type === 'deal-quote' || type === 'sample-request')
       ? data 
       : { quoteRequestId, ...data };
 
@@ -120,11 +120,11 @@ export const genericCommentService = {
     data: UpdateCommentRequest
   ): Promise<GenericCommentResponse> => {
     const baseUrl = getBaseUrl(type);
-    const url = type === 'deal-quote'
+    const url = (type === 'deal-quote' || type === 'sample-request')
       ? `${baseUrl}/update/${commentId}`
       : `${baseUrl}/${commentId}`;
 
-    const method = type === 'deal-quote' ? 'put' : 'patch';
+    const method = (type === 'deal-quote' || type === 'sample-request') ? 'put' : 'patch';
     const response = await axiosInstance[method](url, data);
     return response.data;
   },
@@ -137,7 +137,7 @@ export const genericCommentService = {
     commentId: string
   ): Promise<{ success: boolean; message: string }> => {
     const baseUrl = getBaseUrl(type);
-    const url = type === 'deal-quote'
+    const url = (type === 'deal-quote' || type === 'sample-request')
       ? `${baseUrl}/delete/${commentId}`
       : `${baseUrl}/${commentId}`;
 
