@@ -24,7 +24,9 @@ export const CommentItem: React.FC<CommentItemProps> = ({
   const [isUpdating, setIsUpdating] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const isOwner = comment.userId._id === currentUserId;
+  // Handle both userId and user fields from API
+  const userData = (comment as any).user || (comment as any).userId;
+  const isOwner = userData?._id === currentUserId;
   const canEdit = isOwner || isAdmin;
   const canDelete = isOwner || isAdmin;
 
@@ -99,22 +101,61 @@ export const CommentItem: React.FC<CommentItemProps> = ({
         <div className="flex items-center gap-3">
           {/* Avatar */}
           <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold">
-            {comment.userId.email?.[0]?.toUpperCase() || 'U'}
+            {(() => {
+              if (!userData) return 'U';
+              
+              // Try name initial
+              if (userData.name) return userData.name[0].toUpperCase();
+              
+              // Try firstName initial
+              if (userData.firstName) return userData.firstName[0].toUpperCase();
+              
+              // Try email initial
+              if (userData.email) return userData.email[0].toUpperCase();
+              
+              return 'U';
+            })()}
           </div>
 
           {/* User Info */}
           <div>
             <div className="flex items-center gap-2">
               <span className="font-semibold text-gray-900">
-                {comment.userId.name || comment.userId.email}
+                {(() => {
+                  if (!userData) return 'Unknown User';
+                  
+                  // Try name field first (from new API)
+                  if (userData.name) return userData.name;
+                  
+                  // Try firstName + lastName
+                  if (userData.firstName || userData.lastName) {
+                    return `${userData.firstName || ''} ${userData.lastName || ''}`.trim();
+                  }
+                  
+                  // Try companyName
+                  if (userData.companyName) return userData.companyName;
+                  
+                  // Extract readable name from email if available
+                  if (userData.email) {
+                    const emailName = userData.email.split('@')[0];
+                    // Convert 'john.doe' or 'john_doe' to 'John Doe'
+                    const formattedName = emailName
+                      .split(/[._-]/)
+                      .map((part: string) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+                      .join(' ');
+                    return formattedName;
+                  }
+                  
+                  return 'Unknown User';
+                })()}
               </span>
-              {comment.userRole && (
+              {((comment as any).userRole || userData?.role || userData?.user_type) && (
                 <span
                   className={`text-xs px-2 py-0.5 rounded-full border font-medium ${getRoleBadgeColor(
-                    comment.userRole
+                    (comment as any).userRole || userData?.role || userData?.user_type
                   )}`}
                 >
-                  {comment.userRole.toUpperCase()}
+                  {((comment as any).userRole || userData?.role || userData?.user_type)?.toUpperCase()}
                 </span>
               )}
             </div>

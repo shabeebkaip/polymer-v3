@@ -5,6 +5,7 @@ import { getDealQuoteRequestDetail, updateDealQuoteRequestStatus } from '@/apiSe
 import { SellerResponse, CommentSection } from '@/components/user/deal-quote-requests';
 import { getStatusConfig } from '@/lib/config/status.config';
 import { formatDate } from '@/lib/utils';
+import { useUserInfo } from '@/lib/useUserInfo';
 import {
   ArrowLeft,
   Loader2,
@@ -39,6 +40,7 @@ const DealQuoteRequestDetailPage = () => {
   const params = useParams();
   const router = useRouter();
   const requestId = params?.id as string; // Request ID from /promotion-quote-enquiries/[id]
+  const { user } = useUserInfo();
 
   const [request, setRequest] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -466,6 +468,7 @@ const DealQuoteRequestDetailPage = () => {
               request={request}
               sellerResponse={request.sellerResponse}
               onResponseSubmitted={handleResponseSubmitted}
+              currentUserRole={user?.user_type as 'buyer' | 'seller' | 'admin'}
             />
 
             {/* Comments Section */}

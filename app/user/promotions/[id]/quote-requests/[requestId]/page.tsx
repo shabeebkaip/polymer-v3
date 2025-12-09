@@ -8,6 +8,7 @@ import {
 } from '@/components/user/deal-quote-requests';
 import { getStatusConfig } from '@/lib/config/status.config';
 import { formatCurrency, formatDate } from '@/lib/utils';
+import { useUserInfo } from '@/lib/useUserInfo';
 import {
   ArrowLeft,
   Loader2,
@@ -44,6 +45,7 @@ const DealQuoteRequestDetailPage = () => {
   const router = useRouter();
   const dealId = params?.id as string; // Deal ID from /promotions/[id]
   const requestId = params?.requestId as string; // Request ID from /quote-requests/[requestId]
+  const { user } = useUserInfo();
 
   const [request, setRequest] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -449,6 +451,7 @@ const DealQuoteRequestDetailPage = () => {
               request={request}
               sellerResponse={request.sellerResponse}
               onResponseSubmitted={handleResponseSubmitted}
+              currentUserRole={user?.user_type as 'buyer' | 'seller' | 'admin'}
             />
 
             {/* Comments Section */}
