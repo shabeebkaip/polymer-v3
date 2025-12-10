@@ -49,3 +49,6 @@ next-env.d.ts
 # documentation - ignore all .md files except README.md
 *.md
 !README.md
+
+# documentation folder
+documentation/
