@@ -128,7 +128,7 @@ const usePromotionsStore = create<PromotionStore>((set, get) => ({
           createdAt: deal.createdAt,
           updatedAt: deal.updatedAt,
           isActive: deal.isActive || false,
-          validUntil: deal.validUntil,
+          validUntil: deal.validity || deal.validUntil,
           minimumQuantity: deal.minimumQuantity,
           dealType: deal.dealType,
           statusIcon: deal.statusIcon
