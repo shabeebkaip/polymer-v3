@@ -441,9 +441,14 @@ export const getBuyerProductRequestDetail = async (id: string) => {
 // SELLER SUBMITTED OFFERS
 // ==========================================================================
 
-export const getSellerSubmittedOffers = async () => {
+export const getSellerSubmittedOffers = async (params?: {
+  page?: number;
+  limit?: number;
+  status?: string;
+  search?: string;
+}) => {
   try {
-    const response = await axiosInstance.get("/bulk-order/supplier-offer/history");
+    const response = await axiosInstance.get("/bulk-order/supplier-offer/history", { params });
     return response.data;
   } catch (error) {
     console.error("Error fetching seller submitted offers:", error);

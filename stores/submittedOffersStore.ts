@@ -123,7 +123,7 @@ interface SubmittedOffersState {
   // Actions
   setOffers: (offers: SubmittedOffer[], meta: ApiMeta | null) => void;
   clearOffers: () => void;
-  fetchOffers: () => Promise<void>;
+  fetchOffers: (params?: { page?: number; limit?: number; status?: string; search?: string }) => Promise<void>;
   
   // Detail actions
   setOfferDetail: (offer: SubmittedOffer) => void;
@@ -242,10 +242,10 @@ export const useSubmittedOffersStore = create<SubmittedOffersState>((set, get) =
     set({ offers: [], meta: null });
   },
 
-  fetchOffers: async () => {
+  fetchOffers: async (params?: { page?: number; limit?: number; status?: string; search?: string }) => {
     set({ loading: true, error: null });
     try {
-      const response = await getSellerSubmittedOffers();
+      const response = await getSellerSubmittedOffers(params);
       if (response.success) {
         const { setOffers } = get();
         setOffers(response.data || [], response.meta);
