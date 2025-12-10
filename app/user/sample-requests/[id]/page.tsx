@@ -12,8 +12,6 @@ import {
   ProductInformation,
   RequestDetails,
   TechnicalProperties,
-  UserInformation,
-  SupplierInformation,
   StatusTimeline,
   InfoItem
 } from '@/components/user/sample-requests';
