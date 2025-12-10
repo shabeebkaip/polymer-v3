@@ -4,6 +4,7 @@ import { FileText, Package, Target, Calendar, Factory, Download } from 'lucide-r
 interface EnquiryDetailsProps {
   quantity: number;
   uom?: string;
+  sampleSize?: string;
   expectedAnnualVolume?: number;
   neededBy?: string;
   application?: string;
@@ -14,6 +15,7 @@ interface EnquiryDetailsProps {
 export const EnquiryDetails: React.FC<EnquiryDetailsProps> = ({
   quantity,
   uom,
+  sampleSize,
   expectedAnnualVolume,
   neededBy,
   application,
@@ -37,6 +39,18 @@ export const EnquiryDetails: React.FC<EnquiryDetailsProps> = ({
             {quantity.toLocaleString()} {uom}
           </p>
         </div>
+
+        {sampleSize && (
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <Package className="w-4 h-4 text-gray-400" />
+              <p className="text-xs text-gray-600">Sample Size</p>
+            </div>
+            <p className="font-semibold text-gray-900">
+              {sampleSize}
+            </p>
+          </div>
+        )}
 
         {expectedAnnualVolume && (
           <div>

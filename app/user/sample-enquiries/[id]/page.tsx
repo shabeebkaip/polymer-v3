@@ -207,6 +207,7 @@ const SampleEnquiriesDetail = React.memo(function SampleEnquiriesDetail() {
             <EnquiryDetails
               quantity={enquiryDetail.quantity}
               uom={enquiryDetail.uom}
+              sampleSize={enquiryDetail.sampleSize}
               expectedAnnualVolume={enquiryDetail.expected_annual_volume}
               neededBy={enquiryDetail.neededBy}
               application={enquiryDetail.application}

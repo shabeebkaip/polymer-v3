@@ -27,6 +27,7 @@ export interface SampleEnquiry {
   product: any;
   quantity: number;
   uom: string;
+  sampleSize?: string;
   address: string;
   country: string;
   grade: any;
