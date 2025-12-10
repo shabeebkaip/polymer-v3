@@ -7,11 +7,15 @@ interface SampleEnquiryHeaderProps {
   enquiryId: string;
   status: string;
   statusConfig: StatusConfig;
+  canUpdate?: boolean;
+  onUpdateClick?: () => void;
 }
 
 export const SampleEnquiryHeader: React.FC<SampleEnquiryHeaderProps> = ({
   enquiryId,
   statusConfig,
+  canUpdate = false,
+  onUpdateClick,
 }) => {
   const router = useRouter();
   const StatusIcon = statusConfig.icon;
@@ -41,10 +45,20 @@ export const SampleEnquiryHeader: React.FC<SampleEnquiryHeaderProps> = ({
           </div>
         </div>
 
-        <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium ${statusConfig.bgColor} ${statusConfig.textColor} border ${statusConfig.borderColor}`}>
-          <StatusIcon className="w-5 h-5" />
-          {statusConfig.text}
-        </span>
+        <div className="flex items-center gap-3">
+          <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium ${statusConfig.bgColor} ${statusConfig.textColor} border ${statusConfig.borderColor}`}>
+            <StatusIcon className="w-5 h-5" />
+            {statusConfig.text}
+          </span>
+          {canUpdate && onUpdateClick && (
+            <button
+              onClick={onUpdateClick}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors"
+            >
+              Update Status
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

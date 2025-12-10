@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useSampleEnquiriesStore } from '@/stores/sampleEnquiriesStore';
 import { getRecievedSampleEnquiryDetail, updateSampleEnquiryStatus } from '@/apiServices/user';
 import { getStatusConfig } from '@/lib/config/status.config';
-import { XCircle, ArrowLeft, Edit3, Send, Clock, CheckCircle, Factory, Building2, Mail, Phone, MapPin } from 'lucide-react';
+import { XCircle, ArrowLeft, Send, Clock, CheckCircle, Factory, Building2, Mail, Phone, MapPin } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -194,6 +194,8 @@ const SampleEnquiriesDetail = React.memo(function SampleEnquiriesDetail() {
           enquiryId={enquiryDetail._id}
           status={enquiryDetail.status}
           statusConfig={getStatusConfig(enquiryDetail.status)}
+          canUpdate={canUpdateStatus(enquiryDetail.status).length > 0}
+          onUpdateClick={() => setShowStatusUpdate(true)}
         />
 
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
@@ -281,22 +283,9 @@ const SampleEnquiriesDetail = React.memo(function SampleEnquiriesDetail() {
 
             {/* Status Timeline */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <Clock className="w-5 h-5 text-green-600" />
-                  <h3 className="text-lg font-semibold text-gray-900">Status Timeline</h3>
-                </div>
-                
-                {enquiryDetail && canUpdateStatus(enquiryDetail.status).length > 0 && (
-                  <Button
-                    onClick={() => setShowStatusUpdate(true)}
-                    size="sm"
-                    className="gap-2"
-                  >
-                    <Edit3 className="w-4 h-4" />
-                    Update
-                  </Button>
-                )}
+              <div className="flex items-center gap-2 mb-4">
+                <Clock className="w-5 h-5 text-green-600" />
+                <h3 className="text-lg font-semibold text-gray-900">Status Timeline</h3>
               </div>
 
               <div className="space-y-3">
