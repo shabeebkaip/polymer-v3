@@ -211,100 +211,91 @@ const CreateFinanceRequest = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-primary-50/20 to-primary-50/30">
-      <div className="container mx-auto px-6 py-8 ">
+    <div className="min-h-screen bg-gray-50">
+      <div className="container mx-auto px-4 py-6">
         {/* Header Section */}
-        <div className="relative overflow-hidden bg-white/70 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 mb-8">
-          {/* Background Pattern */}
-          <div className="absolute inset-0 bg-primary-500/5"></div>
-          <div className="absolute top-0 right-0 w-96 h-96 bg-primary-500/10 rounded-full blur-3xl -translate-y-48 translate-x-48"></div>
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+          {/* Back Button */}
+          <Button
+            variant="ghost"
+            onClick={() => router.back()}
+            className="mb-4 text-gray-600 hover:text-gray-900 hover:bg-gray-100 -ml-2"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back
+          </Button>
 
-          <div className="relative z-10">
-            {/* Back Button */}
-            <Button
-              variant="ghost"
-              onClick={() => router.back()}
-              className="mb-6 text-gray-600 hover:text-gray-900 hover:bg-gray-100 p-2"
-            >
-              <ArrowLeft className="w-5 h-5 mr-2" />
-              Back to Finance Requests
-            </Button>
+          <div className="flex items-center gap-3 mb-6">
+            <div className="bg-primary-600 p-2.5 rounded-lg">
+              <CreditCard className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-semibold text-gray-900">
+                Create Finance Request
+              </h1>
+              <p className="text-gray-600 text-sm mt-0.5">
+                Get flexible financing for your polymer purchases
+              </p>
+            </div>
+          </div>
 
-            <div className="flex items-center gap-5 mb-8">
-              <div className="relative">
-                <div className="bg-primary-500 p-4 rounded-2xl shadow-lg">
-                  <CreditCard className="w-7 h-7 text-white" />
+          {/* Finance Benefits Section */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="bg-primary-100 p-2 rounded-lg">
+                  <DollarSign className="w-4 h-4 text-primary-600" />
                 </div>
-                <div className="absolute -top-1 -right-1 w-5 h-5 bg-primary-500 rounded-full animate-pulse"></div>
+                <h3 className="font-semibold text-gray-900 text-sm">Flexible EMI</h3>
               </div>
-              <div>
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 via-primary-600 to-primary-600 bg-clip-text text-transparent">
-                  Finance Request
-                </h1>
-                <p className="text-gray-600 text-lg mt-2 font-medium">
-                  Get flexible financing for your polymer purchases
-                </p>
-              </div>
+              <p className="text-gray-600 text-xs">
+                Choose EMI terms from 3 to 60 months that suit your cash flow.
+              </p>
             </div>
 
-            {/* Finance Benefits Section */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-primary-500/30">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="bg-primary-50 p-3 rounded-xl">
-                    <DollarSign className="w-6 h-6 text-primary-500" />
-                  </div>
-                  <h3 className="font-bold text-gray-900">Flexible EMI</h3>
+            <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="bg-primary-100 p-2 rounded-lg">
+                  <TrendingUp className="w-4 h-4 text-primary-600" />
                 </div>
-                <p className="text-gray-600 text-sm">
-                  Choose EMI terms from 3 to 60 months that suit your cash flow requirements.
-                </p>
+                <h3 className="font-semibold text-gray-900 text-sm">Competitive Rates</h3>
               </div>
+              <p className="text-gray-600 text-xs">
+                Industry-leading interest rates starting from 8.5% per annum.
+              </p>
+            </div>
 
-              <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-primary-500/30">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="bg-primary-50 p-3 rounded-xl">
-                    <TrendingUp className="w-6 h-6 text-primary-500" />
-                  </div>
-                  <h3 className="font-bold text-gray-900">Competitive Rates</h3>
+            <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="bg-primary-100 p-2 rounded-lg">
+                  <Shield className="w-4 h-4 text-primary-600" />
                 </div>
-                <p className="text-gray-600 text-sm">
-                  Get industry-leading interest rates starting from 8.5% per annum.
-                </p>
+                <h3 className="font-semibold text-gray-900 text-sm">Quick Approval</h3>
               </div>
-
-              <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-primary-500/30">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="bg-primary-50 p-3 rounded-xl">
-                    <Shield className="w-6 h-6 text-primary-500" />
-                  </div>
-                  <h3 className="font-bold text-gray-900">Quick Approval</h3>
-                </div>
-                <p className="text-gray-600 text-sm">
-                  Get pre-approved within 24 hours with minimal documentation.
-                </p>
-              </div>
+              <p className="text-gray-600 text-xs">
+                Pre-approved within 24 hours with minimal documentation.
+              </p>
             </div>
           </div>
         </div>
 
         {/* Form Section */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50 overflow-hidden">
-          <div className="border-b border-gray-200/60 px-8 py-6 bg-gradient-to-r from-gray-50/80 to-primary-50/30">
-            <h2 className="text-xl font-bold text-gray-900">Finance Request Details</h2>
-            <p className="text-gray-600 mt-1">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+          <div className="border-b border-gray-200 px-6 py-4 bg-gray-50">
+            <h2 className="text-base font-semibold text-gray-900">Finance Request Details</h2>
+            <p className="text-gray-600 text-sm mt-0.5">
               Fill in the details below to submit your finance request
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="p-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <form onSubmit={handleSubmit} className="p-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Left Column */}
-              <div className="space-y-6">
+              <div className="space-y-4">
                 {/* Product Selection */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-900 mb-3">
-                    <Package className="w-4 h-4 inline mr-2 text-primary-500" />
+                  <label className="block text-sm font-medium text-gray-900 mb-2">
+                    <Package className="w-4 h-4 inline mr-1.5 text-primary-600" />
                     Select Product *
                   </label>
                   <Select
@@ -312,7 +303,7 @@ const CreateFinanceRequest = () => {
                     onValueChange={handleProductChange}
                     disabled={loadingProducts}
                   >
-                    <SelectTrigger className="w-full py-3 px-4 border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                    <SelectTrigger className="w-full h-10 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
                       <SelectValue
                         placeholder={loadingProducts ? 'Loading products...' : 'Choose a product'}
                       />
@@ -343,10 +334,10 @@ const CreateFinanceRequest = () => {
                 </div>
 
                 {/* Quantity and EMI Months Row */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-semibold text-gray-900 mb-3">
-                      <Package className="w-4 h-4 inline mr-2 text-primary-500" />
+                    <label className="block text-sm font-medium text-gray-900 mb-2">
+                      <Package className="w-4 h-4 inline mr-1.5 text-primary-600" />
                       Quantity *
                     </label>
                     <Input
@@ -354,7 +345,7 @@ const CreateFinanceRequest = () => {
                       min="1"
                       value={formData.quantity}
                       onChange={(e) => handleInputChange('quantity', parseInt(e.target.value) || 1)}
-                      className="py-3 px-4 border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                      className="h-10 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                       placeholder="Enter quantity"
                     />
                     {selectedProduct?.uom && (
@@ -363,15 +354,15 @@ const CreateFinanceRequest = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-900 mb-3">
-                      <Calculator className="w-4 h-4 inline mr-2 text-primary-500" />
+                    <label className="block text-sm font-medium text-gray-900 mb-2">
+                      <Calculator className="w-4 h-4 inline mr-1.5 text-primary-600" />
                       EMI Months *
                     </label>
                     <Select
                       value={formData.emiMonths.toString()}
                       onValueChange={(value) => handleInputChange('emiMonths', parseInt(value))}
                     >
-                      <SelectTrigger className="py-3 px-4 border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                      <SelectTrigger className="h-10 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -386,11 +377,11 @@ const CreateFinanceRequest = () => {
                 </div>
 
                 {/* Estimated Price and Monthly EMI */}
-                <div className="bg-primary-50 rounded-xl p-6 border border-primary-500/30">
+                <div className="bg-primary-50 rounded-lg p-4 border border-primary-200">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-semibold text-gray-900 mb-3">
-                        <Banknote className="w-4 h-4 inline mr-2 text-primary-500" />
+                      <label className="block text-sm font-medium text-gray-900 mb-2">
+                        <Banknote className="w-4 h-4 inline mr-1.5 text-primary-600" />
                         Estimated Price ($)
                       </label>
                       <Input
@@ -417,15 +408,15 @@ const CreateFinanceRequest = () => {
                             }));
                           }
                         }}
-                        className="py-3 px-4 border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white/70"
+                        className="h-10 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white"
                         placeholder="Enter price"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-900 mb-3">
+                      <label className="block text-sm font-medium text-gray-900 mb-2">
                         Monthly EMI ($)
                       </label>
-                      <div className="py-3 px-4 bg-white/70 border border-gray-300 rounded-xl text-lg font-bold text-primary-500">
+                      <div className="h-10 px-3 bg-white border border-gray-300 rounded-lg text-base font-semibold text-primary-600 flex items-center">
                         ${calculateMonthlyEMI}
                       </div>
                     </div>
@@ -434,7 +425,7 @@ const CreateFinanceRequest = () => {
 
                 {/* Product Grade */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-900 mb-3">
+                  <label className="block text-sm font-medium text-gray-900 mb-2">
                     Product Grade
                   </label>
                   <Input
@@ -442,21 +433,21 @@ const CreateFinanceRequest = () => {
                     onChange={(e) =>
                       handleInputChange('productGrade', e.target.value)
                     }
-                    className="py-3 px-4 border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    className="h-10 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                     placeholder="e.g., A+, Standard"
                   />
                 </div>
 
                 {/* Request Notes */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-900 mb-3">
-                    <FileText className="w-4 h-4 inline mr-2 text-primary-500" />
+                  <label className="block text-sm font-medium text-gray-900 mb-2">
+                    <FileText className="w-4 h-4 inline mr-1.5 text-primary-600" />
                     Request Notes *
                   </label>
                   <Textarea
                     value={inputValues.notes}
                     onChange={handleTextInputChange('notes')}
-                    className="py-3 px-4 border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 min-h-[120px]"
+                    className="min-h-[100px] border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                     placeholder="Describe your finance requirements, business use case, and any specific terms you need..."
                     required
                   />
@@ -464,18 +455,18 @@ const CreateFinanceRequest = () => {
               </div>
 
               {/* Right Column */}
-              <div className="space-y-6">
+              <div className="space-y-4">
                 {/* Delivery Date */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-900 mb-3">
-                    <CalendarIcon className="w-4 h-4 inline mr-2 text-primary-500" />
+                  <label className="block text-sm font-medium text-gray-900 mb-2">
+                    <CalendarIcon className="w-4 h-4 inline mr-1.5 text-primary-600" />
                     Expected Delivery Date *
                   </label>
                   <Popover>
                     <PopoverTrigger asChild>
                       <Button
                         variant="outline"
-                        className="w-full py-6 px-4 justify-start text-left font-normal border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                        className="w-full h-10 justify-start text-left font-normal border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                       >
                         {formData.desiredDeliveryDate ? (
                           formData.desiredDeliveryDate.toLocaleDateString()
@@ -500,26 +491,26 @@ const CreateFinanceRequest = () => {
 
                 {/* Destination */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-900 mb-3">
-                    <MapPin className="w-4 h-4 inline mr-2 text-primary-500" />
+                  <label className="block text-sm font-medium text-gray-900 mb-2">
+                    <MapPin className="w-4 h-4 inline mr-1.5 text-primary-600" />
                     Destination
                   </label>
                   <Input
                     value={inputValues.destination}
                     onChange={handleTextInputChange('destination')}
-                    className="py-3 px-4 border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    className="h-10 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                     placeholder="Enter delivery destination"
                   />
                 </div>
 
                 {/* Country */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-900 mb-3">Country</label>
+                  <label className="block text-sm font-medium text-gray-900 mb-2">Country</label>
                   <Select
                     value={formData.country}
                     onValueChange={(value) => handleInputChange('country', value)}
                   >
-                    <SelectTrigger className="py-3 px-4 border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                    <SelectTrigger className="h-10 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
                       <SelectValue placeholder="Select country" />
                     </SelectTrigger>
                     <SelectContent>
@@ -534,14 +525,14 @@ const CreateFinanceRequest = () => {
 
                 {/* Payment Terms */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-900 mb-3">
+                  <label className="block text-sm font-medium text-gray-900 mb-2">
                     Payment Terms
                   </label>
                   <Select
                     value={formData.paymentTerms}
                     onValueChange={(value) => handleInputChange('paymentTerms', value)}
                   >
-                    <SelectTrigger className="py-3 px-4 border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                    <SelectTrigger className="h-10 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
                       <SelectValue placeholder="Select payment terms" />
                     </SelectTrigger>
                     <SelectContent>
@@ -557,15 +548,15 @@ const CreateFinanceRequest = () => {
 
                 {/* Logistics Support */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-900 mb-3">
-                    <Truck className="w-4 h-4 inline mr-2 text-primary-500" />
+                  <label className="block text-sm font-medium text-gray-900 mb-2">
+                    <Truck className="w-4 h-4 inline mr-1.5 text-primary-600" />
                     Require Logistics Support?
                   </label>
                   <Select
                     value={formData.requireLogisticsSupport}
                     onValueChange={(value) => handleInputChange('requireLogisticsSupport', value)}
                   >
-                    <SelectTrigger className="py-3 px-4 border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                    <SelectTrigger className="h-10 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -577,13 +568,13 @@ const CreateFinanceRequest = () => {
 
                 {/* Previous Purchase History */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-900 mb-3">
+                  <label className="block text-sm font-medium text-gray-900 mb-2">
                     Previous Purchase History
                   </label>
                   <Textarea
                     value={inputValues.previousPurchaseHistory}
                     onChange={handleTextInputChange('previousPurchaseHistory')}
-                    className="py-3 px-4 border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    className="min-h-[80px] border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                     placeholder="Describe your previous purchasing experience with similar products..."
                     rows={3}
                   />
@@ -591,13 +582,13 @@ const CreateFinanceRequest = () => {
 
                 {/* Additional Notes */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-900 mb-3">
+                  <label className="block text-sm font-medium text-gray-900 mb-2">
                     Additional Notes
                   </label>
                   <Textarea
                     value={inputValues.additionalNotes}
                     onChange={handleTextInputChange('additionalNotes')}
-                    className="py-3 px-4 border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    className="min-h-[80px] border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                     placeholder="Any additional information or special requirements..."
                     rows={3}
                   />
@@ -606,16 +597,16 @@ const CreateFinanceRequest = () => {
             </div>
 
             {/* Submit Button */}
-            <div className="mt-8 pt-6 border-t border-gray-200">
+            <div className="mt-6 pt-4 border-t border-gray-200">
               <div className="flex items-center justify-between">
-                <div className="text-sm text-gray-600">
-                  <AlertCircle className="w-4 h-4 inline mr-2 text-amber-500" />
-                  All finance requests are subject to credit approval and terms may vary.
+                <div className="text-xs text-gray-600">
+                  <AlertCircle className="w-4 h-4 inline mr-1.5 text-amber-500" />
+                  All requests are subject to credit approval.
                 </div>
                 <Button
                   type="submit"
                   disabled={isSubmitting || !formData.productId || !inputValues.notes.trim()}
-                  className="px-8 py-3 bg-primary-500 hover:bg-primary-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50"
+                  className="px-6 h-10 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium shadow-sm hover:shadow transition-all disabled:opacity-50"
                 >
                   {isSubmitting ? (
                     <>
@@ -625,7 +616,7 @@ const CreateFinanceRequest = () => {
                   ) : (
                     <>
                       <CheckCircle className="w-4 h-4 mr-2" />
-                      Submit Finance Request
+                      Submit Request
                     </>
                   )}
                 </Button>
