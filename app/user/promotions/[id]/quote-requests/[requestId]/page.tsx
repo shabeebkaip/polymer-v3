@@ -6,6 +6,7 @@ import {
   SellerResponse,
   CommentSection
 } from '@/components/user/deal-quote-requests';
+import { StatusTimeline, TimelineItem } from '@/components/shared/StatusTimeline';
 import { getStatusConfig } from '@/lib/config/status.config';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import { useUserInfo } from '@/lib/useUserInfo';
@@ -92,9 +93,29 @@ const DealQuoteRequestDetailPage = () => {
   };
 
   const handleOpenStatusModal = () => {
-    setSelectedStatus(request.status);
+    setSelectedStatus(request?.status || '');
     setStatusMessage('');
     setIsStatusModalOpen(true);
+  };
+
+  const getStatusTimeline = (): TimelineItem[] => {
+    if (!request) return [];
+
+    const statusOrder = ['pending', 'responded', 'accepted', 'rejected', 'cancelled'];
+    const currentStatusIndex = statusOrder.indexOf(request.status);
+
+    return statusOrder.map((status, index) => {
+      const statusConfig = getStatusConfig(status);
+      const StatusIcon = statusConfig.icon;
+      
+      return {
+        status,
+        label: statusConfig.text,
+        completed: index <= currentStatusIndex && !['rejected', 'cancelled'].includes(request.status),
+        current: status === request.status,
+        icon: <StatusIcon className="w-5 h-5" />
+      };
+    });
   };
 
   const handleStatusUpdate = async () => {
@@ -504,44 +525,11 @@ const DealQuoteRequestDetailPage = () => {
                 </div>
               </div>
             </div>
-            {/* Status Timeline */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-              <div className="flex items-center gap-3 mb-5">
-                <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                  <Clock className="w-5 h-5 text-gray-600" />
-                </div>
-                <h3 className="text-lg font-bold text-gray-900">Status Timeline</h3>
-              </div>
-
-              <div className="space-y-3">
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 bg-primary-50 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <Clock className="w-4 h-4 text-primary-500" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-gray-900">{getStatusConfig(request.status).text}</p>
-                    <p className="text-xs text-gray-500">Current</p>
-                  </div>
-                </div>
-
-                {request.statusHistory && request.statusHistory.length > 0 && 
-                  request.statusHistory
-                    .filter((history: any) => history.status !== request.status)
-                    .reverse()
-                    .map((history: any) => (
-                      <div key={history._id || history.id} className="flex items-start gap-3">
-                        <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                          <CheckCircle className="w-4 h-4 text-gray-500" />
-                        </div>
-                        <div>
-                          <p className="text-sm font-semibold text-gray-900">{getStatusConfig(history.status).text}</p>
-                          <p className="text-xs text-gray-500">{formatDate(history.date)}</p>
-                        </div>
-                      </div>
-                    ))
-                }
-              </div>
-            </div>
+            <StatusTimeline
+              timeline={getStatusTimeline()}
+              createdAt={request.createdAt}
+              updatedAt={request.updatedAt}
+            />
           </div>
         </div>
       </div>

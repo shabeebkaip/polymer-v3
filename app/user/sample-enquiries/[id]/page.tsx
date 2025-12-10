@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useSampleEnquiriesStore } from '@/stores/sampleEnquiriesStore';
 import { getRecievedSampleEnquiryDetail, updateSampleEnquiryStatus } from '@/apiServices/user';
 import { getStatusConfig } from '@/lib/config/status.config';
-import { XCircle, ArrowLeft, Send, Clock, CheckCircle, Factory, Building2, Mail, Phone, MapPin } from 'lucide-react';
+import { XCircle, ArrowLeft, Send, Factory, Building2, Mail, Phone, MapPin } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -28,6 +28,7 @@ import {
   BuyerInformation,
   InfoItem
 } from '@/components/user/sample-enquiries';
+import { StatusTimeline } from '@/components/shared/StatusTimeline';
 
 const supplierAllowedStatuses: StatusOption[] = [
   { value: 'responded', label: 'Mark as Responded', description: 'You have responded to this enquiry' },
@@ -281,89 +282,11 @@ const SampleEnquiriesDetail = React.memo(function SampleEnquiriesDetail() {
               </div>
             </div>
 
-            {/* Status Timeline */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <Clock className="w-5 h-5 text-green-600" />
-                <h3 className="text-lg font-semibold text-gray-900">Status Timeline</h3>
-              </div>
-
-              <div className="space-y-3">
-                {getStatusTimeline().map((timelineItem, index) => (
-                  <div key={timelineItem.status} className="flex items-center gap-3">
-                    <div className={`relative flex items-center justify-center w-8 h-8 rounded-full border-2 ${
-                      timelineItem.current 
-                        ? 'border-green-500 bg-green-50' 
-                        : timelineItem.completed 
-                          ? 'border-green-500 bg-green-500' 
-                          : 'border-gray-300 bg-gray-50'
-                    }`}>
-                      {timelineItem.completed && !timelineItem.current ? (
-                        <CheckCircle className="w-4 h-4 text-white" />
-                      ) : (
-                        React.cloneElement(timelineItem.icon, {
-                          className: `w-4 h-4 ${
-                            timelineItem.current 
-                              ? 'text-green-600' 
-                              : timelineItem.completed 
-                                ? 'text-white'
-                                : 'text-gray-400'
-                          }`
-                        })
-                      )}
-                      
-                      {timelineItem.current && (
-                        <div className="absolute -inset-1 rounded-full border-2 border-green-300 animate-pulse"></div>
-                      )}
-                    </div>
-                    
-                    <div className="flex-1">
-                      <p className={`text-sm font-medium ${
-                        timelineItem.current 
-                          ? 'text-green-900' 
-                          : timelineItem.completed 
-                            ? 'text-gray-900'
-                            : 'text-gray-500'
-                      }`}>
-                        {timelineItem.label}
-                      </p>
-                      {timelineItem.current && (
-                        <p className="text-xs text-green-600">Current Status</p>
-                      )}
-                    </div>
-                    
-                    {index < getStatusTimeline().length - 1 && (
-                      <div className="absolute left-4 w-0.5 h-6 bg-gray-300" style={{ 
-                        top: `${index * 48 + 32}px` 
-                      }}></div>
-                    )}
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-4 pt-4 border-t border-gray-200 space-y-2">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-gray-600">Created</span>
-                  <span className="font-medium text-gray-900">
-                    {new Date(enquiryDetail.createdAt).toLocaleDateString('en-US', {
-                      month: 'short',
-                      day: 'numeric',
-                      year: 'numeric'
-                    })}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-gray-600">Updated</span>
-                  <span className="font-medium text-gray-900">
-                    {new Date(enquiryDetail.updatedAt).toLocaleDateString('en-US', {
-                      month: 'short',
-                      day: 'numeric',
-                      year: 'numeric'
-                    })}
-                  </span>
-                </div>
-              </div>
-            </div>
+            <StatusTimeline
+              timeline={getStatusTimeline()}
+              createdAt={enquiryDetail.createdAt}
+              updatedAt={enquiryDetail.updatedAt}
+            />
           </div>
         </div>
 

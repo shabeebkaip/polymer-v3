@@ -4,6 +4,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { getProductQuoteRequestDetail, updateProductQuoteRequestStatus } from '@/apiServices/user';
 import { ProductQuoteSellerResponse } from '@/components/user/product-quote-requests';
 import { GenericCommentSection } from '@/components/shared/GenericCommentSection';
+import { StatusTimeline, TimelineItem } from '@/components/shared/StatusTimeline';
 import { getStatusConfig } from '@/lib/config/status.config';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import { useUserInfo } from '@/lib/useUserInfo';
@@ -33,7 +34,6 @@ import {
   FileText,
   Tags,
   Clock,
-  CheckCircle,
   Globe,
   User,
 } from 'lucide-react';
@@ -169,6 +169,26 @@ const ProductQuoteRequestDetailPage = () => {
   const handleResponseSubmitted = () => {
     // Refresh data after response submission
     fetchRequestDetail();
+  };
+
+  const getStatusTimeline = (): TimelineItem[] => {
+    if (!request) return [];
+
+    const statusOrder = ['pending', 'responded', 'accepted', 'rejected', 'cancelled'];
+    const currentStatusIndex = statusOrder.indexOf(request.currentStatus);
+
+    return statusOrder.map((status, index) => {
+      const statusConfig = getStatusConfig(status);
+      const StatusIcon = statusConfig.icon;
+      
+      return {
+        status,
+        label: statusConfig.text,
+        completed: index <= currentStatusIndex && !['rejected', 'cancelled'].includes(request.currentStatus),
+        current: status === request.currentStatus,
+        icon: <StatusIcon className="w-5 h-5" />
+      };
+    });
   };
 
   const handleOpenStatusModal = () => {
@@ -580,48 +600,11 @@ const ProductQuoteRequestDetailPage = () => {
               </div>
             </div>
 
-            {/* Status Timeline */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-              <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <Clock className="w-5 h-5 text-primary-500" />
-                Status Timeline
-              </h3>
-
-              <div className="space-y-3">
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 bg-primary-50 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <StatusIcon className="w-4 h-4 text-primary-500" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-gray-900">{statusConfig.text}</p>
-                    <p className="text-xs text-gray-500">Current</p>
-                  </div>
-                </div>
-
-                {request.status &&
-                  request.status
-                    .slice()
-                    .reverse()
-                    .map((history) => {
-                      const historyConfig = getStatusConfig(history.status);
-                      const HistoryIcon = historyConfig.icon;
-                      return (
-                        <div key={history._id} className="flex items-start gap-3">
-                          <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                            <HistoryIcon className="w-4 h-4 text-gray-500" />
-                          </div>
-                          <div>
-                            <p className="text-sm font-semibold text-gray-900">{historyConfig.text}</p>
-                            {history.message && (
-                              <p className="text-xs text-gray-600 mt-0.5">{history.message}</p>
-                            )}
-                            <p className="text-xs text-gray-500 mt-1">{formatDate(history.date)}</p>
-                          </div>
-                        </div>
-                      );
-                    })}
-              </div>
-            </div>
+            <StatusTimeline
+              timeline={getStatusTimeline()}
+              createdAt={request.createdAt}
+              updatedAt={request.updatedAt}
+            />
           </div>
         </div>
       </div>
