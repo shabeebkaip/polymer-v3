@@ -17,24 +17,8 @@ import { getUserSampleEnquiries } from "@/apiServices/user";
 import { useSampleEnquiriesStore } from "@/stores/sampleEnquiriesStore";
 import { GenericTable, Column } from "@/components/shared/GenericTable";
 import { FilterBar, FilterOption, ActiveFilter } from "@/components/shared/FilterBar";
-
-interface SampleEnquiry {
-  _id: string;
-  product?: {
-    productName?: string;
-    grade?: string;
-    productImages?: Array<{ fileUrl: string }>;
-  };
-  quantity?: number;
-  uom?: string;
-  user?: {
-    company?: string;
-    firstName?: string;
-    lastName?: string;
-  };
-  status?: string;
-  createdAt?: string;
-}
+import { SampleEnquiry } from "@/types/sampleEnquiry";
+import { getStatusConfig } from "@/lib/config/status.config";
 
 const SampleEnquiries = () => {
   const router = useRouter();
@@ -120,69 +104,7 @@ const SampleEnquiries = () => {
     setCurrentPage(1);
   };
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "approved":
-        return <CheckCircle className="w-4 h-4 text-green-500" />;
-      case "rejected":
-        return <XCircle className="w-4 h-4 text-red-500" />;
-      case "cancelled":
-        return <XCircle className="w-4 h-4 text-gray-500" />;
-      case "delivered":
-        return <CheckCircle className="w-4 h-4 text-blue-500" />;
-      case "sent":
-        return <Package className="w-4 h-4 text-purple-500" />;
-      case "responded":
-        return <CheckCircle className="w-4 h-4 text-orange-500" />;
-      case "pending":
-      default:
-        return <Clock className="w-4 h-4 text-yellow-500" />;
-    }
-  };
 
-  const getStatusBadge = (status: string) => {
-    const baseClasses = "inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium";
-
-    switch (status) {
-      case "approved":
-        return `${baseClasses} bg-green-100 text-green-700 border border-green-200`;
-      case "rejected":
-        return `${baseClasses} bg-red-100 text-red-700 border border-red-200`;
-      case "cancelled":
-        return `${baseClasses} bg-gray-100 text-gray-700 border border-gray-200`;
-      case "delivered":
-        return `${baseClasses} bg-blue-100 text-blue-700 border border-blue-200`;
-      case "sent":
-        return `${baseClasses} bg-purple-100 text-purple-700 border border-purple-200`;
-      case "responded":
-        return `${baseClasses} bg-orange-100 text-orange-700 border border-orange-200`;
-      case "pending":
-        return `${baseClasses} bg-yellow-100 text-yellow-700 border border-yellow-200`;
-      default:
-        return `${baseClasses} bg-gray-100 text-gray-700 border border-gray-200`;
-    }
-  };
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case "pending":
-        return "Pending";
-      case "responded":
-        return "Responded";
-      case "sent":
-        return "Sent";
-      case "delivered":
-        return "Delivered";
-      case "approved":
-        return "Approved";
-      case "rejected":
-        return "Rejected";
-      case "cancelled":
-        return "Cancelled";
-      default:
-        return "Unknown";
-    }
-  };
 
   // Define status options for filter
   const statusOptions: FilterOption[] = [
@@ -209,7 +131,7 @@ const SampleEnquiries = () => {
   if (statusFilter !== "all") {
     activeFilters.push({
       type: "status",
-      label: getStatusText(statusFilter),
+      label: getStatusConfig(statusFilter).text,
       value: statusFilter,
       onRemove: () => setStatusFilter("all"),
     });
@@ -302,12 +224,16 @@ const SampleEnquiries = () => {
     {
       key: "status",
       label: "Status",
-      render: (item) => (
-        <span className={getStatusBadge(item.status || "pending")}>
-          {getStatusIcon(item.status || "pending")}
-          {getStatusText(item.status || "pending")}
-        </span>
-      ),
+      render: (item) => {
+        const statusConfig = getStatusConfig(item.status);
+        const StatusIcon = statusConfig.icon;
+        return (
+          <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${statusConfig.bgColor} ${statusConfig.textColor} ${statusConfig.borderColor} border`}>
+            <StatusIcon className="w-4 h-4" />
+            {statusConfig.text}
+          </span>
+        );
+      },
     },
     {
       key: "actions",
