@@ -9,6 +9,8 @@ import {
   Eye,
   Package,
 } from 'lucide-react';
+import { formatCurrency } from '@/lib/utils';
+import { getStatusConfig } from '@/lib/config/status.config';
 import { useFinanceRequestsListStore } from '@/stores/user';
 import { GenericTable, Column } from '@/components/shared/GenericTable';
 import { FilterBar, FilterOption, ActiveFilter } from '@/components/shared/FilterBar';
@@ -61,58 +63,6 @@ const FinanceRequests = () => {
       reset();
     };
   }, [reset]);
-
-  // Pagination handlers
-  const handleNextPage = () => {
-    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
-  };
-  const handlePrevPage = () => {
-    if (currentPage > 1) setCurrentPage(currentPage - 1);
-  };
-  const handlePageClick = (page: number) => setCurrentPage(page);
-
-  // Status badge
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'approved':
-        return 'bg-primary-50 text-primary-600 border border-primary-500/30';
-      case 'rejected':
-        return 'bg-red-100 text-red-700 border border-red-200';
-      case 'cancelled':
-        return 'bg-gray-100 text-gray-700 border border-gray-200';
-      case 'under_review':
-        return 'bg-blue-100 text-blue-700 border border-blue-200';
-      case 'pending':
-        return 'bg-yellow-100 text-yellow-700 border border-yellow-200';
-      default:
-        return 'bg-gray-100 text-gray-700 border border-gray-200';
-    }
-  };
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'pending':
-        return 'Pending';
-      case 'approved':
-        return 'Approved';
-      case 'rejected':
-        return 'Rejected';
-      case 'under_review':
-        return 'Under Review';
-      case 'cancelled':
-        return 'Cancelled';
-      default:
-        return 'Unknown';
-    }
-  };
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(amount);
-  };
-
   // Define status options for filter
   const statusOptions: FilterOption[] = [
     { value: "all", label: "All Statuses" },
@@ -136,7 +86,7 @@ const FinanceRequests = () => {
   if (statusFilter && statusFilter !== "all") {
     activeFilters.push({
       type: 'status',
-      label: getStatusText(statusFilter),
+      label: getStatusConfig(statusFilter).text,
       value: statusFilter,
       onRemove: () => setStatusFilter("all")
     });
@@ -218,11 +168,14 @@ const FinanceRequests = () => {
     {
       key: "status",
       label: "Status",
-      render: (item) => (
-        <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getStatusBadge(item.status)}`}>
-          {getStatusText(item.status)}
-        </span>
-      ),
+      render: (item) => {
+        const statusConfig = getStatusConfig(item.status);
+        return (
+          <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${statusConfig.bgColor} ${statusConfig.textColor} ${statusConfig.borderColor} border`}>
+            {statusConfig.text}
+          </span>
+        );
+      },
     },
     {
       key: "actions",
