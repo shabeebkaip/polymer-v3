@@ -234,7 +234,15 @@ const QuoteDealRequestModal = ({
         : deadline;
       
       // Prepare submission data matching API documentation
-      const submitData: any = {
+      const submitData: {
+        bestDealId: string;
+        sellerId: string;
+        desiredQuantity: number;
+        shippingCountry: string;
+        paymentTerms: string;
+        deliveryDeadline: string;
+        message?: string;
+      } = {
         bestDealId: dataRef.current.bestDealId!,
         sellerId: dataRef.current.sellerId!,
         desiredQuantity: dataRef.current.desiredQuantity!,
@@ -267,8 +275,9 @@ const QuoteDealRequestModal = ({
   // Cleanup timeout on unmount
   useEffect(() => {
     return () => {
-      if (validationTimeoutRef.current) {
-        clearTimeout(validationTimeoutRef.current);
+      const timeoutId = validationTimeoutRef.current;
+      if (timeoutId) {
+        clearTimeout(timeoutId);
       }
     };
   }, []);

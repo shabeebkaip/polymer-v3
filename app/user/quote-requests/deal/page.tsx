@@ -2,7 +2,8 @@
 
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { Gift, Calendar, Eye, MapPin, DollarSign, Package, Truck, Search } from "lucide-react";
+import Image from 'next/image';
+import { Gift, Calendar, Eye, MapPin, Package, Truck, Search } from "lucide-react";
 import { GenericTable, Column } from '@/components/shared/GenericTable';
 import { FilterBar } from '@/components/shared/FilterBar';
 import { DealQuoteRequestsHeader } from '@/components/user/deal-quote-requests';
@@ -39,7 +40,14 @@ interface DealQuoteRequest {
     quotedQuantity?: number;
     estimatedDelivery?: string;
     respondedAt?: string;
-    quotationDocument?: any;
+    quotationDocument?: {
+      id: string;
+      name: string;
+      type: string;
+      fileUrl: string;
+      viewUrl: string;
+      uploadedAt: string;
+    };
   };
   statusHistory: Array<{
     status: string;
@@ -69,7 +77,6 @@ const DealQuoteRequests = () => {
   
   const [requests, setRequests] = useState<DealQuoteRequest[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
@@ -79,10 +86,13 @@ const DealQuoteRequests = () => {
 
   const fetchRequests = useCallback(async () => {
     setLoading(true);
-    setError(null);
     
     try {
-      const params: any = {
+      const params: {
+        page: number;
+        limit: number;
+        status?: string;
+      } = {
         page: currentPage,
         limit: pageSize,
       };
@@ -98,12 +108,16 @@ const DealQuoteRequests = () => {
         setTotalPages(response.meta.pagination.totalPages);
         setTotalRequests(response.meta.pagination.totalItems);
       } else {
-        setError(response.message || 'Failed to fetch deal quote requests');
         toast.error('Failed to fetch deal quote requests');
       }
-    } catch (err: any) {
-      const errorMessage = err?.response?.data?.message || 'Failed to fetch deal quote requests';
-      setError(errorMessage);
+    } catch (err: unknown) {
+      const errorMessage = 
+        (err && typeof err === 'object' && 'response' in err && 
+         err.response && typeof err.response === 'object' && 'data' in err.response &&
+         err.response.data && typeof err.response.data === 'object' && 'message' in err.response.data &&
+         typeof err.response.data.message === 'string') 
+          ? err.response.data.message 
+          : 'Failed to fetch deal quote requests';
       toast.error(errorMessage);
     } finally {
       setLoading(false);
@@ -171,14 +185,14 @@ const DealQuoteRequests = () => {
     cancelled: requests.filter(req => req.status === 'cancelled').length,
   }), [totalRequests, requests]);
 
-  const statusOptions = [
+  const statusOptions = useMemo(() => [
     { value: "all", label: "All Requests" },
     { value: "pending", label: "Pending" },
     { value: "responded", label: "Responded" },
     { value: "accepted", label: "Accepted" },
     { value: "rejected", label: "Rejected" },
     { value: "cancelled", label: "Cancelled" },
-  ];
+  ], []);
 
   const activeFilters = useMemo(() => {
     const filters: Array<{
@@ -217,9 +231,11 @@ const DealQuoteRequests = () => {
         <div className="flex items-start gap-3">
           <div className="w-12 h-12 rounded-lg bg-primary-50 flex items-center justify-center flex-shrink-0">
             {request.deal.productImage ? (
-              <img 
+              <Image
                 src={request.deal.productImage} 
                 alt={request.deal.productName || 'Product'}
+                width={48}
+                height={48}
                 className="w-12 h-12 rounded-lg object-cover"
               />
             ) : (

@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { getUserSampleEnquiries } from "@/apiServices/user";
 import { useSampleEnquiriesStore } from "@/stores/sampleEnquiriesStore";
 import { GenericTable, Column } from "@/components/shared/GenericTable";
@@ -154,9 +155,11 @@ const SampleEnquiries = () => {
       render: (item) => (
         <div className="flex items-center gap-3">
           {item.product?.productImages?.[0] ? (
-            <img
+            <Image
               src={item.product.productImages[0].fileUrl}
               alt={item.product?.productName || "Product"}
+              width={32}
+              height={32}
               className="w-8 h-8 rounded-lg object-cover"
             />
           ) : (

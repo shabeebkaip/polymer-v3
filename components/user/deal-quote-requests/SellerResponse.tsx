@@ -10,7 +10,10 @@ import { postFileUpload } from '@/apiServices/shared';
 import axiosInstance from '@/lib/axiosInstance';
 
 interface SellerResponseProps {
-  request?: any;
+  request?: {
+    _id: string;
+    [key: string]: unknown;
+  };
   sellerResponse?: {
     message?: string;
     quotedPrice?: number;
@@ -41,7 +44,13 @@ export const SellerResponse: React.FC<SellerResponseProps> = ({ request, sellerR
   });
   const [quotationFile, setQuotationFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
-  const [uploadedDocument, setUploadedDocument] = useState<any>(null);
+  const [uploadedDocument, setUploadedDocument] = useState<{
+    id: string;
+    name: string;
+    type: string;
+    fileUrl: string;
+    viewUrl?: string;
+  } | null>(null);
   const [showCalendar, setShowCalendar] = useState(false);
 
   const hasResponse = sellerResponse && (sellerResponse.quotedPrice || sellerResponse.quotedQuantity || sellerResponse.message);
@@ -73,7 +82,13 @@ export const SellerResponse: React.FC<SellerResponseProps> = ({ request, sellerR
       const response = await postFileUpload(formData);
       
       if (response) {
-        setUploadedDocument(response);
+        setUploadedDocument({
+          id: response.id,
+          name: response.name || file.name,
+          type: response.type || file.type,
+          fileUrl: response.fileUrl,
+          viewUrl: response.viewUrl || response.fileUrl,
+        });
         toast.success('Quotation document uploaded successfully');
       }
     } catch (error) {
@@ -92,6 +107,10 @@ export const SellerResponse: React.FC<SellerResponseProps> = ({ request, sellerR
 
   const handleSubmit = async () => {
     // Validation
+    if (!request) {
+      toast.error('Request information is missing');
+      return;
+    }
     if (!formData.message.trim()) {
       toast.error('Please enter a message');
       return;
@@ -113,7 +132,19 @@ export const SellerResponse: React.FC<SellerResponseProps> = ({ request, sellerR
     const toastId = toast.loading('Submitting your response...');
 
     try {
-      const payload: any = {
+      const payload: {
+        message: string;
+        quotedPrice: number;
+        quotedQuantity: number;
+        estimatedDelivery: string;
+        quotationDocument?: {
+          id: string;
+          name: string;
+          type: string;
+          fileUrl: string;
+          viewUrl: string;
+        };
+      } = {
         message: formData.message,
         quotedPrice: parseFloat(formData.quotedPrice),
         quotedQuantity: parseInt(formData.quotedQuantity),
@@ -150,10 +181,17 @@ export const SellerResponse: React.FC<SellerResponseProps> = ({ request, sellerR
       if (onResponseSubmitted) {
         onResponseSubmitted();
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error submitting response:', error);
       toast.dismiss(toastId);
-      toast.error(error.response?.data?.message || 'Failed to submit response');
+      toast.error(
+        (error && typeof error === 'object' && 'response' in error &&
+         error.response && typeof error.response === 'object' && 'data' in error.response &&
+         error.response.data && typeof error.response.data === 'object' && 'message' in error.response.data &&
+         typeof error.response.data.message === 'string')
+          ? error.response.data.message
+          : 'Failed to submit response'
+      );
     } finally {
       setSubmitting(false);
     }
@@ -428,7 +466,7 @@ export const SellerResponse: React.FC<SellerResponseProps> = ({ request, sellerR
         <div className="mb-4">
           <h4 className="text-sm font-medium text-gray-900 mb-2 flex items-center gap-2">
             <FileText className="w-4 h-4 text-gray-600" />
-            Seller's Message
+            Seller&apos;s Message
           </h4>
           <p className="text-sm text-gray-700 bg-gray-50 rounded-lg p-3">{sellerResponse.message}</p>
         </div>

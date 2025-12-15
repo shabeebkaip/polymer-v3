@@ -3,6 +3,7 @@
 import { Package, Calendar, Building2, Search, Eye, XCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { useSampleRequestsListStore } from "@/stores/user";
 import { getStatusConfig } from "@/lib/config/status.config";
 import { GenericTable, Column } from "@/components/shared/GenericTable";
@@ -156,9 +157,11 @@ const SampleRequest = () => {
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-gray-100 rounded-lg overflow-hidden">
             {item.product?.productImage ? (
-              <img 
+              <Image 
                 src={item.product.productImage} 
                 alt={item.product.productName}
+                width={40}
+                height={40}
                 className="w-full h-full object-cover"
               />
             ) : (

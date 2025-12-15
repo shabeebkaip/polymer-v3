@@ -5,7 +5,7 @@ import { Edit2, Trash2, Save, X, Paperclip, Download } from 'lucide-react';
 import type { DealQuoteComment } from '@/types/comment';
 
 interface CommentItemProps {
-  comment: DealQuoteComment;
+  comment: DealQuoteComment | { _id: string; quoteRequestId?: string; dealQuoteRequestId?: string; userId: unknown; userRole?: string; comment: string; attachments?: unknown[]; createdAt: string; updatedAt: string; isEdited?: boolean };
   currentUserId: string;
   isAdmin: boolean;
   onUpdate: (commentId: string, newComment: string) => Promise<void>;
@@ -25,7 +25,7 @@ export const CommentItem: React.FC<CommentItemProps> = ({
   const [isDeleting, setIsDeleting] = useState(false);
 
   // Handle both userId and user fields from API
-  const userData = (comment as any).user || (comment as any).userId;
+  const userData = (comment as { user?: { _id?: string; firstName?: string; lastName?: string; role?: string; user_type?: string; name?: string; email?: string; companyName?: string; company?: string }; userId?: { _id?: string; firstName?: string; lastName?: string; role?: string; user_type?: string; name?: string; email?: string; companyName?: string; company?: string } }).user || (comment as { userId?: { _id?: string; firstName?: string; lastName?: string; role?: string; user_type?: string; name?: string; email?: string; companyName?: string; company?: string } }).userId;
   const isOwner = userData?._id === currentUserId;
   const canEdit = isOwner || isAdmin;
   const canDelete = isOwner || isAdmin;
@@ -149,13 +149,13 @@ export const CommentItem: React.FC<CommentItemProps> = ({
                   return 'Unknown User';
                 })()}
               </span>
-              {((comment as any).userRole || userData?.role || userData?.user_type) && (
+              {((comment as { userRole?: string }).userRole || userData?.role || userData?.user_type) && (
                 <span
                   className={`text-xs px-2 py-0.5 rounded-full border font-medium ${getRoleBadgeColor(
-                    (comment as any).userRole || userData?.role || userData?.user_type
+                    (comment as { userRole?: string }).userRole || userData?.role || userData?.user_type || ''
                   )}`}
                 >
-                  {((comment as any).userRole || userData?.role || userData?.user_type)?.toUpperCase()}
+                  {((comment as { userRole?: string }).userRole || userData?.role || userData?.user_type)?.toUpperCase()}
                 </span>
               )}
             </div>
@@ -241,13 +241,14 @@ export const CommentItem: React.FC<CommentItemProps> = ({
           {comment.attachments && comment.attachments.length > 0 && (
             <div className="mt-3 space-y-2">
               {comment.attachments.map((attachment, index) => {
-                const fileName = (attachment as any).fileName || (attachment as any).name || 'Attachment';
-                const fileType = (attachment as any).fileType || (attachment as any).type || 'file';
-                const attachmentId = (attachment as any)._id || (attachment as any).id || `attachment-${index}`;
+                const typedAttachment = attachment as { fileName?: string; name?: string; fileType?: string; type?: string; _id?: string; id?: string; fileUrl?: string };
+                const fileName = typedAttachment.fileName || typedAttachment.name || 'Attachment';
+                const fileType = typedAttachment.fileType || typedAttachment.type || 'file';
+                const attachmentId = typedAttachment._id || typedAttachment.id || `attachment-${index}`;
                 
                 // Extract filename from URL if fileName is still empty
-                const displayName = fileName === 'Attachment' && attachment.fileUrl 
-                  ? attachment.fileUrl.split('/').pop()?.split('?')[0] || 'Attachment'
+                const displayName = fileName === 'Attachment' && typedAttachment.fileUrl 
+                  ? typedAttachment.fileUrl.split('/').pop()?.split('?')[0] || 'Attachment'
                   : fileName;
                 
                 return (
@@ -266,7 +267,7 @@ export const CommentItem: React.FC<CommentItemProps> = ({
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0">
                       <a
-                        href={attachment.fileUrl}
+                        href={typedAttachment.fileUrl}
                         download={displayName}
                         className="p-1.5 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded transition-colors"
                         title="Download"

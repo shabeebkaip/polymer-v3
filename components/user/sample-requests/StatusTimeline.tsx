@@ -2,7 +2,6 @@ import React from 'react';
 import { Clock, CheckCircle } from 'lucide-react';
 
 interface StatusTimelineProps {
-  currentStatus: string;
   createdAt: string;
   updatedAt: string;
   getStatusTimeline: () => Array<{
@@ -15,7 +14,6 @@ interface StatusTimelineProps {
 }
 
 export const StatusTimeline: React.FC<StatusTimelineProps> = ({
-  currentStatus,
   createdAt,
   updatedAt,
   getStatusTimeline,

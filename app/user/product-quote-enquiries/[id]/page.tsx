@@ -1,12 +1,11 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { getProductQuoteRequestDetail, updateProductQuoteRequestStatus } from '@/apiServices/user';
 import { ProductQuoteSellerResponse } from '@/components/user/product-quote-requests';
 import { GenericCommentSection } from '@/components/shared/GenericCommentSection';
 import { StatusTimeline, TimelineItem } from '@/components/shared/StatusTimeline';
 import { getStatusConfig } from '@/lib/config/status.config';
-import { formatCurrency, formatDate } from '@/lib/utils';
 import { useUserInfo } from '@/lib/useUserInfo';
 import { toast } from 'sonner';
 import {
@@ -24,7 +23,6 @@ import {
   Loader2,
   AlertCircle,
   Package,
-  Calendar,
   Building2,
   Phone,
   Mail,
@@ -32,14 +30,12 @@ import {
   Truck,
   MessageSquare,
   FileText,
-  Tags,
   Clock,
-  Globe,
-  User,
 } from 'lucide-react';
 import Image from 'next/image';
 
 interface ProductQuoteRequestDetail {
+  [key: string]: unknown;
   _id: string;
   productId: {
     _id: string;
@@ -135,19 +131,7 @@ const ProductQuoteRequestDetailPage = () => {
   const [statusMessage, setStatusMessage] = useState<string>('');
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
 
-  useEffect(() => {
-    if (requestId) {
-      fetchRequestDetail();
-    }
-  }, [requestId]);
-
-  useEffect(() => {
-    if (request) {
-      setSelectedStatus(request.currentStatus);
-    }
-  }, [request]);
-
-  const fetchRequestDetail = async () => {
+  const fetchRequestDetail = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -158,13 +142,25 @@ const ProductQuoteRequestDetailPage = () => {
       } else {
         setError(response.message || 'Failed to load request details');
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error fetching product quote request detail:', err);
-      setError(err.message || 'Failed to load request details');
+      setError(err instanceof Error ? err.message : 'Failed to load request details');
     } finally {
       setLoading(false);
     }
-  };
+  }, [requestId]);
+
+  useEffect(() => {
+    if (requestId) {
+      fetchRequestDetail();
+    }
+  }, [requestId, fetchRequestDetail]);
+
+  useEffect(() => {
+    if (request) {
+      setSelectedStatus(request.currentStatus);
+    }
+  }, [request]);
 
   const handleResponseSubmitted = () => {
     // Refresh data after response submission
@@ -180,13 +176,14 @@ const ProductQuoteRequestDetailPage = () => {
     return statusOrder.map((status, index) => {
       const statusConfig = getStatusConfig(status);
       const StatusIcon = statusConfig.icon;
-      
+
       return {
         status,
         label: statusConfig.text,
-        completed: index <= currentStatusIndex && !['rejected', 'cancelled'].includes(request.currentStatus),
+        completed:
+          index <= currentStatusIndex && !['rejected', 'cancelled'].includes(request.currentStatus),
         current: status === request.currentStatus,
-        icon: <StatusIcon className="w-5 h-5" />
+        icon: <StatusIcon className="w-5 h-5" />,
       };
     });
   };
@@ -206,7 +203,10 @@ const ProductQuoteRequestDetailPage = () => {
     }
 
     // Validate message for rejected/cancelled status
-    if ((selectedStatus === 'rejected' || selectedStatus === 'cancelled') && !statusMessage.trim()) {
+    if (
+      (selectedStatus === 'rejected' || selectedStatus === 'cancelled') &&
+      !statusMessage.trim()
+    ) {
       toast.error(`Message is required when status is ${selectedStatus}`);
       return;
     }
@@ -225,9 +225,9 @@ const ProductQuoteRequestDetailPage = () => {
         toast.error(response.message || 'Failed to update status');
         setSelectedStatus(request.currentStatus);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error updating status:', err);
-      toast.error(err.message || 'Failed to update status');
+      toast.error(err instanceof Error ? err.message : 'Failed to update status');
       setSelectedStatus(request.currentStatus);
     } finally {
       setUpdatingStatus(false);
@@ -300,9 +300,7 @@ const ProductQuoteRequestDetailPage = () => {
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">Product Quote Request</h1>
-                <p className="text-sm text-gray-600 mt-1">
-                  Request ID: {request._id}
-                </p>
+                <p className="text-sm text-gray-600 mt-1">Request ID: {request._id}</p>
               </div>
             </div>
 
@@ -313,12 +311,7 @@ const ProductQuoteRequestDetailPage = () => {
                 <StatusIcon className="w-4 h-4" />
                 {statusConfig.text}
               </div>
-              <Button
-                onClick={handleOpenStatusModal}
-                variant="outline"
-                size="sm"
-                className="gap-2"
-              >
+              <Button onClick={handleOpenStatusModal} variant="outline" size="sm" className="gap-2">
                 <Clock className="w-4 h-4" />
                 Update Status
               </Button>
@@ -341,7 +334,10 @@ const ProductQuoteRequestDetailPage = () => {
                 {request.productId?.productImages && request.productId.productImages.length > 0 && (
                   <div className="grid grid-cols-4 gap-3 mb-4">
                     {request.productId.productImages.slice(0, 4).map((image, index) => (
-                      <div key={image._id} className="relative aspect-square rounded-lg overflow-hidden border border-gray-200">
+                      <div
+                        key={image._id}
+                        className="relative aspect-square rounded-lg overflow-hidden border border-gray-200"
+                      >
                         <Image
                           src={image.fileUrl}
                           alt={`Product ${index + 1}`}
@@ -364,7 +360,8 @@ const ProductQuoteRequestDetailPage = () => {
                   )}
                   {request.productId?.chemicalName && (
                     <p className="text-gray-600 mb-1">
-                      <span className="font-medium">Chemical Name:</span> {request.productId.chemicalName}
+                      <span className="font-medium">Chemical Name:</span>{' '}
+                      {request.productId.chemicalName}
                     </p>
                   )}
                   {request.productId?.description && (
@@ -377,7 +374,9 @@ const ProductQuoteRequestDetailPage = () => {
                   {request.productId?.countryOfOrigin && (
                     <div>
                       <span className="text-sm text-gray-500">Country of Origin</span>
-                      <p className="font-medium text-gray-900">{request.productId.countryOfOrigin}</p>
+                      <p className="font-medium text-gray-900">
+                        {request.productId.countryOfOrigin}
+                      </p>
                     </div>
                   )}
                   {request.productId?.color && (
@@ -513,7 +512,7 @@ const ProductQuoteRequestDetailPage = () => {
               <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
                 <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
                   <MessageSquare className="w-4 h-4" />
-                  Buyer's Message
+                  Buyer&apos;s Message
                 </h4>
                 <p className="text-gray-900">{request.message}</p>
               </div>
@@ -615,7 +614,8 @@ const ProductQuoteRequestDetailPage = () => {
           <DialogHeader>
             <DialogTitle>Update Request Status</DialogTitle>
             <DialogDescription>
-              Change the status of this product quote request. Current status: <strong>{getStatusConfig(request.currentStatus).text}</strong>
+              Change the status of this product quote request. Current status:{' '}
+              <strong>{getStatusConfig(request.currentStatus).text}</strong>
             </DialogDescription>
           </DialogHeader>
 
@@ -640,14 +640,15 @@ const ProductQuoteRequestDetailPage = () => {
 
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700">
-                Message {(selectedStatus === 'rejected' || selectedStatus === 'cancelled') && (
+                Message{' '}
+                {(selectedStatus === 'rejected' || selectedStatus === 'cancelled') && (
                   <span className="text-red-500">*</span>
                 )}
               </label>
               <Textarea
                 value={statusMessage}
                 onChange={(e) => setStatusMessage(e.target.value)}
-                placeholder={`Enter a message for this status update${(selectedStatus === 'rejected' || selectedStatus === 'cancelled') ? ' (required)' : ' (optional)'}...`}
+                placeholder={`Enter a message for this status update${selectedStatus === 'rejected' || selectedStatus === 'cancelled' ? ' (required)' : ' (optional)'}...`}
                 rows={4}
                 className="resize-none"
               />

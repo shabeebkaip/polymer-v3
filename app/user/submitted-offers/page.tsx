@@ -70,7 +70,12 @@ const SubmittedOffers = () => {
 
   // Fetch data when component mounts or filters/pagination change
   useEffect(() => {
-    const params: any = {
+    const params: {
+      page: number;
+      limit: number;
+      status?: string;
+      search?: string;
+    } = {
       page: currentPage,
       limit: pageSize,
     };
@@ -133,7 +138,12 @@ const SubmittedOffers = () => {
   }).length;
 
   const handleRefresh = () => {
-    const params: any = {
+    const params: {
+      page: number;
+      limit: number;
+      status?: string;
+      search?: string;
+    } = {
       page: currentPage,
       limit: pageSize,
     };

@@ -1,11 +1,11 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { getDealQuoteRequestDetail, updateDealQuoteRequestStatus } from '@/apiServices/user';
 import { SellerResponse, CommentSection } from '@/components/user/deal-quote-requests';
 import { StatusTimeline, TimelineItem } from '@/components/shared/StatusTimeline';
 import { getStatusConfig } from '@/lib/config/status.config';
-import { formatDate } from '@/lib/utils';
 import { useUserInfo } from '@/lib/useUserInfo';
 import {
   ArrowLeft,
@@ -21,10 +21,7 @@ import {
   MessageSquare,
   Gift,
   FileText,
-  Tags,
   RefreshCw,
-  Clock,
-  CheckCircle,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
@@ -43,7 +40,55 @@ const DealQuoteRequestDetailPage = () => {
   const requestId = params?.id as string; // Request ID from /promotion-quote-enquiries/[id]
   const { user } = useUserInfo();
 
-  const [request, setRequest] = useState<any>(null);
+  const [request, setRequest] = useState<{
+    _id: string;
+    status: string;
+    message?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    deal?: {
+      product?: {
+        productName?: string;
+        tradeName?: string;
+        chemicalName?: string;
+        color?: string;
+        countryOfOrigin?: string;
+        density?: string;
+        mfi?: string | number;
+        productImages?: Array<{ _id?: string; id?: string; fileUrl: string; name?: string }>;
+      };
+    };
+    orderDetails?: {
+      quantity?: number;
+      deliveryDeadline?: string;
+      shippingCountry?: string;
+    };
+    buyer?: {
+      name?: string;
+      company?: string;
+      email?: string;
+      phone?: string | number;
+      address?: string;
+    };
+    seller?: {
+      _id?: string;
+    };
+    sellerResponse?: {
+      message?: string;
+      quotedPrice?: number;
+      quotedQuantity?: string | number;
+      estimatedDelivery?: string;
+      quotationDocument?: {
+        id: string;
+        name: string;
+        type: string;
+        fileUrl: string;
+        viewUrl: string;
+        uploadedAt: string;
+      };
+      respondedAt?: string;
+    };
+  } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [updatingStatus, setUpdatingStatus] = useState(false);
@@ -51,19 +96,7 @@ const DealQuoteRequestDetailPage = () => {
   const [statusMessage, setStatusMessage] = useState<string>('');
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
 
-  useEffect(() => {
-    if (requestId) {
-      fetchRequestDetail();
-    }
-  }, [requestId]);
-
-  useEffect(() => {
-    if (request) {
-      setSelectedStatus(request.status);
-    }
-  }, [request]);
-
-  const fetchRequestDetail = async () => {
+  const fetchRequestDetail = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -74,13 +107,25 @@ const DealQuoteRequestDetailPage = () => {
       } else {
         setError(response.message || 'Failed to load request details');
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error fetching deal quote request detail:', err);
-      setError(err.message || 'Failed to load request details');
+      setError(err instanceof Error ? err.message : 'Failed to load request details');
     } finally {
       setLoading(false);
     }
-  };
+  }, [requestId]);
+
+  useEffect(() => {
+    if (requestId) {
+      fetchRequestDetail();
+    }
+  }, [requestId, fetchRequestDetail]);
+
+  useEffect(() => {
+    if (request) {
+      setSelectedStatus(request.status);
+    }
+  }, [request]);
 
   const handleResponseSubmitted = () => {
     // Refresh data after response submission
@@ -114,7 +159,7 @@ const DealQuoteRequestDetailPage = () => {
   };
 
   const handleStatusUpdate = async () => {
-    if (selectedStatus === request.status) {
+    if (!request || selectedStatus === request.status) {
       toast.info('Please select a different status');
       return;
     }
@@ -133,9 +178,9 @@ const DealQuoteRequestDetailPage = () => {
         toast.error(response.message || 'Failed to update status');
         setSelectedStatus(request.status);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error updating status:', err);
-      toast.error(err.message || 'Failed to update status');
+      toast.error(err instanceof Error ? err.message : 'Failed to update status');
       setSelectedStatus(request.status);
     } finally {
       setUpdatingStatus(false);
@@ -317,11 +362,13 @@ const DealQuoteRequestDetailPage = () => {
                           </label>
                         </div>
                         <div className="flex gap-2 overflow-x-auto pb-2">
-                          {request.deal.product.productImages.map((image: any) => (
+                          {request.deal.product.productImages.map((image: { _id?: string; id?: string; fileUrl: string; name?: string }) => (
                             <div key={image._id || image.id} className="flex-shrink-0">
-                              <img
+                              <Image
                                 src={image.fileUrl}
-                                alt={image.name || request.deal.product.productName}
+                                alt={image.name || request.deal?.product?.productName || 'Product image'}
+                                width={112}
+                                height={80}
                                 className="w-28 h-20 object-cover rounded-lg border border-gray-200"
                               />
                             </div>

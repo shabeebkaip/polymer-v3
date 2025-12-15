@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { getSellerDealQuoteEnquiries } from '@/apiServices/user';
 import { usePromotionQuoteEnquiriesStore, DealQuoteEnquiry } from '@/stores/promotionQuoteEnquiriesStore';
 import { GenericTable, Column } from '@/components/shared/GenericTable';
@@ -25,7 +26,6 @@ const PromotionQuoteEnquiries = () => {
   // Zustand store
   const { enquiries, meta, setEnquiries, clearEnquiries } = usePromotionQuoteEnquiriesStore();
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
 
   // Filter states
   const [searchTerm, setSearchTerm] = useState(meta?.filters?.search || '');
@@ -76,7 +76,7 @@ const PromotionQuoteEnquiries = () => {
         const response = await getSellerDealQuoteEnquiries(params);
         
         // Map API response to expected format
-        const mappedData = (response.data || []).map((item: any) => ({
+        const mappedData = (response.data || []).map((item: DealQuoteEnquiry) => ({
           _id: item._id,
           bestDealId: {
             _id: item.deal?._id || '',
@@ -123,12 +123,10 @@ const PromotionQuoteEnquiries = () => {
         };
 
         setEnquiries(mappedData, mappedMeta);
-        setError(null);
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Failed to load promotion quote enquiries';
-        setError(errorMessage);
+        console.error('Error fetching enquiries:', errorMessage, err);
         clearEnquiries();
-        console.error('Error fetching enquiries:', err);
       } finally {
         setLoading(false);
       }
@@ -253,9 +251,11 @@ const PromotionQuoteEnquiries = () => {
       render: (item) => (
         <div className="flex items-center gap-3">
           {item.bestDealId?.productImage ? (
-            <img
+            <Image
               src={item.bestDealId.productImage}
               alt={item.bestDealId?.productName || 'Product'}
+              width={32}
+              height={32}
               className="w-8 h-8 rounded-lg object-cover"
             />
           ) : (

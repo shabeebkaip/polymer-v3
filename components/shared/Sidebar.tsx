@@ -67,7 +67,7 @@ const Sidebar = () => {
       if (stored) {
         try {
           return new Set(JSON.parse(stored));
-        } catch (e) {
+        } catch {
           return new Set();
         }
       }

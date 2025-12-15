@@ -144,7 +144,7 @@ const QuoteRequestModal = ({
       optionalFields.forEach(field => {
         const value = dataRef.current[field];
         if (value && (typeof value !== 'string' || value.trim())) {
-          payload[field] = value as any;
+          (payload as Record<string, string | number | boolean | Date>)[field] = value as string | number | boolean | Date;
         }
       });
 

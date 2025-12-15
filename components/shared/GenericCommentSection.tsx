@@ -54,8 +54,9 @@ export const GenericCommentSection: React.FC<GenericCommentSectionProps> = ({
         setHasMore(response.pagination.page < response.pagination.totalPages);
         setPage(pageNum);
         setError(null);
-      } catch (err: any) {
-        setError(err.response?.data?.message || 'Failed to load comments');
+      } catch (err: unknown) {
+        const errorMessage = err && typeof err === 'object' && 'response' in err && err.response && typeof err.response === 'object' && 'data' in err.response && err.response.data && typeof err.response.data === 'object' && 'message' in err.response.data ? String(err.response.data.message) : 'Failed to load comments';
+        setError(errorMessage);
         console.error('Failed to fetch comments:', err);
       } finally {
         setIsLoading(false);
@@ -72,20 +73,22 @@ export const GenericCommentSection: React.FC<GenericCommentSectionProps> = ({
 
   const handleAddComment = async (
     comment: string,
-    attachments: any[]
+    attachments: { fileName?: string; name?: string; fileUrl?: string; fileType?: string; type?: string }[]
   ) => {
     try {
       // Transform attachments to match API format
-      const transformedAttachments = attachments.map(att => {
-        const fileName = att.fileName || att.name || att.fileUrl?.split('/').pop()?.split('?')[0] || 'Attachment';
-        const fileType = att.fileType || att.type || 'application/octet-stream';
-        
-        return {
-          fileName,
-          fileUrl: att.fileUrl,
-          fileType,
-        };
-      });
+      const transformedAttachments = attachments
+        .filter(att => att.fileUrl) // Filter out attachments without fileUrl
+        .map(att => {
+          const fileName = att.fileName || att.name || att.fileUrl?.split('/').pop()?.split('?')[0] || 'Attachment';
+          const fileType = att.fileType || att.type || 'application/octet-stream';
+          
+          return {
+            fileName,
+            fileUrl: att.fileUrl!,
+            fileType,
+          };
+        });
 
       console.log('Sending attachments:', transformedAttachments);
 
@@ -96,8 +99,9 @@ export const GenericCommentSection: React.FC<GenericCommentSectionProps> = ({
       
       // Refresh comments to show the new one
       await fetchComments(1, false);
-    } catch (err: any) {
-      throw new Error(err.response?.data?.message || 'Failed to add comment');
+    } catch (err: unknown) {
+      const errorMessage = err && typeof err === 'object' && 'response' in err && err.response && typeof err.response === 'object' && 'data' in err.response && err.response.data && typeof err.response.data === 'object' && 'message' in err.response.data ? String(err.response.data.message) : 'Failed to add comment';
+      throw new Error(errorMessage);
     }
   };
 
@@ -111,8 +115,9 @@ export const GenericCommentSection: React.FC<GenericCommentSectionProps> = ({
       setComments((prev) =>
         prev.map((c) => (c._id === commentId ? response.data : c))
       );
-    } catch (err: any) {
-      throw new Error(err.response?.data?.message || 'Failed to update comment');
+    } catch (err: unknown) {
+      const errorMessage = err && typeof err === 'object' && 'response' in err && err.response && typeof err.response === 'object' && 'data' in err.response && err.response.data && typeof err.response.data === 'object' && 'message' in err.response.data ? String(err.response.data.message) : 'Failed to update comment';
+      throw new Error(errorMessage);
     }
   };
 
@@ -123,8 +128,9 @@ export const GenericCommentSection: React.FC<GenericCommentSectionProps> = ({
       // Remove the comment from the list
       setComments((prev) => prev.filter((c) => c._id !== commentId));
       setTotalComments((prev) => prev - 1);
-    } catch (err: any) {
-      throw new Error(err.response?.data?.message || 'Failed to delete comment');
+    } catch (err: unknown) {
+      const errorMessage = err && typeof err === 'object' && 'response' in err && err.response && typeof err.response === 'object' && 'data' in err.response && err.response.data && typeof err.response.data === 'object' && 'message' in err.response.data ? String(err.response.data.message) : 'Failed to delete comment';
+      throw new Error(errorMessage);
     }
   };
 
@@ -210,7 +216,7 @@ export const GenericCommentSection: React.FC<GenericCommentSectionProps> = ({
               {comments.map((comment) => (
                 <CommentItem
                   key={comment._id}
-                  comment={comment as any}
+                  comment={comment}
                   currentUserId={currentUserId}
                   isAdmin={isAdmin}
                   onUpdate={handleUpdateComment}

@@ -1,17 +1,14 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { getProductQuoteRequestDetail } from '@/apiServices/user';
 import { 
   CheckCircle, 
   XCircle, 
   Clock, 
   AlertCircle,
-  ArrowLeft,
-  Package,
-  TrendingUp,
-  Loader2
+  ArrowLeft
 } from "lucide-react";
 import type { 
   ProductQuoteRequestDetail,
@@ -49,9 +46,16 @@ const ProductQuoteRequestDetailPage = () => {
         } else {
           setError('Failed to fetch request details');
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error('Error fetching product quote request detail:', err);
-        setError(err?.response?.data?.message || 'Failed to fetch request details');
+        setError(
+          (err && typeof err === 'object' && 'response' in err && 
+           err.response && typeof err.response === 'object' && 'data' in err.response &&
+           err.response.data && typeof err.response.data === 'object' && 'message' in err.response.data &&
+           typeof err.response.data.message === 'string') 
+            ? err.response.data.message 
+            : 'Failed to fetch request details'
+        );
       } finally {
         setLoading(false);
       }
@@ -180,7 +184,7 @@ const ProductQuoteRequestDetailPage = () => {
                 quoteRequestId={requestDetail._id}
                 currentUserId={user._id}
                 commentType="product-quote"
-                userRole={(user as any).user_type as 'buyer' | 'seller' | 'admin'}
+                userRole={(user && 'user_type' in user ? user.user_type : 'buyer') as 'buyer' | 'seller' | 'admin'}
               />
             )}
           </div>

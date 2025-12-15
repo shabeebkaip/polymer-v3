@@ -70,13 +70,6 @@ const Promotions = () => {
   const filteredPromotions = getFilteredPromotions();
   const totalPages = getTotalPages();
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  };
 
   const stats = useMemo(() => ({
     total: meta?.summary?.total || promotions.length,

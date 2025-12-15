@@ -64,7 +64,7 @@ const SpecialDeals: React.FC = () => {
             type: 'special-deal',
             title: `${item.productId?.productName || 'Special Product'} - Limited Offer`,
             supplier: {
-              id: typeof item.sellerId === 'object' ? (item.sellerId as any)?._id || '' : item.sellerId || '',
+              id: typeof item.sellerId === 'object' ? (item.sellerId as { _id?: string })?._id || '' : item.sellerId || '',
               name: sellerName,
               logo: item.sellerId?.company_logo || FALLBACK_COMPANY_IMAGE,
               rating: 4.5, // Default rating since not in API

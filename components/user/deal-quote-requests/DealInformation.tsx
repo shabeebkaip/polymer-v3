@@ -1,6 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
-import { Gift, Package, Layers } from 'lucide-react';
+import { Gift, Layers } from 'lucide-react';
 
 interface DealInformationProps {
   deal: {
@@ -85,7 +85,9 @@ export const DealInformation: React.FC<DealInformationProps> = ({ deal }) => {
             {deal.product.manufacturingMethod && (
               <div className="bg-gray-50 rounded-lg p-3 col-span-2">
                 <p className="text-xs text-gray-600 mb-1">Manufacturing Method</p>
-                <p className="text-sm font-medium text-gray-900">{deal.product.manufacturingMethod}</p>
+                <p className="text-sm font-medium text-gray-900">
+                  {deal.product.manufacturingMethod}
+                </p>
               </div>
             )}
           </div>

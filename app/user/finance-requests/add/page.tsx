@@ -16,7 +16,6 @@ const CreateFinanceRequest = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
-    products,
     loadingProducts,
     selectedProduct,
     productOptions,

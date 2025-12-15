@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useMemo, useCallback } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Package, Calendar, Eye, MapPin, Search, FileText } from "lucide-react";
 import { GenericTable, Column } from '@/components/shared/GenericTable';
 import { FilterBar } from '@/components/shared/FilterBar';
@@ -28,7 +29,11 @@ const ProductQuoteRequests = () => {
     setLoading(true);
     
     try {
-      const params: any = {
+      const params: {
+        page: number;
+        limit: number;
+        status?: string;
+      } = {
         page: currentPage,
         limit: pageSize,
       };
@@ -46,8 +51,14 @@ const ProductQuoteRequests = () => {
       } else {
         toast.error('Failed to fetch product quote requests');
       }
-    } catch (err: any) {
-      const errorMessage = err?.response?.data?.message || 'Failed to fetch product quote requests';
+    } catch (err: unknown) {
+      const errorMessage = 
+        (err && typeof err === 'object' && 'response' in err && 
+         err.response && typeof err.response === 'object' && 'data' in err.response &&
+         err.response.data && typeof err.response.data === 'object' && 'message' in err.response.data &&
+         typeof err.response.data.message === 'string') 
+          ? err.response.data.message 
+          : 'Failed to fetch product quote requests';
       toast.error(errorMessage);
     } finally {
       setLoading(false);
@@ -98,13 +109,13 @@ const ProductQuoteRequests = () => {
     });
   };
 
-  const statusOptions = [
+  const statusOptions = useMemo(() => [
     { value: "all", label: "All Requests" },
     ...Object.keys(STATUS_CONFIG).map(key => ({
       value: key,
       label: STATUS_CONFIG[key as keyof typeof STATUS_CONFIG].text,
     })),
-  ];
+  ], [STATUS_CONFIG]);
 
   const stats = useMemo(() => {
     const statusCounts = requests.reduce((acc, req) => {
@@ -159,9 +170,11 @@ const ProductQuoteRequests = () => {
         <div className="flex items-start gap-3">
           <div className="w-12 h-12 rounded-lg bg-primary-50 flex items-center justify-center flex-shrink-0">
             {request.productId.productImages?.[0]?.fileUrl ? (
-              <img 
+              <Image
                 src={request.productId.productImages[0].fileUrl} 
                 alt={request.productId.productName || 'Product'}
+                width={48}
+                height={48}
                 className="w-12 h-12 rounded-lg object-cover"
               />
             ) : (

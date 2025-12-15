@@ -1,5 +1,5 @@
 import React from 'react';
-import { Clock, Calendar } from 'lucide-react';
+import { Clock } from 'lucide-react';
 
 interface StatusTimelineProps {
   statusHistory: Array<{
@@ -58,9 +58,7 @@ export const StatusTimeline: React.FC<StatusTimelineProps> = ({
                   <div className="flex items-center justify-between mb-1">
                     <span
                       className={`text-sm font-medium capitalize ${
-                        index === statusHistory.length - 1
-                          ? 'text-primary-700'
-                          : 'text-gray-900'
+                        index === statusHistory.length - 1 ? 'text-primary-700' : 'text-gray-900'
                       }`}
                     >
                       {item.status.replace('_', ' ')}

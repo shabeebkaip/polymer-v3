@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { getDealQuoteRequestsByDealId } from '@/apiServices/user';
@@ -33,26 +33,26 @@ const DealQuoteRequestsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (dealId) {
-      fetchDealQuoteRequests();
-    }
-  }, [dealId]);
-
-  const fetchDealQuoteRequests = async () => {
+  const fetchDealQuoteRequests = useCallback(async () => {
     setLoading(true);
     setError(null);
     
     try {
       const response = await getDealQuoteRequestsByDealId(dealId);
       setData(response);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error fetching deal quote requests:', err);
-      setError(err.message || 'Failed to load quote requests');
+      setError(err instanceof Error ? err.message : 'Failed to load quote requests');
     } finally {
       setLoading(false);
     }
-  };
+  }, [dealId]);
+
+  useEffect(() => {
+    if (dealId) {
+      fetchDealQuoteRequests();
+    }
+  }, [dealId, fetchDealQuoteRequests]);
 
   // Loading state
   if (loading) {
@@ -175,7 +175,7 @@ const DealQuoteRequestsPage = () => {
               <Users className="w-16 h-16 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-gray-900 mb-2">No Quote Requests Yet</h3>
               <p className="text-gray-600">
-                This deal hasn't received any quote requests from buyers yet.
+                This deal hasn&apos;t received any quote requests from buyers yet.
               </p>
             </div>
           ) : (
@@ -302,7 +302,7 @@ const DealQuoteRequestsPage = () => {
                       <div className="bg-gray-50 rounded-lg p-4 border border-gray-200 mb-4">
                         <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
                           <MessageSquare className="w-4 h-4" />
-                          Buyer's Message
+                          Buyer&apos;s Message
                         </h4>
                         <p className="text-gray-900 text-sm">{request.message}</p>
                       </div>
@@ -353,7 +353,7 @@ const DealQuoteRequestsPage = () => {
                       <div className="bg-yellow-50 rounded-lg p-4 border border-yellow-200">
                         <p className="text-sm text-yellow-800 flex items-center gap-2">
                           <Clock className="w-4 h-4" />
-                          No response yet. Click "View" to provide your quotation.
+                          No response yet. Click &quot;View&quot; to provide your quotation.
                         </p>
                       </div>
                     )}

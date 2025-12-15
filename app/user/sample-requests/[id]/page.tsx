@@ -177,7 +177,6 @@ const SampleRequestDetail = () => {
             </div>
 
             <StatusTimeline
-              currentStatus={sampleRequestDetail.status}
               createdAt={sampleRequestDetail.createdAt}
               updatedAt={sampleRequestDetail.updatedAt}
               getStatusTimeline={getStatusTimeline}

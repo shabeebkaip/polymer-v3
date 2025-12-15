@@ -5,12 +5,12 @@ import {
   Calendar,
   Building2,
   AlertCircle,
-  Search,
   Eye,
   MessageSquare,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { getSellerProductQuoteRequests } from '@/apiServices/user';
 import { GenericTable, Column } from '@/components/shared/GenericTable';
 import { FilterBar, FilterOption, ActiveFilter } from '@/components/shared/FilterBar';
@@ -144,9 +144,9 @@ const ProductQuoteEnquiries = () => {
         setMeta({ pagination: response.pagination });
         setStatusSummary(response.statusSummary || {});
         setError(null);
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error('Error fetching product quote enquiries:', err);
-        setError(err.message || 'Failed to load product quote enquiries');
+        setError(err instanceof Error ? err.message : 'Failed to load product quote enquiries');
         setEnquiries([]);
       } finally {
         setLoading(false);
@@ -200,9 +200,11 @@ const ProductQuoteEnquiries = () => {
       render: (enquiry) => (
         <div className="flex items-center gap-3">
           {enquiry.productId?.productImages?.[0] && (
-            <img
+            <Image
               src={enquiry.productId.productImages[0].fileUrl}
               alt={enquiry.productId.productName}
+              width={40}
+              height={40}
               className="w-10 h-10 rounded-lg object-cover border border-gray-200"
             />
           )}

@@ -96,7 +96,7 @@ export const SellerResponse: React.FC<SellerResponseProps> = ({ sellerResponse }
         <div className="mb-4">
           <h4 className="text-sm font-medium text-gray-900 mb-2 flex items-center gap-2">
             <FileText className="w-4 h-4 text-gray-600" />
-            Seller's Message
+            Seller&apos;s Message
           </h4>
           <p className="text-sm text-gray-700 bg-gray-50 rounded-lg p-3">{sellerResponse.message}</p>
         </div>

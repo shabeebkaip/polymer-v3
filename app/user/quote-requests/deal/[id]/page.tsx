@@ -1,26 +1,17 @@
-"use client";
+'use client';
 
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { getDealQuoteRequestDetail } from '@/apiServices/user';
-import { 
-  CheckCircle, 
-  XCircle, 
-  Clock, 
-  AlertCircle,
-  Truck,
-  Package,
-  TrendingUp,
-  Loader2,
-  ArrowLeft
-} from "lucide-react";
+import { getStatusConfig } from '@/lib/config/status.config';
+import { XCircle, ArrowLeft } from 'lucide-react';
 import {
   DealQuoteRequestHeader,
   DealInformation,
   OrderDetails,
   SellerResponse,
   SupplierInformation,
-  StatusTimeline
+  StatusTimeline,
 } from '@/components/user/deal-quote-requests';
 import { GenericCommentSection } from '@/components/shared/GenericCommentSection';
 import { useUserInfo } from '@/lib/useUserInfo';
@@ -50,6 +41,7 @@ interface SellerResponse {
 }
 
 interface DealQuoteRequestDetail {
+  [key: string]: unknown;
   _id: string;
   status: string;
   message?: string;
@@ -113,10 +105,10 @@ const DealQuoteRequestDetailPage = () => {
   useEffect(() => {
     const fetchDetail = async () => {
       if (!params.id || typeof params.id !== 'string') return;
-      
+
       setLoading(true);
       setError(null);
-      
+
       try {
         const response = await getDealQuoteRequestDetail(params.id);
         if (response.success && response.data) {
@@ -124,9 +116,22 @@ const DealQuoteRequestDetailPage = () => {
         } else {
           setError(response.message || 'Failed to fetch request details');
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error('Error fetching deal quote request detail:', err);
-        setError(err?.response?.data?.message || 'Failed to fetch request details');
+        setError(
+          err &&
+            typeof err === 'object' &&
+            'response' in err &&
+            err.response &&
+            typeof err.response === 'object' &&
+            'data' in err.response &&
+            err.response.data &&
+            typeof err.response.data === 'object' &&
+            'message' in err.response.data &&
+            typeof err.response.data.message === 'string'
+            ? err.response.data.message
+            : 'Failed to fetch request details'
+        );
       } finally {
         setLoading(false);
       }
@@ -134,52 +139,6 @@ const DealQuoteRequestDetailPage = () => {
 
     fetchDetail();
   }, [params.id]);
-
-  const getStatusBadge = (status: string) => {
-    const baseClasses = "inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium";
-    
-    switch (status) {
-      case "pending": return `${baseClasses} bg-amber-100 text-amber-700 border border-amber-200`;
-      case "quoted": return `${baseClasses} bg-blue-100 text-blue-700 border border-blue-200`;
-      case "accepted": return `${baseClasses} bg-emerald-100 text-emerald-700 border border-emerald-200`;
-      case "in_progress": return `${baseClasses} bg-teal-100 text-teal-700 border border-teal-200`;
-      case "shipped": return `${baseClasses} bg-green-100 text-green-700 border border-green-200`;
-      case "delivered": return `${baseClasses} bg-emerald-100 text-emerald-700 border border-emerald-200`;
-      case "completed": return `${baseClasses} bg-green-100 text-green-700 border border-green-200`;
-      case "rejected": return `${baseClasses} bg-red-100 text-red-700 border border-red-200`;
-      case "cancelled": return `${baseClasses} bg-gray-100 text-gray-700 border border-gray-200`;
-      default: return `${baseClasses} bg-gray-100 text-gray-700 border border-gray-200`;
-    }
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "pending": return <Clock className="w-4 h-4 text-amber-600" />;
-      case "quoted": return <CheckCircle className="w-4 h-4 text-blue-600" />;
-      case "accepted": return <CheckCircle className="w-4 h-4 text-emerald-600" />;
-      case "rejected": return <XCircle className="w-4 h-4 text-red-600" />;
-      case "in_progress": return <TrendingUp className="w-4 h-4 text-teal-600" />;
-      case "shipped": return <Truck className="w-4 h-4 text-green-600" />;
-      case "delivered": return <Package className="w-4 h-4 text-emerald-600" />;
-      case "completed": return <CheckCircle className="w-4 h-4 text-green-600" />;
-      default: return <AlertCircle className="w-4 h-4 text-gray-600" />;
-    }
-  };
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case "pending": return "Pending";
-      case "quoted": return "Quoted";
-      case "accepted": return "Accepted";
-      case "in_progress": return "In Progress";
-      case "shipped": return "Shipped";
-      case "delivered": return "Delivered";
-      case "completed": return "Completed";
-      case "rejected": return "Rejected";
-      case "cancelled": return "Cancelled";
-      default: return "Unknown";
-    }
-  };
 
   if (loading) {
     return (
@@ -204,7 +163,7 @@ const DealQuoteRequestDetailPage = () => {
             <XCircle className="w-6 h-6 text-red-500" />
           </div>
           <h3 className="text-base font-semibold text-gray-900 mb-2">Error Loading Details</h3>
-          <p className="text-sm text-gray-600 mb-4">{error || "Request details not found"}</p>
+          <p className="text-sm text-gray-600 mb-4">{error || 'Request details not found'}</p>
           <button
             onClick={() => router.push('/user/quote-requests/deal')}
             className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white text-sm rounded-lg hover:bg-primary-700 transition-colors"
@@ -224,25 +183,35 @@ const DealQuoteRequestDetailPage = () => {
           requestId={requestDetail._id}
           status={requestDetail.status}
           createdAt={requestDetail.createdAt}
-          getStatusBadge={getStatusBadge}
-          getStatusIcon={getStatusIcon}
-          getStatusText={getStatusText}
+          getStatusBadge={(status) => {
+            const config = getStatusConfig(status);
+            return `inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium ${config.bgColor} ${config.textColor} ${config.borderColor} border`;
+          }}
+          getStatusIcon={(status) => {
+            const StatusIcon = getStatusConfig(status).icon;
+            return <StatusIcon className="w-4 h-4" />;
+          }}
+          getStatusText={(status) => getStatusConfig(status).text}
         />
 
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
           {/* Main Content */}
           <div className="xl:col-span-2 space-y-6">
             <DealInformation deal={requestDetail.deal} />
-            <OrderDetails 
-              orderDetails={requestDetail.orderDetails} 
-              message={requestDetail.message} 
+            <OrderDetails
+              orderDetails={requestDetail.orderDetails}
+              message={requestDetail.message}
             />
-            <SellerResponse 
+            <SellerResponse
               sellerResponse={requestDetail.sellerResponse}
               request={requestDetail}
-              currentUserRole={user && 'user_type' in user ? user.user_type as 'buyer' | 'seller' | 'admin' : undefined}
+              currentUserRole={
+                user && 'user_type' in user
+                  ? (user.user_type as 'buyer' | 'seller' | 'admin')
+                  : undefined
+              }
             />
-            
+
             {/* Comment Section */}
             {user && '_id' in user && 'user_type' in user && (
               <GenericCommentSection
@@ -256,11 +225,14 @@ const DealQuoteRequestDetailPage = () => {
 
           {/* Sidebar */}
           <div className="space-y-6">
-            <StatusTimeline 
+            <StatusTimeline
               statusHistory={requestDetail.statusHistory}
               createdAt={requestDetail.createdAt}
               updatedAt={requestDetail.updatedAt}
-              getStatusIcon={getStatusIcon}
+              getStatusIcon={(status) => {
+                const StatusIcon = getStatusConfig(status).icon;
+                return <StatusIcon className="w-5 h-5" />;
+              }}
             />
             <SupplierInformation seller={requestDetail.seller} />
           </div>

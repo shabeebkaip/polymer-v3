@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
-import { Send, Loader2, Paperclip, X, Upload, FileText, Image as ImageIcon } from 'lucide-react';
+import { Send, Loader2, Paperclip, X, FileText, Image as ImageIcon } from 'lucide-react';
 import type { CommentAttachment } from '@/types/comment';
 import { postFileUpload } from '@/apiServices/shared';
 import { toast } from 'sonner';
@@ -96,7 +96,7 @@ export const CommentInput: React.FC<CommentInputProps> = ({
             viewUrl: response.viewUrl || response.fileUrl,
             uploadedAt: new Date().toISOString(),
           });
-        } catch (err: any) {
+        } catch (err: unknown) {
           console.error(`Failed to upload ${file.name}:`, err);
           toast.error(`Failed to upload ${file.name}`);
         }

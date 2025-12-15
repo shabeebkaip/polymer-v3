@@ -2,9 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
-  CheckCircle,
-  XCircle,
-  Clock,
   Search,
   Eye,
   Package,

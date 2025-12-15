@@ -52,8 +52,15 @@ export const CommentSection: React.FC<CommentSectionProps> = ({
         setHasMore(response.pagination.page < response.pagination.totalPages);
         setPage(pageNum);
         setError(null);
-      } catch (err: any) {
-        setError(err.response?.data?.message || 'Failed to load comments');
+      } catch (err: unknown) {
+        setError(
+          (err && typeof err === 'object' && 'response' in err &&
+           err.response && typeof err.response === 'object' && 'data' in err.response &&
+           err.response.data && typeof err.response.data === 'object' && 'message' in err.response.data &&
+           typeof err.response.data.message === 'string')
+            ? err.response.data.message
+            : 'Failed to load comments'
+        );
         console.error('Failed to fetch comments:', err);
       } finally {
         setIsLoading(false);
@@ -80,8 +87,15 @@ export const CommentSection: React.FC<CommentSectionProps> = ({
       
       // Refresh comments to show the new one
       await fetchComments(1, false);
-    } catch (err: any) {
-      throw new Error(err.response?.data?.message || 'Failed to add comment');
+    } catch (err: unknown) {
+      throw new Error(
+        (err && typeof err === 'object' && 'response' in err &&
+         err.response && typeof err.response === 'object' && 'data' in err.response &&
+         err.response.data && typeof err.response.data === 'object' && 'message' in err.response.data &&
+         typeof err.response.data.message === 'string')
+          ? err.response.data.message
+          : 'Failed to add comment'
+      );
     }
   };
 
@@ -95,8 +109,15 @@ export const CommentSection: React.FC<CommentSectionProps> = ({
       setComments((prev) =>
         prev.map((c) => (c._id === commentId ? response.data : c))
       );
-    } catch (err: any) {
-      throw new Error(err.response?.data?.message || 'Failed to update comment');
+    } catch (err: unknown) {
+      throw new Error(
+        (err && typeof err === 'object' && 'response' in err &&
+         err.response && typeof err.response === 'object' && 'data' in err.response &&
+         err.response.data && typeof err.response.data === 'object' && 'message' in err.response.data &&
+         typeof err.response.data.message === 'string')
+          ? err.response.data.message
+          : 'Failed to update comment'
+      );
     }
   };
 
@@ -107,8 +128,15 @@ export const CommentSection: React.FC<CommentSectionProps> = ({
       // Remove the comment from the list
       setComments((prev) => prev.filter((c) => c._id !== commentId));
       setTotalComments((prev) => prev - 1);
-    } catch (err: any) {
-      throw new Error(err.response?.data?.message || 'Failed to delete comment');
+    } catch (err: unknown) {
+      throw new Error(
+        (err && typeof err === 'object' && 'response' in err &&
+         err.response && typeof err.response === 'object' && 'data' in err.response &&
+         err.response.data && typeof err.response.data === 'object' && 'message' in err.response.data &&
+         typeof err.response.data.message === 'string')
+          ? err.response.data.message
+          : 'Failed to delete comment'
+      );
     }
   };
 
