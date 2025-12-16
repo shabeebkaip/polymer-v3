@@ -12,6 +12,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
       - name: Deploy to server via SSH
         uses: appleboy/ssh-action@v1
         with:
@@ -21,19 +22,27 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             set -e
-            echo "Changing to project directory..."
+
+            echo "📂 Switching to app directory"
             cd ${{ secrets.APP_DIR }}
-            
-            echo "Pulling latest code from main..."
+
+            echo "⬇️ Pulling latest code"
             git pull origin main
 
-            echo "Installing dependencies..."
+            echo "🧹 Cleaning old Next.js build"
+            rm -rf .next
+
+            echo "📦 Enabling pnpm"
+            corepack enable
+            corepack prepare pnpm@latest --activate
+
+            echo "📥 Installing dependencies"
             pnpm install --frozen-lockfile
 
-            echo "Building application..."
+            echo "🏗️ Building application"
             pnpm run build
 
-            echo "Restarting PM2..."
+            echo "♻️ Restarting PM2"
             pm2 restart 0
 
-            echo "Deployment completed successfully ✅"
+            echo "✅ Deployment completed successfully"
