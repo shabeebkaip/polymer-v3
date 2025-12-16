@@ -30,7 +30,7 @@ jobs:
             git pull origin main
 
             echo "🧹 Cleaning old Next.js build"
-            rm -rf .next
+            sudo rm -rf .next
 
             echo "📦 Enabling pnpm"
             corepack enable
@@ -43,6 +43,6 @@ jobs:
             pnpm run build
 
             echo "♻️ Restarting PM2"
-            pm2 restart 0
+            pm2 restart polymer-v3
 
             echo "✅ Deployment completed successfully"
