@@ -22,7 +22,7 @@ jobs:
           script: |
             set -e
             echo "Changing to project directory..."
-            cd /var/www/my-app
+            cd ${{ secrets.APP_DIR }}
             
             echo "Pulling latest code from main..."
             git pull origin main
