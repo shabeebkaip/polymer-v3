@@ -22,27 +22,9 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             set -e
-
-            echo "📂 Switching to app directory"
             cd ${{ secrets.APP_DIR }}
-
-            echo "⬇️ Pulling latest code"
             git pull origin main
-
-            echo "🧹 Cleaning old Next.js build"
-            sudo rm -rf .next
-
-            echo "📦 Enabling pnpm"
-            corepack enable
-            corepack prepare pnpm@latest --activate
-
-            echo "📥 Installing dependencies"
-            pnpm install --frozen-lockfile
-
-            echo "🏗️ Building application"
-            pnpm run build
-
-            echo "♻️ Restarting PM2"
+            rm -rf .next
+            npx pnpm install --frozen-lockfile
+            npx pnpm run build
             pm2 restart polymer-v3
-
-            echo "✅ Deployment completed successfully"
