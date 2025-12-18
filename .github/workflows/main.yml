@@ -14,18 +14,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set environment variables based on branch
-        run: |
-          if [[ "${GITHUB_REF_NAME}" == "main" ]]; then
-            echo "APP_DIR=${{ secrets.APP_DIR }}" >> $GITHUB_ENV
-            echo "PM2_APP=polymer-v3" >> $GITHUB_ENV
-            echo "BRANCH=main" >> $GITHUB_ENV
-          elif [[ "${GITHUB_REF_NAME}" == "staging" ]]; then
-            echo "APP_DIR=${{ secrets.STAGING_APP_DIR }}" >> $GITHUB_ENV
-            echo "PM2_APP=polymer-v3-staging" >> $GITHUB_ENV
-            echo "BRANCH=staging" >> $GITHUB_ENV
-          fi
-
       - name: Deploy to server via SSH
         uses: appleboy/ssh-action@v1
         with:
@@ -35,9 +23,27 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             set -e
-            cd $APP_DIR
-            git pull origin $BRANCH
+
+            if [ "${{ github.ref_name }}" = "main" ]; then
+              APP_DIR="${{ secrets.APP_DIR }}"
+              BRANCH="main"
+              PM2_APP="polymer-v3"
+            elif [ "${{ github.ref_name }}" = "staging" ]; then
+              APP_DIR="${{ secrets.STAGING_APP_DIR }}"
+              BRANCH="staging"
+              PM2_APP="polymer-v3-staging"
+            else
+              echo "❌ Unsupported branch"
+              exit 1
+            fi
+
+            cd "$APP_DIR"
+
+            git fetch origin
+            git checkout "$BRANCH"
+            git reset --hard "origin/$BRANCH"
+
             rm -rf .next
             npx pnpm install --frozen-lockfile
             npx pnpm run build
-            pm2 restart $PM2_APP
+            pm2 restart "$PM2_APP"
