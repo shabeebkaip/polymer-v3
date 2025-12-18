@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - staging
 
 jobs:
   deploy:
@@ -22,9 +23,27 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             set -e
-            cd ${{ secrets.APP_DIR }}
-            git pull origin main
+
+            if [ "${{ github.ref_name }}" = "main" ]; then
+              APP_DIR="${{ secrets.APP_DIR }}"
+              BRANCH="main"
+              PM2_APP="polymer-v3"
+            elif [ "${{ github.ref_name }}" = "staging" ]; then
+              APP_DIR="${{ secrets.STAGING_APP_DIR }}"
+              BRANCH="staging"
+              PM2_APP="polymer-v3-staging"
+            else
+              echo "❌ Unsupported branch"
+              exit 1
+            fi
+
+            cd "$APP_DIR"
+
+            git fetch origin
+            git checkout "$BRANCH"
+            git reset --hard "origin/$BRANCH"
+
             rm -rf .next
             npx pnpm install --frozen-lockfile
             npx pnpm run build
-            pm2 restart polymer-v3
+            pm2 restart "$PM2_APP"
