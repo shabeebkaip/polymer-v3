@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - staging
 
 jobs:
   deploy:
@@ -13,18 +12,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Set environment variables based on branch
-        run: |
-          if [[ "${GITHUB_REF_NAME}" == "main" ]]; then
-            echo "APP_DIR=${{ secrets.APP_DIR }}" >> $GITHUB_ENV
-            echo "PM2_APP=polymer-v3" >> $GITHUB_ENV
-            echo "BRANCH=main" >> $GITHUB_ENV
-          elif [[ "${GITHUB_REF_NAME}" == "staging" ]]; then
-            echo "APP_DIR=${{ secrets.STAGING_APP_DIR }}" >> $GITHUB_ENV
-            echo "PM2_APP=polymer-v3-staging" >> $GITHUB_ENV
-            echo "BRANCH=staging" >> $GITHUB_ENV
-          fi
 
       - name: Deploy to server via SSH
         uses: appleboy/ssh-action@v1
@@ -35,9 +22,9 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             set -e
-            cd $APP_DIR
-            git pull origin $BRANCH
+            cd ${{ secrets.APP_DIR }}
+            git pull origin main
             rm -rf .next
             npx pnpm install --frozen-lockfile
             npx pnpm run build
-            pm2 restart $PM2_APP
+            pm2 restart polymer-v3
