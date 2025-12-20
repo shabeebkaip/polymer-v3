@@ -22,6 +22,7 @@ import {
   Calendar as CalendarIcon
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 // Zod validation schema
 const promotionSchema = z.object({
@@ -48,8 +49,6 @@ const EditPromotion = () => {
     clearPromotionDetail
   } = usePromotionsStore();
   
-  const [apiError, setApiError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
   const [calendarOpen, setCalendarOpen] = useState(false);
 
   // React Hook Form with Zod validation
@@ -95,12 +94,11 @@ const EditPromotion = () => {
   // Form submission handler
   const onSubmit = async (data: PromotionFormData) => {
     if (!promotionId) {
-      setApiError("Promotion ID not available");
+      toast.error("Promotion ID not available");
       return;
     }
 
     try {
-      setApiError(null);
       
       await updatePromotion(
         promotionId, 
@@ -108,12 +106,8 @@ const EditPromotion = () => {
         data.validity ? data.validity.toISOString() : undefined
       );
       
-      setSuccess(true);
-      
-      // Redirect after a short delay
-      setTimeout(() => {
-        router.push('/user/promotions');
-      }, 2000);
+      toast.success("Promotion updated successfully!");
+      router.push('/user/promotions');
 
     } catch (err) {
       // Type guard for error with response
@@ -123,9 +117,9 @@ const EditPromotion = () => {
         'response' in err &&
         typeof (err as { response?: { data?: { message?: string } } }).response?.data?.message === 'string'
       ) {
-        setApiError((err as { response: { data: { message: string } } }).response.data.message);
+        toast.error((err as { response: { data: { message: string } } }).response.data.message);
       } else {
-        setApiError("Failed to update promotion");
+        toast.error("Failed to update promotion");
       }
       console.error("Error updating promotion:", err);
     }
@@ -147,51 +141,9 @@ const EditPromotion = () => {
 
   // Error state for promotion details
   if (detailError || !promotionDetail) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="container mx-auto max-w-4xl px-4 py-6">
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <AlertTriangle className="w-8 h-8 text-red-600" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                {detailError ? 'Error Loading Promotion' : 'Promotion Not Found'}
-              </h3>
-              <p className="text-gray-600 max-w-md mb-6 mx-auto">
-                {detailError || 'The promotion you are trying to edit could not be found.'}
-              </p>
-              <button
-                onClick={() => router.push('/user/promotions')}
-                className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2 mx-auto"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                Back to Promotions
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (success) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 max-w-md w-full mx-4">
-          <div className="text-center">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <CheckCircle className="w-8 h-8 text-green-600" />
-            </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Promotion Updated!</h2>
-            <p className="text-gray-600 mb-4">
-              Your promotional deal has been updated successfully. You&apos;ll be redirected to the promotions page.
-            </p>
-            <div className="animate-pulse text-sm text-gray-500">Redirecting...</div>
-          </div>
-        </div>
-      </div>
-    );
+    toast.error(detailError || 'Promotion not found');
+    router.push('/user/promotions');
+    return null;
   }
 
   return (
@@ -228,14 +180,6 @@ const EditPromotion = () => {
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-5">
-            {/* Error Message */}
-            {apiError && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-3 flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 text-red-600 flex-shrink-0" />
-                <span className="text-red-700 text-sm">{apiError}</span>
-              </div>
-            )}
-
             {/* Product Information (Read-only) */}
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <h3 className="font-medium text-blue-900 text-sm mb-3 flex items-center gap-2">
