@@ -144,6 +144,13 @@ const Sidebar = () => {
   const getFallbackSidebarList = (userType?: string): SidebarItem[] => {
     const sidebarItems: SidebarItem[] = [
       {
+        displayName: "Dashboard",
+        route: "/user/dashboard",
+        name: "dashboard",
+        icon: "LayoutDashboard",
+        subItems: [],
+      },
+      {
         displayName: "Profile",
         route: "/user/profile",
         name: "profile",

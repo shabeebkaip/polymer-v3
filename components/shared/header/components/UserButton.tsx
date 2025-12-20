@@ -9,7 +9,7 @@ const UserButton: React.FC = () => {
   const router = useRouter();
   console.log('user', user);
   const handleClick = () => {
-    router.push('/user/profile');
+    router.push('/user/dashboard');
   };
 
   const capitalizedFirstName = user?.firstName 
