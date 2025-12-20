@@ -3,10 +3,8 @@
 import React, { useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useProductRequestDetailStore } from '@/stores/user';
-import { Button } from "@/components/ui/button";
 import { 
   Package, 
-  Calendar, 
   Building2, 
   CheckCircle, 
   XCircle, 
@@ -20,15 +18,9 @@ import {
   ArrowLeft,
   Truck,
   Activity,
-  CalendarDays,
-  Hash,
-  Scale,
-  MapPinHouse,
   MessageSquare,
   Eye,
-  Download,
-  ChevronRight,
-  Loader2
+  Download
 } from "lucide-react";
 import Image from 'next/image';
 
@@ -132,12 +124,14 @@ const ProductRequestDetail = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-green-50/20 to-emerald-50/30 flex items-center justify-center">
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50 p-8">
-          <div className="flex items-center gap-4">
-            <Loader2 className="w-8 h-8 animate-spin text-green-600" />
-            <span className="text-xl font-semibold text-gray-700">Loading product request details...</span>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="relative mx-auto mb-4 w-10 h-10">
+            <div className="absolute inset-0 rounded-full border-3 border-green-200"></div>
+            <div className="absolute inset-0 rounded-full border-3 border-transparent border-t-green-600 animate-spin"></div>
           </div>
+          <h3 className="text-sm font-medium text-gray-900 mb-1">Loading...</h3>
+          <p className="text-xs text-gray-600">Please wait</p>
         </div>
       </div>
     );
@@ -145,20 +139,20 @@ const ProductRequestDetail = () => {
 
   if (error || !productRequestDetail) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-green-50/20 to-emerald-50/30 flex items-center justify-center">
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-red-200/50 p-8 max-w-md">
-          <div className="flex items-center gap-4 mb-4">
-            <AlertCircle className="w-8 h-8 text-red-600" />
-            <span className="text-xl font-semibold text-red-700">Error Loading Request</span>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="bg-red-100 rounded-lg w-12 h-12 flex items-center justify-center mx-auto mb-3">
+            <XCircle className="w-6 h-6 text-red-500" />
           </div>
-          <p className="text-gray-600 mb-6">{error || "Product request not found"}</p>
-          <Button 
+          <h3 className="text-base font-semibold text-gray-900 mb-2">Error Loading Details</h3>
+          <p className="text-sm text-gray-600 mb-4">{error || "Product request not found"}</p>
+          <button
             onClick={() => router.push('/user/product-requests')}
-            className="bg-green-600 hover:bg-green-700 text-white"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors"
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Product Requests
-          </Button>
+            <ArrowLeft className="w-4 h-4" />
+            Back
+          </button>
         </div>
       </div>
     );
@@ -168,96 +162,85 @@ const ProductRequestDetail = () => {
   const sellerStatusBadge = getStatusBadge(productRequestDetail.sellerStatus, true);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-green-50/20 to-emerald-50/30">
-      <div className="container mx-auto px-6 py-8 ">
+    <div className="min-h-screen bg-gray-50">
+      <div className="container mx-auto px-4 py-6">
         {/* Header */}
-        <div className="flex items-center gap-4 mb-8">
-          <Button
-            variant="outline"
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+          <button
             onClick={() => router.push('/user/product-requests')}
-            className="border-green-200 text-green-700 hover:bg-green-50"
+            className="inline-flex items-center gap-2 mb-4 px-3 py-1.5 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Requests
-          </Button>
-          <div className="flex items-center gap-2 text-gray-500">
-            <span>Product Requests</span>
-            <ChevronRight className="w-4 h-4" />
-            <span className="text-green-700 font-semibold">Request #{productRequestDetail._id.slice(-8).toUpperCase()}</span>
+            <ArrowLeft className="w-4 h-4" />
+            Back
+          </button>
+
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="bg-green-600 p-2.5 rounded-lg">
+                <Package className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-semibold text-gray-900">
+                  Product Request Details
+                </h1>
+                <p className="text-gray-600 text-sm mt-0.5">
+                  Request ID: #{productRequestDetail._id.slice(-8).toUpperCase()}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium ${adminStatus.class}`}>
+                <adminStatus.icon className="w-5 h-5" />
+                {adminStatus.text}
+              </span>
+              <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium ${sellerStatusBadge.class}`}>
+                <sellerStatusBadge.icon className="w-5 h-5" />
+                {sellerStatusBadge.text}
+              </span>
+            </div>
           </div>
         </div>
 
-        {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column - Main Details */}
-          <div className="lg:col-span-2 space-y-8">
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+          {/* Main Content - Left Side */}
+          <div className="xl:col-span-2 space-y-6">
             {/* Request Overview */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50 p-8">
-              <div className="flex items-center justify-between mb-6">
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 via-green-800 to-emerald-800 bg-clip-text text-transparent">
-                  Product Request Details
-                </h1>
-                <div className="flex gap-3">
-                  <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border ${adminStatus.class}`}>
-                    <adminStatus.icon className="w-4 h-4" />
-                    {adminStatus.text}
-                  </span>
-                  <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border ${sellerStatusBadge.class}`}>
-                    <sellerStatusBadge.icon className="w-4 h-4" />
-                    {sellerStatusBadge.text}
-                  </span>
-                </div>
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <FileText className="w-5 h-5 text-green-600" />
+                <h2 className="text-lg font-semibold text-gray-900">Request Overview</h2>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="flex items-center gap-3">
-                  <div className="bg-green-100 p-3 rounded-xl">
-                    <Hash className="w-5 h-5 text-green-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Request ID</p>
-                    <p className="font-semibold text-gray-900">#{productRequestDetail._id.slice(-8).toUpperCase()}</p>
-                  </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <p className="text-xs text-gray-600 mb-1">Request ID</p>
+                  <p className="text-sm font-medium text-gray-900">#{productRequestDetail._id.slice(-8).toUpperCase()}</p>
                 </div>
                 
-                <div className="flex items-center gap-3">
-                  <div className="bg-emerald-100 p-3 rounded-xl">
-                    <CalendarDays className="w-5 h-5 text-emerald-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Created On</p>
-                    <p className="font-semibold text-gray-900">{formatDate(productRequestDetail.createdAt)}</p>
-                  </div>
+                <div>
+                  <p className="text-xs text-gray-600 mb-1">Created On</p>
+                  <p className="text-sm font-medium text-gray-900">{formatDate(productRequestDetail.createdAt)}</p>
                 </div>
                 
-                <div className="flex items-center gap-3">
-                  <div className="bg-teal-100 p-3 rounded-xl">
-                    <Scale className="w-5 h-5 text-teal-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Quantity Required</p>
-                    <p className="font-semibold text-gray-900">{productRequestDetail.quantity.toLocaleString()} {productRequestDetail.uom}</p>
-                  </div>
+                <div>
+                  <p className="text-xs text-gray-600 mb-1">Quantity Required</p>
+                  <p className="text-sm font-medium text-gray-900">{productRequestDetail.quantity.toLocaleString()} {productRequestDetail.uom}</p>
                 </div>
                 
-                <div className="flex items-center gap-3">
-                  <div className="bg-green-100 p-3 rounded-xl">
-                    <Calendar className="w-5 h-5 text-green-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Delivery Date</p>
-                    <p className="font-semibold text-gray-900">{formatDateOnly(productRequestDetail.delivery_date)}</p>
-                  </div>
+                <div>
+                  <p className="text-xs text-gray-600 mb-1">Delivery Date</p>
+                  <p className="text-sm font-medium text-gray-900">{formatDateOnly(productRequestDetail.delivery_date)}</p>
                 </div>
               </div>
             </div>
 
             {/* Product Information */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50 p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-                <Package className="w-6 h-6 text-green-600" />
-                Product Information
-              </h2>
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Package className="w-5 h-5 text-green-600" />
+                <h2 className="text-lg font-semibold text-gray-900">Product Information</h2>
+              </div>
               
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Product Image */}
@@ -282,130 +265,106 @@ const ProductRequestDetail = () => {
                 {/* Product Details */}
                 <div className="space-y-4">
                   <div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">{productRequestDetail.product.productName}</h3>
-                    <p className="text-green-600 font-semibold">{productRequestDetail.product.tradeName}</p>
+                    <h3 className="text-base font-semibold text-gray-900 mb-1">{productRequestDetail.product.productName}</h3>
+                    {productRequestDetail.product.description && (
+                      <p className="text-sm text-gray-600">{productRequestDetail.product.description}</p>
+                    )}
                   </div>
                   
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <p className="text-sm text-gray-600">Chemical Name</p>
-                      <p className="font-semibold text-gray-900">{productRequestDetail.product.chemicalName}</p>
+                      <p className="text-xs text-gray-600 mb-1">Chemical Name</p>
+                      <p className="text-sm font-medium text-gray-900">{productRequestDetail.product.chemicalName}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-600">Manufacturing Method</p>
-                      <p className="font-semibold text-gray-900">{productRequestDetail.product.manufacturingMethod}</p>
+                      <p className="text-xs text-gray-600 mb-1">Trade Name</p>
+                      <p className="text-sm font-medium text-gray-900">{productRequestDetail.product.tradeName}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-600">Country of Origin</p>
-                      <p className="font-semibold text-gray-900">{productRequestDetail.product.countryOfOrigin}</p>
+                      <p className="text-xs text-gray-600 mb-1">Manufacturing Method</p>
+                      <p className="text-sm font-medium text-gray-900">{productRequestDetail.product.manufacturingMethod}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-600">Color</p>
-                      <p className="font-semibold text-gray-900 capitalize">{productRequestDetail.product.color}</p>
+                      <p className="text-xs text-gray-600 mb-1">Country of Origin</p>
+                      <p className="text-sm font-medium text-gray-900">{productRequestDetail.product.countryOfOrigin}</p>
                     </div>
-                  </div>
-
-                  <div>
-                    <p className="text-sm text-gray-600 mb-2">Description</p>
-                    <p className="text-gray-900">{productRequestDetail.product.description}</p>
+                    <div>
+                      <p className="text-xs text-gray-600 mb-1">Color</p>
+                      <p className="text-sm font-medium text-gray-900 capitalize">{productRequestDetail.product.color}</p>
+                    </div>
                   </div>
                 </div>
               </div>
 
               {/* Technical Specifications */}
-              <div className="mt-8 pt-8 border-t border-gray-200">
-                <h4 className="text-lg font-semibold text-gray-900 mb-4">Technical Specifications</h4>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                  <div className="bg-gray-50 p-4 rounded-xl">
+              <div className="mt-6 pt-6 border-t border-gray-200">
+                <h4 className="text-sm font-semibold text-gray-900 mb-3">Technical Specifications</h4>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  <div className="bg-gray-50 rounded-lg p-3">
                     <p className="text-xs text-gray-600 mb-1">Density</p>
-                    <p className="font-semibold text-gray-900">{productRequestDetail.product.density}</p>
+                    <p className="text-sm font-medium text-gray-900">{productRequestDetail.product.density}</p>
                   </div>
-                  <div className="bg-gray-50 p-4 rounded-xl">
+                  <div className="bg-gray-50 rounded-lg p-3">
                     <p className="text-xs text-gray-600 mb-1">MFI (g/10 min)</p>
-                    <p className="font-semibold text-gray-900">{productRequestDetail.product.mfi}</p>
+                    <p className="text-sm font-medium text-gray-900">{productRequestDetail.product.mfi}</p>
                   </div>
-                  <div className="bg-gray-50 p-4 rounded-xl">
+                  <div className="bg-gray-50 rounded-lg p-3">
                     <p className="text-xs text-gray-600 mb-1">Tensile Strength</p>
-                    <p className="font-semibold text-gray-900">{productRequestDetail.product.tensileStrength}</p>
+                    <p className="text-sm font-medium text-gray-900">{productRequestDetail.product.tensileStrength}</p>
                   </div>
-                  <div className="bg-gray-50 p-4 rounded-xl">
+                  <div className="bg-gray-50 rounded-lg p-3">
                     <p className="text-xs text-gray-600 mb-1">Elongation at Break</p>
-                    <p className="font-semibold text-gray-900">{productRequestDetail.product.elongationAtBreak}</p>
+                    <p className="text-sm font-medium text-gray-900">{productRequestDetail.product.elongationAtBreak}</p>
                   </div>
-                  <div className="bg-gray-50 p-4 rounded-xl">
+                  <div className="bg-gray-50 rounded-lg p-3">
                     <p className="text-xs text-gray-600 mb-1">Shore Hardness</p>
-                    <p className="font-semibold text-gray-900">{productRequestDetail.product.shoreHardness}</p>
+                    <p className="text-sm font-medium text-gray-900">{productRequestDetail.product.shoreHardness}</p>
                   </div>
-                  <div className="bg-gray-50 p-4 rounded-xl">
+                  <div className="bg-gray-50 rounded-lg p-3">
                     <p className="text-xs text-gray-600 mb-1">Water Absorption</p>
-                    <p className="font-semibold text-gray-900">{productRequestDetail.product.waterAbsorption}</p>
+                    <p className="text-sm font-medium text-gray-900">{productRequestDetail.product.waterAbsorption}</p>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Delivery & Location Details */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50 p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-                <Truck className="w-6 h-6 text-green-600" />
-                Delivery & Location Details
-              </h2>
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Truck className="w-5 h-5 text-green-600" />
+                <h2 className="text-lg font-semibold text-gray-900">Delivery & Location Details</h2>
+              </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="flex items-start gap-3">
-                  <div className="bg-green-100 p-3 rounded-xl">
-                    <MapPin className="w-5 h-5 text-green-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Destination</p>
-                    <p className="font-semibold text-gray-900">{productRequestDetail.destination}</p>
-                    <p className="text-sm text-gray-600 mt-1">{productRequestDetail.city}, {productRequestDetail.country}</p>
-                  </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <p className="text-xs text-gray-600 mb-1">Destination</p>
+                  <p className="text-sm font-medium text-gray-900">{productRequestDetail.destination}</p>
+                  <p className="text-xs text-gray-600 mt-1">{productRequestDetail.city}, {productRequestDetail.country}</p>
                 </div>
                 
-                <div className="flex items-start gap-3">
-                  <div className="bg-emerald-100 p-3 rounded-xl">
-                    <Calendar className="w-5 h-5 text-emerald-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Required Delivery Date</p>
-                    <p className="font-semibold text-gray-900">{formatDateOnly(productRequestDetail.delivery_date)}</p>
-                  </div>
+                <div>
+                  <p className="text-xs text-gray-600 mb-1">Required Delivery Date</p>
+                  <p className="text-sm font-medium text-gray-900">{formatDateOnly(productRequestDetail.delivery_date)}</p>
                 </div>
               </div>
 
               {productRequestDetail.message && (
-                <div className="mt-6 pt-6 border-t border-gray-200">
-                  <div className="flex items-start gap-3">
-                    <div className="bg-teal-100 p-3 rounded-xl">
-                      <MessageSquare className="w-5 h-5 text-teal-600" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-sm text-gray-600 mb-2">Additional Message</p>
-                      <p className="text-gray-900 bg-gray-50 p-4 rounded-xl">{productRequestDetail.message}</p>
-                    </div>
-                  </div>
+                <div className="mt-4 pt-4 border-t border-gray-200">
+                  <p className="text-xs text-gray-600 mb-2">Additional Message</p>
+                  <p className="text-sm text-gray-900 bg-gray-50 p-3 rounded-lg">{productRequestDetail.message}</p>
                 </div>
               )}
 
               {productRequestDetail.request_document && (
-                <div className="mt-6 pt-6 border-t border-gray-200">
-                  <div className="flex items-center gap-3">
-                    <div className="bg-green-100 p-3 rounded-xl">
-                      <FileText className="w-5 h-5 text-green-600" />
+                <div className="mt-4 pt-4 border-t border-gray-200">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs text-gray-600 mb-1">Attached Document</p>
+                      <p className="text-sm font-medium text-gray-900">{productRequestDetail.request_document}</p>
                     </div>
-                    <div className="flex-1">
-                      <p className="text-sm text-gray-600">Attached Document</p>
-                      <p className="font-semibold text-gray-900">{productRequestDetail.request_document}</p>
-                    </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="border-green-200 text-green-700 hover:bg-green-50"
-                    >
-                      <Download className="w-4 h-4 mr-2" />
-                      Download
-                    </Button>
+                    <button className="px-3 py-1.5 text-sm border border-gray-200 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
+                      <Download className="w-4 h-4" />
+                    </button>
                   </div>
                 </div>
               )}
@@ -413,127 +372,118 @@ const ProductRequestDetail = () => {
 
             {/* Supplier Offers */}
             {supplierOffers && supplierOffers.length > 0 && (
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50 p-8">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-                    <Building2 className="w-6 h-6 text-green-600" />
-                    Supplier Offers
-                  </h2>
-                  <div className="bg-green-100 px-4 py-2 rounded-full">
-                    <span className="text-green-700 font-semibold">{supplierOffers.length} Offer{supplierOffers.length > 1 ? 's' : ''} Received</span>
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <Building2 className="w-5 h-5 text-green-600" />
+                    <h2 className="text-lg font-semibold text-gray-900">Supplier Offers</h2>
+                  </div>
+                  <div className="bg-green-50 px-3 py-1 rounded-full">
+                    <span className="text-sm text-green-700 font-medium">{supplierOffers.length} Offer{supplierOffers.length > 1 ? 's' : ''}</span>
                   </div>
                 </div>
 
                 {/* Offers Summary */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 p-4 bg-gray-50 rounded-xl">
+                <div className="grid grid-cols-3 gap-3 mb-6 p-4 bg-gray-50 rounded-lg">
                   <div className="text-center">
-                    <p className="text-sm text-gray-600">Pending Offers</p>
-                    <p className="text-2xl font-bold text-amber-600">
+                    <p className="text-xs text-gray-600 mb-1">Pending</p>
+                    <p className="text-lg font-semibold text-gray-900">
                       {supplierOffers.filter(offer => offer.status === 'pending').length}
                     </p>
                   </div>
                   <div className="text-center">
-                    <p className="text-sm text-gray-600">Approved Offers</p>
-                    <p className="text-2xl font-bold text-green-600">
+                    <p className="text-xs text-gray-600 mb-1">Approved</p>
+                    <p className="text-lg font-semibold text-gray-900">
                       {supplierOffers.filter(offer => offer.status === 'approved').length}
                     </p>
                   </div>
                   <div className="text-center">
-                    <p className="text-sm text-gray-600">Best Price</p>
-                    <p className="text-2xl font-bold text-blue-600">
+                    <p className="text-xs text-gray-600 mb-1">Best Price</p>
+                    <p className="text-lg font-semibold text-gray-900">
                       ${Math.min(...supplierOffers.map(offer => offer.pricePerUnit)).toFixed(2)}
                     </p>
                   </div>
                 </div>
-                
-                <div className="space-y-6">
+                <div className="space-y-4">
                   {supplierOffers.map((offer) => {
                     const offerStatus = getStatusBadge(offer.status);
                     const totalCost = offer.pricePerUnit * productRequestDetail.quantity;
                     
                     return (
-                      <div key={offer._id} className="border border-gray-200 rounded-xl p-6 hover:shadow-md transition-shadow">
+                      <div key={offer._id} className="border border-gray-200 rounded-lg p-4 hover:shadow-sm transition-shadow">
                         {/* Offer Header */}
                         <div className="flex items-center justify-between mb-4">
-                          <div className="flex items-center gap-3">
-                            <div className="bg-green-100 p-2 rounded-lg">
-                              <Building2 className="w-5 h-5 text-green-600" />
-                            </div>
-                            <div>
-                              <h4 className="font-bold text-gray-900">
-                                {offer.supplierId.firstName} {offer.supplierId.lastName}
-                              </h4>
-                              <p className="text-sm text-gray-600">{offer.supplierId.company}</p>
-                            </div>
+                          <div>
+                            <h4 className="font-semibold text-gray-900">
+                              {offer.supplierId.firstName} {offer.supplierId.lastName}
+                            </h4>
+                            <p className="text-xs text-gray-600">{offer.supplierId.company}</p>
                           </div>
-                          <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium border ${offerStatus.class}`}>
+                          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${offerStatus.class}`}>
                             <offerStatus.icon className="w-3 h-3" />
                             {offerStatus.text}
                           </span>
                         </div>
 
                         {/* Offer Details Grid */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-                          <div className="bg-green-50 p-3 rounded-lg">
-                            <p className="text-xs text-green-600 font-medium mb-1">Price per Unit</p>
-                            <p className="font-bold text-gray-900">${offer.pricePerUnit.toFixed(2)}</p>
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+                          <div className="bg-gray-50 p-3 rounded-lg">
+                            <p className="text-xs text-gray-600 mb-1">Price per Unit</p>
+                            <p className="text-sm font-semibold text-gray-900">${offer.pricePerUnit.toFixed(2)}</p>
                           </div>
-                          <div className="bg-emerald-50 p-3 rounded-lg">
-                            <p className="text-xs text-emerald-600 font-medium mb-1">Total Cost</p>
-                            <p className="font-bold text-gray-900">${totalCost.toLocaleString()}</p>
+                          <div className="bg-gray-50 p-3 rounded-lg">
+                            <p className="text-xs text-gray-600 mb-1">Total Cost</p>
+                            <p className="text-sm font-semibold text-gray-900">${totalCost.toLocaleString()}</p>
                           </div>
-                          <div className="bg-teal-50 p-3 rounded-lg">
-                            <p className="text-xs text-teal-600 font-medium mb-1">Delivery Time</p>
-                            <p className="font-bold text-gray-900">{offer.deliveryTimeInDays} days</p>
+                          <div className="bg-gray-50 p-3 rounded-lg">
+                            <p className="text-xs text-gray-600 mb-1">Delivery Time</p>
+                            <p className="text-sm font-semibold text-gray-900">{offer.deliveryTimeInDays} days</p>
                           </div>
-                          <div className="bg-blue-50 p-3 rounded-lg">
-                            <p className="text-xs text-blue-600 font-medium mb-1">Available Qty</p>
-                            <p className="font-bold text-gray-900">{offer.availableQuantity.toLocaleString()}</p>
+                          <div className="bg-gray-50 p-3 rounded-lg">
+                            <p className="text-xs text-gray-600 mb-1">Available Qty</p>
+                            <p className="text-sm font-semibold text-gray-900">{offer.availableQuantity.toLocaleString()}</p>
                           </div>
                         </div>
 
                         {/* Additional Details */}
-                        <div className="space-y-3">
-                          <div className="flex items-start gap-3">
-                            <Package className="w-4 h-4 text-gray-500 mt-1" />
+                        <div className="space-y-2.5 text-sm">
+                          <div className="flex items-start gap-2">
+                            <Package className="w-4 h-4 text-gray-400 mt-0.5" />
                             <div>
-                              <p className="text-sm font-medium text-gray-700">Incoterm & Packaging</p>
-                              <p className="text-gray-600">{offer.incotermAndPackaging}</p>
+                              <p className="text-xs text-gray-600">Incoterm & Packaging</p>
+                              <p className="text-gray-900">{offer.incotermAndPackaging}</p>
                             </div>
                           </div>
                           
                           {offer.message && (
-                            <div className="flex items-start gap-3">
-                              <MessageSquare className="w-4 h-4 text-gray-500 mt-1" />
+                            <div className="flex items-start gap-2">
+                              <MessageSquare className="w-4 h-4 text-gray-400 mt-0.5" />
                               <div>
-                                <p className="text-sm font-medium text-gray-700">Supplier Message</p>
-                                <p className="text-gray-600">{offer.message}</p>
+                                <p className="text-xs text-gray-600">Supplier Message</p>
+                                <p className="text-gray-900">{offer.message}</p>
                               </div>
                             </div>
                           )}
 
-                          <div className="flex items-center gap-3">
-                            <Mail className="w-4 h-4 text-gray-500" />
-                            <div>
-                              <p className="text-sm font-medium text-gray-700">Contact</p>
-                              <p className="text-gray-600">{offer.supplierId.email}</p>
-                            </div>
+                          <div className="flex items-center gap-2">
+                            <Mail className="w-4 h-4 text-gray-400" />
+                            <p className="text-gray-900">{offer.supplierId.email}</p>
                           </div>
                         </div>
 
                         {/* Status Messages */}
                         {offer.statusMessage && offer.statusMessage.length > 0 && (
                           <div className="mt-4 pt-4 border-t border-gray-200">
-                            <p className="text-sm font-medium text-gray-700 mb-2">Status History</p>
+                            <p className="text-xs text-gray-600 mb-2">Status History</p>
                             <div className="space-y-2">
                               {offer.statusMessage.slice(-3).map((statusMsg) => (
                                 <div key={statusMsg._id} className="bg-gray-50 p-2 rounded text-xs">
-                                  <div className="flex justify-between items-center">
-                                    <span className="font-medium capitalize">{statusMsg.status}</span>
+                                  <div className="flex justify-between items-center mb-1">
+                                    <span className="font-medium capitalize text-gray-900">{statusMsg.status}</span>
                                     <span className="text-gray-500">{formatDate(statusMsg.date)}</span>
                                   </div>
-                                  <p className="text-gray-600 mt-1">{statusMsg.message}</p>
-                                  <p className="text-gray-500 text-xs">Updated by: {statusMsg.updatedBy}</p>
+                                  <p className="text-gray-700">{statusMsg.message}</p>
+                                  <p className="text-gray-500 text-xs mt-1">Updated by: {statusMsg.updatedBy}</p>
                                 </div>
                               ))}
                             </div>
@@ -542,22 +492,15 @@ const ProductRequestDetail = () => {
 
                         {/* Action Buttons */}
                         {offer.status === 'pending' && (
-                          <div className="mt-4 pt-4 border-t border-gray-200 flex gap-3">
-                            <Button
-                              size="sm"
-                              className="bg-green-600 hover:bg-green-700 text-white"
-                            >
-                              <CheckCircle className="w-4 h-4 mr-2" />
+                          <div className="mt-4 pt-4 border-t border-gray-200 flex gap-2">
+                            <button className="flex-1 px-3 py-2 text-sm bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors flex items-center justify-center gap-1.5">
+                              <CheckCircle className="w-4 h-4" />
                               Accept Offer
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="border-red-200 text-red-700 hover:bg-red-50"
-                            >
-                              <XCircle className="w-4 h-4 mr-2" />
-                              Reject Offer
-                            </Button>
+                            </button>
+                            <button className="flex-1 px-3 py-2 text-sm border border-gray-200 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors flex items-center justify-center gap-1.5">
+                              <XCircle className="w-4 h-4" />
+                              Reject
+                            </button>
                           </div>
                         )}
                       </div>
@@ -569,161 +512,121 @@ const ProductRequestDetail = () => {
 
             {/* No Offers State */}
             {supplierOffers && supplierOffers.length === 0 && (
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50 p-8">
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                 <div className="text-center py-8">
-                  <Building2 className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold text-gray-700 mb-2">No Supplier Offers Yet</h3>
-                  <p className="text-gray-500 mb-4">
+                  <Building2 className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                  <h3 className="text-lg font-semibold text-gray-700 mb-2">No Supplier Offers Yet</h3>
+                  <p className="text-sm text-gray-500 mb-3">
                     Your request is being reviewed by suppliers. You&apos;ll see offers here once they respond.
                   </p>
-                  <div className="inline-flex items-center gap-2 text-sm text-green-600">
+                  <div className="inline-flex items-center gap-2 text-sm text-gray-600">
                     <Clock className="w-4 h-4" />
-                    Waiting for supplier responses...
+                    Waiting for responses...
                   </div>
                 </div>
               </div>
             )}
           </div>
 
-          {/* Right Column - Sidebar */}
-          <div className="space-y-8">
+          {/* Sidebar - Right Side */}
+          <div className="space-y-6">
             {/* Supplier Information */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50 p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <div className="flex items-center gap-2 mb-4">
                 <Building2 className="w-5 h-5 text-green-600" />
-                Supplier Information
-              </h3>
+                <h3 className="text-lg font-semibold text-gray-900">Supplier Information</h3>
+              </div>
               
-              <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="bg-green-100 p-2 rounded-lg">
-                    <User className="w-4 h-4 text-green-600" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-gray-900">
-                      {productRequestDetail.product.createdBy.firstName} {productRequestDetail.product.createdBy.lastName}
-                    </p>
-                    <p className="text-sm text-gray-600">{productRequestDetail.product.createdBy.company}</p>
-                  </div>
+              <div className="space-y-3">
+                <div>
+                  <p className="font-medium text-gray-900">
+                    {productRequestDetail.product.createdBy.firstName} {productRequestDetail.product.createdBy.lastName}
+                  </p>
+                  <p className="text-xs text-gray-600">{productRequestDetail.product.createdBy.company}</p>
                 </div>
                 
-                <div className="flex items-center gap-3">
-                  <div className="bg-emerald-100 p-2 rounded-lg">
-                    <Mail className="w-4 h-4 text-emerald-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Email</p>
-                    <p className="font-semibold text-gray-900">{productRequestDetail.product.createdBy.email}</p>
-                  </div>
+                <div className="flex items-center gap-2">
+                  <Mail className="w-4 h-4 text-gray-400" />
+                  <span className="text-sm text-gray-700">{productRequestDetail.product.createdBy.email}</span>
                 </div>
                 
-                <div className="flex items-center gap-3">
-                  <div className="bg-teal-100 p-2 rounded-lg">
-                    <Phone className="w-4 h-4 text-teal-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Phone</p>
-                    <p className="font-semibold text-gray-900">{productRequestDetail.product.createdBy.phone}</p>
-                  </div>
+                <div className="flex items-center gap-2">
+                  <Phone className="w-4 h-4 text-gray-400" />
+                  <span className="text-sm text-gray-700">{productRequestDetail.product.createdBy.phone}</span>
                 </div>
                 
-                <div className="flex items-start gap-3">
-                  <div className="bg-green-100 p-2 rounded-lg">
-                    <MapPinHouse className="w-4 h-4 text-green-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Address</p>
-                    <p className="font-semibold text-gray-900">{productRequestDetail.product.createdBy.address}</p>
-                  </div>
+                <div className="flex items-start gap-2">
+                  <MapPin className="w-4 h-4 text-gray-400 mt-0.5" />
+                  <span className="text-sm text-gray-700">{productRequestDetail.product.createdBy.address}</span>
                 </div>
               </div>
             </div>
 
             {/* Buyer Information */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50 p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <div className="flex items-center gap-2 mb-4">
                 <User className="w-5 h-5 text-green-600" />
-                Buyer Information
-              </h3>
+                <h3 className="text-lg font-semibold text-gray-900">Buyer Information</h3>
+              </div>
               
-              <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="bg-green-100 p-2 rounded-lg">
-                    <User className="w-4 h-4 text-green-600" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-gray-900">
-                      {productRequestDetail.user.firstName} {productRequestDetail.user.lastName}
-                    </p>
-                    <p className="text-sm text-gray-600">{productRequestDetail.user.company}</p>
-                  </div>
+              <div className="space-y-3">
+                <div>
+                  <p className="font-medium text-gray-900">
+                    {productRequestDetail.user.firstName} {productRequestDetail.user.lastName}
+                  </p>
+                  <p className="text-xs text-gray-600">{productRequestDetail.user.company}</p>
                 </div>
                 
-                <div className="flex items-center gap-3">
-                  <div className="bg-emerald-100 p-2 rounded-lg">
-                    <Mail className="w-4 h-4 text-emerald-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Email</p>
-                    <p className="font-semibold text-gray-900">{productRequestDetail.user.email}</p>
-                  </div>
+                <div className="flex items-center gap-2">
+                  <Mail className="w-4 h-4 text-gray-400" />
+                  <span className="text-sm text-gray-700">{productRequestDetail.user.email}</span>
                 </div>
                 
-                <div className="flex items-center gap-3">
-                  <div className="bg-teal-100 p-2 rounded-lg">
-                    <Phone className="w-4 h-4 text-teal-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Phone</p>
-                    <p className="font-semibold text-gray-900">{productRequestDetail.user.phone}</p>
-                  </div>
+                <div className="flex items-center gap-2">
+                  <Phone className="w-4 h-4 text-gray-400" />
+                  <span className="text-sm text-gray-700">{productRequestDetail.user.phone}</span>
                 </div>
                 
-                <div className="flex items-start gap-3">
-                  <div className="bg-green-100 p-2 rounded-lg">
-                    <MapPinHouse className="w-4 h-4 text-green-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Address</p>
-                    <p className="font-semibold text-gray-900">{productRequestDetail.user.address}</p>
-                  </div>
+                <div className="flex items-start gap-2">
+                  <MapPin className="w-4 h-4 text-gray-400 mt-0.5" />
+                  <span className="text-sm text-gray-700">{productRequestDetail.user.address}</span>
                 </div>
               </div>
             </div>
 
             {/* Status Tracking */}
             {productRequestDetail.statusTracking && (
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50 p-6">
-                <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div className="flex items-center gap-2 mb-4">
                   <Activity className="w-5 h-5 text-green-600" />
-                  Status Tracking
-                </h3>
+                  <h3 className="text-lg font-semibold text-gray-900">Status Tracking</h3>
+                </div>
                 
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
-                    <span className="text-sm font-medium text-gray-600">Admin Status</span>
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusBadge(productRequestDetail.statusTracking.adminStatus).class}`}>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between p-2.5 bg-gray-50 rounded-lg">
+                    <span className="text-xs text-gray-600">Admin Status</span>
+                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${getStatusBadge(productRequestDetail.statusTracking.adminStatus).class}`}>
                       {getStatusBadge(productRequestDetail.statusTracking.adminStatus).text}
                     </span>
                   </div>
                   
-                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
-                    <span className="text-sm font-medium text-gray-600">Seller Status</span>
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusBadge(productRequestDetail.statusTracking.sellerStatus).class}`}>
+                  <div className="flex items-center justify-between p-2.5 bg-gray-50 rounded-lg">
+                    <span className="text-xs text-gray-600">Seller Status</span>
+                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${getStatusBadge(productRequestDetail.statusTracking.sellerStatus).class}`}>
                       {getStatusBadge(productRequestDetail.statusTracking.sellerStatus).text}
                     </span>
                   </div>
                   
-                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
-                    <span className="text-sm font-medium text-gray-600">Last Updated</span>
-                    <span className="text-sm font-semibold text-gray-900">
+                  <div className="flex items-center justify-between p-2.5 bg-gray-50 rounded-lg">
+                    <span className="text-xs text-gray-600">Last Updated</span>
+                    <span className="text-xs font-medium text-gray-900">
                       {formatDate(productRequestDetail.statusTracking.lastUpdate)}
                     </span>
                   </div>
                   
-                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
-                    <span className="text-sm font-medium text-gray-600">Total Updates</span>
-                    <span className="text-sm font-semibold text-gray-900">
+                  <div className="flex items-center justify-between p-2.5 bg-gray-50 rounded-lg">
+                    <span className="text-xs text-gray-600">Total Updates</span>
+                    <span className="text-xs font-medium text-gray-900">
                       {productRequestDetail.statusTracking.totalUpdates}
                     </span>
                   </div>
@@ -732,26 +635,25 @@ const ProductRequestDetail = () => {
             )}
 
             {/* Quick Actions */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50 p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-6">Quick Actions</h3>
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
               
-              <div className="space-y-3">
-                <Button
-                  className="w-full bg-green-600 hover:bg-green-700 text-white"
+              <div className="space-y-2">
+                <button
+                  className="w-full px-3 py-2.5 text-sm bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors flex items-center justify-center gap-2"
                   onClick={() => router.push(`/products/${productRequestDetail.product._id}`)}
                 >
-                  <Eye className="w-4 h-4 mr-2" />
+                  <Eye className="w-4 h-4" />
                   View Product Details
-                </Button>
+                </button>
                 
-                <Button
-                  variant="outline"
-                  className="w-full border-green-200 text-green-700 hover:bg-green-50"
+                <button
+                  className="w-full px-3 py-2.5 text-sm border border-gray-200 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors flex items-center justify-center gap-2"
                   onClick={() => router.push('/user/product-requests')}
                 >
-                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  <ArrowLeft className="w-4 h-4" />
                   Back to All Requests
-                </Button>
+                </button>
               </div>
             </div>
           </div>

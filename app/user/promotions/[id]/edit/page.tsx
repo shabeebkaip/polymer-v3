@@ -16,8 +16,6 @@ import {
   DollarSign, 
   Save, 
   Loader2,
-  CheckCircle,
-  AlertTriangle,
   Edit,
   Calendar as CalendarIcon
 } from 'lucide-react';

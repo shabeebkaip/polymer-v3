@@ -19,8 +19,6 @@ import {
   DollarSign, 
   Save, 
   Loader2,
-  CheckCircle,
-  AlertTriangle,
   Calendar as CalendarIcon
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
