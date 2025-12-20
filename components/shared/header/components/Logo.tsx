@@ -15,13 +15,10 @@ const Logo = () => {
         height={48}
         className="md:h-12 h-10 w-auto"
       />
-      <Image
-        src="/typography.svg"
-        alt="Polymers Hub"
-        width={150}
-        height={40}
-        className="md:h-8 h-6 w-auto"
-      />
+      <h4 className="text-primary-500 font-bold text-xl md:text-2xl">
+        POLYMERS HUB
+      </h4>
+      
     </Link>
   );
 };

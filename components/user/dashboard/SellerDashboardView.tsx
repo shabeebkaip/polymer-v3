@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { SellerDashboard } from '@/types/dashboard';
+import { useUserInfo } from '@/lib/useUserInfo';
 import {
   Package,
   FileText,
@@ -35,7 +36,18 @@ interface Props {
 }
 
 const SellerDashboardView: React.FC<Props> = ({ data }) => {
+  const { user } = useUserInfo();
   const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+  // Get time-based greeting
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 18) return 'Good afternoon';
+    return 'Good evening';
+  };
+
+  const userName = user?.firstName || 'there';
 
   // Prepare chart data
   const monthlyChartData = data.charts.monthlyQuoteRequests.map((item, index) => ({
@@ -77,8 +89,10 @@ const SellerDashboardView: React.FC<Props> = ({ data }) => {
       <div className="container mx-auto px-4 py-6">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Seller Dashboard</h1>
-          <p className="text-gray-600">Manage your products and track your business performance.</p>
+          <div className="flex items-center gap-3 mb-2">
+            <h1 className="text-3xl font-bold text-gray-900">{getGreeting()}, {userName}! 👋</h1>
+          </div>
+          <p className="text-gray-600">{`Here's an overview of your products and business performance.`}</p>
         </div>
 
         {/* Stats Cards */}

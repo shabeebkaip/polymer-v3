@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { BuyerDashboard } from '@/types/dashboard';
+import { useUserInfo } from '@/lib/useUserInfo';
 import {
   FileText,
   Clock,
@@ -33,7 +34,18 @@ interface Props {
 }
 
 const BuyerDashboardView: React.FC<Props> = ({ data }) => {
+  const { user } = useUserInfo();
   const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+  // Get time-based greeting
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 18) return 'Good afternoon';
+    return 'Good evening';
+  };
+
+  const userName = user?.firstName || 'there';
 
   // Prepare chart data
   const monthlyChartData = data.charts.monthlyQuoteRequests.map((item, index) => ({
@@ -74,8 +86,10 @@ const BuyerDashboardView: React.FC<Props> = ({ data }) => {
       <div className="container mx-auto px-4 py-6">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Buyer Dashboard</h1>
-          <p className="text-gray-600">{`Welcome back! Here's your business overview.`}</p>
+          <div className="flex items-center gap-3 mb-2">
+            <h1 className="text-3xl font-bold text-gray-900">{getGreeting()}, {userName}! 👋</h1>
+          </div>
+          <p className="text-gray-600">{`Here's what's happening with your procurement today.`}</p>
         </div>
 
         {/* Stats Cards */}
