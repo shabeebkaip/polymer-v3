@@ -194,10 +194,12 @@ const ProductRequestDetail = () => {
                 <adminStatus.icon className="w-5 h-5" />
                 {adminStatus.text}
               </span>
-              <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium ${sellerStatusBadge.class}`}>
-                <sellerStatusBadge.icon className="w-5 h-5" />
-                {sellerStatusBadge.text}
-              </span>
+              {productRequestDetail.status === 'approved' && (
+                <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium ${sellerStatusBadge.class}`}>
+                  <sellerStatusBadge.icon className="w-5 h-5" />
+                  {sellerStatusBadge.text}
+                </span>
+              )}
             </div>
           </div>
         </div>
@@ -610,12 +612,14 @@ const ProductRequestDetail = () => {
                     </span>
                   </div>
                   
-                  <div className="flex items-center justify-between p-2.5 bg-gray-50 rounded-lg">
-                    <span className="text-xs text-gray-600">Seller Status</span>
-                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${getStatusBadge(productRequestDetail.statusTracking.sellerStatus).class}`}>
-                      {getStatusBadge(productRequestDetail.statusTracking.sellerStatus).text}
-                    </span>
-                  </div>
+                  {productRequestDetail.statusTracking.adminStatus === 'approved' && (
+                    <div className="flex items-center justify-between p-2.5 bg-gray-50 rounded-lg">
+                      <span className="text-xs text-gray-600">Seller Status</span>
+                      <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${getStatusBadge(productRequestDetail.statusTracking.sellerStatus).class}`}>
+                        {getStatusBadge(productRequestDetail.statusTracking.sellerStatus).text}
+                      </span>
+                    </div>
+                  )}
                   
                   <div className="flex items-center justify-between p-2.5 bg-gray-50 rounded-lg">
                     <span className="text-xs text-gray-600">Last Updated</span>
