@@ -137,6 +137,25 @@ export interface PromotionDetail {
   minimumQuantity?: string;
   dealType?: string;
   statusIcon?: string;
+  isExpired?: boolean;
+  statusTracking?: {
+    adminStatus: string;
+    lastUpdate: string;
+    totalRequests: number;
+    requestBreakdown: {
+      pending: number;
+      accepted: number;
+      rejected: number;
+      completed: number;
+    };
+  };
+  quoteRequests?: any[];
+  summary?: {
+    totalQuoteRequests: number;
+    dealStatus: string;
+    isActive: boolean;
+    recentRequests: any[];
+  };
 }
 
 export interface PromotionDetailResponse {
