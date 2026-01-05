@@ -2,13 +2,14 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { Mail, Bell, CheckCircle2 } from 'lucide-react';
+import { Mail, CheckCircle2, Building2, ShoppingCart } from 'lucide-react';
 import { toast } from 'sonner';
 import { DotPattern } from '../magicui/dot-pattern';
 import { cn } from '@/lib/utils';
 
 const ComingSoonPage = () => {
   const [email, setEmail] = useState('');
+  const [userType, setUserType] = useState<'supplier' | 'buyer' | ''>('');
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -19,9 +20,15 @@ const ComingSoonPage = () => {
       return;
     }
 
+    if (!userType) {
+      toast.error('Please select Supplier or Buyer');
+      return;
+    }
+
     setIsSubmitted(true);
-    toast.success("Thank you! We'll notify you when we launch 🚀");
+    toast.success(`Thank you. We'll contact you soon.`);
     setEmail('');
+    setUserType('');
 
     setTimeout(() => {
       setIsSubmitted(false);
@@ -30,27 +37,27 @@ const ComingSoonPage = () => {
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-gradient-to-b from-white via-gray-50 to-white">
-      {/* Background Pattern - matching your design */}
+      {/* Background Pattern - simplified without glow */}
       <DotPattern
         className={cn('[mask-image:radial-gradient(800px_circle_at_center,white,transparent)]')}
-        glow={true}
+        glow={false}
       />
 
-      {/* Decorative Elements - matching Hero design */}
+      {/* Decorative Elements - static for performance */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <Image
           src="/assets/hero_element_1.svg"
-          alt="Decorative Element"
+          alt=""
           width={100}
           height={100}
-          className="absolute top-20 left-4 md:left-20 w-[40px] md:w-[80px] lg:w-[100px] opacity-30 animate-float"
+          className="absolute top-20 left-4 md:left-20 w-[40px] md:w-[80px] lg:w-[100px] opacity-20"
         />
         <Image
           src="/assets/hero_element_2.svg"
-          alt="Decorative Element"
+          alt=""
           width={100}
           height={100}
-          className="absolute top-20 right-4 md:right-20 w-[40px] md:w-[80px] lg:w-[100px] opacity-30 animate-float"
+          className="absolute top-20 right-4 md:right-20 w-[40px] md:w-[80px] lg:w-[100px] opacity-20"
         />
       </div>
 
@@ -58,7 +65,7 @@ const ComingSoonPage = () => {
       <div className="relative z-10 flex items-center justify-center min-h-screen px-4 py-20">
         <div className="max-w-5xl w-full text-center space-y-8 md:space-y-12">
           {/* Logo/Branding */}
-          <div className="animate-fade-in-up">
+          <div>
             <div className="flex justify-center mb-6 gap-3 items-center">
               <Image
                 src="/onlylogo.png"
@@ -66,16 +73,19 @@ const ComingSoonPage = () => {
                 width={80}
                 height={80}
                 className="w-16 h-16 md:w-20 md:h-20"
+                priority
               />
-              {/* <h4 className="text-primary-500 font-bold text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-[80px]">
-                POLYMERS HUB
-              </h4> */}
             </div>
           </div>
 
           {/* Main Heading - matching your typography */}
-          <div className="animate-fade-in-up-delayed space-y-4">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-[80px] uppercase font-semibold leading-tight px-4">
+          <div className="space-y-4">
+            <div className="inline-block px-6 py-2 bg-primary-50 border border-primary-200 rounded-full mb-4">
+              <span className="text-sm md:text-base font-semibold text-primary-600 uppercase tracking-wide">
+                Soft Launch Phase – Limited Early Access
+              </span>
+            </div>
+            <h1 className="text-4xl sm:text-5xl md:text-6xl   uppercase font-semibold leading-tight px-4">
               Global <span className="text-primary-500">POLYMER</span> Marketplace
             </h1>
             <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-normal text-gray-600 mt-4">
@@ -84,60 +94,74 @@ const ComingSoonPage = () => {
           </div>
 
           {/* Description */}
-          <p className="text-gray-600 text-base sm:text-lg md:text-xl max-w-2xl mx-auto leading-relaxed animate-fade-in-up-delayed-2 px-4">
+          <p className="text-gray-600 text-base sm:text-lg md:text-xl max-w-2xl mx-auto leading-relaxed px-4">
             {`We're building something extraordinary. Connect directly with verified polymer suppliers
             worldwide — source smarter, trade faster, grow confidently.`}
           </p>
 
           {/* Email Signup */}
-          <div className="animate-fade-in-up-delayed-3 max-w-md mx-auto">
+          <div className="max-w-md mx-auto">
             {!isSubmitted ? (
-              <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
-                <div className="relative flex-1">
-                  <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {/* User Type Selection */}
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setUserType('supplier')}
+                    className={`flex-1 flex items-center justify-center gap-2 px-6 py-4 rounded-xl border-2 font-semibold transition-colors duration-150 ${
+                      userType === 'supplier'
+                        ? 'bg-primary-500 border-primary-500 text-white shadow-md'
+                        : 'bg-white border-gray-300 text-gray-700 hover:border-primary-300 hover:bg-primary-50'
+                    }`}
+                  >
+                    <Building2 className="w-5 h-5" />
+                    <span>Supplier</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setUserType('buyer')}
+                    className={`flex-1 flex items-center justify-center gap-2 px-6 py-4 rounded-xl border-2 font-semibold transition-colors duration-150 ${
+                      userType === 'buyer'
+                        ? 'bg-primary-500 border-primary-500 text-white shadow-md'
+                        : 'bg-white border-gray-300 text-gray-700 hover:border-primary-300 hover:bg-primary-50'
+                    }`}
+                  >
+                    <ShoppingCart className="w-5 h-5" />
+                    <span>Buyer</span>
+                  </button>
+                </div>
+
+                {/* Email Input */}
+                <div className="relative">
+                  <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Enter your email"
-                    className="w-full px-12 py-4 bg-white border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                    className="w-full px-12 py-4 bg-white border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   />
                 </div>
+
+                {/* Submit Button */}
                 <button
                   type="submit"
-                  className="px-8 py-4 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-xl shadow-sm hover:shadow-md flex items-center justify-center gap-2 transition-all"
+                  className="w-full px-8 py-4 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-xl shadow-sm hover:shadow-md transition-colors duration-150"
                 >
-                  <Bell className="w-5 h-5" />
-                  <span>Notify Me</span>
+                  Request Early Access
                 </button>
               </form>
             ) : (
               <div className="flex items-center justify-center gap-3 py-4 px-6 bg-green-50 border border-green-200 rounded-xl">
                 <CheckCircle2 className="w-6 h-6 text-green-600" />
                 <span className="text-green-700 font-medium">
-                  You&apos;re on the list! We&apos;ll keep you updated.
+                  Thank you. We&apos;ll contact you soon.
                 </span>
               </div>
             )}
             <p className="text-xs text-gray-500 mt-4">
-              Be the first to know when we launch. No spam, ever.
+              Be the first to access our platform. No spam, ever.
             </p>
-          </div>
-
-          {/* Trust Indicators - matching your design */}
-          <div className="flex flex-wrap items-center justify-center gap-3 md:gap-4 animate-fade-in-up-delayed-4 pb-8">
-            <div className="flex items-center gap-2 px-4 py-2 bg-primary-50 rounded-full border border-primary-500">
-              <div className="w-2 h-2 bg-primary-500 rounded-full animate-pulse"></div>
-              <span className="text-sm font-medium text-primary-600">SASO Compliant</span>
-            </div>
-            <div className="flex items-center gap-2 px-4 py-2 bg-primary-50 rounded-full border border-primary-500">
-              <div className="w-2 h-2 bg-primary-500 rounded-full animate-pulse"></div>
-              <span className="text-sm font-medium text-primary-600">Global Shipping</span>
-            </div>
-            <div className="flex items-center gap-2 px-4 py-2 bg-primary-50 rounded-full border border-primary-500">
-              <div className="w-2 h-2 bg-primary-500 rounded-full animate-pulse"></div>
-              <span className="text-sm font-medium text-primary-600">24/7 Support</span>
-            </div>
           </div>
         </div>
       </div>
@@ -148,91 +172,6 @@ const ComingSoonPage = () => {
           © 2026 Polymers Hub. All rights reserved.
         </p>
       </div>
-
-      {/* Animations CSS */}
-      <style jsx>{`
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        @keyframes float {
-          0%,
-          100% {
-            transform: translateY(0px);
-          }
-          50% {
-            transform: translateY(-15px);
-          }
-        }
-
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
-        }
-
-        .animate-fade-in-up {
-          animation: fadeInUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-          will-change: opacity, transform;
-        }
-
-        .animate-fade-in-up-delayed {
-          animation: fadeInUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
-          opacity: 0;
-          will-change: opacity, transform;
-        }
-
-        .animate-fade-in-up-delayed-2 {
-          animation: fadeInUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.2s forwards;
-          opacity: 0;
-          will-change: opacity, transform;
-        }
-
-        .animate-fade-in-up-delayed-3 {
-          animation: fadeInUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.3s forwards;
-          opacity: 0;
-          will-change: opacity, transform;
-        }
-
-        .animate-fade-in-up-delayed-4 {
-          animation: fadeInUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.4s forwards;
-          opacity: 0;
-          will-change: opacity, transform;
-        }
-
-        .animate-float {
-          animation: float 4s ease-in-out infinite;
-          will-change: transform;
-        }
-
-        /* Smooth transitions for interactive elements */
-        input,
-        button {
-          transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
-        }
-
-        /* Enable hardware acceleration */
-        .animate-fade-in-up,
-        .animate-fade-in-up-delayed,
-        .animate-fade-in-up-delayed-2,
-        .animate-fade-in-up-delayed-3,
-        .animate-fade-in-up-delayed-4,
-        .animate-float {
-          backface-visibility: hidden;
-          -webkit-font-smoothing: antialiased;
-          transform: translateZ(0);
-        }
-      `}</style>
     </div>
   );
 };
