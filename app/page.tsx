@@ -1,3 +1,13 @@
+import ComingSoonPage from "@/components/pages/ComingSoonPage";
+
+export default function HomePage() {
+  return <ComingSoonPage />;
+}
+
+/* 
+// ======= ORIGINAL HOME PAGE CODE - DISABLED FOR LAUNCH =======
+// Uncomment this code and remove ComingSoonPage when ready to launch
+
 import {
   getIndustryList,
   getProductFamilies,
@@ -47,7 +57,6 @@ export default async function HomePage() {
           : [],
       sellers:
         sellersRes.status === "fulfilled" ? sellersRes.value?.data || [] : [],
-      buyersBenefits:
         buyersBenefitsRes.status === "fulfilled"
           ? buyersBenefitsRes.value?.data || {}
           : {},
@@ -83,3 +92,13 @@ export default async function HomePage() {
     return <HomePageClient initialData={emptyData} />;
   }
 }
+*/
+      // buyersBenefits: {},
+      // suppliersBenefits: {},
+      // buyerOpportunities: [],
+      // suppliersSpecialDeals: [],
+   // };
+
+    // return <HomePageClient initialData={emptyData} />;
+  // }
+// }
