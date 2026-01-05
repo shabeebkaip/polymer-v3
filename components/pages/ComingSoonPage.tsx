@@ -154,7 +154,7 @@ const ComingSoonPage = () => {
         @keyframes fadeInUp {
           from {
             opacity: 0;
-            transform: translateY(30px);
+            transform: translateY(20px);
           }
           to {
             opacity: 1;
@@ -168,36 +168,69 @@ const ComingSoonPage = () => {
             transform: translateY(0px);
           }
           50% {
-            transform: translateY(-10px);
+            transform: translateY(-15px);
+          }
+        }
+
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
           }
         }
 
         .animate-fade-in-up {
-          animation: fadeInUp 0.8s ease-out forwards;
+          animation: fadeInUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+          will-change: opacity, transform;
         }
 
         .animate-fade-in-up-delayed {
-          animation: fadeInUp 0.8s ease-out 0.2s forwards;
+          animation: fadeInUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
           opacity: 0;
+          will-change: opacity, transform;
         }
 
         .animate-fade-in-up-delayed-2 {
-          animation: fadeInUp 0.8s ease-out 0.4s forwards;
+          animation: fadeInUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.2s forwards;
           opacity: 0;
+          will-change: opacity, transform;
         }
 
         .animate-fade-in-up-delayed-3 {
-          animation: fadeInUp 0.8s ease-out 0.6s forwards;
+          animation: fadeInUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.3s forwards;
           opacity: 0;
+          will-change: opacity, transform;
         }
 
         .animate-fade-in-up-delayed-4 {
-          animation: fadeInUp 0.8s ease-out 0.8s forwards;
+          animation: fadeInUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.4s forwards;
           opacity: 0;
+          will-change: opacity, transform;
         }
 
         .animate-float {
-          animation: float 3s ease-in-out infinite;
+          animation: float 4s ease-in-out infinite;
+          will-change: transform;
+        }
+
+        /* Smooth transitions for interactive elements */
+        input,
+        button {
+          transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        /* Enable hardware acceleration */
+        .animate-fade-in-up,
+        .animate-fade-in-up-delayed,
+        .animate-fade-in-up-delayed-2,
+        .animate-fade-in-up-delayed-3,
+        .animate-fade-in-up-delayed-4,
+        .animate-float {
+          backface-visibility: hidden;
+          -webkit-font-smoothing: antialiased;
+          transform: translateZ(0);
         }
       `}</style>
     </div>
