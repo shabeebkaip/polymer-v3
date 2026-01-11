@@ -1,28 +1,12 @@
 import React from 'react';
 import Image from 'next/image';
-import { Globe, MapPin, Shield, Award, Users, ExternalLink, MessageCircle } from 'lucide-react';
+import { Globe, MapPin, Shield, Award, Users, ExternalLink } from 'lucide-react';
 import VisitShopButton from '@/components/suppliers/VisitShopButton';
 import { Badge } from '@/components/ui/badge';
 import { FALLBACK_COMPANY_IMAGE } from '@/lib/fallbackImages';
-import { useChatUserStore } from '@/stores/chatUser';
 import { CompanyDetailsProps } from '@/types/product';
-import { useRouter } from 'next/navigation';
-import { useUserInfo } from '@/lib/useUserInfo';
 
 const CompanyDetails: React.FC<CompanyDetailsProps> = ({ companyDetails, product, userType }) => {
-  const setChatUser = useChatUserStore((s) => s.setChatUser);
-  const { user } = useUserInfo();
-  const router = useRouter();
-  console.log('user', user);
-  const handleChatClick = () => {
-    if (!user || !user._id || !product.createdBy?._id) return;
-    setChatUser({
-      userId: user._id as string,
-      receiverId: product.createdBy._id,
-      receiverName: product.createdBy.name,
-    });
-    router.push(`/chat/${product._id}`);
-  };
   return (
     <div className="space-y-6">
       {/* Company Header */}
@@ -107,19 +91,9 @@ const CompanyDetails: React.FC<CompanyDetailsProps> = ({ companyDetails, product
           </div>
         </div>
 
-        {/* Visit Shop Button and Chat Button */}
+        {/* Visit Shop Button */}
         <div className="mt-6 flex flex-col sm:flex-row items-center justify-start gap-3">
           <VisitShopButton supplierId={companyDetails?._id} />
-          {userType === 'buyer' && (
-            <button
-              className="px-5 py-2 border-2 border-primary-500 text-primary-600 bg-white rounded-lg font-semibold flex items-center gap-2 shadow-sm transition-all duration-150 cursor-pointer hover:bg-primary-50 focus:outline-none focus:ring-2 focus:ring-primary-500/30"
-              onClick={handleChatClick}
-              type="button"
-            >
-              <MessageCircle className="w-5 h-5" />
-              <span>Chat with Supplier</span>
-            </button>
-          )}
         </div>
       </div>
     </div>
