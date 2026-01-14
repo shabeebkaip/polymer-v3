@@ -1,4 +1,5 @@
 import Cookies from "js-cookie";
+import { clearAuthData, isTokenExpiredError, redirectToHome } from "./authUtils";
 
 const BASE_URL = "https://polymer-backend.code-ox.com/api";
 
@@ -29,7 +30,23 @@ const fetchInstance = async <T = unknown>(
 
   if (!res.ok) {
     const errorBody = await res.json().catch(() => ({}));
-    throw new Error(errorBody?.message || `Fetch error: ${res.status}`);
+    const error = new Error(errorBody?.message || `Fetch error: ${res.status}`);
+    
+    // Check if it's a token expiration error
+    const tokenExpired = 
+      res.status === 401 ||
+      errorBody?.message?.toLowerCase().includes('token expired') ||
+      errorBody?.message?.toLowerCase().includes('token invalid') ||
+      errorBody?.message?.toLowerCase().includes('unauthorized') ||
+      errorBody?.message?.toLowerCase().includes('jwt expired');
+    
+    if (tokenExpired) {
+      console.error('❌ Token expired or invalid - clearing auth data');
+      clearAuthData();
+      redirectToHome();
+    }
+    
+    throw error;
   }
 
   return res.json() as Promise<T>;

@@ -125,6 +125,8 @@ const Sidebar = () => {
   const handleLogout = () => {
     Cookies.remove("token");
     Cookies.remove("userInfo");
+    Cookies.remove("refreshToken");
+    
     window.location.href = "/";
   };
 

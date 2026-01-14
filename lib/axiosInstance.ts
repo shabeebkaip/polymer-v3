@@ -1,5 +1,6 @@
 import axios from "axios";
 import Cookies from "js-cookie";
+import { clearAuthData, isTokenExpiredError, redirectToHome } from "./authUtils";
 
 // Fallback to localhost if env not set to ensure dev OTP flow works locally
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL
@@ -24,11 +25,19 @@ axiosInstance.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// 🔄 Response interceptor with retry logic for timeouts
+// 🔄 Response interceptor with retry logic for timeouts AND token expiration handling
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
     const { config } = error;
+    
+    // 🔐 Check if token is expired - clear cookies and redirect to home
+    if (isTokenExpiredError(error)) {
+      console.error('❌ Token expired or invalid - clearing auth data');
+      clearAuthData();
+      redirectToHome();
+      return Promise.reject(error);
+    }
     
     // Don't retry if it's not a timeout or if we've already retried
     if (!config || config.__retryCount >= 2) {
