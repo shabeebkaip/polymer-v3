@@ -18,7 +18,7 @@ const HowPolymersConnect = ({ isBuyer, isSeller }: howPolymersConnectType) => {
     <div className="mt-12 md:mt-16 mb-8 md:mb-12">
       <div className="text-center mb-10">
         <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
-          How Polymers Hub Connects You
+          How PolymersHub Connects You
         </h3>
         <p className="text-gray-600 text-lg max-w-3xl mx-auto">
           We bridge the gap between buyers and suppliers, creating seamless

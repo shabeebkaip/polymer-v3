@@ -60,7 +60,7 @@ const Footer: React.FC = () => {
               <div className="relative group">
                 <Image
                   src="/onlylogo.png"
-                  alt="Polymers Hub Logo"
+                  alt="PolymersHub Logo"
                   width={80}
                   height={80}
                   className=" transition-transform duration-300 group-hover:scale-105"
@@ -69,7 +69,7 @@ const Footer: React.FC = () => {
               <div className="relative group">
                 <Image
                   src="/assets/Title.svg"
-                  alt="Polymers Hub"
+                  alt="PolymersHub"
                   width={160}
                   height={40}
                   className="w-40 h-auto transition-transform duration-300 group-hover:scale-105"
@@ -216,7 +216,7 @@ const Footer: React.FC = () => {
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-4">
               <p className="text-gray-300 text-sm">
-                &copy; {new Date().getFullYear()} Polymers Hub. All rights reserved.
+                &copy; {new Date().getFullYear()} PolymersHub. All rights reserved.
               </p>
               <div className="hidden md:flex items-center gap-2">
                 <div className="w-2 h-2 bg-primary-400 rounded-full animate-pulse"></div>

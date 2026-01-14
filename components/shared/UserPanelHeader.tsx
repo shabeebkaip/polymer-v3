@@ -33,7 +33,7 @@ const UserPanelHeader = () => {
           {/* Logo */}
           <div className="flex items-center">
             <div className="text-2xl font-bold text-primary-500">
-              POLYMERS HUB
+              PolymersHub
             </div>
             <div className="ml-4 px-3 py-1 bg-primary-50 text-primary-500 text-sm font-medium rounded-full">
               User Panel

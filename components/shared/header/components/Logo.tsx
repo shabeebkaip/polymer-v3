@@ -10,14 +10,14 @@ const Logo = () => {
     >
       <Image
         src="/onlylogo.png"
-        alt="Polymers Hub Icon"
+        alt="PolymersHub Icon"
         width={48}
         height={48}
         className="md:h-12 h-10 w-auto"
       />
       <Image
         src="/typography.svg"
-        alt="Polymers Hub"
+        alt="PolymersHub"
         width={150}
         height={40}
         className="md:h-8 h-6 w-auto"

@@ -25,14 +25,14 @@ const AboutUsPage = () => {
             <div className="inline-flex items-center gap-3 mb-6">
               <Image
                 src="/onlylogo.png"
-                alt="Polymers Hub Icon"
+                alt="PolymersHub Icon"
                 width={60}
                 height={60}
                 className="w-12 h-12 md:w-16 md:h-16"
               />
               <Image
                 src="/typography.svg"
-                alt="Polymers Hub"
+                alt="PolymersHub"
                 width={180}
                 height={48}
                 className="h-8 md:h-10 w-auto brightness-0 invert"
@@ -171,7 +171,7 @@ const AboutUsPage = () => {
       {/* Why Choose Us Section */}
       <section className="container mx-auto px-4 py-16 md:py-20">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Why Choose Polymers Hub?</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Why Choose PolymersHub?</h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             The platform built for the modern polymer industry
           </p>
@@ -251,7 +251,7 @@ const AboutUsPage = () => {
                 ))}
               </div>
               <p className="text-gray-700 text-base leading-relaxed mb-6 italic">
-                {`"Polymers Hub made sourcing raw materials so much easier and more reliable. The
+                {`"PolymersHub made sourcing raw materials so much easier and more reliable. The
                 support team is fantastic!"`}
               </p>
               <div className="flex items-center gap-3">
@@ -313,7 +313,7 @@ const AboutUsPage = () => {
           <div className="bg-white/80 border border-primary-500/20 rounded-2xl p-6 shadow-lg flex flex-col items-center gap-3 backdrop-blur-md">
             <User className="w-8 h-8 text-primary-500 mb-1" />
             <p className="text-gray-700 text-base italic">
-              {`"Polymers Hub made sourcing raw materials so much easier and more reliable. The
+              {`"PolymersHub made sourcing raw materials so much easier and more reliable. The
               support team is fantastic!"`}
             </p>
             <span className="text-primary-500 font-semibold mt-2">- S. Kumar, Buyer</span>
