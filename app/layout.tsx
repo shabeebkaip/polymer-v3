@@ -14,8 +14,28 @@ const kanit = Kanit({
 });
 
 export const metadata: Metadata = {
+  title: "Polymers Hub - Global Polymer Marketplace",
+  description: "Connect directly with verified polymer suppliers worldwide. Source smarter, trade faster, grow confidently. Join our exclusive early access program.",
+  keywords: ["polymers", "polymer marketplace", "polymer suppliers", "polymer trading", "B2B marketplace", "chemical suppliers"],
+  authors: [{ name: "Polymers Hub" }],
+  openGraph: {
+    title: "Polymers Hub - Global Polymer Marketplace",
+    description: "Connect directly with verified polymer suppliers worldwide. Join our exclusive early access program.",
+    type: "website",
+    locale: "en_US",
+    siteName: "Polymers Hub",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Polymers Hub - Global Polymer Marketplace",
+    description: "Connect directly with verified polymer suppliers worldwide. Join our exclusive early access program.",
+  },
   icons: {
     icon: "/logo.png",
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
 };
 
