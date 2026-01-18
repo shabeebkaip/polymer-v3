@@ -4,6 +4,7 @@ import { Kanit } from "next/font/google";
 import { Toaster } from "sonner";
 import PageNavigationLoader from "@/components/shared/PageNaigationLoader";
 import ConditionalLayout from "@/components/shared/ConditionalLayout";
+import type { Metadata } from "next";
 
 const kanit = Kanit({
   subsets: ["latin"],
@@ -11,6 +12,12 @@ const kanit = Kanit({
   variable: "--font-kanit",
   display: "swap",
 });
+
+export const metadata: Metadata = {
+  icons: {
+    icon: "/logo.png",
+  },
+};
 
 export default function RootLayout({
   children,
