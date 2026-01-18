@@ -89,13 +89,13 @@ const ProductQuoteRequests = () => {
     setCurrentPage(1);
   }, []);
 
-  const STATUS_CONFIG: StatusConfigMap = {
+  const STATUS_CONFIG: StatusConfigMap = useMemo(() => ({
     pending: { badge: "bg-amber-100 text-amber-700 border border-amber-200", text: "Pending" },
     responded: { badge: "bg-primary-50 text-primary-600 border border-primary-500/30", text: "Responded" },
     accepted: { badge: "bg-emerald-100 text-emerald-700 border border-emerald-200", text: "Accepted" },
     rejected: { badge: "bg-red-100 text-red-700 border border-red-200", text: "Rejected" },
     cancelled: { badge: "bg-gray-100 text-gray-700 border border-gray-200", text: "Cancelled" },
-  };
+  }), []);
 
   const getStatusBadge = (status: string) => 
     STATUS_CONFIG[status as keyof typeof STATUS_CONFIG]?.badge || "bg-gray-100 text-gray-700 border border-gray-200";

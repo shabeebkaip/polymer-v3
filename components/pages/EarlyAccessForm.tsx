@@ -54,10 +54,10 @@ const EarlyAccessForm: React.FC<EarlyAccessFormProps> = ({ className = '', compa
           message: response.message || 'Something went wrong. Please try again.',
         });
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       const errorMessage =
-        error?.response?.data?.message ||
-        error?.message ||
+        (error as { response?: { data?: { message?: string } }; message?: string })?.response?.data?.message ||
+        (error as { message?: string })?.message ||
         'Failed to submit request. Please try again.';
       
       setStatus({
