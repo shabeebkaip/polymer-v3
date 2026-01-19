@@ -248,7 +248,7 @@ const EarlyAccessForm: React.FC<EarlyAccessFormProps> = ({ className = '', compa
         {/* Privacy Note */}
         {!compact && (
           <p className="text-xs text-center text-gray-500">
-            By requesting early access, you agree to receive email updates from PolymersHub.
+           Early access is limited and reviewed manually. 
           </p>
         )}
       </form>

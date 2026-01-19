@@ -57,12 +57,12 @@ const ComingSoonPage = () => {
             
             {/* Title */}
             <h1 className="text-2xl sm:text-3xl uppercase font-semibold leading-tight text-center">
-              Global <span className="text-primary-500">POLYMER</span> Marketplace
+              Connecting Verified Polymer Suppliers with Serious Buyers
             </h1>
             
             {/* Subtitle */}
             <p className="text-base sm:text-lg font-normal text-gray-600 text-center">
-              Connecting Industry Worldwide
+              Global <span className="text-primary-500">POLYMER</span> Marketplace
             </p>
             
             {/* Form */}
@@ -94,12 +94,12 @@ const ComingSoonPage = () => {
               
               {/* Title */}
               <h1 className="text-5xl xl:text-6xl uppercase font-semibold leading-tight">
-                Global <span className="text-primary-500">POLYMER</span> Marketplace
+                Connecting Verified Polymer Suppliers with Serious Buyers
               </h1>
               
               {/* Subtitle */}
               <p className="text-2xl xl:text-3xl font-normal text-gray-600">
-                Connecting Industry Worldwide
+                Global <span className="text-primary-500">POLYMER</span> Marketplace
               </p>
               
               {/* Description */}
