@@ -1,5 +1,5 @@
 import Cookies from "js-cookie";
-import { clearAuthData, isTokenExpiredError, redirectToHome } from "./authUtils";
+import { clearAuthData, redirectToHome } from "./authUtils";
 
 const BASE_URL = "https://polymer-backend.code-ox.com/api";
 

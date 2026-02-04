@@ -21,9 +21,9 @@ export const clearAuthData = () => {
 /**
  * Check if error is due to token expiration
  */
-export const isTokenExpiredError = (error: any): boolean => {
-  const status = error?.response?.status;
-  const message = error?.response?.data?.message?.toLowerCase() || '';
+export const isTokenExpiredError = (error: unknown): boolean => {
+  const status = (error as { response?: { status?: number } })?.response?.status;
+  const message = (error as { response?: { data?: { message?: string } } })?.response?.data?.message?.toLowerCase() || '';
   
   return (
     status === 401 ||

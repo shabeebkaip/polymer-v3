@@ -274,10 +274,10 @@ const QuoteDealRequestModal = ({
 
   // Cleanup timeout on unmount
   useEffect(() => {
+    const timeoutRef = validationTimeoutRef;
     return () => {
-      const timeoutId = validationTimeoutRef.current;
-      if (timeoutId) {
-        clearTimeout(timeoutId);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
       }
     };
   }, []);

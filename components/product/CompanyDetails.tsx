@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { FALLBACK_COMPANY_IMAGE } from '@/lib/fallbackImages';
 import { CompanyDetailsProps } from '@/types/product';
 
-const CompanyDetails: React.FC<CompanyDetailsProps> = ({ companyDetails, product, userType }) => {
+const CompanyDetails: React.FC<CompanyDetailsProps> = ({ companyDetails }) => {
   return (
     <div className="space-y-6">
       {/* Company Header */}
