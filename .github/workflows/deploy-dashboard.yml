@@ -1,0 +1,83 @@
+name: Deploy – Admin Dashboard (Vite/Vue)
+
+on:
+  repository_dispatch:
+    types: [deploy-dashboard]
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "Branch to deploy"
+        required: true
+        default: "main"
+        type: choice
+        options:
+          - main
+          - staging
+
+concurrency:
+  group: deploy-dashboard-${{ github.event.inputs.branch || 'main' }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy Dashboard to ${{ github.event.inputs.branch == 'main' && 'Production' || 'Staging' }}
+    runs-on: ubuntu-latest
+    permissions: {}
+    environment: ${{ github.event.inputs.branch == 'main' && 'production' || 'staging' }}
+
+    steps:
+      - name: Deploy to server via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            set -e
+
+            BRANCH="${{ github.event.inputs.branch || 'main' }}"
+            APP_DIR="/var/www/polymer/dashboard"
+            PM2_APP="polymer-dashboard"
+
+            cd "$APP_DIR"
+
+            echo "──────────────────────────────────────────────"
+            echo "🔄  Pulling latest dashboard code ($BRANCH)"
+            echo "──────────────────────────────────────────────"
+            git fetch origin
+            git checkout "$BRANCH"
+            git reset --hard "origin/$BRANCH"
+
+            echo "📦  Installing dependencies"
+            pnpm install --frozen-lockfile
+
+            echo "🏗️   Building Vite/Vue"
+            pnpm run build
+
+            echo "♻️   Reloading PM2 process: $PM2_APP"
+            if pm2 describe "$PM2_APP" > /dev/null 2>&1; then
+              pm2 reload "$PM2_APP" --update-env
+            else
+              pm2 start /var/www/polymer/deployment/pm2/ecosystem.config.js \
+                  --only "$PM2_APP" --env production
+            fi
+            pm2 save
+
+            echo "✅  Dashboard deployment complete!"
+
+      - name: Verify deployment
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 http://127.0.0.1:5173 || echo "000")
+            if [[ "$HTTP_CODE" =~ ^[23] ]]; then
+              echo "✅  Dashboard health check passed (HTTP $HTTP_CODE)"
+            else
+              echo "❌  Dashboard health check FAILED (HTTP $HTTP_CODE)"
+              exit 1
+            fi
