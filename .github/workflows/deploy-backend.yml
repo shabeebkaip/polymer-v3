@@ -1,0 +1,80 @@
+name: Deploy – Backend API (Node.js)
+
+on:
+  repository_dispatch:
+    types: [deploy-backend]
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "Branch to deploy"
+        required: true
+        default: "main"
+        type: choice
+        options:
+          - main
+          - staging
+
+concurrency:
+  group: deploy-backend-${{ github.event.inputs.branch || 'main' }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy Backend to ${{ github.event.inputs.branch == 'main' && 'Production' || 'Staging' }}
+    runs-on: ubuntu-latest
+    permissions: {}
+    environment: ${{ github.event.inputs.branch == 'main' && 'production' || 'staging' }}
+
+    steps:
+      - name: Deploy to server via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            set -e
+
+            BRANCH="${{ github.event.inputs.branch || 'main' }}"
+            APP_DIR="/var/www/polymer/backend"
+            PM2_APP="polymer-backend"
+
+            cd "$APP_DIR"
+
+            echo "──────────────────────────────────────────────"
+            echo "🔄  Pulling latest backend code ($BRANCH)"
+            echo "──────────────────────────────────────────────"
+            git fetch origin
+            git checkout "$BRANCH"
+            git reset --hard "origin/$BRANCH"
+
+            echo "📦  Installing dependencies"
+            pnpm install --frozen-lockfile
+
+            echo "♻️   Reloading PM2 process: $PM2_APP"
+            if pm2 describe "$PM2_APP" > /dev/null 2>&1; then
+              pm2 reload "$PM2_APP" --update-env
+            else
+              pm2 start /var/www/polymer/deployment/pm2/ecosystem.config.js \
+                  --only "$PM2_APP" --env production
+            fi
+            pm2 save
+
+            echo "✅  Backend deployment complete!"
+
+      - name: Verify deployment
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 http://127.0.0.1:5000/health || echo "000")
+            if [[ "$HTTP_CODE" =~ ^[23] ]]; then
+              echo "✅  Backend health check passed (HTTP $HTTP_CODE)"
+            else
+              echo "❌  Backend health check FAILED (HTTP $HTTP_CODE)"
+              exit 1
+            fi
