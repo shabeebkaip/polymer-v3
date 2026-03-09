@@ -11,7 +11,6 @@ const ConditionalLayout: React.FC<ConditionalLayoutProps> = ({ children }) => {
   // Check if current route should hide header/footer
   const isAuthRoute = pathname.startsWith("/auth");
   const isUserRoute = pathname.startsWith("/user");
-  const isHomePage = pathname === "/"; // Coming soon page
   
   // Header visibility: Hide for auth, user routes
   const showHeader = !isAuthRoute && !isUserRoute 
