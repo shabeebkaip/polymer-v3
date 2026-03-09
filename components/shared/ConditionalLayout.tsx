@@ -13,11 +13,11 @@ const ConditionalLayout: React.FC<ConditionalLayoutProps> = ({ children }) => {
   const isUserRoute = pathname.startsWith("/user");
   const isHomePage = pathname === "/"; // Coming soon page
   
-  // Header visibility: Hide for auth, user routes, and home page
-  const showHeader = !isAuthRoute && !isUserRoute && !isHomePage;
+  // Header visibility: Hide for auth, user routes
+  const showHeader = !isAuthRoute && !isUserRoute 
   
-  // Footer visibility: Hide for auth routes, user routes, and home page
-  const showFooter = !isAuthRoute && !isUserRoute && !isHomePage;
+  // Footer visibility: Hide for auth routes, user routes
+  const showFooter = !isAuthRoute && !isUserRoute 
 
   return (
     <>
