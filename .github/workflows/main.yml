@@ -27,7 +27,7 @@ jobs:
             if [ "${{ github.ref_name }}" = "main" ]; then
               APP_DIR="${{ secrets.APP_DIR }}"
               BRANCH="main"
-              PM2_APP="polymer-v3"
+              PM2_APP="polymer-frontend"
             elif [ "${{ github.ref_name }}" = "staging" ]; then
               APP_DIR="${{ secrets.STAGING_APP_DIR }}"
               BRANCH="staging"
