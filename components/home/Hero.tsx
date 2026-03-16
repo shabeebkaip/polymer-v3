@@ -5,12 +5,15 @@ import { cn } from '@/lib/utils';
 import { DotPattern } from '../magicui/dot-pattern';
 import HeroSearch from './HeroSearch';
 
-const stats = [
-  { value: '10,000+', label: 'Polymer Products' },
-  { value: '500+', label: 'Verified Suppliers' },
-  { value: '50+', label: 'Countries Served' },
-  { value: '24/7', label: 'Expert Support' },
+const features = [
+  { icon: '🔍', label: 'Smart Product Search' },
+  { icon: '🤝', label: 'Direct Supplier Connect' },
+  { icon: '📦', label: 'Wide Product Range' },
+  { icon: '🌍', label: 'Global Trade Network' },
+  { icon: '✅', label: 'Verified Listings' },
+  { icon: '💬', label: 'Real-Time Enquiries' },
 ];
+
 const gradientTextClass = `
   text-primary-500
 `;
@@ -61,40 +64,21 @@ const Hero: React.FC = () => {
         <HeroSearch />
       </div>
 
-      <div className="relative z-10 container mx-auto px-4 sm:px-6 mt-4 sm:mt-6 lg:mt-8">
+      <div className="relative z-10 container mx-auto px-4 sm:px-6 mt-6 sm:mt-8 lg:mt-10 pb-8">
         <div className="flex flex-col items-center justify-center text-center">
-          {/* Stats Section */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 w-full max-w-xs sm:max-w-md md:max-w-2xl lg:max-w-4xl animate-fade-in-up-delayed-4">
-            {stats.map((stat, index) => (
+          {/* Platform Feature Pills */}
+          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 animate-fade-in-up-delayed-4 px-4">
+            {features.map((feature, index) => (
               <div
                 key={index}
-                className="text-center group hover:scale-105 transition-transform duration-300 p-2 sm:p-3"
-                style={{ animationDelay: `${index * 0.1}s` }}
+                className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-white rounded-full border border-gray-200 shadow-sm hover:border-primary-400 hover:shadow-md transition-all duration-200"
               >
-                <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-bold text-primary-600 mb-1 sm:mb-2 animate-count-up">
-                  {stat.value}
-                </div>
-                <div className="text-xs sm:text-sm md:text-base text-gray-600 font-medium leading-tight">
-                  {stat.label}
-                </div>
+                <span className="text-sm sm:text-base">{feature.icon}</span>
+                <span className="text-xs sm:text-sm font-medium text-gray-700 whitespace-nowrap">
+                  {feature.label}
+                </span>
               </div>
             ))}
-          </div>
-
-          {/* Trust Indicators */}
-          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 md:gap-4 lg:gap-6 mt-6 sm:mt-8 lg:mt-10 animate-fade-in-up-delayed-5 px-4">
-            <div className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 bg-primary-50 rounded-full border border-primary-500">
-              <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-primary-500 rounded-full animate-pulse"></div>
-              <span className="text-xs sm:text-sm font-medium text-primary-600 whitespace-nowrap">
-                SASO Compliant
-              </span>
-            </div>
-            <div className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 bg-primary-50 rounded-full border border-primary-500">
-              <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-primary-500 rounded-full animate-pulse"></div>
-              <span className="text-xs sm:text-sm font-medium text-primary-600 whitespace-nowrap">
-                Global Shipping
-              </span>
-            </div>
           </div>
         </div>
       </div>

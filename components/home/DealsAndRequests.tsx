@@ -6,13 +6,39 @@ import SpecialDeals from './SpecialDeals';
 import BuyerOpportunities from './BuyerOpportunities';
 import { useUserInfo } from '@/lib/useUserInfo';
 import HowPolymersConnect from '@/components/home/HowPolymersConnect';
+import { useSharedState } from '@/stores/sharedStore';
 
 const DealsAndRequests: React.FC = () => {
   const { user } = useUserInfo();
   const userType = user?.user_type;
-  const isGuest = !user; // User is not logged in
+  const isGuest = !user;
   const isBuyer = Boolean(user && userType === 'buyer');
   const isSeller = Boolean(user && userType === 'seller');
+
+  const {
+    suppliersSpecialDeals,
+    suppliersSpecialDealsLoading,
+    buyerOpportunities,
+    buyerOpportunitiesLoading,
+  } = useSharedState();
+
+  const hasSpecialDeals =
+    Array.isArray(suppliersSpecialDeals) && suppliersSpecialDeals.length > 0;
+
+  const hasBuyerOpportunities = (() => {
+    if (!buyerOpportunities) return false;
+    if (typeof buyerOpportunities === 'object' && 'data' in buyerOpportunities) {
+      return Array.isArray((buyerOpportunities as { data: unknown[] }).data) &&
+        (buyerOpportunities as { data: unknown[] }).data.length > 0;
+    }
+    return Array.isArray(buyerOpportunities) && (buyerOpportunities as unknown[]).length > 0;
+  })();
+
+  const isLoading = suppliersSpecialDealsLoading || buyerOpportunitiesLoading;
+
+  // Don't render anything while loading or if both sections have no data
+  if (isLoading || (!hasSpecialDeals && !hasBuyerOpportunities)) return null;
+
   return (
     <section className="container mx-auto px-4 py-8 md:py-12">
       <div className="text-center mb-8 md:mb-10">
