@@ -127,11 +127,15 @@ const usePromotionsStore = create<PromotionStore>((set, get) => ({
           adminNote: deal.adminNote,
           createdAt: deal.createdAt,
           updatedAt: deal.updatedAt,
-          isActive: deal.isActive || false,
+          isActive: response.data.summary?.isActive ?? deal.isActive ?? false,
           validUntil: deal.validity || deal.validUntil,
           minimumQuantity: deal.minimumQuantity,
           dealType: deal.dealType,
-          statusIcon: deal.statusIcon
+          statusIcon: deal.statusIcon,
+          isExpired: deal.isExpired,
+          statusTracking: deal.statusTracking,
+          quoteRequests: response.data.quoteRequests,
+          summary: response.data.summary
         };
         
         set({ 

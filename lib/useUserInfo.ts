@@ -26,6 +26,9 @@ export const useUserInfo = create<UserStore>((set) => ({
         set({ user: parsedUser, isInitialized: true });
       } catch (error) {
         console.error('Failed to parse user info from cookies:', error);
+        // Clear invalid cookies
+        Cookies.remove('token');
+        Cookies.remove('userInfo');
         set({ user: null, isInitialized: true });
       }
     } else {
@@ -34,9 +37,15 @@ export const useUserInfo = create<UserStore>((set) => ({
     }
   },
   logout: () => {
+    // Clear cookies
     Cookies.remove('token');
     Cookies.remove('userInfo');
+    Cookies.remove('refreshToken');
+    
+    // Reset state
     set({ user: null, isInitialized: false });
+    
+    console.log('🔐 User logged out - all auth data cleared');
   },
 }));
 

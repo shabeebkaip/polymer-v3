@@ -125,6 +125,8 @@ const Sidebar = () => {
   const handleLogout = () => {
     Cookies.remove("token");
     Cookies.remove("userInfo");
+    Cookies.remove("refreshToken");
+    
     window.location.href = "/";
   };
 
@@ -143,6 +145,13 @@ const Sidebar = () => {
   // Comprehensive fallback data based on API structure
   const getFallbackSidebarList = (userType?: string): SidebarItem[] => {
     const sidebarItems: SidebarItem[] = [
+      {
+        displayName: "Dashboard",
+        route: "/user/dashboard",
+        name: "dashboard",
+        icon: "LayoutDashboard",
+        subItems: [],
+      },
       {
         displayName: "Profile",
         route: "/user/profile",

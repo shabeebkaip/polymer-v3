@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import { clearAuthData } from "./authUtils";
 
 export const useAuthGuard = () => {
   const router = useRouter();
@@ -14,9 +15,8 @@ export const useAuthGuard = () => {
       
       if (!token || !userInfo) {
         console.log("Auth guard: No valid authentication found, redirecting to home");
-        // Clear any remaining cookies
-        Cookies.remove("token");
-        Cookies.remove("userInfo");
+        // Clear all auth data using centralized function
+        clearAuthData();
         router.push("/");
         return false;
       }

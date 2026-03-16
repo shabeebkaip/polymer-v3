@@ -35,7 +35,7 @@ const Login: React.FC = () => {
 
         // Role-based routing
         const userType = response.userInfo?.user_type;
-        const redirectPath = userType === "seller" ? "/user/products" : "/";
+        const redirectPath = userType === "seller" ? "/user/dashboard" : "/";
 
         setTimeout(() => {
           router.push(redirectPath);
