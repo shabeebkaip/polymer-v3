@@ -49,8 +49,8 @@ jobs:
             git reset --hard "origin/$BRANCH"
 
             echo "🧹 Cleaning old build"
-            rm -rf node_modules
-            rm -rf .next
+            sudo rm -rf node_modules
+            sudo rm -rf .next
 
             echo "📦 Installing dependencies"
             pnpm install --frozen-lockfile --prefer-offline
