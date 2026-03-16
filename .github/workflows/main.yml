@@ -21,6 +21,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
+
           script: |
             set -e
 
@@ -28,22 +29,36 @@ jobs:
               APP_DIR="${{ secrets.APP_DIR }}"
               BRANCH="main"
               PM2_APP="polymer-frontend"
+
             elif [ "${{ github.ref_name }}" = "staging" ]; then
               APP_DIR="${{ secrets.STAGING_APP_DIR }}"
               BRANCH="staging"
               PM2_APP="polymer-v3-staging"
+
             else
               echo "❌ Unsupported branch"
               exit 1
             fi
 
+            echo "🚀 Deploying branch: $BRANCH"
             cd "$APP_DIR"
 
+            echo "📥 Fetching latest code"
             git fetch origin
             git checkout "$BRANCH"
             git reset --hard "origin/$BRANCH"
 
+            echo "🧹 Cleaning old build"
+            rm -rf node_modules
             rm -rf .next
-            npx pnpm install --frozen-lockfile --force
-            npx pnpm run build
+
+            echo "📦 Installing dependencies"
+            pnpm install --frozen-lockfile --prefer-offline
+
+            echo "🏗️ Building project"
+            pnpm run build
+
+            echo "🔄 Restarting PM2"
             pm2 restart "$PM2_APP"
+
+            echo "✅ Deployment finished"
