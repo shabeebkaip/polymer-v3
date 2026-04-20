@@ -59,13 +59,11 @@ export const useSampleRequestStore = create<SampleRequestStore>((set, get) => ({
   updateStatus: async (id: string, status: string, statusMessage: string) => {
     set({ updating: true, error: null });
     try {
-      console.log("🔍 Store: Updating sample request status:", { id, status, statusMessage });
       const response = await updateSampleRequestStatus(id, { 
         status: status as any, 
         statusMessage 
       });
       
-      console.log("✅ Store: Sample request status response:", response);
       
       // Check if response has success property or just assume success if no error
       if (response?.success !== false) {
@@ -134,13 +132,11 @@ export const useQuoteRequestStore = create<QuoteRequestStore>((set, get) => ({
   updateStatus: async (id: string, status: string, statusMessage: string) => {
     set({ updating: true, error: null });
     try {
-      console.log("🔍 Store: Updating quote request status:", { id, status, statusMessage });
       const response = await updateQuoteRequestStatus(id, { 
         status: status as any, 
         statusMessage 
       });
       
-      console.log("✅ Store: Quote request status response:", response);
       
       // Check if response has success property or just assume success if no error
       if (response?.success !== false) {
@@ -221,13 +217,11 @@ export const useSampleRequestsListStore = create<SampleRequestsListStore>((set, 
     // If we already fetched with these exact params and it's not a forced refresh, skip
     // Also check if we're currently loading to prevent race conditions
     if ((state.lastFetchParams === cacheKey && !params.forceRefresh) || state.loading) {
-      console.log("🔄 Skipping duplicate/concurrent API call with params:", actualParams);
       return;
     }
 
     try {
       set({ loading: true, error: null, lastFetchParams: cacheKey });
-      console.log("🔍 Fetching sample requests from store with params:", actualParams);
       
       const { getUserSampleRequests } = await import("@/apiServices/user");
       const response = await getUserSampleRequests(actualParams);
@@ -330,13 +324,11 @@ export const useQuoteRequestsListStore = create<QuoteRequestsListStore>((set, ge
     // If we already fetched with these exact params and it's not a forced refresh, skip
     // Also check if we're currently loading to prevent race conditions
     if ((state.lastFetchParams === cacheKey && !params.forceRefresh) || state.loading) {
-      console.log("🔄 Skipping duplicate/concurrent API call for quote requests with params:", actualParams);
       return;
     }
 
     try {
       set({ loading: true, error: null, lastFetchParams: cacheKey });
-      console.log("🔍 Fetching quote requests from store with params:", actualParams);
       
       const { getUserQuoteRequests } = await import("@/apiServices/user");
       const response = await getUserQuoteRequests(actualParams);
@@ -437,13 +429,11 @@ export const useFinanceRequestsListStore = create<FinanceRequestsListStore>((set
     const cacheKey = JSON.stringify(actualParams);
     
     if ((state.lastFetchParams === cacheKey && !params.forceRefresh) || state.loading) {
-      console.log("🔄 Skipping duplicate/concurrent API call with params:", actualParams);
       return;
     }
 
     try {
       set({ loading: true, error: null, lastFetchParams: cacheKey });
-      console.log("🔍 Fetching finance requests from store with params:", actualParams);
       
       const { getFinanceRequests } = await import("@/apiServices/user");
       const response = await getFinanceRequests();
@@ -514,7 +504,6 @@ export const useFinanceRequestStore = create<FinanceRequestStore>((set, get) => 
   fetchFinanceRequestDetail: async (id: string) => {
     try {
       set({ loading: true, error: null });
-      console.log("🔍 Fetching finance request detail for ID:", id);
       
       const { getFinanceRequestDetail } = await import("@/apiServices/user");
       const response = await getFinanceRequestDetail(id);
@@ -525,7 +514,6 @@ export const useFinanceRequestStore = create<FinanceRequestStore>((set, get) => 
           loading: false, 
           error: null 
         });
-        console.log("✅ Finance request detail fetched successfully:", response.data);
       } else {
         set({ 
           financeRequestDetail: null, 
@@ -546,7 +534,6 @@ export const useFinanceRequestStore = create<FinanceRequestStore>((set, get) => 
   updateStatus: async (id: string, status: string, statusMessage: string) => {
     try {
       set({ updating: true });
-      console.log("🔍 Updating finance request status:", { id, status, statusMessage });
       
       const { updateFinanceRequestStatus } = await import("@/apiServices/user");
       const response = await updateFinanceRequestStatus(id, {
@@ -558,7 +545,6 @@ export const useFinanceRequestStore = create<FinanceRequestStore>((set, get) => 
       await get().fetchFinanceRequestDetail(id);
       
       set({ updating: false });
-      console.log("✅ Finance request status updated successfully");
       return true;
     } catch (error) {
       console.error("❌ Error updating finance request status:", error);
@@ -618,13 +604,11 @@ export const useProductRequestsListStore = create<ProductRequestsListStore>((set
     // If we already fetched with these exact params and it's not a forced refresh, skip
     // Also check if we're currently loading to prevent race conditions
     if ((state.lastFetchParams === cacheKey && !params.forceRefresh) || state.loading) {
-      console.log("🔄 Skipping duplicate/concurrent API call for product requests with params:", actualParams);
       return;
     }
 
     try {
       set({ loading: true, error: null, lastFetchParams: cacheKey });
-      console.log("🔍 Fetching product requests from store with params:", actualParams);
       
       const { getBuyerProductRequests } = await import("@/apiServices/user");
       const response: ProductRequestsListResponse = await getBuyerProductRequests(actualParams);
@@ -640,7 +624,6 @@ export const useProductRequestsListStore = create<ProductRequestsListStore>((set
           loading: false,
           error: null
         });
-        console.log("✅ Product requests fetched successfully:", response.data.length, "items");
       } else {
         set({
           requests: [],
@@ -697,7 +680,6 @@ export const useProductRequestDetailStore = create<ProductRequestDetailStore>((s
   fetchProductRequestDetail: async (id: string) => {
     set({ loading: true, error: null });
     try {
-      console.log("🔍 Fetching product request detail for ID:", id);
       
       const { getBuyerProductRequestDetail } = await import("@/apiServices/user");
       const response = await getBuyerProductRequestDetail(id);
@@ -709,7 +691,6 @@ export const useProductRequestDetailStore = create<ProductRequestDetailStore>((s
           loading: false, 
           error: null 
         });
-        console.log("✅ Product request detail fetched successfully:", response.data);
       } else {
         set({ 
           productRequestDetail: null, 
@@ -732,7 +713,6 @@ export const useProductRequestDetailStore = create<ProductRequestDetailStore>((s
   updateStatus: async (id: string, status: string, statusMessage: string) => {
     try {
       set({ updating: true });
-      console.log("🔍 Updating product request status:", { id, status, statusMessage });
       
       // Note: Update this when the update API endpoint is available
       // const { updateProductRequestStatus } = await import("@/apiServices/user");
@@ -745,7 +725,6 @@ export const useProductRequestDetailStore = create<ProductRequestDetailStore>((s
       await get().fetchProductRequestDetail(id);
       
       set({ updating: false });
-      console.log("✅ Product request status updated successfully");
       return true;
     } catch (error) {
       console.error("❌ Error updating product request status:", error);

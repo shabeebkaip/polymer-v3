@@ -1,20 +1,56 @@
 import ImageContainers from '@/components/product/ImageContainers';
-import { Award, Package, Share2 } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import ActionButtons from '@/components/shared/ActionButtons';
+import { Award, Package, Share2, CheckCircle2, Clock, AlertCircle, MapPin, ShoppingCart, FileText } from 'lucide-react';
+import QuoteRequestModal from '@/components/shared/QuoteRequestModal';
+import SampleRequestModal from '@/components/shared/SampleRequestModal';
 import { Button } from '@/components/ui/button';
+import Image from 'next/image';
 import React from 'react';
 import { Product } from '@/types/product';
 import { UserType } from '@/types/user';
+import { FALLBACK_COMPANY_IMAGE } from '@/lib/fallbackImages';
+import Link from 'next/link';
 
-const ProductHeroSection = ({ product, user }: { product: Product; user: UserType }) => {
+const HERO_GRADIENTS = [
+  'from-emerald-600 to-teal-700',
+  'from-blue-600 to-indigo-700',
+  'from-violet-600 to-purple-700',
+  'from-orange-500 to-amber-600',
+  'from-rose-500 to-pink-600',
+  'from-cyan-600 to-sky-700',
+];
+
+const getHeroGradient = (id: string) => {
+  const n = id ? id.charCodeAt(id.length - 1) % HERO_GRADIENTS.length : 0;
+  return HERO_GRADIENTS[n];
+};
+
+const AvailabilityBadge = ({ value }: { value: string }) => {
+  if (value === 'In Stock') return (
+    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold">
+      <CheckCircle2 className="w-3.5 h-3.5" /> In Stock
+    </span>
+  );
+  if (value === 'On Request') return (
+    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold">
+      <Clock className="w-3.5 h-3.5" /> On Request
+    </span>
+  );
+  if (value === 'Limited') return (
+    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-100 text-amber-700 text-xs font-semibold">
+      <AlertCircle className="w-3.5 h-3.5" /> Limited Stock
+    </span>
+  );
+  return null;
+};
+
+const ProductHeroSection = ({ product, user }: { product: Product; user: UserType | Record<string, unknown> }) => {
+  const gradient = getHeroGradient(product._id || '');
+  const hasImage = !!(product?.productImages?.length);
+
   const handleShare = async () => {
     try {
       if (navigator.share) {
-        await navigator.share({
-          title: product.productName,
-          url: window.location.href,
-        });
+        await navigator.share({ title: product.productName, url: window.location.href });
       } else {
         await navigator.clipboard.writeText(window.location.href);
       }
@@ -23,114 +59,153 @@ const ProductHeroSection = ({ product, user }: { product: Product; user: UserTyp
     }
   };
 
+  const polymerTags: string[] = (product as any).polymerTypes?.filter((p: any) => p.name).map((p: any) => p.name) ||
+    (product.polymerType?.name ? [product.polymerType.name] : []);
+
+  const title = product.productName || polymerTags.join(' / ') || 'Polymer Product';
+  const userType = (user as any)?.user_type;
+
   return (
-    <div className="bg-white rounded-2xl shadow-sm border overflow-hidden mb-8">
-      <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-6 lg:p-8">
-        <div className="flex flex-col lg:flex-row items-start gap-6">
-          {/* Product Image */}
-          <div className="flex-shrink-0">
-            {product?.productImages && product?.productImages?.length ? (
-              <ImageContainers productImages={product.productImages} isCompact={true} />
+    <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
+
+      {/* Gradient header — avatar hangs from bottom into content */}
+      <div className={`h-20 bg-gradient-to-r ${gradient} relative`}>
+        {/* Company logo — top right */}
+        <div className="absolute top-3 right-3 w-10 h-10 rounded-xl bg-white shadow-md flex items-center justify-center p-1.5">
+          <Image
+            src={(product.createdBy as any)?.company_logo || FALLBACK_COMPANY_IMAGE}
+            alt="Supplier"
+            width={28}
+            height={28}
+            className="w-full h-full object-contain"
+            onError={(e) => { (e.target as HTMLImageElement).src = FALLBACK_COMPANY_IMAGE; }}
+          />
+        </div>
+
+        {/* Avatar — anchored to bottom-left, hangs into content area */}
+        <div className="absolute bottom-0 left-5 translate-y-1/2 z-10">
+          <div className="w-16 h-16 rounded-2xl ring-4 ring-white shadow-lg overflow-hidden">
+            {hasImage ? (
+              <ImageContainers productImages={product.productImages!} isCompact={true} />
             ) : (
-              <div className="w-32 h-32 bg-gray-100 rounded-xl flex items-center justify-center">
-                <Package className="w-8 h-8 text-gray-400" />
+              <div className={`w-full h-full bg-gradient-to-br ${gradient} flex items-center justify-center`}>
+                <Package className="w-7 h-7 text-white" />
               </div>
             )}
           </div>
+        </div>
+      </div>
 
-          {/* Product Info */}
-          <div className="flex-1">
-            {/* Badge */}
-            {product.fdaApproved ? (
-              <Badge variant="secondary" className="bg-blue-100 text-blue-800 mb-3">
-                <Award className="w-4 h-4 mr-1" />
-                FDA Approved
-              </Badge>
-            ) : null}
-            {product.medicalGrade && !product.fdaApproved ? (
-              <Badge variant="secondary" className="bg-purple-100 text-purple-800 mb-3">
-                <Award className="w-4 h-4 mr-1" />
-                Medical Grade
-              </Badge>
-            ) : null}
-            {!product.fdaApproved && !product.medicalGrade ? (
-              <Badge variant="secondary" className="bg-gray-100 text-gray-800 mb-3">
-                <Award className="w-4 h-4 mr-1" />
-                Industrial Grade
-              </Badge>
-            ) : null}
+      <div className="px-5 lg:px-6 pb-5 lg:pb-6 pt-10">
 
-            {/* Product Name */}
-            <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-3">
-              {product.productName}
-            </h1>
+        {/* Share button — top right of content area */}
+        <div className="flex justify-end mb-3">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleShare}
+            className="border-gray-200 text-gray-400 hover:text-gray-700 h-8 w-8 p-0"
+          >
+            <Share2 className="w-3.5 h-3.5" />
+          </Button>
+        </div>
 
-            {/* Key Details */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-              {product.price && product.price > 0 ? (
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-600">Price:</span>
-                  <span className="font-semibold text-lg text-gray-900">
-                    {product.price} USD/{product.uom}
-                  </span>
-                </div>
-              ) : null}
-              {(product.minimum_order_quantity && product.minimum_order_quantity > 0) ||
-              (product.minOrderQuantity && product.minOrderQuantity > 0) ? (
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-600">Min Order:</span>
-                  <span className="font-medium text-gray-900">
-                    {product.minimum_order_quantity || product.minOrderQuantity} {product.uom}
-                  </span>
-                </div>
-              ) : null}
-              {typeof product.stock === 'number' ? (
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-600">Stock:</span>
+        {/* Badges */}
+        <div className="flex flex-wrap items-center gap-2 mb-3 mt-1">
+          {product.fdaApproved && (
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-semibold">
+              <Award className="w-3 h-3" /> FDA Approved
+            </span>
+          )}
+          {product.medicalGrade && !product.fdaApproved && (
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-purple-100 text-purple-800 text-xs font-semibold">
+              <Award className="w-3 h-3" /> Medical Grade
+            </span>
+          )}
+          {(product as any).availability && (
+            <AvailabilityBadge value={(product as any).availability} />
+          )}
+        </div>
 
-                  {product.stock > 0 && (
-                    <span className="font-medium text-gray-900">
-                      {product.stock} {product.uom}
-                    </span>
-                  )}
-                  {product.stock > 0 ? (
-                    <span className="font-medium text-primary-600 bg-primary-50 px-2 py-1 rounded">
-                      In Stock
-                    </span>
-                  ) : (
-                    <span className="font-medium text-red-700 bg-red-100 px-2 py-1 rounded">
-                      Out of Stock
-                    </span>
-                  )}
-                </div>
-              ) : null}
-              {product.leadTime ? (
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-600">Lead Time:</span>
-                  <span className="font-medium text-gray-900">{product.leadTime} Days</span>
-                </div>
-              ) : null}
-            </div>
+        {/* Title */}
+        <h1 className="text-xl lg:text-2xl font-bold text-gray-900 mb-2 leading-tight">{title}</h1>
 
-            {/* Action Buttons */}
-            <div className="flex flex-wrap gap-3">
-              <ActionButtons
-                productId={product._id}
-                uom={product.uom || 'Metric Ton'}
-                variant="compact"
-                user={user}
-              />
-
-              <Button
-                variant="outline"
-                size="lg"
-                onClick={handleShare}
-                className="border-gray-300 text-gray-600 hover:bg-gray-50"
-              >
-                <Share2 className="w-5 h-5" />
-              </Button>
-            </div>
+        {/* Polymer type tags */}
+        {polymerTags.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 mb-4">
+            {polymerTags.map((tag, i) => (
+              <span key={i} className="px-2.5 py-0.5 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-full text-xs font-medium">
+                {tag}
+              </span>
+            ))}
           </div>
+        )}
+
+        {/* Stats row */}
+        {(product.price || product.minimum_order_quantity || product.minOrderQuantity || product.countryOfOrigin || product.leadTime || product.stock) && (
+          <div className="flex flex-wrap gap-x-5 gap-y-2 py-3 border-y border-gray-100 mb-4 text-sm">
+            {product.price && product.price > 0 && (
+              <div>
+                <span className="text-gray-400 text-xs block">Price</span>
+                <span className="font-semibold text-emerald-700">${product.price}/{product.uom}</span>
+              </div>
+            )}
+            {(product.minimum_order_quantity || product.minOrderQuantity) && (
+              <div>
+                <span className="text-gray-400 text-xs block">Min Order</span>
+                <span className="font-semibold text-gray-900">
+                  {(product.minimum_order_quantity || product.minOrderQuantity)?.toLocaleString()} {product.uom}
+                </span>
+              </div>
+            )}
+            {typeof product.stock === 'number' && product.stock > 0 && (
+              <div>
+                <span className="text-gray-400 text-xs block">Stock</span>
+                <span className="font-semibold text-gray-900">{product.stock.toLocaleString()} {product.uom}</span>
+              </div>
+            )}
+            {product.leadTime && (
+              <div>
+                <span className="text-gray-400 text-xs block">Lead Time</span>
+                <span className="font-semibold text-gray-900">{product.leadTime} days</span>
+              </div>
+            )}
+            {product.countryOfOrigin && (
+              <div className="flex items-end gap-1">
+                <MapPin className="w-3.5 h-3.5 text-gray-400 mb-0.5" />
+                <span className="font-medium text-gray-700 text-sm">{product.countryOfOrigin}</span>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Actions — shown only on mobile / when sidebar hidden */}
+        <div className="flex flex-wrap gap-2 lg:hidden">
+          {userType === 'buyer' ? (
+            <>
+              <QuoteRequestModal
+                productId={product._id}
+                uom={product.uom || 'kg'}
+                className="flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold transition-all"
+              >
+                <ShoppingCart className="w-4 h-4" /> Request Quote
+              </QuoteRequestModal>
+              <SampleRequestModal
+                productId={product._id}
+                uom={product.uom || 'kg'}
+                className="flex items-center gap-1.5 px-4 py-2 border-2 border-gray-200 text-gray-700 hover:border-emerald-400 hover:text-emerald-700 rounded-xl text-sm font-medium transition-all"
+              >
+                <FileText className="w-4 h-4" /> Request Sample
+              </SampleRequestModal>
+            </>
+          ) : !user || !(user as any)._id ? (
+            <Link
+              href="/auth/login"
+              className="flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold transition-all"
+            >
+              Sign in to enquire
+            </Link>
+          ) : null}
         </div>
       </div>
     </div>

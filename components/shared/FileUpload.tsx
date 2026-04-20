@@ -22,19 +22,11 @@ import { toast } from "sonner";
 
 // Helper to construct full viewUrl from relative path
 const getFullViewUrl = (file: UploadedFile): string => {
-  console.log("getFullViewUrl called with file:", { 
-    viewUrl: file.viewUrl, 
-    id: file.id, 
-    resourceType: file.resourceType,
-    format: file.format,
-    type: file.type
-  });
-  
+
   // If viewUrl exists, use it (it's relative, e.g., /api/files/view/...)
   if (file.viewUrl) {
     // If already absolute, return as-is
     if (file.viewUrl.startsWith("http")) {
-      console.log("Using absolute viewUrl:", file.viewUrl);
       return file.viewUrl;
     }
     
@@ -42,7 +34,6 @@ const getFullViewUrl = (file: UploadedFile): string => {
     const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || "";
     const baseWithoutApi = apiBase.replace(/\/api$/, "");
     const fullUrl = `${baseWithoutApi}${file.viewUrl}`;
-    console.log("Constructed full viewUrl:", fullUrl);
     return fullUrl;
   }
   
@@ -60,12 +51,10 @@ const getFullViewUrl = (file: UploadedFile): string => {
     const resourceType = isImage ? "image" : "raw";
     
     const constructedUrl = `${baseWithoutApi}/api/files/view/${encodeURIComponent(file.id)}?resourceType=${resourceType}`;
-    console.log("Constructed fallback URL:", constructedUrl);
     return constructedUrl;
   }
   
   // Last resort: return fileUrl (will force download)
-  console.log("Falling back to fileUrl:", file.fileUrl);
   return file.fileUrl;
 };
 
@@ -273,7 +262,6 @@ const FileUpload: React.FC<FileUploadProps> = ({
 export default FileUpload;
 // Usage example
 // <FileUpload
-//   onFileUpload={(files) => console.log(files)}
 //   existingFiles={[
 //     {
 //       id: "1",
@@ -289,5 +277,4 @@ export default FileUpload;
 //     },
 //   ]}
 //   multiple={true}
-//   setCloudinaryImage={(url) => console.log(url)}
 // />

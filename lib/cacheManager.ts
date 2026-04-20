@@ -20,7 +20,6 @@ export class CacheManager {
   invalidateAllCaches(): void {
     const { invalidateCache } = useSharedState.getState();
     invalidateCache();
-    console.log('🗑️ All caches invalidated');
   }
 
   /**
@@ -29,7 +28,6 @@ export class CacheManager {
   invalidateCache(cacheKey: string): void {
     const { invalidateCache } = useSharedState.getState();
     invalidateCache(cacheKey);
-    console.log(`🗑️ Cache invalidated: ${cacheKey}`);
   }
 
   /**
@@ -38,7 +36,6 @@ export class CacheManager {
   async refreshHomeData(): Promise<void> {
     const store = useSharedState.getState();
     
-    console.log('🔄 Refreshing all home page data...');
     
     await Promise.all([
       store.fetchIndustries(true),
@@ -48,7 +45,6 @@ export class CacheManager {
       store.fetchSuppliersSpecialDeals(true),
     ]);
     
-    console.log('✅ Home page data refreshed');
   }
 
   /**

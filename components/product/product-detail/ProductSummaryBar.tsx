@@ -7,12 +7,19 @@ const ProductSummaryBar: React.FC<ProductSummaryBarProps> = ({ product }) => {
     <div className="bg-white border-b">
       <div className="container mx-auto px-4 py-4">
         <div className="flex flex-wrap items-center gap-4 text-sm">
-          <div className="flex items-center gap-2">
-            <Badge variant="outline" className="text-primary-600 border-primary-600">
-              {product.productType || product.polymerType?.name || 'Product'}
-            </Badge>
-            <span className="text-gray-600">•</span>
-            <span className="font-medium">{product.productName}</span>
+          <div className="flex items-center gap-2 flex-wrap">
+            {(product.polymerType?.name || (product as any).polymerTypes?.length > 0) && (
+              <Badge variant="outline" className="text-primary-600 border-primary-600">
+                {product.polymerType?.name ||
+                  (product as any).polymerTypes?.map((p: any) => p.name || p).slice(0, 2).join(', ')}
+              </Badge>
+            )}
+            {product.productName && (
+              <>
+                <span className="text-gray-400">•</span>
+                <span className="font-medium">{product.productName}</span>
+              </>
+            )}
           </div>
           {product.grade || product.physicalForm ? (
             <>

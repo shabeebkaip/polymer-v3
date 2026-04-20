@@ -37,9 +37,9 @@ const Documents: React.FC<DocumentsProps> = ({ data, onFieldChange }) => {
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-3 pb-3 border-b border-gray-100">
               <div>
-                <h4 className="text-sm font-semibold text-gray-900">Supporting Documents</h4>
+                <h4 className="text-sm font-semibold text-gray-900">Boost Technical Credibility – Upload Documents</h4>
                 <p className="text-xs text-gray-500 mt-0.5">
-                  Upload certificates and technical documentation
+                  TDS and SDS help buyers make faster purchasing decisions
                 </p>
               </div>
               <span className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs font-medium">
@@ -89,9 +89,7 @@ const Documents: React.FC<DocumentsProps> = ({ data, onFieldChange }) => {
                       buttonText={hasDoc ? 'Upload' : 'Upload'}
                       existingFiles={hasDoc && doc ? [doc] : []}
                       multiple={false}
-                      setCloudinaryImage={(url) => {
-                        console.log('Cloudinary image URL:', url);
-                      }}
+                      setCloudinaryImage={() => {}}
                     />
                   </div>
                 );

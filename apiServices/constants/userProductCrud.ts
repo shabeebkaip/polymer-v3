@@ -8,6 +8,7 @@ export const initialFormData: ProductFormData = {
   tradeName: "",
   chemicalFamily: "",
   polymerType: "",
+  polymerTypes: [],
   industry: [],
   grade: [],
   manufacturingMethod: "",

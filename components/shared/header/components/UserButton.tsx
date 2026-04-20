@@ -7,7 +7,6 @@ import { ChevronDown } from 'lucide-react';
 const UserButton: React.FC = () => {
   const { user } = useUserInfo();
   const router = useRouter();
-  console.log('user', user);
   const handleClick = () => {
     router.push('/user/dashboard');
   };

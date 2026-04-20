@@ -6,46 +6,31 @@ export const useUserInfo = create<UserStore>((set) => ({
   user: null,
   isInitialized: false,
   setUser: (user) => {
-    console.log('Setting user:', user);
     set({ user, isInitialized: true });
   },
   loadUserFromCookies: () => {
     const token = Cookies.get('token');
     const userInfo = Cookies.get('userInfo');
-    console.log('Loading user from cookies:', {
-      hasToken: !!token,
-      hasUserInfo: !!userInfo,
-      tokenPreview: token?.substring(0, 10) + '...',
-      userInfoPreview: userInfo?.substring(0, 50) + '...',
-    });
 
     if (token && userInfo) {
       try {
         const parsedUser = JSON.parse(userInfo);
-        console.log('Parsed user from cookies:', parsedUser);
         set({ user: parsedUser, isInitialized: true });
       } catch (error) {
         console.error('Failed to parse user info from cookies:', error);
-        // Clear invalid cookies
         Cookies.remove('token');
         Cookies.remove('userInfo');
         set({ user: null, isInitialized: true });
       }
     } else {
-      console.log('No token or userInfo found in cookies');
       set({ user: null, isInitialized: true });
     }
   },
   logout: () => {
-    // Clear cookies
     Cookies.remove('token');
     Cookies.remove('userInfo');
     Cookies.remove('refreshToken');
-    
-    // Reset state
     set({ user: null, isInitialized: false });
-    
-    console.log('🔐 User logged out - all auth data cleared');
   },
 }));
 

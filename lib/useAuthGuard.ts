@@ -14,8 +14,6 @@ export const useAuthGuard = () => {
       const userInfo = Cookies.get("userInfo");
       
       if (!token || !userInfo) {
-        console.log("Auth guard: No valid authentication found, redirecting to home");
-        // Clear all auth data using centralized function
         clearAuthData();
         router.push("/");
         return false;

@@ -6,7 +6,6 @@ import { useSearchParams } from "next/navigation";
 const SupplierBasic: React.FC = () => {
   const searchParams = useSearchParams();
   const supplierDetail = searchParams.get("supplierDetail");
-  console.log("Supplier Detail:", supplierDetail);
 
   return (
     <div

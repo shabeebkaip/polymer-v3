@@ -67,14 +67,12 @@ export const useSharedState = create<SharedState>((set, get) => ({
     
     // Check cache validity
     if (!forceRefresh && state.industries.length > 0 && state.isCacheValid('industries')) {
-      console.log('🚀 Industries loaded from cache');
-      return;
+            return;
     }
 
     set({ industriesLoading: true });
 
     try {
-      console.log('🌐 Fetching industries from API');
       const res = await getIndustryList();
       const now = Date.now();
       
@@ -97,14 +95,12 @@ export const useSharedState = create<SharedState>((set, get) => ({
     
     // Check cache validity
     if (!forceRefresh && state.productFamilies.length > 0 && state.isCacheValid('productFamilies')) {
-      console.log('🚀 Product families loaded from cache');
       return;
     }
 
     set({ familiesLoading: true });
 
     try {
-      console.log('🌐 Fetching product families from API');
       const res = await getProductFamilies();
       const now = Date.now();
       
@@ -127,14 +123,12 @@ export const useSharedState = create<SharedState>((set, get) => ({
     
     // Check cache validity
     if (!forceRefresh && state.sellers.length > 0 && state.isCacheValid('sellers')) {
-      console.log('🚀 Sellers loaded from cache');
       return;
     }
 
     set({ sellersLoading: true });
 
     try {
-      console.log('🌐 Fetching sellers from API');
       const res = await getSellers();
       const now = Date.now();
       
@@ -157,14 +151,12 @@ export const useSharedState = create<SharedState>((set, get) => ({
     
     // Check cache validity
     if (!forceRefresh && state.buyerOpportunities.length > 0 && state.isCacheValid('buyerOpportunities')) {
-      console.log('🚀 Buyer opportunities loaded from cache');
       return;
     }
 
     set({ buyerOpportunitiesLoading: true });
 
     try {
-      console.log('🌐 Fetching buyer opportunities from API');
       const res = await getBuyerOpportunities();
       const now = Date.now();
       
@@ -187,14 +179,12 @@ export const useSharedState = create<SharedState>((set, get) => ({
     
     // Check cache validity
     if (!forceRefresh && state.suppliersSpecialDeals.length > 0 && state.isCacheValid('suppliersSpecialDeals')) {
-      console.log('🚀 Suppliers special deals loaded from cache');
       return;
     }
 
     set({ suppliersSpecialDealsLoading: true });
 
     try {
-      console.log('🌐 Fetching suppliers special deals from API');
       const res = await getSuppliersSpecialDeals();
       const now = Date.now();
       
@@ -214,7 +204,6 @@ export const useSharedState = create<SharedState>((set, get) => ({
 
   // Setter methods for SSR hydration with cache metadata
   setIndustries: (industries) => {
-    console.log("setIndustries called with:", industries?.length);
     const now = Date.now();
     set({ 
       industries, 
@@ -227,7 +216,6 @@ export const useSharedState = create<SharedState>((set, get) => ({
   },
 
   setProductFamilies: (productFamilies) => {
-    console.log("setProductFamilies called with:", productFamilies?.length);
     const now = Date.now();
     set({ 
       productFamilies, 
@@ -240,7 +228,6 @@ export const useSharedState = create<SharedState>((set, get) => ({
   },
 
   setSellers: (sellers) => {
-    console.log("setSellers called with:", sellers?.length);
     const now = Date.now();
     set({ 
       sellers, 
@@ -253,7 +240,6 @@ export const useSharedState = create<SharedState>((set, get) => ({
   },
 
   setBuyerOpportunities: (buyerOpportunities) => {
-    console.log("setBuyerOpportunities called with:", buyerOpportunities?.length);
     const now = Date.now();
     set({ 
       buyerOpportunities, 
@@ -266,7 +252,6 @@ export const useSharedState = create<SharedState>((set, get) => ({
   },
 
   setSuppliersSpecialDeals: (suppliersSpecialDeals) => {
-    console.log("setSuppliersSpecialDeals called with:", suppliersSpecialDeals?.length);
     const now = Date.now();
     set({ 
       suppliersSpecialDeals, 

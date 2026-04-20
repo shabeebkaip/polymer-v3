@@ -2,6 +2,7 @@ import React from "react";
 import { ProductValueCardProps } from "@/types/product";
 
 const ProductValueCard: React.FC<ProductValueCardProps> = ({ label, value }) => {
+    if (value === null || value === undefined || value === "") return null;
     return (
         <div className="bg-gray-50 rounded-lg p-3">
             <span className="text-sm font-medium text-gray-600">

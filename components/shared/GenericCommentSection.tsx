@@ -90,7 +90,6 @@ export const GenericCommentSection: React.FC<GenericCommentSectionProps> = ({
           };
         });
 
-      console.log('Sending attachments:', transformedAttachments);
 
       await genericCommentService.addComment(commentType, quoteRequestId, {
         comment,

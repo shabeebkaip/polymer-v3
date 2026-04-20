@@ -4,11 +4,25 @@ import { Badge } from "@/components/ui/badge";
 import React from "react";
 
 const ProductTradeInformation: React.FC<ProductTradeInformationProps> = ({ product }) => {
+  const paymentTermsVal = product.paymentTerms?.name || "";
+  const incotermsVal = product.incoterms?.filter(t => t.name).map(t => t.name).join(", ") || "";
+  const packagingTypeVal = product.packagingType?.filter(t => t.name).map(t => t.name).join(", ") || "";
+
+  const hasPricingTerms =
+    (product.price && product.price > 0) ||
+    (product.minimum_order_quantity && product.minimum_order_quantity > 0) ||
+    (product.minOrderQuantity && (product.minOrderQuantity as number) > 0) ||
+    paymentTermsVal || product.leadTime || incotermsVal;
+
+  const hasPackaging =
+    packagingTypeVal || product.packagingWeight || product.storageConditions || product.shelfLife;
+
   return (
     <div className="bg-white rounded-2xl shadow-sm border overflow-hidden mb-8">
       <div className="p-6 lg:p-8">
         <h2 className="text-xl font-bold text-gray-900 mb-6">Trade Information</h2>
         {/* Pricing & Terms */}
+        {hasPricingTerms ? (
         <div className="mb-8">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Pricing & Terms</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -19,47 +33,30 @@ const ProductTradeInformation: React.FC<ProductTradeInformationProps> = ({ produ
               />
             ) : null}
             {(product.minimum_order_quantity && product.minimum_order_quantity > 0) ||
-            (product.minOrderQuantity && product.minOrderQuantity > 0) ? (
+            ((product.minOrderQuantity as number) > 0) ? (
               <ProductValueCard
                 label="Minimum Order Quantity"
-                value={`${product.minimum_order_quantity || product.minOrderQuantity} ${product.uom}`}
+                value={`${product.minimum_order_quantity || product.minOrderQuantity} ${product.uom || ""}`}
               />
             ) : null}
-            {product.paymentTerms ? (
-              <ProductValueCard label="Payment Terms" value={product.paymentTerms.name || ""} />
-            ) : null}
-            {product.leadTime ? (
-              <ProductValueCard label="Lead Time" value={product.leadTime || ""} />
-            ) : null}
-            {product.incoterms && product.incoterms.length > 0 ? (
-              <ProductValueCard
-                label="Incoterms"
-                value={product.incoterms.map((term) => term.name).join(", ")}
-              />
-            ) : null}
+            <ProductValueCard label="Payment Terms" value={paymentTermsVal} />
+            <ProductValueCard label="Lead Time" value={product.leadTime || ""} />
+            <ProductValueCard label="Incoterms" value={incotermsVal} />
           </div>
         </div>
+        ) : null}
         {/* Packaging & Storage */}
+        {hasPackaging ? (
         <div className="mb-8">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Packaging & Storage</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {product.packagingType && product.packagingType.length > 0 ? (
-              <ProductValueCard
-                label="Packaging Type"
-                value={product.packagingType.map((type) => type.name).join(", ")}
-              />
-            ) : null}
-            {product.packagingWeight ? (
-              <ProductValueCard label="Packaging Weight" value={product.packagingWeight || ""} />
-            ) : null}
-            {product.storageConditions ? (
-              <ProductValueCard label="Storage Conditions" value={product.storageConditions || ""} />
-            ) : null}
-            {product.shelfLife ? (
-              <ProductValueCard label="Shelf Life" value={product.shelfLife || ""} />
-            ) : null}
+            <ProductValueCard label="Packaging Type" value={packagingTypeVal} />
+            <ProductValueCard label="Packaging Weight" value={product.packagingWeight || ""} />
+            <ProductValueCard label="Storage Conditions" value={product.storageConditions || ""} />
+            <ProductValueCard label="Shelf Life" value={product.shelfLife || ""} />
           </div>
         </div>
+        ) : null}
         {/* Industry Applications */}
         {product.industry && product.industry.length > 0 ? (
           <div className="mb-8">
