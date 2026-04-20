@@ -81,13 +81,11 @@ const Sidebar = () => {
     
     // Redirect to home if no token
     if (!token) {
-      console.log("No token found, redirecting to home");
       router.push("/");
       return;
     }
 
     if (!isInitialized) {
-      console.log("Loading user from cookies...");
       loadUserFromCookies();
     }
   }, [isInitialized, loadUserFromCookies, router]);

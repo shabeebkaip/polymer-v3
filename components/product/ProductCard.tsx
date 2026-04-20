@@ -4,115 +4,197 @@ import Image from "next/image";
 import QuoteRequestModal from "../shared/QuoteRequestModal";
 import SampleRequestModal from "../shared/SampleRequestModal";
 import { ProductCardProps } from "@/types/product";
-import { FALLBACK_PRODUCT_IMAGE, FALLBACK_COMPANY_IMAGE } from "@/lib/fallbackImages";
+import { FALLBACK_COMPANY_IMAGE } from "@/lib/fallbackImages";
+import { MapPin, Package, CheckCircle2, Clock, AlertCircle, ArrowRight } from "lucide-react";
+
+// Accent palette — cycles by product ID
+const ACCENTS = [
+  { strip: "from-emerald-500 to-teal-600", avatar: "from-emerald-500 to-teal-600" },
+  { strip: "from-blue-500 to-indigo-600",  avatar: "from-blue-500 to-indigo-600"  },
+  { strip: "from-violet-500 to-purple-600",avatar: "from-violet-500 to-purple-600"},
+  { strip: "from-orange-400 to-amber-500", avatar: "from-orange-400 to-amber-500" },
+  { strip: "from-rose-500 to-pink-600",    avatar: "from-rose-500 to-pink-600"    },
+  { strip: "from-cyan-500 to-sky-600",     avatar: "from-cyan-500 to-sky-600"     },
+];
+
+const getAccent = (id: string) => {
+  const n = id ? id.charCodeAt(id.length - 1) % ACCENTS.length : 0;
+  return ACCENTS[n];
+};
+
+const AvailabilityBadge = ({ value }: { value: string }) => {
+  if (value === "In Stock")
+    return (
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold">
+        <CheckCircle2 className="w-3 h-3" /> In Stock
+      </span>
+    );
+  if (value === "On Request")
+    return (
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold">
+        <Clock className="w-3 h-3" /> On Request
+      </span>
+    );
+  if (value === "Limited")
+    return (
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 text-xs font-semibold">
+        <AlertCircle className="w-3 h-3" /> Limited
+      </span>
+    );
+  return null;
+};
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, userType }) => {
   const router = useRouter();
+  const accent = getAccent(product._id || "");
+  const hasImage = !!(product?.productImages?.[0]?.fileUrl);
+
+  // Polymer tags: prefer polymerTypes array, fall back to polymerType
+  const polymerTags: string[] =
+    (product as any).polymerTypes?.length > 0
+      ? (product as any).polymerTypes.map((p: any) => p.name || p).filter(Boolean)
+      : product.polymerType?.name
+      ? [product.polymerType.name]
+      : [];
+
+  const title = product.productName || polymerTags.join(" / ") || "Polymer Product";
+  const availability = (product as any).availability as string | undefined;
+
   return (
-    <div className="group bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-primary-500/30 h-full flex flex-col">
-      <div className="relative overflow-hidden">
-        {/* Product image */}
-        <div className="aspect-w-16 aspect-h-10 bg-gray-100 relative">
-          <Image
-            src={product?.productImages?.[0]?.fileUrl || FALLBACK_PRODUCT_IMAGE}
-            alt={product?.productName || 'Product'}
-            width={320}
-            height={160}
-            className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = FALLBACK_PRODUCT_IMAGE;
-            }}
-          />
-          <div className="absolute inset-0 bg-black/5 group-hover:bg-black/0 transition-colors duration-300"></div>
+    <div
+      className="group bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden border border-gray-100 hover:border-emerald-200 flex flex-col cursor-pointer"
+      onClick={() => router.push(`/products/${product._id}`)}
+    >
+      {/* ── Accent strip + avatar ── */}
+      <div className="relative">
+        {/* Thin gradient strip */}
+        <div className={`h-14 bg-gradient-to-r ${accent.strip}`} />
+
+        {/* Circular avatar — overlaps strip into content */}
+        <div className="absolute left-4 -bottom-6">
+          <div className="w-14 h-14 rounded-full ring-4 ring-white shadow-md overflow-hidden">
+            {hasImage ? (
+              <Image
+                src={product.productImages![0].fileUrl}
+                alt={title}
+                width={56}
+                height={56}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).style.display = "none";
+                }}
+              />
+            ) : (
+              <div className={`w-full h-full bg-gradient-to-br ${accent.avatar} flex items-center justify-center`}>
+                <Package className="w-6 h-6 text-white" />
+              </div>
+            )}
+          </div>
         </div>
-        
-        {/* Hover overlay with company logo */}
-        <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm rounded-lg p-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+
+        {/* Company logo — top-right of strip */}
+        <div className="absolute top-2.5 right-3 w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center p-1 border border-gray-100">
           <Image
             src={product?.createdBy?.company_logo || FALLBACK_COMPANY_IMAGE}
-            alt="Company"
+            alt="Supplier"
             width={24}
             height={24}
-            className="w-6 h-6 object-contain"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = FALLBACK_COMPANY_IMAGE;
-            }}
+            className="w-full h-full object-contain"
+            onError={(e) => { (e.target as HTMLImageElement).src = FALLBACK_COMPANY_IMAGE; }}
           />
         </div>
       </div>
 
-      <div className="p-4 flex flex-col flex-1">
-        {/* Company Info Header */}
-        <div className="flex items-center gap-2 mb-3">
-          <div className="flex-shrink-0">
-            <Image
-              src={product?.createdBy?.company_logo || FALLBACK_COMPANY_IMAGE}
-              alt="Company"
-              width={40}
-              height={40}
-              className="w-10 h-10 object-contain rounded-lg bg-gray-50 p-1"
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = FALLBACK_COMPANY_IMAGE;
-              }}
-            />
-          </div>
-          <div className="flex-1 min-w-0">
-            <h4 className="font-semibold text-base text-gray-900 truncate group-hover:text-primary-600 transition-colors duration-200">
-              {product?.productName || 'Untitled Product'}
-            </h4>
-            <p className="text-xs text-gray-500 flex items-center gap-1">
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-              {product?.countryOfOrigin || 'Unknown'}
-            </p>
-          </div>
+      {/* ── Content ── */}
+      <div className="pt-8 px-4 pb-4 flex flex-col flex-1">
+
+        {/* Availability + right-side meta */}
+        <div className="flex items-center justify-between mb-2">
+          {availability ? (
+            <AvailabilityBadge value={availability} />
+          ) : <span />}
+          {product.countryOfOrigin && (
+            <span className="flex items-center gap-1 text-xs text-gray-400">
+              <MapPin className="w-3 h-3 shrink-0" />
+              {product.countryOfOrigin}
+            </span>
+          )}
         </div>
 
-        {/* Product Details */}
-        <div className="mb-4 flex-1">
-          <div className="bg-gradient-to-br from-gray-50 to-gray-100/50 rounded-lg p-3 border border-gray-200/50">
-            <div className="space-y-2">
-              <div>
-                <span className="text-gray-600 font-medium text-xs uppercase tracking-wide">Chemical Name</span>
-                <div className="text-gray-900 text-sm font-medium leading-snug break-words mt-1">
-                  {product.chemicalName || 'Not specified'}
-                </div>
-              </div>
-              <div className="border-t border-gray-200/60 pt-2">
-                <span className="text-gray-600 font-medium text-xs uppercase tracking-wide">Polymer Type</span>
-                <div className="text-gray-900 text-sm font-medium leading-snug break-words mt-1">
-                  {product.polymerType?.name || 'Not specified'}
-                </div>
-              </div>
+        {/* Title */}
+        <h4 className="font-bold text-gray-900 text-sm leading-snug mb-2 line-clamp-2 group-hover:text-emerald-700 transition-colors">
+          {title}
+        </h4>
+
+        {/* Polymer tags */}
+        {polymerTags.length > 0 && (
+          <div className="flex flex-wrap gap-1 mb-3">
+            {polymerTags.slice(0, 3).map((tag, i) => (
+              <span key={i} className="px-2 py-0.5 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-full text-xs font-medium">
+                {tag}
+              </span>
+            ))}
+            {polymerTags.length > 3 && (
+              <span className="px-2 py-0.5 bg-gray-100 text-gray-500 rounded-full text-xs">
+                +{polymerTags.length - 3}
+              </span>
+            )}
+          </div>
+        )}
+
+        {/* Key specs */}
+        <div className="space-y-1.5 mb-3 flex-1">
+          {product.chemicalName && (
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-gray-400">Chemical</span>
+              <span className="text-xs font-medium text-gray-700 text-right max-w-[60%] truncate">{product.chemicalName}</span>
             </div>
-          </div>
+          )}
+          {(product.minimum_order_quantity || (product as any).minOrderQuantity) && (
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-gray-400">Min Order</span>
+              <span className="text-xs font-semibold text-gray-800">
+                {((product.minimum_order_quantity || (product as any).minOrderQuantity) as number).toLocaleString()} {product.uom || ""}
+              </span>
+            </div>
+          )}
+          {product.price && product.price > 0 && (
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-gray-400">Price</span>
+              <span className="text-xs font-semibold text-emerald-700">${product.price}/{product.uom}</span>
+            </div>
+          )}
         </div>
 
-        {/* Action Buttons */}
-        <div className="space-y-2">
+        {/* Supplier name */}
+        {product.createdBy?.company && (
+          <p className="text-xs text-gray-400 mb-3 truncate">
+            by <span className="font-medium text-gray-600">{product.createdBy.company}</span>
+          </p>
+        )}
+
+        {/* Actions */}
+        <div className="space-y-2 mt-auto" onClick={(e) => e.stopPropagation()}>
           {userType === "buyer" && (
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-1.5">
               <QuoteRequestModal
-                className="px-2 py-1.5 bg-primary-500 hover:bg-primary-600 text-white rounded-md transition-all duration-300 cursor-pointer text-xs font-medium text-center"
-                productId={product?._id}
-                uom={product?.uom}
+                className="py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors text-xs font-semibold text-center"
+                productId={product._id}
+                uom={product.uom}
               />
               <SampleRequestModal
-                className="px-2 py-1.5 border border-primary-500 text-primary-600 rounded-md hover:bg-primary-50 transition-all duration-300 cursor-pointer text-xs font-medium text-center hover:border-primary-600"
-                productId={product?._id}
-                uom={product?.uom}
+                className="py-2 border border-emerald-200 text-emerald-700 rounded-lg hover:bg-emerald-50 transition-colors text-xs font-medium text-center"
+                productId={product._id}
+                uom={product.uom}
               />
             </div>
           )}
           <button
-            className="w-full px-3 py-2 border border-gray-300 text-gray-700 rounded-md hover:border-primary-500 hover:text-primary-600 hover:bg-primary-50 transition-all duration-300 text-xs font-medium"
-            onClick={() => {
-              router.push(`/products/${product._id}`);
-            }}
+            className="w-full flex items-center justify-center gap-1.5 py-2 border border-gray-200 text-gray-600 rounded-lg hover:border-emerald-400 hover:text-emerald-700 hover:bg-emerald-50 transition-all text-xs font-medium"
+            onClick={() => router.push(`/products/${product._id}`)}
           >
             View Details
+            <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>

@@ -122,7 +122,6 @@ const ProductsClient: React.FC = () => {
     });
   };
 
-  console.log("filters", filters);
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-primary-50/20">
       {/* Header Section with Breadcrumb */}

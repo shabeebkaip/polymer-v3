@@ -44,6 +44,10 @@ export interface Product {
   productName: string;
   chemicalName?: string;
   tradeName?: string;
+  availability?: 'In Stock' | 'On Request' | 'Limited';
+  completionStatus?: 'quick' | 'complete';
+  polymerTypes?: NamedObject[];
+  productListFile?: { fileUrl: string; id?: string; name?: string; originalFilename?: string };
   description?: string;
   productImages?: ProductImage[];
   createdBy?: Company;
@@ -155,6 +159,15 @@ export interface ProductRequestFormData {
   request_document: string;
 }
 
+export interface QuickAddFormData {
+  polymerTypes: string[];
+  productName?: string;
+  minimum_order_quantity?: number | null;
+  uom?: string;
+  availability?: string;
+  productListFile?: UploadedFile | null;
+}
+
 export interface ProductFormData {
   productName: string;
   chemicalName: string;
@@ -163,6 +176,7 @@ export interface ProductFormData {
   tradeName: string;
   chemicalFamily: string;
   polymerType: string;
+  polymerTypes: string[];
 
   industry: string[]; // Array of industry IDs
   grade: string[]; // Array of grade IDs
@@ -212,6 +226,10 @@ export interface ProductFormData {
 
   product_family: string[]; // Array of family IDs
 
+  availability?: string;
+  productListFile?: UploadedFile | null;
+  completionStatus?: 'quick' | 'complete';
+
   _id?: string | null;
 
   [key: string]: any; // fallback for dynamic keys
@@ -222,6 +240,7 @@ export interface ProductCardTypes {
   productName: string;
   createdBy: {
     company_logo: string;
+    company?: string;
   };
   countryOfOrigin: string;
   chemicalName: string;
@@ -230,6 +249,9 @@ export interface ProductCardTypes {
   };
   uom: string;
   _id: string;
+  minimum_order_quantity?: number;
+  price?: number;
+  availability?: string;
   [key: string]: any; // fallback for dynamic keys
 }
 

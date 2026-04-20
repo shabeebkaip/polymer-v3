@@ -57,7 +57,6 @@ axiosInstance.interceptors.response.use(
       const delay = Math.pow(2, config.__retryCount) * 1000;
       await new Promise(resolve => setTimeout(resolve, delay));
       
-      console.log(`Retrying API call (attempt ${config.__retryCount + 1}/3):`, config.url);
       return axiosInstance(config);
     }
     

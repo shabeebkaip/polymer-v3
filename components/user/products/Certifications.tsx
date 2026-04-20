@@ -84,9 +84,9 @@ const Certification: React.FC<CertificationProps> = ({ data, onFieldChange }) =>
       <div className="col-span-full mb-4">
         <div className="flex items-center justify-between pb-3 border-b border-gray-200">
           <div>
-            <h4 className="text-base font-semibold text-gray-900">Quality Certifications</h4>
+            <h4 className="text-base font-semibold text-gray-900">Increase Buyer Trust – Upload Certificates</h4>
             <p className="text-xs text-gray-600 mt-0.5">
-              Showcase regulatory compliance and industry standards
+              Verified certifications attract more serious buyers
             </p>
           </div>
           <Badge variant="outline" className="bg-gray-100 text-gray-700 border-gray-300 text-xs">
@@ -194,7 +194,7 @@ const Certification: React.FC<CertificationProps> = ({ data, onFieldChange }) =>
                                 hasCertificate && certificateData ? [certificateData as unknown as UploadedFile] : []
                               }
                               multiple={false}
-                              setCloudinaryImage={(url) => console.log(url)}
+                              setCloudinaryImage={() => {}}
                             />
                           </div>
                         </div>
@@ -267,7 +267,7 @@ const Certification: React.FC<CertificationProps> = ({ data, onFieldChange }) =>
                                 buttonText={cert.document ? 'Replace' : 'Upload'}
                                 existingFiles={cert.document ? [cert.document] : []}
                                 multiple={false}
-                                setCloudinaryImage={(url) => console.log(url)}
+                                setCloudinaryImage={() => {}}
                               />
                             </div>
                           </div>

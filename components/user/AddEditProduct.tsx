@@ -75,14 +75,14 @@ const FORM_STEPS = [
   {
     id: 8,
     title: "Certifications",
-    description: "Quality certifications",
+    description: "Increase Buyer Trust – Upload Certificates",
     icon: Shield,
     component: "certification"
   },
   {
     id: 9,
     title: "Documents",
-    description: "Supporting documents",
+    description: "Boost Technical Credibility – Upload Documents",
     icon: Upload,
     component: "documents"
   }
@@ -310,28 +310,8 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
         }
       }
     } else {
-      // Smart validation for editing - validate core business fields (aligned with backend schema)
-      const coreRequiredFields = [
-        { field: "productName", label: "Product Name" },
-        { field: "chemicalName", label: "Chemical Name" },
-        { field: "chemicalFamily", label: "Chemical Family" },
-        { field: "polymerType", label: "Polymer Type" },
-        { field: "physicalForm", label: "Physical Form" },
-        { field: "price", label: "Price" },
-        { field: "uom", label: "Unit of Measure" }
-      ];
-
-      coreRequiredFields.forEach(({ field, label }) => {
-        const value = data[field];
-        if (!value || value === "" || (Array.isArray(value) && value.length === 0)) {
-          validationErrors[field] = `${label} is required`;
-        }
-      });
-
-      // Validate at least one industry for business logic
-      if (data.industry.length === 0) {
-        validationErrors.industry = "At least one industry must be selected";
-      }
+      // Lenient validation for editing - backend schema has no required fields except createdBy
+      // Only validate FDA/Medical certs below (handled separately)
     }
 
     // Validate FDA and Medical Grade certificates
@@ -616,7 +596,6 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
     }
   };
 
-  console.log("Errors", data);
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 via-primary-50 to-blue-50">
       <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">

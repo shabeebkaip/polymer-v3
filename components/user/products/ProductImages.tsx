@@ -9,13 +9,11 @@ const ProductImages: React.FC<ProductImagesProps> = ({ data, onFieldChange }) =>
     data.productImages?.map((img) => img?.fileUrl) || []
   );
 
-  const handleImageClick = (index: number) => {
-    console.log('Image clicked:', index);
+  const handleImageClick = (_index: number) => {
     // Could open modal preview, etc.
   };
 
   const handleFilesUpload = (uploadedFiles: UploadedFile[]) => {
-    console.log('Files uploaded:', uploadedFiles);
 
     onFieldChange('productImages', [...data.productImages, ...uploadedFiles]);
 

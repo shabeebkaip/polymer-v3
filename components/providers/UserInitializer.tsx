@@ -14,27 +14,14 @@ const UserInitializer = () => {
   useEffect(() => {
     const token = Cookies.get("token");
     
-    console.log("UserInitializer: Starting initialization", {
-      hasToken: !!token,
-      isInitialized,
-      hasUser: !!user,
-      hasUserInfo: !!Cookies.get("userInfo"),
-      mounted: mountedRef.current
-    });
-
-    // Redirect to home if no token
     if (!token) {
-      console.log("UserInitializer: No token found, redirecting to home");
       router.push("/");
       return;
     }
 
     if (!mountedRef.current) {
       mountedRef.current = true;
-      
-      // Load user from cookies if not initialized
       if (!isInitialized) {
-        console.log("UserInitializer: Loading user from cookies");
         loadUserFromCookies();
       }
     }

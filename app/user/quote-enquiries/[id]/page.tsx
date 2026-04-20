@@ -708,7 +708,6 @@ const QuoteEnquiryDetails = () => {
           <Dialog
             open={true}
             onOpenChange={(open) => {
-              console.log('Dialog open state changing to:', open);
               if (!open) {
                 setStatusModalOpen(false);
               }

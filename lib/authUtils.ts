@@ -15,7 +15,6 @@ export const clearAuthData = () => {
   const { logout } = useUserInfo.getState();
   logout();
   
-  console.log('🔐 Auth data cleared - token expired or user logged out');
 };
 
 /**

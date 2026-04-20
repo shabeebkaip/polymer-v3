@@ -23,7 +23,6 @@ const Header: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
 
   const [language, setLanguage] = useState<Language>('en');
-  console.log('user', user);
   // ✅ Safe early return AFTER hooks
   if (pathname.includes('auth')) return null;
 
