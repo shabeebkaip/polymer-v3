@@ -38,16 +38,18 @@ const ProductsClient: React.FC = () => {
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
   const [pagination, setPagination] = useState<Pagination | null>(null);
   const [filters, setFilters] = useState<ProductFilter>();
+  const [filtersLoading, setFiltersLoading] = useState(true);
   const [loader, setLoader] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
 
   // --- Fetch filters only once ---
   useEffect(() => {
-    setLoader(true); // Start loading state for filters
+    setFiltersLoading(true);
     getProductFilters().then((response) => {
-      setFilters(response);
-      // Don't set loader to false here since products still need to load
+      setFilters(response.data);
+    }).finally(() => {
+      setFiltersLoading(false);
     });
   }, []);
 
@@ -159,7 +161,7 @@ const ProductsClient: React.FC = () => {
                   </h2>
                 </div>
                 <div className="p-6">
-                  <Suspense fallback={
+                  {filtersLoading ? (
                     <div className="space-y-6">
                       {[1, 2, 3, 4].map(i => (
                         <div key={i} className="animate-pulse">
@@ -172,13 +174,13 @@ const ProductsClient: React.FC = () => {
                         </div>
                       ))}
                     </div>
-                  }>
+                  ) : (
                     <Filter
                       filters={filters?.filterSide || []}
                       onFilterChange={handleFilter}
                       query={query}
                     />
-                  </Suspense>
+                  )}
                 </div>
               </div>
             </div>
@@ -456,7 +458,7 @@ const ProductsClient: React.FC = () => {
                 <p className="text-sm text-gray-600">Refine your search results</p>
               </div>
             </div>
-            <Suspense fallback={
+            {filtersLoading ? (
               <div className="space-y-6">
                 {[1, 2, 3, 4].map(i => (
                   <div key={i} className="animate-pulse">
@@ -469,7 +471,7 @@ const ProductsClient: React.FC = () => {
                   </div>
                 ))}
               </div>
-            }>
+            ) : (
               <Filter
                 filters={filters?.filterSide || []}
                 onFilterChange={(name: string, id: string, isChecked: boolean) => {
@@ -477,7 +479,7 @@ const ProductsClient: React.FC = () => {
                 }}
                 query={query}
               />
-            </Suspense>
+            )}
           </div>
         </FilterModal>
       </div>

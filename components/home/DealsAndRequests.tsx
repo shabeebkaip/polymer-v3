@@ -7,9 +7,13 @@ import BuyerOpportunities from './BuyerOpportunities';
 import { useUserInfo } from '@/lib/useUserInfo';
 import HowPolymersConnect from '@/components/home/HowPolymersConnect';
 import { useSharedState } from '@/stores/sharedStore';
+import { useCmsStore } from '@/stores/cms';
 
 const DealsAndRequests: React.FC = () => {
   const { user } = useUserInfo();
+  const { homeSections } = useCmsStore();
+  const dealsTitle = homeSections?.content?.dealsTitle || 'Driving Business Excellence Through Supply and Demand Synergy';
+  const dealsDescription = homeSections?.content?.dealsDescription || 'Discover exclusive deals from trusted suppliers and connect with buyers seeking quality products';
   const userType = user?.user_type;
   const isGuest = !user;
   const isBuyer = Boolean(user && userType === 'buyer');
@@ -43,13 +47,10 @@ const DealsAndRequests: React.FC = () => {
     <section className="container mx-auto px-4 py-8 md:py-12">
       <div className="text-center mb-8 md:mb-10">
         <h2 className="text-2xl md:text-3xl lg:text-4xl font-extrabold text-gray-900 mb-3 md:mb-4 tracking-tight">
-          Driving Business Excellence Through Supply
-          <br />
-          <span className="text-primary-600">and Demand Synergy</span>
+          <span className="text-primary-600">{dealsTitle}</span>
         </h2>
         <p className="text-gray-700 text-base md:text-lg max-w-2xl mx-auto font-medium">
-          Discover exclusive deals from trusted suppliers and connect with buyers seeking quality
-          products
+          {dealsDescription}
         </p>
       </div>
       <SpecialDeals />

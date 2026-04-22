@@ -29,3 +29,34 @@ export const getSocialLinks = async () => {
     throw error;
   }
 };
+
+export const getHeroSection = async () => {
+  try {
+    const response = await axiosInstance.get("/cms/list/HeroSection");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching hero section:", error);
+    throw error;
+  }
+};
+
+export const getPolymerAdvantages = async () => {
+  try {
+    const response = await axiosInstance.get("/cms/list/PolymerAdvantages");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching polymer advantages:", error);
+    throw error;
+  }
+};
+
+export const getHomeSections = async () => {
+  try {
+    const response = await axiosInstance.get("/cms/list/HomeSections");
+    return response.data;
+  } catch (error: any) {
+    if (error?.response?.status === 404) return null;
+    console.error("Error fetching home sections:", error);
+    throw error;
+  }
+};

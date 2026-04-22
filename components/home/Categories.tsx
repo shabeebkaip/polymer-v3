@@ -1,13 +1,10 @@
 'use client';
 import React, { useState, useMemo } from 'react';
 import CategoryCard from './CategoryCard';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import useIsMobile from '@/lib/useIsMobile';
 import { Skeleton } from '../ui/skeleton';
 import { useSharedState } from '@/stores/sharedStore';
-import { ProductFamily } from '@/types/productFamily';
-import { IndustryItem } from '@/types/industries';
 import { CategoryData } from '@/types/category';
 
 const categoryData: CategoryData[] = [
@@ -53,18 +50,22 @@ const Categories: React.FC = () => {
           </p>
         </div>
 
-        {/* Minimal Tab Design */}
-        <div className="flex justify-center gap-3 overflow-x-auto">
-          {categoryData.map(({ id, name, icon }) => (
+        {/* Segmented tab control */}
+        <div
+          className="flex items-center rounded-xl p-1 gap-1"
+          style={{ background: '#f0fdf4', border: '1px solid #bbf7d0' }}
+        >
+          {categoryData.map(({ id, name }) => (
             <button
               key={id}
               onClick={() => setSelectedCategory(id)}
-              className={`flex items-center gap-3 px-6 py-3 rounded-xl font-semibold text-base transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2
-                ${selectedCategory === id ? 'bg-primary-500 text-white border border-primary-500 shadow-sm' : 'bg-white text-primary-600 border border-primary-500/20 hover:bg-primary-50'}`}
-              style={{ minWidth: 150 }}
+              className={`relative px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 focus:outline-none whitespace-nowrap
+                ${selectedCategory === id
+                  ? 'bg-primary-600 text-white shadow-sm'
+                  : 'text-primary-700 hover:bg-primary-100/60'
+                }`}
             >
-              <Image src={icon} alt={name} width={28} height={28} className="rounded" />
-              <span>{name}</span>
+              {name}
             </button>
           ))}
         </div>
@@ -80,21 +81,13 @@ const Categories: React.FC = () => {
               ))}
 
             {displayedItems.map((item, index) => (
-              <div
+              <CategoryCard
                 key={item?._id || index}
-                className="group hover:scale-105 transition-all duration-300"
-              >
-                <CategoryCard
-                  name={item?.name}
-                  image={
-                    selectedCategory === 'industries'
-                      ? (item as IndustryItem).bg
-                      : (item as ProductFamily).image
-                  }
-                  id={item?._id}
-                  selectedCategory={selectedCategory}
-                />
-              </div>
+                name={item?.name}
+                id={item?._id}
+                index={index}
+                selectedCategory={selectedCategory}
+              />
             ))}
 
             {shouldShowViewAll && (
@@ -154,15 +147,9 @@ const Categories: React.FC = () => {
           }
         >
           <span>See More</span>
-          <div className="w-5 h-5 bg-white/20 rounded-full flex items-center justify-center">
-            <Image
-              src="/icons/lucide_arrow-up.svg"
-              alt="Arrow Icon"
-              width={16}
-              height={16}
-              className="rotate-90 filter brightness-0 invert"
-            />
-          </div>
+          <svg className="w-4 h-4 rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h14M12 5l7 7-7 7" />
+          </svg>
         </button>
       </div>
     </section>

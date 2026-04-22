@@ -6,8 +6,9 @@ export type CategoryData = {
 
 export type CategoryCardProps = {
   name: string;
-  image: string;
+  image?: string;
   selectedCategory?: string;
   id: string;
+  index?: number;
 }
 

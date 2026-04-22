@@ -2,12 +2,17 @@
 import React from "react";
 import SellerLogoContainer from "./SellerLogoContainer";
 import { useSharedState } from "@/stores/sharedStore";
+import { useCmsStore } from "@/stores/cms";
 import { useRouter } from "next/navigation";
 import { BadgeCheck, Clock, Globe } from "lucide-react";
 
 const FeaturedSuppliers: React.FC = () => {
   const router = useRouter();
   const { sellers } = useSharedState();
+  const { homeSections } = useCmsStore();
+  const badge = homeSections?.content?.suppliersBadge || 'Trusted Partners';
+  const title = homeSections?.content?.suppliersTitle || 'Featured Suppliers';
+  const description = homeSections?.content?.suppliersDescription || 'Partner with industry-leading polymer suppliers from around the globe. Our verified network ensures quality materials, reliable delivery, and competitive pricing for your manufacturing needs.';
 
   return (
     <section className="bg-gradient-to-br from-gray-50 to-primary-50/30 py-8 md:py-12">
@@ -17,15 +22,13 @@ const FeaturedSuppliers: React.FC = () => {
           <div className="text-center max-w-4xl mx-auto space-y-3 md:space-y-4">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary-50 text-primary-600 rounded-full text-sm font-medium mb-2">
               <div className="w-2 h-2 bg-primary-500 rounded-full animate-pulse"></div>
-              Trusted Partners
+              {badge}
             </div>
             <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-gray-900 via-primary-500 to-gray-900 bg-clip-text text-transparent">
-              Featured Suppliers
+              {title}
             </h2>
             <p className="text-[var(--text-gray-tertiary)] font-normal text-sm md:text-base lg:text-lg leading-relaxed max-w-3xl mx-auto">
-              Partner with industry-leading polymer suppliers from around the
-              globe. Our verified network ensures quality materials, reliable
-              delivery, and competitive pricing for your manufacturing needs.
+              {description}
             </p>
           </div>
 

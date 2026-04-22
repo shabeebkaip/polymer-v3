@@ -4,7 +4,10 @@ import BenefitCard from './BenefitCard';
 import { useCmsStore } from '@/stores/cms';
 
 const Benefits: React.FC = () => {
-  const { buyersBenefits, suppliersBenefits } = useCmsStore();
+  const { buyersBenefits, suppliersBenefits, polymerAdvantages, homeSections } = useCmsStore();
+  const badge = homeSections?.content?.benefitsBadge || 'Why Choose Us';
+  const title = polymerAdvantages?.content?.title || 'Unique Advantages of PolymersHub';
+  const description = polymerAdvantages?.content?.description || "Experience the future of polymer trading with our comprehensive platform. Whether you're sourcing quality materials or expanding your market reach, we provide the tools and network to accelerate your success.";
   return (
     <section className="bg-gradient-to-br from-gray-50 via-white to-primary-50/30 py-8 sm:py-12 lg:py-16">
       <div className="container mx-auto px-4 sm:px-6">
@@ -13,18 +16,13 @@ const Benefits: React.FC = () => {
           <div className="flex flex-col items-center justify-center text-center gap-3 sm:gap-4 lg:gap-6 max-w-xs sm:max-w-2xl lg:max-w-4xl">
             <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-primary-50 text-primary-600 rounded-full text-xs sm:text-sm font-medium mb-1">
               <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-primary-500 rounded-full animate-pulse"></div>
-              Why Choose Us
+              {badge}
             </div>
             <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold leading-tight">
-              Unique Advantages of{' '}
-              <span className="text-primary-500">
-                PolymersHub
-              </span>
+              <span className="text-primary-500">{title}</span>
             </h1>
             <p className="text-[var(--text-gray-tertiary)] font-normal text-sm sm:text-base lg:text-lg text-center max-w-xs sm:max-w-lg md:max-w-2xl lg:max-w-3xl leading-relaxed">
-              Experience the future of polymer trading with our comprehensive platform. Whether
-              you&apos;re sourcing quality materials or expanding your market reach, we provide the
-              tools and network to accelerate your success.
+              {description}
             </p>
           </div>
 

@@ -3,7 +3,7 @@ import {
   getProductFamilies,
   getSellers,
 } from "@/apiServices/shared";
-import { getBenefitsOfBuyers, getBenefitsOfSuppliers } from "@/apiServices/cms";
+import { getBenefitsOfBuyers, getBenefitsOfSuppliers, getHeroSection, getPolymerAdvantages, getHomeSections } from "@/apiServices/cms";
 import { getBuyerOpportunities, getSuppliersSpecialDeals } from "@/apiServices/dealsAndRequests";
 import { HomePageData } from "@/types/home";
 import HomePageClient from "@/components/pages/HomePageClient";
@@ -24,6 +24,9 @@ export default async function HomePage() {
       suppliersBenefitsRes,
       buyerOpportunitiesRes,
       suppliersSpecialDealsRes,
+      heroSectionRes,
+      polymerAdvantagesRes,
+      homeSectionsRes,
     ] = await Promise.allSettled([
       getIndustryList(),
       getProductFamilies(),
@@ -32,6 +35,9 @@ export default async function HomePage() {
       getBenefitsOfSuppliers(),
       getBuyerOpportunities(),
       getSuppliersSpecialDeals(),
+      getHeroSection(),
+      getPolymerAdvantages(),
+      getHomeSections(),
     ]);
 
 
@@ -63,6 +69,18 @@ export default async function HomePage() {
         suppliersSpecialDealsRes.status === "fulfilled"
           ? suppliersSpecialDealsRes.value?.data || []
           : [],
+      heroSection:
+        heroSectionRes.status === "fulfilled"
+          ? { content: heroSectionRes.value?.data?.content || {} }
+          : {},
+      polymerAdvantages:
+        polymerAdvantagesRes.status === "fulfilled"
+          ? { content: polymerAdvantagesRes.value?.data?.content || {} }
+          : {},
+      homeSections:
+        homeSectionsRes.status === "fulfilled"
+          ? { content: homeSectionsRes.value?.data?.content || {} }
+          : {},
     };
     
     return <HomePageClient initialData={homeData} />;
@@ -78,6 +96,9 @@ export default async function HomePage() {
       suppliersBenefits: {},
       buyerOpportunities: [],
       suppliersSpecialDeals: [],
+      heroSection: {},
+      polymerAdvantages: {},
+      homeSections: {},
     };
 
     return <HomePageClient initialData={emptyData} />;

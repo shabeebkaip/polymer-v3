@@ -4,8 +4,9 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 import { DotPattern } from '../magicui/dot-pattern';
 import HeroSearch from './HeroSearch';
+import { useCmsStore } from '@/stores/cms';
 
-const features = [
+const DEFAULT_FEATURES = [
   { icon: '🔍', label: 'Smart Product Search' },
   { icon: '🤝', label: 'Direct Supplier Connect' },
   { icon: '📦', label: 'Wide Product Range' },
@@ -19,6 +20,10 @@ const gradientTextClass = `
 `;
 
 const Hero: React.FC = () => {
+  const { heroSection } = useCmsStore();
+  const cmsTitle = heroSection?.content?.title;
+  const cmsDescription = heroSection?.content?.description;
+
   return (
     <section className="relative w-full overflow-hidden">
       <DotPattern
@@ -44,8 +49,15 @@ const Hero: React.FC = () => {
               className="absolute top-4 sm:top-7 lg:top-0 right-0 w-[25px] sm:w-[40px] md:w-[60px] lg:w-[100px] h-auto lg:h-[300px] animate-float"
             />
             <h1 className="text-xl sm:text-2xl md:text-4xl lg:text-6xl xl:text-[80px] uppercase font-semibold leading-tight animate-fade-in-up px-4 sm:px-8 md:px-12">
-              Global <span className={`${gradientTextClass} animate-gradient`}>POLYMER</span>{' '}
-              Marketplace <br />
+              {cmsTitle ? (
+                <span className={`${gradientTextClass} animate-gradient`}>{cmsTitle}</span>
+              ) : (
+                <>
+                  Global <span className={`${gradientTextClass} animate-gradient`}>POLYMER</span>{' '}
+                  Marketplace
+                </>
+              )}
+              <br />
               <span className="text-base sm:text-xl md:text-2xl lg:text-3xl xl:text-[40px] font-normal text-gray-600 animate-fade-in-up-delayed block mt-2 lg:mt-0">
                 Connecting Industry Worldwide
               </span>
@@ -53,8 +65,7 @@ const Hero: React.FC = () => {
           </div>
 
           <p className="text-[var(--text-gray-secondary)] text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl mt-4 sm:mt-6 lg:mt-8 max-w-xs sm:max-w-md md:max-w-2xl lg:max-w-4xl font-normal animate-fade-in-up-delayed-2 px-4 leading-relaxed">
-            Connect directly with verified polymer suppliers worldwide — source smarter, trade
-            faster, grow confidently.
+            {cmsDescription || 'Connect directly with verified polymer suppliers worldwide — source smarter, trade faster, grow confidently.'}
           </p>
         </div>
       </div>
@@ -68,7 +79,7 @@ const Hero: React.FC = () => {
         <div className="flex flex-col items-center justify-center text-center">
           {/* Platform Feature Pills */}
           <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 animate-fade-in-up-delayed-4 px-4">
-            {features.map((feature, index) => (
+            {DEFAULT_FEATURES.map((feature, index) => (
               <div
                 key={index}
                 className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-white rounded-full border border-gray-200 shadow-sm hover:border-primary-400 hover:shadow-md transition-all duration-200"

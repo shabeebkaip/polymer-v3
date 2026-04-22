@@ -40,7 +40,7 @@ export default function HomeDataProvider({ children, initialData }: HomeDataProv
     setSuppliersSpecialDeals,
   } = useSharedState();
 
-  const { setBuyersBenefits, setSuppliersBenefits } = useCmsStore();
+  const { setBuyersBenefits, setSuppliersBenefits, setHeroSection, setPolymerAdvantages, setHomeSections } = useCmsStore();
 
   // Hydrate stores only when we're on the client side and haven't initialized yet
   useEffect(() => {
@@ -57,6 +57,9 @@ export default function HomeDataProvider({ children, initialData }: HomeDataProv
     setSuppliersBenefits(initialData.suppliersBenefits || {});
     setBuyerOpportunities(initialData.buyerOpportunities || []);
     setSuppliersSpecialDeals(initialData.suppliersSpecialDeals || []);
+    setHeroSection(initialData.heroSection || {});
+    setPolymerAdvantages(initialData.polymerAdvantages || {});
+    setHomeSections(initialData.homeSections || {});
     setIsHydrated(true);
   }, [
     isClient,
@@ -68,6 +71,9 @@ export default function HomeDataProvider({ children, initialData }: HomeDataProv
     setSuppliersBenefits,
     setBuyerOpportunities,
     setSuppliersSpecialDeals,
+    setHeroSection,
+    setPolymerAdvantages,
+    setHomeSections,
   ]);
 
 

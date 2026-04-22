@@ -4,12 +4,15 @@ import {
   getBenefitsOfSuppliers,
   getSocialLinks,
 } from "@/apiServices/cms";
-import { BenefitsContent, CmsState } from "@/types/cms";
+import { BenefitsContent, CmsState, HeroSectionContent, HomeSectionsContent, PolymerAdvantagesContent } from "@/types/cms";
 
 export const useCmsStore = create<CmsState>((set, get) => ({
   buyersBenefits: {},
   suppliersBenefits: {},
   socialLinks: [],
+  heroSection: {},
+  polymerAdvantages: {},
+  homeSections: {},
   loading: false,
 
   getBenefitsOfBuyers: async () => {
@@ -59,5 +62,17 @@ export const useCmsStore = create<CmsState>((set, get) => ({
 
   setSuppliersBenefits: (suppliersBenefits) => {
     set({ suppliersBenefits, loading: false });
+  },
+
+  setHeroSection: (heroSection: HeroSectionContent) => {
+    set({ heroSection });
+  },
+
+  setPolymerAdvantages: (polymerAdvantages: PolymerAdvantagesContent) => {
+    set({ polymerAdvantages });
+  },
+
+  setHomeSections: (homeSections: HomeSectionsContent) => {
+    set({ homeSections });
   },
 }));

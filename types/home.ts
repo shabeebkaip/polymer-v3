@@ -1,4 +1,4 @@
-import { BenefitsContent } from './cms';
+import { BenefitsContent, HeroSectionContent, HomeSectionsContent, PolymerAdvantagesContent } from './cms';
 import { ProductCardTypes } from './product';
 
 export interface HomePageData {
@@ -9,6 +9,9 @@ export interface HomePageData {
   suppliersBenefits: BenefitsContent;
   buyerOpportunities: any[];
   suppliersSpecialDeals: any[];
+  heroSection: HeroSectionContent;
+  polymerAdvantages: PolymerAdvantagesContent;
+  homeSections: HomeSectionsContent;
 }
 
 export type howPolymersConnectType = {
