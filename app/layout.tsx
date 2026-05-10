@@ -45,7 +45,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${kanit.variable}`}>
+    <html lang="en" className={`${kanit.variable}`} suppressHydrationWarning>
       <body className="antialiased">
         <PageNavigationLoader />
         <Toaster richColors position="top-right" />

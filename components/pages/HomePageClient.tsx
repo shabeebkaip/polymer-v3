@@ -11,7 +11,7 @@ import { HomePageClientProps } from "@/types/home";
 export default function HomePageClient({ initialData }: HomePageClientProps) {
   return (
     <HomeDataProvider initialData={initialData}>
-      <div className="space-y-4 md:space-y-6 lg:space-y-8 bg-gradient-to-b from-white via-gray-50 to-white">
+      <div className="bg-gradient-to-b from-white via-gray-50 to-white">
         <Hero />
         <DealsAndRequests />
         <Categories />

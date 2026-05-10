@@ -6,6 +6,7 @@ export type CategoryData = {
 
 export type CategoryCardProps = {
   name: string;
+  icon?: string;
   image?: string;
   selectedCategory?: string;
   id: string;
