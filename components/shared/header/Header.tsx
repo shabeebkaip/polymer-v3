@@ -79,19 +79,6 @@ const Header: React.FC = () => {
               {user && <UserButton />}
               {!user && <AuthButtons />}
               <MobileMenuButton isOpen={isOpen} toggleMenu={toggleMenu} />
-              {isOpen && <MobileMenuOverlay toggleMenu={toggleMenu} />}
-              <MobileMenu
-                isOpen={isOpen}
-                links={links}
-                handleNavigate={handleNavigate}
-                toggleVisibility={toggleVisibility}
-                language={language}
-                changeLanguage={(selectedLanguage: string) =>
-                  changeLanguage(selectedLanguage as Language)
-                }
-                isVisible={isVisible}
-                handleLogout={handleLogout}
-              />
             </div>
           </div>
         </div>
@@ -99,6 +86,22 @@ const Header: React.FC = () => {
 
       {/* Sub Header */}
       <SubHeader />
+
+      {/* MobileMenu MUST live outside <header> — backdrop-filter on the header
+          creates a new containing block that breaks fixed positioning */}
+      <MobileMenu
+        isOpen={isOpen}
+        toggleMenu={toggleMenu}
+        links={links}
+        handleNavigate={handleNavigate}
+        toggleVisibility={toggleVisibility}
+        language={language}
+        changeLanguage={(selectedLanguage: string) =>
+          changeLanguage(selectedLanguage as Language)
+        }
+        isVisible={isVisible}
+        handleLogout={handleLogout}
+      />
     </>
   );
 };

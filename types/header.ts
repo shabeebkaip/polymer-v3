@@ -33,6 +33,7 @@ export type mobileMenuOverlayType = {
 
 export type mobileMenuType = {
   isOpen: boolean;
+  toggleMenu: () => void;
   links: linksType[];
   handleNavigate: (href: string) => void;
   toggleVisibility: () => void;

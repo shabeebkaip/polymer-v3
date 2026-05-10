@@ -20,8 +20,7 @@ const Hero: React.FC = () => {
 
   return (
     <section
-      className="relative w-full overflow-hidden"
-      style={{ height: 'calc(100dvh - 120px)' }}
+      className="relative w-full overflow-hidden h-[calc(100dvh-64px)] md:h-[calc(100dvh-120px)]"
     >
       {/* Background image */}
       <Image
@@ -94,15 +93,15 @@ const Hero: React.FC = () => {
             sm+    : all 6, centred wrap                             */}
         <div className="w-full mt-3 sm:mt-5 animate-fade-in-up-delayed-4">
 
-          {/* Mobile — 3 pills */}
-          <div className="flex sm:hidden items-center justify-center gap-2 px-4">
-            {DEFAULT_FEATURES.slice(0, 3).map((feature, index) => (
+          {/* Mobile — 2×3 compact grid, no overflow */}
+          <div className="grid grid-cols-3 sm:hidden gap-1.5 px-4 w-full max-w-xs mx-auto">
+            {DEFAULT_FEATURES.map((feature, index) => (
               <div
                 key={index}
-                className="flex items-center gap-1.5 px-3 py-2 bg-white/90 backdrop-blur-sm rounded-full border border-gray-200 shadow-sm"
+                className="flex flex-col items-center gap-1 px-1.5 py-2 bg-white/90 backdrop-blur-sm rounded-xl border border-gray-200 shadow-sm text-center"
               >
-                <span className="text-sm leading-none">{feature.icon}</span>
-                <span className="text-[10px] font-medium text-gray-700 whitespace-nowrap">{feature.label}</span>
+                <span className="text-base leading-none">{feature.icon}</span>
+                <span className="text-[9px] font-medium text-gray-600 leading-tight line-clamp-2">{feature.label}</span>
               </div>
             ))}
           </div>

@@ -42,7 +42,7 @@ const SubHeader: React.FC = () => {
   if (pathname.includes('auth')) return null;
 
   return (
-    <div className="w-full bg-white border-b border-gray-200 sticky top-[64px] z-20 shadow-sm backdrop-blur-sm">
+    <div className="hidden md:block w-full bg-white border-b border-gray-200 sticky top-[64px] z-20 shadow-sm backdrop-blur-sm">
       <div className="container mx-auto px-4 lg:px-6">
         <div className="flex items-center justify-between h-14">
           {/* Left Section - Category Dropdowns & Quick Links */}
