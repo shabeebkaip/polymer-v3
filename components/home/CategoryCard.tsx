@@ -19,7 +19,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ name, icon, selectedCategor
   // Resolve icon name → Lucide component at render time
   const IconComponent =
     icon && icon in LucideIcons
-      ? (LucideIcons as Record<string, React.ElementType>)[icon]
+      ? (LucideIcons as unknown as Record<string, React.ElementType>)[icon]
       : null;
 
   return (

@@ -9,7 +9,6 @@ import Notification from './components/Notification';
 import UserButton from '@/components/shared/header/components/UserButton';
 import AuthButtons from '@/components/shared/header/components/AuthButtons';
 import MobileMenuButton from '@/components/shared/header/components/MobileMenuButton';
-import MobileMenuOverlay from '@/components/shared/header/components/MobileMenuOverlay';
 import MobileMenu from '@/components/shared/header/components/MobileMenu';
 import SubHeader from '@/components/shared/header/components/SubHeader';
 import AccountVerificationBanner from '@/components/shared/header/components/AccountVerificationBanner';
