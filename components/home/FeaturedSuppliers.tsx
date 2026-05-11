@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useSharedState } from "@/stores/sharedStore";
 import { useCmsStore } from "@/stores/cms";
 import { useRouter } from "next/navigation";
+import { useUserInfo } from "@/lib/useUserInfo";
 import {
   ChevronLeft,
   ChevronRight,
@@ -23,7 +24,16 @@ const FeaturedSuppliers: React.FC = () => {
   const router = useRouter();
   const { sellers, sellersTotal } = useSharedState();
   const { homeSections } = useCmsStore();
+  const { user } = useUserInfo();
   const [currentPage, setCurrentPage] = useState(0);
+
+  const handleSupplierClick = useCallback((supplierId: string) => {
+    if (!user) {
+      router.push(`/auth/login?redirect=/suppliers/${supplierId}`);
+    } else {
+      router.push(`/suppliers/${supplierId}`);
+    }
+  }, [user, router]);
 
   const uniqueCountries = new Set(
     sellers?.map((s) => s.location).filter(Boolean)
@@ -137,7 +147,7 @@ const FeaturedSuppliers: React.FC = () => {
                   return (
                     <button
                       key={seller._id}
-                      onClick={() => router.push(`/sellers/${seller._id}`)}
+                      onClick={() => handleSupplierClick(seller._id)}
                       className="flex-1 flex flex-col items-center justify-center gap-4 p-6 md:p-8 min-h-[160px] hover:bg-primary-50/20 transition-colors group"
                     >
                       {seller.company_logo ? (

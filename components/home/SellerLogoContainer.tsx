@@ -12,11 +12,11 @@ const SellerLogoContainer: React.FC<SellerLogoContainerProps> = ({
   const router = useRouter();
   return (
     <div
-      onClick={() => router.push(`/sellers/${seller._id}`)}
+      onClick={() => router.push(`/suppliers/${seller._id}`)}
       className="border border-primary-500 rounded-xl flex items-center justify-center w-[70px] h-[70px] bg-white hover:shadow-lg hover:border-primary-600 focus:shadow-lg focus:border-primary-600 transition-all duration-200 cursor-pointer group outline-none"
       tabIndex={0}
       onKeyDown={(e) => {
-        if (e.key === "Enter") router.push(`/sellers/${seller._id}`);
+        if (e.key === "Enter") router.push(`/suppliers/${seller._id}`);
       }}
       aria-label={seller.company_logo}
     >
