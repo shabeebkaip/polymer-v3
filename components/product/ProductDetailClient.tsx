@@ -214,8 +214,8 @@ const ProductDetailClient: React.FC<ProductDetailClientProps> = ({ product }) =>
               </div>
             )}
 
-            {/* Supplier */}
-            {product.createdBy && (
+            {/* Supplier details — only visible to logged-in users */}
+            {product.createdBy && user && (user as any)._id && (
               <div className="bg-white rounded-2xl shadow-sm border p-5 lg:p-6">
                 <CompanyDetails
                   companyDetails={product.createdBy}
@@ -226,6 +226,26 @@ const ProductDetailClient: React.FC<ProductDetailClientProps> = ({ product }) =>
                 />
               </div>
             )}
+
+            {/* Login prompt for guests */}
+            {product.createdBy && (!user || !(user as any)._id) && (
+              <div className="bg-white rounded-2xl border border-dashed border-gray-200 p-8 text-center">
+                <div className="w-12 h-12 rounded-full bg-primary-50 flex items-center justify-center mx-auto mb-3">
+                  <FileText className="w-6 h-6 text-primary-500" />
+                </div>
+                <p className="text-sm font-semibold text-gray-800 mb-1">Sign in to view supplier details</p>
+                <p className="text-xs text-gray-400 mb-4">
+                  Create a free account to connect with verified polymer suppliers.
+                </p>
+                <a
+                  href={`/auth/login?redirect=/products/${product._id}`}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary-600 hover:bg-primary-700 text-white text-sm font-semibold rounded-lg transition-colors"
+                >
+                  Sign In to View Supplier
+                </a>
+              </div>
+            )}
+
           </div>
 
           {/* ── Sticky sidebar ── */}
