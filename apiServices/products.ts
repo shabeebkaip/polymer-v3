@@ -34,10 +34,28 @@ export const getProductList = async (query: ProductQuery) => {
   }
 };
 
+// Normalize a raw filter section from the backend shape to the frontend shape
+const normalizeFilter = (f: any) => ({
+  ...f,
+  displayName: f.displayName ?? f.title ?? f.name ?? "",
+  name:        f.name        ?? f.filter ?? "",
+  data:        f.data        ?? f.options ?? [],
+  collapsible: f.collapsible ?? true,
+});
+
 export const getProductFilters = async () => {
   try {
     const response = await axiosInstance.post("/product/filter", {});
-    return response.data;
+    const raw = response.data;
+    // Normalize field names so components always get displayName / name / data
+    if (raw?.data) {
+      raw.data = {
+        ...raw.data,
+        filterSide: (raw.data.filterSide ?? []).map(normalizeFilter),
+        filterTop:  (raw.data.filterTop  ?? []).map(normalizeFilter),
+      };
+    }
+    return raw;
   } catch (error) {
     console.error("Error fetching product filters:", error);
     throw error;

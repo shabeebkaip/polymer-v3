@@ -128,12 +128,17 @@ const FeaturedSuppliers: React.FC = () => {
               {currentSellers.length > 0 ? (
                 currentSellers.map((seller) => {
                   const displayName = seller.company?.trim() || seller.name?.trim() || "Supplier";
-                  const initial = displayName.charAt(0).toUpperCase();
+                  // Up to 2 initials: "Code Ox" → "CO", "code-ox" → "CO", "SABIC" → "SA"
+                  const words = displayName.replace(/[-_]/g, " ").split(/\s+/).filter(Boolean);
+                  const monogram = words.length >= 2
+                    ? (words[0][0] + words[1][0]).toUpperCase()
+                    : displayName.slice(0, 2).toUpperCase();
+
                   return (
                     <button
                       key={seller._id}
                       onClick={() => router.push(`/sellers/${seller._id}`)}
-                      className="flex-1 flex flex-col items-center justify-center gap-3 p-6 md:p-8 min-h-[140px] hover:bg-primary-50/30 transition-colors group"
+                      className="flex-1 flex flex-col items-center justify-center gap-4 p-6 md:p-8 min-h-[160px] hover:bg-primary-50/20 transition-colors group"
                     >
                       {seller.company_logo ? (
                         <>
@@ -146,21 +151,38 @@ const FeaturedSuppliers: React.FC = () => {
                               className="object-contain max-h-14 w-auto grayscale group-hover:grayscale-0 transition-all duration-300"
                             />
                           </div>
-                          <span className="text-xs text-gray-400 font-medium truncate max-w-[100px] group-hover:text-primary-600 transition-colors">
+                          <span className="text-xs text-gray-400 font-medium truncate max-w-[110px] group-hover:text-primary-600 transition-colors">
                             {displayName}
                           </span>
                         </>
                       ) : (
-                        <>
-                          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary-600 to-primary-800 flex items-center justify-center shadow-md group-hover:shadow-primary-200 group-hover:scale-105 transition-all duration-300">
-                            <span className="text-white text-xl font-bold">
-                              {initial}
+                        /* Professional monogram card */
+                        <div className="flex flex-col items-center gap-3">
+                          {/* Monogram container */}
+                          <div className="relative w-16 h-16 rounded-xl border border-primary-200 bg-white shadow-sm group-hover:shadow-md group-hover:border-primary-400 transition-all duration-300 flex items-center justify-center overflow-hidden">
+                            {/* subtle top-left tint */}
+                            <div className="absolute inset-0 bg-gradient-to-br from-primary-50/60 to-white pointer-events-none" />
+                            {/* left accent bar */}
+                            <div className="absolute left-0 top-3 bottom-3 w-[3px] bg-primary-500 rounded-r-full" />
+                            <span className="relative text-xl font-bold tracking-tight text-primary-700 group-hover:text-primary-600 transition-colors select-none">
+                              {monogram}
                             </span>
                           </div>
-                          <span className="text-xs text-gray-500 font-medium text-center leading-tight max-w-[100px] truncate group-hover:text-primary-600 transition-colors">
-                            {displayName}
-                          </span>
-                        </>
+
+                          {/* Company name */}
+                          <div className="flex flex-col items-center gap-0.5">
+                            <span className="text-[11px] font-semibold text-gray-700 text-center leading-tight max-w-[110px] line-clamp-2 group-hover:text-primary-700 transition-colors capitalize">
+                              {displayName}
+                            </span>
+                            {/* Verified pill */}
+                            <span className="inline-flex items-center gap-1 text-[9px] text-primary-600 font-medium">
+                              <svg className="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
+                              </svg>
+                              Verified Supplier
+                            </span>
+                          </div>
+                        </div>
                       )}
                     </button>
                   );
