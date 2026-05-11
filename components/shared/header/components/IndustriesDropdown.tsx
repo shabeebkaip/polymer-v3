@@ -5,7 +5,7 @@ import Link from 'next/link';
 import {
   ChevronDown, Building2, ArrowRight, Car, Package, Cpu,
   Zap, Leaf, Heart, ShoppingBag, Layers, Factory,
-  Scissors, Workflow, FlaskConical, Wrench
+  Scissors, Workflow, Wrench
 } from 'lucide-react';
 import { getIndustryList } from '@/apiServices/shared';
 import { IndustryItem } from '@/types/industries';

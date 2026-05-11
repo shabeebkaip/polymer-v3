@@ -1,4 +1,3 @@
-import ImageContainers from '@/components/product/ImageContainers';
 import { Award, Package, Share2, CheckCircle2, Clock, AlertCircle, MapPin, ShoppingCart, FileText } from 'lucide-react';
 import QuoteRequestModal from '@/components/shared/QuoteRequestModal';
 import SampleRequestModal from '@/components/shared/SampleRequestModal';

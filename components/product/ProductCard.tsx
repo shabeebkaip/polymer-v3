@@ -58,7 +58,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, userType }) => {
       : [];
 
   const title = product.productName || polymerTags.join(" / ") || "Polymer Product";
-  const availability = (product as any).availability as string | undefined;
 
   return (
     <div

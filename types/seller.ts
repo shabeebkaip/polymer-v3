@@ -2,6 +2,7 @@ import { ProductCardTypes } from "./product";
 
 export type sellerLogoContainerType = {
   _id: string;
+  company: string;
   company_logo: string;
 }
 export type SellerLogoContainerProps  = {  

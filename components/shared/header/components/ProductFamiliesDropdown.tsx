@@ -5,7 +5,7 @@ import Link from 'next/link';
 import {
   ChevronDown, Package, ArrowRight, FlaskConical, Layers,
   Atom, Droplets, Flame, Shield, Recycle, Zap,
-  Microscope, Wind, Wrench
+  Microscope, Wind
 } from 'lucide-react';
 import { getProductFamilies } from '@/apiServices/shared';
 import { ProductFamily } from '@/types/productFamily';
