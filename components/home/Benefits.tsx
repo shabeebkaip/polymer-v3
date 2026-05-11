@@ -2,143 +2,105 @@
 import React from 'react';
 import BenefitCard from './BenefitCard';
 import { useCmsStore } from '@/stores/cms';
+import { Zap, ShieldCheck, Globe2, BarChart3 } from 'lucide-react';
+
+const FEATURES = [
+  {
+    icon: <Zap className="w-5 h-5" />,
+    title: "Lightning Fast",
+    description: "Source products and connect with verified suppliers in minutes.",
+    color: "text-primary-600",
+  },
+  {
+    icon: <ShieldCheck className="w-5 h-5" />,
+    title: "Verified Suppliers",
+    description: "Every supplier goes through a rigorous verification process.",
+    color: "text-primary-600",
+  },
+  {
+    icon: <Globe2 className="w-5 h-5" />,
+    title: "Global Reach",
+    description: "Access polymer trade across 40+ countries from one platform.",
+    color: "text-primary-600",
+  },
+  {
+    icon: <BarChart3 className="w-5 h-5" />,
+    title: "Market Intelligence",
+    description: "Real-time pricing and analytics to help you trade smarter.",
+    color: "text-primary-600",
+  },
+];
 
 const Benefits: React.FC = () => {
   const { buyersBenefits, suppliersBenefits, polymerAdvantages, homeSections } = useCmsStore();
+
   const badge = homeSections?.content?.benefitsBadge || 'Why Choose Us';
   const title = polymerAdvantages?.content?.title || 'Unique Advantages of PolymersHub';
-  const description = polymerAdvantages?.content?.description || "Experience the future of polymer trading with our comprehensive platform. Whether you're sourcing quality materials or expanding your market reach, we provide the tools and network to accelerate your success.";
+  const description = polymerAdvantages?.content?.description ||
+    "Whether you're sourcing quality polymer materials or expanding your supplier reach — PolymersHub gives you the tools, network, and intelligence to trade smarter.";
+
   return (
-    <section className="bg-gradient-to-br from-gray-50 via-white to-primary-50/30 py-8 sm:py-12 lg:py-16">
-      <div className="container mx-auto px-4 sm:px-6">
-        <div className="flex flex-col items-center gap-6 sm:gap-8 lg:gap-12">
-          {/* Enhanced Header Section */}
-          <div className="flex flex-col items-center justify-center text-center gap-3 sm:gap-4 lg:gap-6 max-w-xs sm:max-w-2xl lg:max-w-4xl">
-            <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-primary-50 text-primary-600 rounded-full text-xs sm:text-sm font-medium mb-1">
-              <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-primary-500 rounded-full animate-pulse"></div>
-              {badge}
-            </div>
-            <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold leading-tight">
-              <span className="text-primary-500">{title}</span>
-            </h1>
-            <p className="text-[var(--text-gray-tertiary)] font-normal text-sm sm:text-base lg:text-lg text-center max-w-xs sm:max-w-lg md:max-w-2xl lg:max-w-3xl leading-relaxed">
-              {description}
-            </p>
-          </div>
+    <section className="py-16 md:py-24 bg-gray-50">
+      <div className="container mx-auto px-4 max-w-6xl">
 
-          {/* Enhanced Benefits Grid */}
-          <div className="w-full ">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
-              <div className="group ">
-                <BenefitCard
-                  subtitle="Free For Buyers"
-                  title="Benefits for Buyers"
-                  registerLink="auth/register?role=buyer"
-                  benefits={buyersBenefits?.content?.description || []}
-                />
-              </div>
-              <div className="group  ">
-                <BenefitCard
-                  subtitle="Free For Suppliers"
-                  title="Benefits for Suppliers"
-                  registerLink="auth/register?role=seller"
-                  benefits={suppliersBenefits?.content?.description || []}
-                />
-              </div>
-            </div>
-          </div>
+        {/* ── Header ── */}
+        <div className="text-center mb-12">
+          <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-gray-200 text-primary-600 text-xs font-bold uppercase tracking-widest shadow-sm mb-5">
+            <span className="w-1.5 h-1.5 bg-primary-500 rounded-full animate-pulse" />
+            {badge}
+          </span>
 
-          {/* Additional Value Propositions */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 w-full max-w-6xl mt-4 sm:mt-6 lg:mt-8">
-            <div className="text-center space-y-3 sm:space-y-4 p-4 sm:p-6 bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300">
-              <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-primary-50 to-primary-50 rounded-xl sm:rounded-2xl flex items-center justify-center mx-auto">
-                <svg
-                  className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-primary-500"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M13 10V3L4 14h7v7l9-11h-7z"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-lg sm:text-xl font-semibold text-gray-900">Lightning Fast</h3>
-              <p className="text-gray-600 text-xs sm:text-sm leading-relaxed">
-                Connect with suppliers and find products in minutes, not days. Our streamlined
-                platform accelerates your sourcing process.
-              </p>
-            </div>
+          <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-4 leading-tight">
+            {title.includes('PolymersHub') ? (
+              <>
+                {title.split('PolymersHub')[0]}
+                <span className="text-primary-600">PolymersHub</span>
+                {title.split('PolymersHub')[1]}
+              </>
+            ) : title}
+          </h2>
 
-            <div className="text-center space-y-3 sm:space-y-4 p-4 sm:p-6 bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300">
-              <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-primary-50 to-primary-50 rounded-xl sm:rounded-2xl flex items-center justify-center mx-auto">
-                <svg
-                  className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-primary-500"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-lg sm:text-xl font-semibold text-gray-900">Secure & Trusted</h3>
-              <p className="text-gray-600 text-xs sm:text-sm leading-relaxed">
-                Every transaction is protected with enterprise-grade security. Build lasting
-                partnerships with verified, trusted suppliers.
-              </p>
-            </div>
+          <p className="text-gray-500 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
+            {description}
+          </p>
+        </div>
 
-            <div className="text-center space-y-3 sm:space-y-4 p-4 sm:p-6 bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300 sm:col-span-2 lg:col-span-1">
-              <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-primary-50 to-primary-50 rounded-xl sm:rounded-2xl flex items-center justify-center mx-auto">
-                <svg
-                  className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-primary-500"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
+        {/* ── Buyer / Supplier cards ── */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <BenefitCard
+            variant="buyer"
+            subtitle="Free For Buyers"
+            title="Benefits for Buyers"
+            registerLink="auth/register?role=buyer"
+            benefits={buyersBenefits?.content?.description || []}
+          />
+          <BenefitCard
+            variant="supplier"
+            subtitle="Free For Suppliers"
+            title="Benefits for Suppliers"
+            registerLink="auth/register?role=seller"
+            benefits={suppliersBenefits?.content?.description || []}
+          />
+        </div>
+
+        {/* ── Platform features ── */}
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-gray-100">
+            {FEATURES.map((f, i) => (
+              <div key={i} className="flex items-start gap-4 p-6">
+                <div className={`flex-shrink-0 w-9 h-9 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center ${f.color}`}>
+                  {f.icon}
+                </div>
+                <div>
+                  <h4 className="font-semibold text-gray-900 text-sm mb-1">{f.title}</h4>
+                  <p className="text-gray-500 text-xs leading-relaxed">{f.description}</p>
+                </div>
               </div>
-              <h3 className="text-lg sm:text-xl font-semibold text-gray-900">Global Network</h3>
-              <p className="text-gray-600 text-xs sm:text-sm leading-relaxed">
-                Access a worldwide network of polymer suppliers and buyers. Expand your reach beyond
-                geographical boundaries.
-              </p>
-            </div>
+            ))}
           </div>
         </div>
+
       </div>
-
-      {/* Enhanced CSS for animations */}
-      <style jsx>{`
-        @keyframes gradient {
-          0%,
-          100% {
-            background-position: 0% 50%;
-          }
-          50% {
-            background-position: 100% 50%;
-          }
-        }
-
-        .animate-gradient {
-          background-size: 400% 400%;
-          animation: gradient 4s ease infinite;
-        }
-      `}</style>
     </section>
   );
 };
