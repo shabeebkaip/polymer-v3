@@ -32,6 +32,9 @@ export interface SupplierCardProps {
   logo: string;
   website?: string;
   supplierId: string;
+  productCount?: number;
+  description?: string;
+  industry?: string;
 }
 
 export interface VisitShopButtonProps {
