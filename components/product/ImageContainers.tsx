@@ -45,7 +45,7 @@ const autoplay: KeenSliderPlugin = (slider) => {
   slider.on("updated", nextTimeout);
 };
 
-const ImageContainers: React.FC<ImageContainersProps> = ({ productImages }) => {
+const ImageContainers: React.FC<ImageContainersProps & { fullWidth?: boolean }> = ({ productImages, fullWidth = false }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const [sliderRef] = useKeenSlider<HTMLDivElement>(
@@ -63,16 +63,47 @@ const ImageContainers: React.FC<ImageContainersProps> = ({ productImages }) => {
     return null;
   }
 
-  // Always very compact - slightly bigger size
-  const containerHeight = "h-32 w-32"; // Fixed small square size
-  
+  if (fullWidth) {
+    return (
+      <div className="relative w-full h-full">
+        <div ref={sliderRef} className="keen-slider w-full h-full">
+          {productImages.map((image, index) => (
+            <div className="keen-slider__slide" key={index}>
+              <Image
+                src={image.fileUrl}
+                alt={`Product Image ${index + 1}`}
+                fill
+                sizes="(max-width: 768px) 100vw, 800px"
+                className="object-contain"
+                priority={index === 0}
+              />
+            </div>
+          ))}
+        </div>
+        {productImages.length > 1 && (
+          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+            {productImages.map((_, index) => (
+              <div
+                key={index}
+                className={`rounded-full transition-all duration-300 ${
+                  index === currentSlide
+                    ? 'w-5 h-2 bg-white'
+                    : 'w-2 h-2 bg-white/50'
+                }`}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="w-32 h-32 flex-shrink-0">
-      {/* Main Image Slider - Very Compact */}
       <div className="relative group w-full h-full">
-        <div 
-          ref={sliderRef} 
-          className={`keen-slider keen-slider-main rounded-lg overflow-hidden shadow-md ${containerHeight} bg-gray-50`}
+        <div
+          ref={sliderRef}
+          className="keen-slider keen-slider-main rounded-lg overflow-hidden shadow-md h-32 w-32 bg-gray-50"
         >
           {productImages.map((image, index) => (
             <div
@@ -89,8 +120,6 @@ const ImageContainers: React.FC<ImageContainersProps> = ({ productImages }) => {
             </div>
           ))}
         </div>
-
-        {/* Minimal Slide Indicators - Only show if multiple images */}
         {productImages.length > 1 && (
           <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 flex space-x-1">
             {productImages.map((_, index) => (

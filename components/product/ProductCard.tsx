@@ -65,35 +65,33 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, userType }) => {
       className="group bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden border border-gray-100 hover:border-emerald-200 flex flex-col cursor-pointer"
       onClick={() => router.push(`/products/${product._id}`)}
     >
-      {/* ── Accent strip + avatar ── */}
-      <div className="relative">
-        {/* Thin gradient strip */}
-        <div className={`h-14 bg-gradient-to-r ${accent.strip}`} />
-
-        {/* Circular avatar — overlaps strip into content */}
-        <div className="absolute left-4 -bottom-6">
-          <div className="w-14 h-14 rounded-full ring-4 ring-white shadow-md overflow-hidden">
-            {hasImage ? (
-              <Image
-                src={product.productImages![0].fileUrl}
-                alt={title}
-                width={56}
-                height={56}
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).style.display = "none";
-                }}
-              />
-            ) : (
-              <div className={`w-full h-full bg-gradient-to-br ${accent.avatar} flex items-center justify-center`}>
-                <Package className="w-6 h-6 text-white" />
-              </div>
-            )}
+      {/* ── Image / banner area ── */}
+      <div className="relative h-36 overflow-hidden">
+        {hasImage ? (
+          /* Real product image — fill the banner */
+          <Image
+            src={product.productImages![0].fileUrl}
+            alt={title}
+            fill
+            sizes="(max-width: 768px) 100vw, 400px"
+            className="object-cover"
+            onError={(e) => {
+              const parent = (e.target as HTMLImageElement).parentElement;
+              if (parent) parent.innerHTML = `<div class="w-full h-full bg-gradient-to-r ${accent.strip} flex items-center justify-center"><svg xmlns='http://www.w3.org/2000/svg' class='w-10 h-10 text-white opacity-80' fill='none' viewBox='0 0 24 24' stroke='currentColor'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10'/></svg></div>`;
+            }}
+          />
+        ) : (
+          /* Gradient placeholder with centred icon */
+          <div className={`w-full h-full bg-gradient-to-r ${accent.strip} flex items-center justify-center`}>
+            <Package className="w-10 h-10 text-white opacity-70" />
           </div>
-        </div>
+        )}
 
-        {/* Company logo — top-right of strip */}
-        <div className="absolute top-2.5 right-3 w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center p-1 border border-gray-100">
+        {/* Subtle dark scrim so overlays are readable */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent pointer-events-none" />
+
+        {/* Company logo — top-right */}
+        <div className="absolute top-2.5 right-2.5 w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center p-1 border border-gray-100">
           <Image
             src={product?.createdBy?.company_logo || FALLBACK_COMPANY_IMAGE}
             alt="Supplier"
@@ -103,23 +101,25 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, userType }) => {
             onError={(e) => { (e.target as HTMLImageElement).src = FALLBACK_COMPANY_IMAGE; }}
           />
         </div>
+
+        {/* Availability badge — bottom-left of image */}
+        {(product as any).availability && (
+          <div className="absolute bottom-2 left-3">
+            <AvailabilityBadge value={(product as any).availability} />
+          </div>
+        )}
       </div>
 
       {/* ── Content ── */}
-      <div className="pt-8 px-4 pb-4 flex flex-col flex-1">
+      <div className="pt-3 px-4 pb-4 flex flex-col flex-1">
 
-        {/* Availability + right-side meta */}
-        <div className="flex items-center justify-between mb-2">
-          {availability ? (
-            <AvailabilityBadge value={availability} />
-          ) : <span />}
-          {product.countryOfOrigin && (
-            <span className="flex items-center gap-1 text-xs text-gray-400">
-              <MapPin className="w-3 h-3 shrink-0" />
-              {product.countryOfOrigin}
-            </span>
-          )}
-        </div>
+        {/* Location meta */}
+        {product.countryOfOrigin && (
+          <div className="flex items-center gap-1 text-xs text-gray-400 mb-2">
+            <MapPin className="w-3 h-3 shrink-0" />
+            {product.countryOfOrigin}
+          </div>
+        )}
 
         {/* Title */}
         <h4 className="font-bold text-gray-900 text-sm leading-snug mb-2 line-clamp-2 group-hover:text-emerald-700 transition-colors">

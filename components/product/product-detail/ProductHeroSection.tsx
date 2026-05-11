@@ -68,10 +68,53 @@ const ProductHeroSection = ({ product, user }: { product: Product; user: UserTyp
   return (
     <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
 
-      {/* Gradient header — avatar hangs from bottom into content */}
-      <div className={`h-20 bg-gradient-to-r ${gradient} relative`}>
+      {/* ── Image gallery ── */}
+      <div className="relative w-full h-72 overflow-hidden bg-gray-50">
+        {hasImage ? (
+          <>
+            {/* Blurred backdrop — fills the space for any aspect ratio */}
+            <Image
+              src={product.productImages![0].fileUrl}
+              alt=""
+              fill
+              sizes="100vw"
+              className="object-cover scale-110 blur-2xl brightness-75 saturate-150 pointer-events-none"
+              aria-hidden="true"
+            />
+            {/* Dark overlay for depth */}
+            <div className="absolute inset-0 bg-black/30 pointer-events-none" />
+
+            {/* Actual image — contained, centred, crisp */}
+            <div className="absolute inset-0 flex items-center justify-center p-6">
+              <Image
+                src={product.productImages![0].fileUrl}
+                alt={product.productName || 'Product image'}
+                fill
+                sizes="(max-width: 768px) 100vw, 800px"
+                className="object-contain drop-shadow-2xl"
+                priority
+              />
+            </div>
+
+            {/* Image count pill — bottom right */}
+            {(product.productImages?.length ?? 0) > 1 && (
+              <div className="absolute bottom-3 right-4 flex items-center gap-1.5 px-2.5 py-1 bg-black/50 text-white text-xs rounded-full backdrop-blur-sm z-10">
+                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd"/>
+                </svg>
+                {product.productImages!.length} photos
+              </div>
+            )}
+          </>
+        ) : (
+          <div className={`w-full h-full bg-gradient-to-br ${gradient} flex flex-col items-center justify-center gap-3`}>
+            <Package className="w-14 h-14 text-white/70" />
+            <span className="text-white/60 text-sm font-medium">No image available</span>
+          </div>
+        )}
+
         {/* Company logo — top right */}
-        <div className="absolute top-3 right-3 w-10 h-10 rounded-xl bg-white shadow-md flex items-center justify-center p-1.5">
+        <div className="absolute top-3 right-3 z-10 w-10 h-10 rounded-xl bg-white shadow-md flex items-center justify-center p-1.5">
           <Image
             src={(product.createdBy as any)?.company_logo || FALLBACK_COMPANY_IMAGE}
             alt="Supplier"
@@ -82,21 +125,32 @@ const ProductHeroSection = ({ product, user }: { product: Product; user: UserTyp
           />
         </div>
 
-        {/* Avatar — anchored to bottom-left, hangs into content area */}
-        <div className="absolute bottom-0 left-5 translate-y-1/2 z-10">
-          <div className="w-16 h-16 rounded-2xl ring-4 ring-white shadow-lg overflow-hidden">
-            {hasImage ? (
-              <ImageContainers productImages={product.productImages!} isCompact={true} />
-            ) : (
-              <div className={`w-full h-full bg-gradient-to-br ${gradient} flex items-center justify-center`}>
-                <Package className="w-7 h-7 text-white" />
-              </div>
-            )}
+        {/* Availability badge — bottom left */}
+        {(product as any).availability && (
+          <div className="absolute bottom-3 left-4 z-10">
+            <AvailabilityBadge value={(product as any).availability} />
           </div>
-        </div>
+        )}
       </div>
 
-      <div className="px-5 lg:px-6 pb-5 lg:pb-6 pt-10">
+      {/* Thumbnail strip — shown when multiple images */}
+      {(product.productImages?.length ?? 0) > 1 && (
+        <div className="flex gap-2 px-4 py-3 bg-gray-50 border-b border-gray-100 overflow-x-auto scrollbar-hide">
+          {product.productImages!.map((img, i) => (
+            <div key={i} className="flex-shrink-0 w-14 h-14 rounded-lg overflow-hidden border-2 border-gray-200 hover:border-primary-400 transition-colors cursor-pointer">
+              <Image
+                src={img.fileUrl}
+                alt={`Photo ${i + 1}`}
+                width={56}
+                height={56}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div className="px-5 lg:px-6 pb-5 lg:pb-6 pt-4">
 
         {/* Share button — top right of content area */}
         <div className="flex justify-end mb-3">
@@ -111,21 +165,20 @@ const ProductHeroSection = ({ product, user }: { product: Product; user: UserTyp
         </div>
 
         {/* Badges */}
-        <div className="flex flex-wrap items-center gap-2 mb-3 mt-1">
-          {product.fdaApproved && (
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-semibold">
-              <Award className="w-3 h-3" /> FDA Approved
-            </span>
-          )}
-          {product.medicalGrade && !product.fdaApproved && (
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-purple-100 text-purple-800 text-xs font-semibold">
-              <Award className="w-3 h-3" /> Medical Grade
-            </span>
-          )}
-          {(product as any).availability && (
-            <AvailabilityBadge value={(product as any).availability} />
-          )}
-        </div>
+        {(product.fdaApproved || product.medicalGrade) && (
+          <div className="flex flex-wrap items-center gap-2 mb-3 mt-1">
+            {product.fdaApproved && (
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-semibold">
+                <Award className="w-3 h-3" /> FDA Approved
+              </span>
+            )}
+            {product.medicalGrade && !product.fdaApproved && (
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-purple-100 text-purple-800 text-xs font-semibold">
+                <Award className="w-3 h-3" /> Medical Grade
+              </span>
+            )}
+          </div>
+        )}
 
         {/* Title */}
         <h1 className="text-xl lg:text-2xl font-bold text-gray-900 mb-2 leading-tight">{title}</h1>
