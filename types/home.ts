@@ -5,6 +5,7 @@ export interface HomePageData {
   industries: any[];
   productFamilies: any[];
   sellers: any[];
+  sellersTotal: number;
   buyersBenefits: BenefitsContent;
   suppliersBenefits: BenefitsContent;
   buyerOpportunities: any[];

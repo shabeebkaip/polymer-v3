@@ -20,14 +20,20 @@ const SellerLogoContainer: React.FC<SellerLogoContainerProps> = ({
       }}
       aria-label={seller.company_logo}
     >
-      <Image
-        src={seller.company_logo}
-        alt={seller.company_logo || "Supplier Logo"}
-        width={56}
-        height={56}
-        className="object-contain w-12 h-12 sm:w-14 sm:h-14 group-hover:scale-105 transition-transform duration-200"
-        draggable={false}
-      />
+      {seller.company_logo ? (
+        <Image
+          src={seller.company_logo}
+          alt={seller.company || "Supplier Logo"}
+          width={56}
+          height={56}
+          className="object-contain w-12 h-12 sm:w-14 sm:h-14 group-hover:scale-105 transition-transform duration-200"
+          draggable={false}
+        />
+      ) : (
+        <span className="text-primary-600 font-bold text-lg select-none">
+          {seller.company?.charAt(0).toUpperCase() || "S"}
+        </span>
+      )}
     </div>
   );
 };

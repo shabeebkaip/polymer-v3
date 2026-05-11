@@ -52,7 +52,7 @@ export default function HomeDataProvider({ children, initialData }: HomeDataProv
 
     setIndustries(initialData.industries || []);
     setProductFamilies(initialData.productFamilies || []);
-    setSellers(initialData.sellers || []);
+    setSellers(initialData.sellers || [], initialData.sellersTotal || 0);
     setBuyersBenefits(initialData.buyersBenefits || {});
     setSuppliersBenefits(initialData.suppliersBenefits || {});
     setBuyerOpportunities(initialData.buyerOpportunities || []);

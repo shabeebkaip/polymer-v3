@@ -108,6 +108,7 @@ export interface SharedState {
   industries: any[];
   productFamilies: any[];
   sellers: any[];
+  sellersTotal: number;
   buyerOpportunities: any[];
   suppliersSpecialDeals: any[];
   industriesCache: CacheMetadata | null;
@@ -129,7 +130,7 @@ export interface SharedState {
   isCacheValid: (cacheKey: string) => boolean;
   setIndustries: (industries: any[]) => void;
   setProductFamilies: (families: any[]) => void;
-  setSellers: (sellers: any[]) => void;
+  setSellers: (sellers: any[], total?: number) => void;
   setBuyerOpportunities: (opportunities: any[]) => void;
   setSuppliersSpecialDeals: (deals: any[]) => void;
 }

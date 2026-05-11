@@ -53,6 +53,8 @@ export default async function HomePage() {
           : [],
       sellers:
         sellersRes.status === "fulfilled" ? sellersRes.value?.data || [] : [],
+      sellersTotal:
+        sellersRes.status === "fulfilled" ? sellersRes.value?.total || 0 : 0,
       buyersBenefits:
         buyersBenefitsRes.status === "fulfilled"
           ? buyersBenefitsRes.value?.data || {}
@@ -92,6 +94,7 @@ export default async function HomePage() {
       industries: [],
       productFamilies: [],
       sellers: [],
+      sellersTotal: 0,
       buyersBenefits: {},
       suppliersBenefits: {},
       buyerOpportunities: [],

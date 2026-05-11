@@ -20,6 +20,7 @@ export const useSharedState = create<SharedState>((set, get) => ({
   industries: [],
   productFamilies: [],
   sellers: [],
+  sellersTotal: 0,
   buyerOpportunities: [],
   suppliersSpecialDeals: [],
   
@@ -227,10 +228,11 @@ export const useSharedState = create<SharedState>((set, get) => ({
     });
   },
 
-  setSellers: (sellers) => {
+  setSellers: (sellers, total) => {
     const now = Date.now();
-    set({ 
-      sellers, 
+    set({
+      sellers,
+      sellersTotal: total ?? sellers.length,
       sellersLoading: false,
       sellersCache: {
         lastFetch: now,
