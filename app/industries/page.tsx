@@ -104,21 +104,16 @@ const Page: React.FC = () => {
       {/* ═══════════════════════════════════════════════════════════
           SECTION 1 — HERO
       ═══════════════════════════════════════════════════════════ */}
-      <section className="relative overflow-hidden bg-white h-[calc(100dvh-64px)] md:h-[calc(100dvh-120px)]">
-
-            {/* Right half — CSS background image */}
-            <div
-              className="absolute right-0 top-0 h-full hidden lg:block"
-              style={{
-                width: '55%',
-                backgroundImage: 'url(/industries-bg.png)',
-                backgroundSize: 'contain',
-                backgroundRepeat: 'no-repeat',
-                backgroundPosition: 'center center',
-              }}
-              aria-hidden="true"
-            />
-
+      <section
+        className="relative overflow-hidden h-[calc(100dvh-64px)] md:h-[calc(100dvh-120px)]"
+        style={{
+          backgroundImage: 'url(/industries-bg.png)',
+          backgroundSize: '52%',
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'right center',
+          backgroundColor: '#fff',
+        }}
+      >
         <div className="relative h-full container mx-auto px-4 lg:px-8 flex flex-col justify-center">
           <div className="flex flex-col gap-6 lg:w-[48%] py-12 lg:py-0">
 
