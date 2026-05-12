@@ -3,4 +3,5 @@ export interface IndustryItem {
   name: string;
   bg: string;
   image: string;
+  icon?: string;
 }
