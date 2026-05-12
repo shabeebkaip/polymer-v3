@@ -248,7 +248,7 @@ const ProductsByBrand: React.FC = () => {
                   </div>
                 ))}
               {products?.slice(0, 4).map((product) => (
-                <div key={product._id} className="transform transition-all duration-300 hover:scale-105 hover:shadow-xl">
+                <div key={product._id}>
                   <ProductCard
                     product={product}
                     userType={user?.user_type}
