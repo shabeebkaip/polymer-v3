@@ -104,12 +104,25 @@ const Page: React.FC = () => {
       {/* ═══════════════════════════════════════════════════════════
           SECTION 1 — HERO
       ═══════════════════════════════════════════════════════════ */}
-      <section className="relative overflow-hidden bg-white h-[calc(100dvh-120px)]">
-        <div className="container mx-auto px-4 lg:px-8 h-full">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full">
+      <section className="relative overflow-hidden bg-white h-[calc(100dvh-64px)] md:h-[calc(100dvh-120px)]">
+
+            {/* Right image — absolutely fills right half */}
+            <div className="absolute right-0 top-0 h-full hidden lg:block" style={{ width: '55%' }}>
+              <Image
+                src="/industries-bg.png"
+                alt="Industries served by Polymers Hub"
+                fill
+                priority
+                sizes="55vw"
+                className="object-contain object-center"
+              />
+            </div>
+
+        <div className="relative h-full container mx-auto px-4 lg:px-8 flex flex-col justify-center">
+          <div className="flex flex-col gap-6 lg:w-[48%] py-12 lg:py-0">
 
             {/* Left column — vertically centred */}
-            <div className="flex flex-col justify-center gap-6 z-10 py-12 lg:py-0">
+            <div className="flex flex-col gap-6 z-10">
 
               {/* Badge */}
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary-500 bg-white text-primary-600 text-[11px] font-bold uppercase tracking-widest w-fit">
@@ -175,18 +188,6 @@ const Page: React.FC = () => {
                   ))}
                 </div>
               </div>
-            </div>
-
-            {/* Right column — image fills full column height */}
-            <div className="relative hidden lg:block h-full">
-              <Image
-                src="/industries-bg.png"
-                alt="Industries served by Polymers Hub"
-                fill
-                priority
-                sizes="50vw"
-                className="object-contain object-center"
-              />
             </div>
           </div>
         </div>
