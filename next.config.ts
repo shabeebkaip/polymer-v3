@@ -14,6 +14,11 @@ const nextConfig: NextConfig = {
         hostname: "media.knowde.com",
         pathname: "/**",
       },
+      {
+        // Allow any HTTPS hostname for user-uploaded supplier/product logos
+        protocol: "https",
+        hostname: "**",
+      },
     ],
   },
 };
