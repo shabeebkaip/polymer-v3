@@ -113,7 +113,10 @@ const Page: React.FC = () => {
           backgroundPosition: 'center center',
         }}
       >
-        <div className="relative h-full container mx-auto px-4 lg:px-8 flex flex-col justify-center">
+        {/* White gradient — keeps left content readable over bg image */}
+        <div className="absolute inset-0 bg-gradient-to-r from-white via-white/85 to-transparent pointer-events-none z-0" />
+
+        <div className="relative z-10 h-full container mx-auto px-4 lg:px-8 flex flex-col justify-center">
           <div className="flex flex-col gap-6 lg:w-[48%] py-12 lg:py-0">
 
             {/* Left column — vertically centred */}
