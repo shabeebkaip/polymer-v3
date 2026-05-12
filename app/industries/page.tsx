@@ -206,12 +206,6 @@ const Page: React.FC = () => {
               Discover solutions tailored for your sector&apos;s unique challenges and opportunities.
             </p>
           </div>
-          <Link
-            href="/products"
-            className="inline-flex items-center gap-2 border border-primary-600 text-primary-600 hover:bg-primary-50 px-4 py-2 rounded-lg font-semibold text-sm transition-colors whitespace-nowrap self-start sm:self-auto"
-          >
-            View All Industries <ArrowRight className="w-4 h-4" />
-          </Link>
         </div>
 
         {loading ? (
@@ -314,10 +308,10 @@ const Page: React.FC = () => {
               </div>
             </div>
 
-            {/* Row 2: small horizontal cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-              {[industries[3], industries[4], industries[5], industries[6]].map((industry, idx) =>
-                industry ? (
+            {/* Row 2: all remaining industries */}
+            {industries.slice(3).length > 0 && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+                {industries.slice(3).map((industry) => (
                   <button
                     key={industry._id}
                     onClick={() => router.push(`/products?industry=${industry._id}`)}
@@ -338,23 +332,10 @@ const Page: React.FC = () => {
                       </span>
                     </div>
                   </button>
-                ) : (
-                  <div key={idx} />
-                )
-              )}
-            </div>
+                ))}
+              </div>
+            )}
 
-            {/* Pagination dots */}
-            <div className="flex items-center justify-center gap-2 mt-2">
-              {[0, 1, 2, 3].map((i) => (
-                <span
-                  key={i}
-                  className={`rounded-full transition-colors ${
-                    i === 0 ? "w-5 h-2 bg-primary-500" : "w-2 h-2 bg-gray-300"
-                  }`}
-                />
-              ))}
-            </div>
           </div>
         ) : (
           <div className="text-center py-12 md:py-16">
@@ -370,52 +351,52 @@ const Page: React.FC = () => {
       {/* ══════════════════════════════════════════════
           SECTION 3 — INNOVATION
       ══════════════════════════════════════════════ */}
-      <section className="w-full flex flex-col lg:flex-row">
+      <section className="container mx-auto px-4 md:px-6 lg:px-8 py-10 md:py-16">
+        <div className="flex flex-col lg:flex-row overflow-hidden rounded-2xl border border-gray-100 shadow-sm">
 
-        {/* Left — image */}
-        <div
-          className="w-full lg:w-1/2 min-h-[260px] sm:min-h-[340px] md:min-h-[420px] lg:min-h-[480px]"
-          style={{
-            backgroundImage: 'url(/industries/innovation.png)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-          }}
-        />
+          {/* Left — image */}
+          <div
+            className="w-full lg:w-1/2 min-h-[260px] sm:min-h-[340px] md:min-h-[420px] lg:min-h-0"
+            style={{
+              backgroundImage: 'url(/industries/innovation.png)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            }}
+          />
 
-        {/* Right — content */}
-        <div className="relative w-full lg:w-1/2 bg-white px-4 py-10 sm:px-8 sm:py-12 md:p-12 lg:p-16 flex flex-col justify-center overflow-hidden">
-          <img src="/globe-network.png" alt="" aria-hidden="true"
-            className="absolute -top-8 -right-8 w-36 md:w-48 opacity-10 pointer-events-none select-none" />
-          <img src="/hero_element_2.svg" alt="" aria-hidden="true"
-            className="absolute bottom-4 right-4 w-24 md:w-32 opacity-10 pointer-events-none select-none" />
-
-          <div className="relative z-10 max-w-xl">
-            <p className="text-primary-600 text-[10px] md:text-xs font-bold uppercase tracking-widest mb-3 md:mb-4">
-              Industry Solutions
-            </p>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-gray-900 leading-tight mb-4 md:mb-5">
-              Driving{" "}
-              <span className="text-primary-500">Innovation</span>{" "}
-              Across Key Industries
-            </h2>
-            <p className="text-gray-500 text-sm md:text-base leading-relaxed mb-6 md:mb-8">
-              Our polymer materials help industries improve performance, reduce weight,
-              enhance safety and achieve sustainability goals.
-            </p>
-            <ul className="flex flex-col gap-2.5 md:gap-3 mb-6 md:mb-8">
-              {INNOVATION_BULLETS.map((bullet) => (
-                <li key={bullet} className="flex items-center gap-3">
-                  <CheckCircle2 className="w-4 h-4 md:w-5 md:h-5 text-primary-500 shrink-0" />
-                  <span className="text-gray-700 text-sm font-medium">{bullet}</span>
-                </li>
-              ))}
-            </ul>
-            <Link
-              href="/products"
-              className="inline-flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-lg font-semibold text-sm transition-colors w-full sm:w-auto"
-            >
-              View Solutions <ArrowRight className="w-4 h-4" />
-            </Link>
+          {/* Right — content */}
+          <div className="relative w-full lg:w-1/2 bg-white px-6 py-10 sm:px-10 sm:py-12 md:p-12 lg:p-14 flex flex-col justify-center overflow-hidden">
+            <img src="/globe-network.png" alt="" aria-hidden="true"
+              className="absolute -top-8 -right-8 w-36 md:w-48 opacity-10 pointer-events-none select-none" />
+  
+            <div className="relative z-10 max-w-xl">
+              <p className="text-primary-600 text-[10px] md:text-xs font-bold uppercase tracking-widest mb-3 md:mb-4">
+                Industry Solutions
+              </p>
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-gray-900 leading-tight mb-4 md:mb-5">
+                Driving{" "}
+                <span className="text-primary-500">Innovation</span>{" "}
+                Across Key Industries
+              </h2>
+              <p className="text-gray-500 text-sm md:text-base leading-relaxed mb-6 md:mb-8">
+                Our polymer materials help industries improve performance, reduce weight,
+                enhance safety and achieve sustainability goals.
+              </p>
+              <ul className="flex flex-col gap-2.5 md:gap-3 mb-6 md:mb-8">
+                {INNOVATION_BULLETS.map((bullet) => (
+                  <li key={bullet} className="flex items-center gap-3">
+                    <CheckCircle2 className="w-4 h-4 md:w-5 md:h-5 text-primary-500 shrink-0" />
+                    <span className="text-gray-700 text-sm font-medium">{bullet}</span>
+                  </li>
+                ))}
+              </ul>
+              <Link
+                href="/products"
+                className="inline-flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-lg font-semibold text-sm transition-colors w-full sm:w-auto"
+              >
+                View Solutions <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
           </div>
         </div>
       </section>
