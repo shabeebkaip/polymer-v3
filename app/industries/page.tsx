@@ -384,13 +384,13 @@ const Page: React.FC = () => {
 
         {/* Left half — innovation image */}
         <div
-          className="relative w-full lg:w-1/2 min-h-[480px]"
+          className="w-full lg:w-1/2 min-h-[480px]"
           style={{
             backgroundImage: 'url(/industries/innovation.png)',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
           }}
-        />
+        ></div>
 
         {/* Right half — content */}
         <div className="relative w-full lg:w-1/2 bg-white p-12 lg:p-16 flex flex-col justify-center overflow-hidden">
