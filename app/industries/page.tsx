@@ -382,12 +382,15 @@ const Page: React.FC = () => {
       ═══════════════════════════════════════════════════════════ */}
       <section className="w-full flex flex-col lg:flex-row">
 
-        {/* Left half — image placeholder */}
-        <div className="relative w-full lg:w-1/2 min-h-[480px] bg-gray-900 flex items-center justify-center">
-          <span className="text-white/50 text-sm font-medium select-none">
-            Innovation Image Coming Soon
-          </span>
-        </div>
+        {/* Left half — innovation image */}
+        <div
+          className="relative w-full lg:w-1/2 min-h-[480px]"
+          style={{
+            backgroundImage: 'url(/industries/innovation.png)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+        />
 
         {/* Right half — content */}
         <div className="relative w-full lg:w-1/2 bg-white p-12 lg:p-16 flex flex-col justify-center overflow-hidden">
