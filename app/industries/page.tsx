@@ -83,9 +83,9 @@ const Page: React.FC = () => {
   return (
     <div>
       {/* ── Hero ── */}
-      <section className="relative overflow-hidden bg-white">
-        <div className="container mx-auto px-4 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-center min-h-[calc(100vh-120px)] py-12 lg:py-0">
+      <section className="relative overflow-hidden bg-white min-h-[calc(100vh-120px)] flex items-center">
+        <div className="container mx-auto px-4 lg:px-8 w-full py-12 lg:py-0">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
 
             {/* Left column */}
             <div className="flex flex-col gap-6 z-10">
@@ -159,7 +159,7 @@ const Page: React.FC = () => {
             </div>
 
             {/* Right column — hero image */}
-            <div className="relative h-[380px] lg:h-[620px] w-full">
+            <div className="relative h-[320px] md:h-[480px] lg:h-[580px] w-full">
               <Image
                 src="/industries-bg.png"
                 alt="Industries served by Polymers Hub"
