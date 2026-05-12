@@ -77,7 +77,7 @@ const SuppliersPage: React.FC = () => {
             {/* Right — world map */}
             <div className="hidden lg:flex items-center justify-center h-72 xl:h-96 relative">
               <Image
-                src="/ChatGPT Image May 11, 2026, 11_14_54 PM.png"
+                src="/globe-network.png"
                 alt="Global supplier network"
                 fill
                 className="object-contain object-center"
