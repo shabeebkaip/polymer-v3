@@ -6,6 +6,8 @@ import { useSharedState } from '@/stores/sharedStore';
 import { Building2, Globe2, ShieldCheck, Package, Search, SlidersHorizontal, Headphones, X } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useUserInfo } from '@/lib/useUserInfo';
+import { useRouter } from 'next/navigation';
 
 const FEATURES = [
   { icon: <ShieldCheck className="w-4 h-4 text-primary-600" />, title: 'Fully Verified',  desc: 'Every supplier is vetted for quality and compliance' },
@@ -16,9 +18,19 @@ const FEATURES = [
 
 const SuppliersPage: React.FC = () => {
   const { sellers, fetchSellers, sellersLoading } = useSharedState();
+  const { user, isInitialized } = useUserInfo();
+  const router = useRouter();
   const [search, setSearch] = useState('');
 
-  useEffect(() => { fetchSellers(); }, [fetchSellers]);
+  useEffect(() => {
+    if (isInitialized && !user) {
+      router.replace('/auth/login?redirect=/suppliers');
+    }
+  }, [isInitialized, user, router]);
+
+  useEffect(() => { if (user) fetchSellers(); }, [fetchSellers, user]);
+
+  if (!isInitialized || !user) return null;
 
   const totalCountries = new Set(sellers.map((s: any) => s.location).filter(Boolean)).size;
   const totalProducts  = sellers.reduce((acc: number, s: any) => acc + (s.products?.length || 0), 0);
