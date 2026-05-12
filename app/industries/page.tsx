@@ -104,12 +104,12 @@ const Page: React.FC = () => {
       {/* ═══════════════════════════════════════════════════════════
           SECTION 1 — HERO
       ═══════════════════════════════════════════════════════════ */}
-      <section className="relative overflow-hidden bg-white min-h-[calc(100vh-120px)] flex items-center">
-        <div className="container mx-auto px-4 lg:px-8 w-full py-12 lg:py-0">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+      <section className="relative overflow-hidden bg-white h-[calc(100dvh-120px)]">
+        <div className="container mx-auto px-4 lg:px-8 h-full">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full">
 
-            {/* Left column */}
-            <div className="flex flex-col gap-6 z-10">
+            {/* Left column — vertically centred */}
+            <div className="flex flex-col justify-center gap-6 z-10 py-12 lg:py-0">
 
               {/* Badge */}
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary-500 bg-white text-primary-600 text-[11px] font-bold uppercase tracking-widest w-fit">
@@ -126,8 +126,9 @@ const Page: React.FC = () => {
 
               {/* Description */}
               <p className="text-gray-500 text-base leading-relaxed max-w-md">
-                High-performance polymer materials and chemical solutions powering
-                innovation across industries. Built for today. Engineered for tomorrow.
+                Powering innovation across industries with high-performance
+                polymer materials and chemical solutions.<br />
+                Built for today. Ready for tomorrow.
               </p>
 
               {/* CTA Buttons */}
@@ -159,16 +160,31 @@ const Page: React.FC = () => {
                   </div>
                 ))}
               </div>
+
+              {/* Trusted by */}
+              <div>
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">
+                  Trusted by Industry Leaders
+                </p>
+                <div className="flex flex-wrap items-center gap-6">
+                  {BRANDS.map((brand) => (
+                    <span key={brand.name} className="text-gray-400 font-bold text-sm tracking-tight leading-none">
+                      {brand.name}
+                      {brand.sub && <span className="block text-[9px] font-normal">{brand.sub}</span>}
+                    </span>
+                  ))}
+                </div>
+              </div>
             </div>
 
-            {/* Right column — hero image */}
-            <div className="relative h-[320px] md:h-[480px] lg:h-[580px] w-full">
+            {/* Right column — image fills full column height */}
+            <div className="relative hidden lg:block h-full">
               <Image
                 src="/industries-bg.png"
                 alt="Industries served by Polymers Hub"
                 fill
                 priority
-                sizes="(max-width: 1024px) 100vw, 50vw"
+                sizes="50vw"
                 className="object-contain object-center"
               />
             </div>
