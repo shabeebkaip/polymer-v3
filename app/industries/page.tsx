@@ -101,150 +101,144 @@ const Page: React.FC = () => {
 
   return (
     <div className="bg-white">
-      {/* ═══════════════════════════════════════════════════════════
+
+      {/* ══════════════════════════════════════════════
           SECTION 1 — HERO
-      ═══════════════════════════════════════════════════════════ */}
+      ══════════════════════════════════════════════ */}
       <section
-        className="relative overflow-hidden h-[calc(100dvh-64px)] md:h-[calc(100dvh-120px)]"
+        className="relative overflow-hidden min-h-[100dvh] md:min-h-0 md:h-[calc(100dvh-120px)] flex items-center"
         style={{
           backgroundImage: 'url(/industries-bg.png)',
           backgroundSize: 'cover',
           backgroundRepeat: 'no-repeat',
-          backgroundPosition: 'center center',
+          backgroundPosition: 'top right',
         }}
       >
-        {/* White gradient — keeps left content readable over bg image */}
-        <div className="absolute inset-0 bg-gradient-to-r from-white via-white/85 to-transparent pointer-events-none z-0" />
+        {/* Stronger gradient on mobile (full cover), fades on desktop */}
+        <div className="absolute inset-0 bg-white/90 md:bg-gradient-to-r md:from-white md:via-white/90 md:to-white/20 pointer-events-none z-0" />
 
-        <div className="relative z-10 h-full container mx-auto px-4 lg:px-8 flex flex-col justify-center">
-          <div className="flex flex-col gap-6 lg:w-[48%] py-12 lg:py-0">
+        <div className="relative z-10 w-full container mx-auto px-4 md:px-6 lg:px-8 py-16 md:py-12 lg:py-0">
+          <div className="flex flex-col gap-5 md:gap-6 max-w-lg md:max-w-xl lg:w-[50%] lg:max-w-none">
 
-            {/* Left column — vertically centred */}
-            <div className="flex flex-col gap-6 z-10">
+            {/* Badge */}
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-primary-500 bg-white/90 text-primary-600 text-[10px] md:text-[11px] font-bold uppercase tracking-widest w-fit">
+              <span className="w-2 h-2 bg-primary-500 rounded-full shrink-0" />
+              Industries We Serve
+            </div>
 
-              {/* Badge */}
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary-500 bg-white text-primary-600 text-[11px] font-bold uppercase tracking-widest w-fit">
-                <span className="w-2 h-2 bg-primary-500 rounded-full" />
-                Industries We Serve
-              </div>
+            {/* Heading */}
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[54px] font-extrabold leading-[1.1] text-gray-900">
+              Advanced Polymer<br />
+              Solutions for Every<br />
+              <span className="text-primary-500">Industry</span>
+            </h1>
 
-              {/* Heading */}
-              <h1 className="text-4xl md:text-5xl lg:text-[54px] font-extrabold leading-[1.1] text-gray-900">
-                Advanced Polymer<br />
-                Solutions for Every<br />
-                <span className="text-primary-500">Industry</span>
-              </h1>
+            {/* Description */}
+            <p className="text-gray-600 text-sm md:text-base leading-relaxed max-w-sm md:max-w-md">
+              Powering innovation across industries with high-performance
+              polymer materials and chemical solutions.
+              Built for today. Ready for tomorrow.
+            </p>
 
-              {/* Description */}
-              <p className="text-gray-500 text-base leading-relaxed max-w-md">
-                Powering innovation across industries with high-performance
-                polymer materials and chemical solutions.<br />
-                Built for today. Ready for tomorrow.
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row gap-3">
+              <a
+                href="#industries"
+                className="inline-flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-lg font-semibold text-sm transition-colors w-full sm:w-auto"
+              >
+                Explore Industries <ArrowRight className="w-4 h-4" />
+              </a>
+              <Link
+                href="/products"
+                className="inline-flex items-center justify-center gap-2 border border-primary-600 text-primary-600 hover:bg-primary-50 px-6 py-3 rounded-lg font-semibold text-sm transition-colors w-full sm:w-auto"
+              >
+                View All Products <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+
+            {/* Stats row */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 md:gap-3">
+              {STATS.map(({ icon: Icon, value, label }) => (
+                <div
+                  key={label}
+                  className="border border-gray-200 bg-white/80 backdrop-blur-sm rounded-xl p-3 flex flex-col gap-1"
+                >
+                  <Icon className="w-4 h-4 text-primary-500" />
+                  <span className="text-base md:text-lg font-extrabold text-primary-600">{value}</span>
+                  <span className="text-[10px] md:text-[11px] text-gray-500 leading-tight">{label}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Trusted by — hidden on very small screens */}
+            <div className="hidden sm:block">
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
+                Trusted by Industry Leaders
               </p>
-
-              {/* CTA Buttons */}
-              <div className="flex flex-wrap gap-3">
-                <a
-                  href="#industries"
-                  className="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-lg font-semibold text-sm transition-colors"
-                >
-                  Explore Industries <ArrowRight className="w-4 h-4" />
-                </a>
-                <Link
-                  href="/products"
-                  className="inline-flex items-center gap-2 border border-primary-600 text-primary-600 hover:bg-primary-50 px-6 py-3 rounded-lg font-semibold text-sm transition-colors"
-                >
-                  View All Products <ArrowRight className="w-4 h-4" />
-                </Link>
-              </div>
-
-              {/* Stats row */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {STATS.map(({ icon: Icon, value, label }) => (
-                  <div
-                    key={label}
-                    className="border border-gray-200 rounded-xl p-3 flex flex-col gap-1.5"
-                  >
-                    <Icon className="w-4 h-4 text-primary-500" />
-                    <span className="text-lg font-extrabold text-primary-600">{value}</span>
-                    <span className="text-[11px] text-gray-500 leading-tight">{label}</span>
-                  </div>
+              <div className="flex flex-wrap items-center gap-4 md:gap-6">
+                {BRANDS.map((brand) => (
+                  <span key={brand.name} className="text-gray-400 font-bold text-xs md:text-sm tracking-tight leading-none">
+                    {brand.name}
+                    {brand.sub && <span className="block text-[9px] font-normal">{brand.sub}</span>}
+                  </span>
                 ))}
               </div>
-
-              {/* Trusted by */}
-              <div>
-                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">
-                  Trusted by Industry Leaders
-                </p>
-                <div className="flex flex-wrap items-center gap-6">
-                  {BRANDS.map((brand) => (
-                    <span key={brand.name} className="text-gray-400 font-bold text-sm tracking-tight leading-none">
-                      {brand.name}
-                      {brand.sub && <span className="block text-[9px] font-normal">{brand.sub}</span>}
-                    </span>
-                  ))}
-                </div>
-              </div>
             </div>
+
           </div>
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════════
+      {/* ══════════════════════════════════════════════
           SECTION 2 — EXPLORE INDUSTRIES
-      ═══════════════════════════════════════════════════════════ */}
-      <section id="industries" className="container mx-auto px-4 lg:px-8 py-16">
+      ══════════════════════════════════════════════ */}
+      <section id="industries" className="container mx-auto px-4 md:px-6 lg:px-8 py-10 md:py-16">
 
         {/* Section header */}
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-6 md:mb-10">
           <div>
-            <h2 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">
+            <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 mb-1">
               Explore Industries
             </h2>
-            <p className="text-gray-600 max-w-md">
+            <p className="text-gray-500 text-sm md:text-base max-w-md">
               Discover solutions tailored for your sector&apos;s unique challenges and opportunities.
             </p>
           </div>
-          <a
-            href="#industries"
-            className="inline-flex items-center gap-2 border border-primary-600 text-primary-600 hover:bg-primary-50 px-5 py-2.5 rounded-lg font-semibold text-sm transition-colors whitespace-nowrap"
+          <Link
+            href="/products"
+            className="inline-flex items-center gap-2 border border-primary-600 text-primary-600 hover:bg-primary-50 px-4 py-2 rounded-lg font-semibold text-sm transition-colors whitespace-nowrap self-start sm:self-auto"
           >
             View All Industries <ArrowRight className="w-4 h-4" />
-          </a>
+          </Link>
         </div>
 
         {loading ? (
-          /* Loading skeleton */
           <div className="flex flex-col gap-4">
-            {/* Row 1 skeleton */}
             <div className="flex flex-col lg:flex-row gap-4">
-              <Skeleton className="w-full lg:w-[45%] min-h-[320px] rounded-2xl" />
+              <Skeleton className="w-full lg:w-[45%] h-[240px] md:h-[320px] rounded-2xl" />
               <div className="flex flex-col gap-4 flex-1">
-                <Skeleton className="h-[152px] rounded-2xl" />
-                <Skeleton className="h-[152px] rounded-2xl" />
+                <Skeleton className="h-[120px] md:h-[152px] rounded-2xl" />
+                <Skeleton className="h-[120px] md:h-[152px] rounded-2xl" />
               </div>
             </div>
-            {/* Row 2 skeleton */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
               {Array.from({ length: 4 }).map((_, i) => (
-                <Skeleton key={i} className="h-[100px] rounded-xl" />
+                <Skeleton key={i} className="h-[90px] md:h-[100px] rounded-xl" />
               ))}
             </div>
           </div>
         ) : industries.length > 0 ? (
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-3 md:gap-4">
 
-            {/* Row 1: featured + 2 medium cards */}
-            <div className="flex flex-col lg:flex-row gap-4">
+            {/* Row 1: featured + 2 medium */}
+            <div className="flex flex-col lg:flex-row gap-3 md:gap-4">
 
-              {/* Featured card (industries[0]) */}
+              {/* Featured card */}
               {industries[0] && (
                 <button
                   onClick={() => router.push(`/products?industry=${industries[0]._id}`)}
-                  className="group relative w-full lg:w-[45%] min-h-[320px] rounded-2xl overflow-hidden text-left cursor-pointer"
+                  className="group relative w-full lg:w-[45%] min-h-[240px] md:min-h-[320px] rounded-2xl overflow-hidden text-left cursor-pointer"
                 >
-                  {/* Background */}
                   <div className="absolute inset-0 bg-gradient-to-br from-gray-800 to-gray-900" />
                   {industries[0].bg && (
                     <Image
@@ -255,25 +249,20 @@ const Page: React.FC = () => {
                       className="object-cover opacity-50 group-hover:opacity-60 transition-opacity duration-300"
                     />
                   )}
-                  {/* Dark overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-
-                  {/* Featured badge */}
-                  <div className="absolute top-4 left-4 z-10">
-                    <span className="bg-primary-500 text-white text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wide">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                  <div className="absolute top-3 left-3 md:top-4 md:left-4 z-10">
+                    <span className="bg-primary-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wide">
                       Featured
                     </span>
                   </div>
-
-                  {/* Bottom content */}
-                  <div className="absolute bottom-0 left-0 right-0 z-10 p-6">
-                    <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center mb-3 border border-white/30">
-                      <Factory className="w-5 h-5 text-white" strokeWidth={1.5} />
+                  <div className="absolute bottom-0 left-0 right-0 z-10 p-4 md:p-6">
+                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center mb-2 md:mb-3 border border-white/30">
+                      <Factory className="w-4 h-4 md:w-5 md:h-5 text-white" strokeWidth={1.5} />
                     </div>
-                    <h3 className="text-white font-bold text-2xl mb-1 leading-tight">
+                    <h3 className="text-white font-bold text-lg md:text-2xl mb-1 leading-tight">
                       {industries[0].name}
                     </h3>
-                    <p className="text-gray-300 text-sm mb-3 line-clamp-2">
+                    <p className="text-gray-300 text-xs md:text-sm mb-2 md:mb-3 line-clamp-2">
                       Advanced polymer solutions engineered for {industries[0].name.toLowerCase()} sector performance.
                     </p>
                     <span className="inline-flex items-center gap-1.5 text-white text-sm font-semibold group-hover:gap-2.5 transition-all">
@@ -283,14 +272,14 @@ const Page: React.FC = () => {
                 </button>
               )}
 
-              {/* Medium cards stacked (industries[1] and industries[2]) */}
-              <div className="flex flex-col gap-4 flex-1">
+              {/* Medium cards stacked */}
+              <div className="flex flex-col gap-3 md:gap-4 flex-1">
                 {[industries[1], industries[2]].map((industry, idx) =>
                   industry ? (
                     <button
                       key={industry._id}
                       onClick={() => router.push(`/products?industry=${industry._id}`)}
-                      className="group relative w-full bg-white border border-gray-200 rounded-2xl p-6 text-left hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 min-h-[152px] flex flex-col justify-between overflow-hidden"
+                      className="group relative w-full bg-white border border-gray-200 rounded-2xl p-4 md:p-6 text-left hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 min-h-[120px] md:min-h-[152px] flex flex-col justify-between overflow-hidden"
                     >
                       {industry.bg && (
                         <Image
@@ -302,17 +291,17 @@ const Page: React.FC = () => {
                         />
                       )}
                       <div className="relative z-10">
-                        <div className="w-9 h-9 rounded-full bg-primary-50 flex items-center justify-center border border-primary-100 mb-3">
+                        <div className="w-8 h-8 rounded-full bg-primary-50 flex items-center justify-center border border-primary-100 mb-2 md:mb-3">
                           <Factory className="w-4 h-4 text-primary-600" strokeWidth={1.5} />
                         </div>
-                        <h3 className="font-bold text-gray-900 text-base leading-snug mb-1 group-hover:text-primary-600 transition-colors">
+                        <h3 className="font-bold text-gray-900 text-sm md:text-base leading-snug mb-1 group-hover:text-primary-600 transition-colors">
                           {industry.name}
                         </h3>
-                        <p className="text-gray-500 text-sm line-clamp-2">
+                        <p className="text-gray-500 text-xs md:text-sm line-clamp-2 hidden sm:block">
                           Tailored polymer solutions for the {industry.name.toLowerCase()} industry.
                         </p>
                       </div>
-                      <span className="relative z-10 inline-flex items-center gap-1 text-primary-600 text-sm font-semibold mt-3 group-hover:gap-2 transition-all">
+                      <span className="relative z-10 inline-flex items-center gap-1 text-primary-600 text-xs md:text-sm font-semibold mt-2 md:mt-3 group-hover:gap-2 transition-all">
                         Explore Industry <ArrowRight className="w-3.5 h-3.5" />
                       </span>
                     </button>
@@ -323,14 +312,14 @@ const Page: React.FC = () => {
               </div>
             </div>
 
-            {/* Row 2: 4 small horizontal cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Row 2: small horizontal cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
               {[industries[3], industries[4], industries[5], industries[6]].map((industry, idx) =>
                 industry ? (
                   <button
                     key={industry._id}
                     onClick={() => router.push(`/products?industry=${industry._id}`)}
-                    className="group flex items-start gap-3 bg-white border border-gray-200 rounded-xl p-5 text-left hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
+                    className="group flex items-start gap-3 bg-white border border-gray-200 rounded-xl p-4 md:p-5 text-left hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
                   >
                     <div className="w-8 h-8 rounded-full bg-primary-50 flex items-center justify-center border border-primary-100 shrink-0 mt-0.5">
                       <Factory className="w-4 h-4 text-primary-600" strokeWidth={1.5} />
@@ -339,11 +328,11 @@ const Page: React.FC = () => {
                       <h3 className="font-bold text-gray-900 text-sm leading-snug mb-1 group-hover:text-primary-600 transition-colors truncate">
                         {industry.name}
                       </h3>
-                      <p className="text-gray-500 text-xs line-clamp-2 mb-2">
+                      <p className="text-gray-500 text-xs line-clamp-2 mb-1.5">
                         Polymer solutions for {industry.name.toLowerCase()}.
                       </p>
                       <span className="inline-flex items-center gap-1 text-primary-600 text-xs font-semibold group-hover:gap-1.5 transition-all">
-                        Explore Industry <ArrowRight className="w-3 h-3" />
+                        Explore <ArrowRight className="w-3 h-3" />
                       </span>
                     </div>
                   </button>
@@ -358,84 +347,70 @@ const Page: React.FC = () => {
               {[0, 1, 2, 3].map((i) => (
                 <span
                   key={i}
-                  className={`w-2 h-2 rounded-full transition-colors ${
-                    i === 0 ? "bg-primary-500" : "bg-gray-300"
+                  className={`rounded-full transition-colors ${
+                    i === 0 ? "w-5 h-2 bg-primary-500" : "w-2 h-2 bg-gray-300"
                   }`}
                 />
               ))}
             </div>
           </div>
         ) : (
-          /* Empty state */
-          <div className="text-center py-16">
-            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Factory className="w-8 h-8 text-gray-400" />
+          <div className="text-center py-12 md:py-16">
+            <div className="w-14 h-14 md:w-16 md:h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Factory className="w-7 h-7 md:w-8 md:h-8 text-gray-400" />
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">No Industries Available</h3>
-            <p className="text-gray-600">Industries data is currently being updated. Please check back later.</p>
+            <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-2">No Industries Available</h3>
+            <p className="text-gray-500 text-sm md:text-base">Industries data is currently being updated. Please check back later.</p>
           </div>
         )}
       </section>
 
-      {/* ═══════════════════════════════════════════════════════════
-          SECTION 3 — INNOVATION (full-width two-column)
-      ═══════════════════════════════════════════════════════════ */}
+      {/* ══════════════════════════════════════════════
+          SECTION 3 — INNOVATION
+      ══════════════════════════════════════════════ */}
       <section className="w-full flex flex-col lg:flex-row">
 
-        {/* Left half — innovation image */}
+        {/* Left — image */}
         <div
-          className="w-full lg:w-1/2 min-h-[480px]"
+          className="w-full lg:w-1/2 min-h-[260px] sm:min-h-[340px] md:min-h-[420px] lg:min-h-[480px]"
           style={{
             backgroundImage: 'url(/industries/innovation.png)',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
           }}
-        ></div>
+        />
 
-        {/* Right half — content */}
-        <div className="relative w-full lg:w-1/2 bg-white p-12 lg:p-16 flex flex-col justify-center overflow-hidden">
-          {/* Decorative polymer elements */}
-          <img
-            src="/globe-network.png"
-            alt=""
-            aria-hidden="true"
-            className="absolute -top-8 -right-8 w-48 h-48 opacity-10 pointer-events-none select-none"
-          />
-          <img
-            src="/hero_element_2.svg"
-            alt=""
-            aria-hidden="true"
-            className="absolute bottom-4 right-4 w-32 h-32 opacity-10 pointer-events-none select-none"
-          />
+        {/* Right — content */}
+        <div className="relative w-full lg:w-1/2 bg-white px-4 py-10 sm:px-8 sm:py-12 md:p-12 lg:p-16 flex flex-col justify-center overflow-hidden">
+          <img src="/globe-network.png" alt="" aria-hidden="true"
+            className="absolute -top-8 -right-8 w-36 md:w-48 opacity-10 pointer-events-none select-none" />
+          <img src="/hero_element_2.svg" alt="" aria-hidden="true"
+            className="absolute bottom-4 right-4 w-24 md:w-32 opacity-10 pointer-events-none select-none" />
 
           <div className="relative z-10 max-w-xl">
-            <p className="text-primary-600 text-xs font-bold uppercase tracking-widest mb-4">
+            <p className="text-primary-600 text-[10px] md:text-xs font-bold uppercase tracking-widest mb-3 md:mb-4">
               Industry Solutions
             </p>
-
-            <h2 className="text-3xl lg:text-4xl font-extrabold text-gray-900 leading-tight mb-5">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-gray-900 leading-tight mb-4 md:mb-5">
               Driving{" "}
               <span className="text-primary-500">Innovation</span>{" "}
               Across Key Industries
             </h2>
-
-            <p className="text-gray-500 text-base leading-relaxed mb-8">
+            <p className="text-gray-500 text-sm md:text-base leading-relaxed mb-6 md:mb-8">
               Our polymer materials help industries improve performance, reduce weight,
               enhance safety and achieve sustainability goals.
             </p>
-
-            <ul className="flex flex-col gap-3 mb-8">
+            <ul className="flex flex-col gap-2.5 md:gap-3 mb-6 md:mb-8">
               {INNOVATION_BULLETS.map((bullet) => (
                 <li key={bullet} className="flex items-center gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-primary-500 shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 md:w-5 md:h-5 text-primary-500 shrink-0" />
                   <span className="text-gray-700 text-sm font-medium">{bullet}</span>
                 </li>
               ))}
             </ul>
-
             <Link
               href="/products"
-              className="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-lg font-semibold text-sm transition-colors"
+              className="inline-flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-lg font-semibold text-sm transition-colors w-full sm:w-auto"
             >
               View Solutions <ArrowRight className="w-4 h-4" />
             </Link>
@@ -443,48 +418,43 @@ const Page: React.FC = () => {
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════════
+      {/* ══════════════════════════════════════════════
           SECTION 4 — APPLICATIONS & MATERIALS
-      ═══════════════════════════════════════════════════════════ */}
-      <section className="container mx-auto px-4 lg:px-8 py-16">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+      ══════════════════════════════════════════════ */}
+      <section className="container mx-auto px-4 md:px-6 lg:px-8 py-10 md:py-16">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12">
 
-          {/* Left column — Applications */}
+          {/* Left — Applications */}
           <div>
-            <h2 className="text-xl font-bold text-gray-900 mb-6">
+            <h2 className="text-lg md:text-xl font-bold text-gray-900 mb-4 md:mb-6">
               Applications Across Industries
             </h2>
-
-            {/* Application icons grid */}
-            <div className="grid grid-cols-4 gap-4 mb-8">
+            <div className="grid grid-cols-4 gap-2 md:gap-4 mb-6 md:mb-8">
               {APPLICATIONS.map(({ icon: Icon, label }) => (
                 <div
                   key={label}
-                  className="flex flex-col items-center gap-2 border border-gray-200 rounded-xl p-3 hover:border-primary-200 hover:bg-primary-50 transition-colors"
+                  className="flex flex-col items-center gap-1.5 md:gap-2 border border-gray-200 rounded-xl p-2 md:p-3 hover:border-primary-200 hover:bg-primary-50 transition-colors cursor-pointer"
                 >
-                  <Icon className="w-5 h-5 text-primary-600" strokeWidth={1.5} />
-                  <span className="text-[10px] text-gray-600 text-center leading-tight font-medium">
+                  <Icon className="w-4 h-4 md:w-5 md:h-5 text-primary-600" strokeWidth={1.5} />
+                  <span className="text-[9px] md:text-[10px] text-gray-600 text-center leading-tight font-medium">
                     {label}
                   </span>
                 </div>
               ))}
             </div>
-
-            {/* Material categories */}
-            <h3 className="text-sm font-bold text-gray-900 mb-3">
+            <h3 className="text-sm font-bold text-gray-900 mb-2 md:mb-3">
               Polymer Material Categories
             </h3>
-            <div className="flex flex-wrap gap-2 mb-5">
+            <div className="flex flex-wrap gap-1.5 md:gap-2 mb-4 md:mb-5">
               {MATERIAL_TAGS.map((tag) => (
                 <span
                   key={tag}
-                  className="border border-gray-300 rounded-full text-xs px-3 py-1 text-gray-600 hover:border-primary-400 hover:text-primary-600 cursor-pointer transition-colors"
+                  className="border border-gray-300 rounded-full text-[10px] md:text-xs px-2.5 md:px-3 py-1 text-gray-600 hover:border-primary-400 hover:text-primary-600 cursor-pointer transition-colors"
                 >
                   {tag}
                 </span>
               ))}
             </div>
-
             <Link
               href="/products"
               className="inline-flex items-center gap-1.5 text-primary-600 text-sm font-semibold hover:gap-2.5 transition-all"
@@ -493,36 +463,32 @@ const Page: React.FC = () => {
             </Link>
           </div>
 
-          {/* Right column — Process flow */}
+          {/* Right — Process flow */}
           <div>
-            <h2 className="text-xl font-bold text-gray-900 mb-6">
+            <h2 className="text-lg md:text-xl font-bold text-gray-900 mb-4 md:mb-6">
               From Material to Solution
             </h2>
-
-            {/* 5-step horizontal flow */}
-            <div className="flex items-start gap-1 mb-8 overflow-x-auto pb-2">
+            <div className="flex items-start gap-1 mb-6 md:mb-8 overflow-x-auto pb-2 -mx-4 px-4 md:mx-0 md:px-0">
               {PROCESS_STEPS.map(({ icon: Icon, label }, idx) => (
                 <React.Fragment key={label}>
-                  <div className="flex flex-col items-center gap-2 min-w-[60px]">
-                    <div className="w-10 h-10 rounded-full bg-primary-50 border border-primary-200 flex items-center justify-center shrink-0">
-                      <Icon className="w-4 h-4 text-primary-600" strokeWidth={1.5} />
+                  <div className="flex flex-col items-center gap-1.5 md:gap-2 min-w-[56px] md:min-w-[60px]">
+                    <div className="w-9 h-9 md:w-10 md:h-10 rounded-full bg-primary-50 border border-primary-200 flex items-center justify-center shrink-0">
+                      <Icon className="w-3.5 h-3.5 md:w-4 md:h-4 text-primary-600" strokeWidth={1.5} />
                     </div>
-                    <span className="text-[10px] text-gray-600 text-center leading-tight font-medium w-14">
+                    <span className="text-[9px] md:text-[10px] text-gray-600 text-center leading-tight font-medium w-12 md:w-14">
                       {label}
                     </span>
                   </div>
                   {idx < PROCESS_STEPS.length - 1 && (
-                    <ChevronRight className="w-4 h-4 text-gray-300 mt-3 shrink-0" />
+                    <ChevronRight className="w-3.5 h-3.5 md:w-4 md:h-4 text-gray-300 mt-2.5 md:mt-3 shrink-0" />
                   )}
                 </React.Fragment>
               ))}
             </div>
-
-            <p className="text-gray-500 text-sm leading-relaxed mb-5">
+            <p className="text-gray-500 text-xs md:text-sm leading-relaxed mb-4 md:mb-5">
               End-to-end polymer solutions with consistent quality, technical expertise
               and global supply chain support.
             </p>
-
             <Link
               href="/products"
               className="inline-flex items-center gap-1.5 text-primary-600 text-sm font-semibold hover:gap-2.5 transition-all"
@@ -533,51 +499,41 @@ const Page: React.FC = () => {
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════════
+      {/* ══════════════════════════════════════════════
           SECTION 5 — TRUSTED BY
-      ═══════════════════════════════════════════════════════════ */}
-      <section className="bg-white py-16 px-4">
-        <h2 className="text-2xl font-bold text-gray-900 text-center mb-10">
+      ══════════════════════════════════════════════ */}
+      <section className="bg-gray-50 py-10 md:py-16 px-4">
+        <h2 className="text-lg md:text-2xl font-bold text-gray-900 text-center mb-6 md:mb-10">
           Trusted by Industry Leaders Worldwide
         </h2>
-
-        <div className="relative flex items-center justify-center gap-2">
-          {/* Left arrow */}
+        <div className="relative flex items-center justify-center gap-2 max-w-4xl mx-auto">
           <button
-            className="flex-shrink-0 w-9 h-9 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 hover:text-gray-700 hover:border-gray-400 transition-colors"
+            className="flex-shrink-0 w-8 h-8 md:w-9 md:h-9 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 hover:text-gray-700 hover:border-gray-400 transition-colors"
             aria-label="Previous"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
-
-          {/* Brand logos row */}
-          <div className="flex items-center gap-0 overflow-x-auto scrollbar-hide flex-1 max-w-4xl">
+          <div className="flex items-center gap-0 overflow-x-auto scrollbar-hide flex-1">
             {BRANDS.map(({ name, sub }) => (
               <div
                 key={name}
-                className="flex-shrink-0 flex flex-col items-center justify-center px-8 border-r border-gray-100 last:border-r-0"
+                className="flex-shrink-0 flex flex-col items-center justify-center px-4 md:px-8 border-r border-gray-200 last:border-r-0"
               >
                 <span
                   className={`font-bold text-gray-600 leading-tight ${
-                    name === "Dow"
-                      ? "text-2xl"
-                      : name === "BASF" || name === "ExxonMobil"
-                      ? "text-lg"
-                      : "text-base"
+                    name === "Dow" ? "text-xl md:text-2xl"
+                    : name === "BASF" || name === "ExxonMobil" ? "text-base md:text-lg"
+                    : "text-sm md:text-base"
                   } ${name === "sabic" ? "text-primary-700" : ""}`}
                 >
                   {name}
                 </span>
-                {sub && (
-                  <span className="text-[10px] text-gray-400 mt-0.5">{sub}</span>
-                )}
+                {sub && <span className="text-[9px] md:text-[10px] text-gray-400 mt-0.5">{sub}</span>}
               </div>
             ))}
           </div>
-
-          {/* Right arrow */}
           <button
-            className="flex-shrink-0 w-9 h-9 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 hover:text-gray-700 hover:border-gray-400 transition-colors"
+            className="flex-shrink-0 w-8 h-8 md:w-9 md:h-9 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 hover:text-gray-700 hover:border-gray-400 transition-colors"
             aria-label="Next"
           >
             <ChevronRight className="w-4 h-4" />
@@ -585,36 +541,31 @@ const Page: React.FC = () => {
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════════
+      {/* ══════════════════════════════════════════════
           SECTION 6 — CTA BANNER
-      ═══════════════════════════════════════════════════════════ */}
-      <div className="px-4 lg:px-8 mb-8">
-        <div className="bg-primary-700 rounded-2xl p-8 lg:p-12">
-          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
-
-            {/* Left — text */}
+      ══════════════════════════════════════════════ */}
+      <div className="px-4 md:px-6 lg:px-8 py-8 md:py-10">
+        <div className="bg-primary-700 rounded-2xl p-6 sm:p-8 lg:p-12">
+          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 md:gap-8">
             <div className="max-w-xl">
-              <h2 className="text-2xl lg:text-3xl font-bold text-white mb-3 leading-snug">
+              <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white mb-2 md:mb-3 leading-snug">
                 Ready to find the right polymer solutions for your industry?
               </h2>
-              <p className="text-primary-200 text-base leading-relaxed">
-                Connect with verified suppliers and explore thousands of high-quality
-                polymer products.
+              <p className="text-primary-200 text-sm md:text-base leading-relaxed">
+                Connect with verified suppliers and explore thousands of high-quality polymer products.
               </p>
             </div>
-
-            {/* Right — buttons */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 shrink-0">
+            <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto shrink-0">
               <Link
                 href="/products"
-                className="inline-flex items-center gap-2 border border-white text-white hover:bg-white/10 px-6 py-3 rounded-lg font-semibold text-sm transition-colors whitespace-nowrap"
+                className="inline-flex items-center justify-center gap-2 border border-white text-white hover:bg-white/10 px-6 py-3 rounded-lg font-semibold text-sm transition-colors w-full sm:w-auto whitespace-nowrap"
               >
                 <Package className="w-4 h-4" />
                 Explore Products
               </Link>
               <Link
                 href="/suppliers"
-                className="inline-flex items-center gap-2 border border-white text-white hover:bg-white/10 px-6 py-3 rounded-lg font-semibold text-sm transition-colors whitespace-nowrap"
+                className="inline-flex items-center justify-center gap-2 border border-white text-white hover:bg-white/10 px-6 py-3 rounded-lg font-semibold text-sm transition-colors w-full sm:w-auto whitespace-nowrap"
               >
                 <Users className="w-4 h-4" />
                 Contact Suppliers
@@ -623,6 +574,7 @@ const Page: React.FC = () => {
           </div>
         </div>
       </div>
+
     </div>
   );
 };
