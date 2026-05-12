@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { getIndustryList } from "@/apiServices/shared";
-import * as LucideIcons from "lucide-react";
 import { BarChart2, Package, Users, Globe, ArrowRight, Factory } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { IndustryItem } from "@/types/industries";
@@ -22,11 +21,6 @@ const BRANDS = ["sabic", "BASF", "Dow", "ExxonMobil", "LyondellBasell"];
 const IndustryCard: React.FC<{ industry: IndustryItem }> = ({ industry }) => {
   const router = useRouter();
 
-  const IconComponent =
-    industry.icon && industry.icon in LucideIcons
-      ? (LucideIcons as unknown as Record<string, React.ElementType>)[industry.icon]
-      : null;
-
   return (
     <button
       onClick={() => router.push(`/products?industry=${industry._id}`)}
@@ -34,7 +28,7 @@ const IndustryCard: React.FC<{ industry: IndustryItem }> = ({ industry }) => {
     >
       {/* Top colour band */}
       <div className="relative h-32 bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center overflow-hidden">
-        {/* Decorative circle */}
+        {/* Decorative circles */}
         <div className="absolute -bottom-6 -right-6 w-24 h-24 rounded-full bg-white/10" />
         <div className="absolute -top-4 -left-4 w-16 h-16 rounded-full bg-white/5" />
 
@@ -49,13 +43,9 @@ const IndustryCard: React.FC<{ industry: IndustryItem }> = ({ industry }) => {
           />
         )}
 
-        {/* Icon */}
+        {/* Icon placeholder */}
         <div className="relative z-10 w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/30">
-          {IconComponent ? (
-            <IconComponent className="w-7 h-7 text-white" strokeWidth={1.5} />
-          ) : (
-            <Factory className="w-7 h-7 text-white" strokeWidth={1.5} />
-          )}
+          <Factory className="w-7 h-7 text-white" strokeWidth={1.5} />
         </div>
       </div>
 
