@@ -108,10 +108,9 @@ const Page: React.FC = () => {
         className="relative overflow-hidden h-[calc(100dvh-64px)] md:h-[calc(100dvh-120px)]"
         style={{
           backgroundImage: 'url(/industries-bg.png)',
-          backgroundSize: '52%',
+          backgroundSize: 'cover',
           backgroundRepeat: 'no-repeat',
-          backgroundPosition: 'right center',
-          backgroundColor: '#fff',
+          backgroundPosition: 'center center',
         }}
       >
         <div className="relative h-full container mx-auto px-4 lg:px-8 flex flex-col justify-center">
