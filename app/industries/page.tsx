@@ -394,8 +394,19 @@ const Page: React.FC = () => {
 
         {/* Right half — content */}
         <div className="relative w-full lg:w-1/2 bg-white p-12 lg:p-16 flex flex-col justify-center overflow-hidden">
-          {/* Decorative blurred circle */}
-          <div className="absolute -top-16 -right-16 w-64 h-64 bg-primary-100 rounded-full blur-3xl opacity-60 pointer-events-none" />
+          {/* Decorative polymer elements */}
+          <img
+            src="/globe-network.png"
+            alt=""
+            aria-hidden="true"
+            className="absolute -top-8 -right-8 w-48 h-48 opacity-10 pointer-events-none select-none"
+          />
+          <img
+            src="/hero_element_2.svg"
+            alt=""
+            aria-hidden="true"
+            className="absolute bottom-4 right-4 w-32 h-32 opacity-10 pointer-events-none select-none"
+          />
 
           <div className="relative z-10 max-w-xl">
             <p className="text-primary-600 text-xs font-bold uppercase tracking-widest mb-4">
