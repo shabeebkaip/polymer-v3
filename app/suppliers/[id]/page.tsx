@@ -91,15 +91,16 @@ const SupplierDetail = () => {
   /* ── Loading skeleton ── */
   if (loading) return (
     <div className="min-h-screen bg-gray-50">
-      <div className="h-14 bg-white border-b" />
-      <div className="h-72 bg-gray-200 animate-pulse" />
-      <div className="container mx-auto px-4 max-w-6xl py-8 space-y-6">
-        <div className="grid grid-cols-2 gap-6">
-          <Skeleton className="h-64 rounded-2xl" />
-          <Skeleton className="h-64 rounded-2xl" />
+      <div className="h-12 bg-white border-b" />
+      <div className="h-56 md:h-72 bg-gray-200 animate-pulse" />
+      <div className="h-16 bg-white border-b animate-pulse" />
+      <div className="container mx-auto px-4 max-w-6xl py-5 md:py-8 space-y-4 md:space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+          <Skeleton className="h-48 md:h-64 rounded-2xl" />
+          <Skeleton className="h-48 md:h-64 rounded-2xl" />
         </div>
-        <Skeleton className="h-24 rounded-2xl" />
-        <Skeleton className="h-64 rounded-2xl" />
+        <Skeleton className="h-20 md:h-24 rounded-2xl" />
+        <Skeleton className="h-48 md:h-64 rounded-2xl" />
       </div>
     </div>
   );
@@ -123,46 +124,47 @@ const SupplierDetail = () => {
       {/* ── Sticky top nav ── */}
       <div className="sticky top-0 z-30 bg-white border-b border-gray-100 shadow-sm">
         <div className="container mx-auto px-4 max-w-6xl">
-          <div className="flex items-center justify-between h-14">
-            {/* Back */}
+          {/* Top row: back + actions */}
+          <div className="flex items-center justify-between h-12">
             <Link href="/suppliers" className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-primary-600 transition-colors">
               <ArrowLeft className="w-4 h-4" />
-              Back to Suppliers
+              <span className="hidden sm:inline">Back to Suppliers</span>
+              <span className="sm:hidden">Back</span>
             </Link>
-
-            {/* Tabs */}
-            <div className="hidden md:flex items-center gap-1">
-              {TABS.map(tab => (
-                <button
-                  key={tab}
-                  onClick={() => {
-                    if (tab === 'Overview')      scrollTo(overviewRef,     tab);
-                    if (tab === 'Products')      scrollTo(productsRef,     tab);
-                    if (tab === 'Certifications')scrollTo(certsRef,        tab);
-                    if (tab === 'Capabilities')  scrollTo(capabilitiesRef, tab);
-                    if (tab === 'Contact')       scrollTo(contactRef,      tab);
-                    else setActiveTab(tab);
-                  }}
-                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-                    activeTab === tab
-                      ? 'text-primary-600 border-b-2 border-primary-600 rounded-none'
-                      : 'text-gray-500 hover:text-gray-800'
-                  }`}
-                >
-                  {tab}
-                </button>
-              ))}
-            </div>
-
-            {/* Actions */}
-            <div className="flex items-center gap-2">
-              <button className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 transition-colors">
-                <Share2 className="w-4 h-4" /> Share
+            <div className="flex items-center gap-3">
+              <button className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-800 transition-colors">
+                <Share2 className="w-4 h-4" />
+                <span className="hidden sm:inline">Share</span>
               </button>
-              <button className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 transition-colors">
-                <Heart className="w-4 h-4" /> Save
+              <button className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-800 transition-colors">
+                <Heart className="w-4 h-4" />
+                <span className="hidden sm:inline">Save</span>
               </button>
             </div>
+          </div>
+
+          {/* Tabs row — horizontally scrollable on mobile */}
+          <div className="flex gap-1 overflow-x-auto scrollbar-hide -mb-px pb-0">
+            {TABS.map(tab => (
+              <button
+                key={tab}
+                onClick={() => {
+                  if (tab === 'Overview')       scrollTo(overviewRef,     tab);
+                  if (tab === 'Products')       scrollTo(productsRef,     tab);
+                  if (tab === 'Certifications') scrollTo(certsRef,        tab);
+                  if (tab === 'Capabilities')   scrollTo(capabilitiesRef, tab);
+                  if (tab === 'Contact')        scrollTo(contactRef,      tab);
+                  else setActiveTab(tab);
+                }}
+                className={`flex-shrink-0 px-3 md:px-4 py-2.5 text-xs md:text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+                  activeTab === tab
+                    ? 'text-primary-600 border-primary-600'
+                    : 'text-gray-500 border-transparent hover:text-gray-800'
+                }`}
+              >
+                {tab}
+              </button>
+            ))}
           </div>
         </div>
       </div>
@@ -174,14 +176,14 @@ const SupplierDetail = () => {
         {/* Overlay — lighter so the bg image shows through */}
         <div className="absolute inset-0 bg-[#0f2d1e]/55 pointer-events-none" />
 
-        <div className="relative container mx-auto px-4 max-w-6xl py-12 md:py-16">
-          <div className="flex flex-col lg:flex-row gap-10 items-center">
+        <div className="relative container mx-auto px-4 max-w-6xl py-8 md:py-12 lg:py-16">
+          <div className="flex flex-col lg:flex-row gap-6 lg:gap-10 items-start lg:items-center">
 
             {/* Left — identity + CTAs */}
             <div className="flex-1 min-w-0">
               {/* Logo + name row */}
-              <div className="flex items-center gap-5 mb-4">
-                <div className="flex-shrink-0 w-28 h-28 bg-white rounded-2xl flex items-center justify-center overflow-hidden shadow-xl p-3">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="flex-shrink-0 w-20 h-20 md:w-28 md:h-28 bg-white rounded-2xl flex items-center justify-center overflow-hidden shadow-xl p-2 md:p-3">
                   {hasLogo ? (
                     <Image src={supplier.company_logo} alt={displayName} width={96} height={96} className="w-full h-full object-contain" onError={() => setLogoError(true)} />
                   ) : (
@@ -190,7 +192,7 @@ const SupplierDetail = () => {
                 </div>
                 <div>
                   <div className="flex items-center gap-2 flex-wrap mb-1">
-                    <h1 className="text-2xl md:text-4xl font-bold text-white leading-tight">{displayName}</h1>
+                    <h1 className="text-xl md:text-4xl font-bold text-white leading-tight">{displayName}</h1>
                     <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-primary-500/40 border border-primary-400/50 text-white text-xs font-bold rounded-full">
                       <BadgeCheck className="w-3.5 h-3.5" /> Verified Supplier
                     </span>
@@ -257,21 +259,21 @@ const SupplierDetail = () => {
       {/* ── Performance bar — white card BELOW hero ── */}
       <div className="bg-white border-b border-gray-100 shadow-sm">
         <div className="container mx-auto px-4 max-w-6xl">
-          <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-gray-100">
+          <div className="grid grid-cols-2 md:grid-cols-4">
             {[
-              { icon: <Clock   className="w-5 h-5 text-primary-500" />, label: 'Response Time',    value: '< 2 hrs',      sub: 'Average response'      },
-              { icon: <Truck   className="w-5 h-5 text-primary-500" />, label: 'On-time Delivery', value: '98%',          sub: 'Reliable & consistent'  },
-              { icon: <Factory className="w-5 h-5 text-primary-500" />, label: 'Supplier Type',    value: 'Manufacturer', sub: 'ISO Certified'          },
-              { icon: <Shield  className="w-5 h-5 text-primary-500" />, label: 'Trade Assurance',  value: 'Protected',    sub: 'Your orders are safe'   },
+              { icon: <Clock   className="w-4 h-4 text-primary-500" />, label: 'Response Time',    value: '< 2 hrs',      sub: 'Average response'     },
+              { icon: <Truck   className="w-4 h-4 text-primary-500" />, label: 'On-time Delivery', value: '98%',          sub: 'Reliable & consistent' },
+              { icon: <Factory className="w-4 h-4 text-primary-500" />, label: 'Supplier Type',    value: 'Manufacturer', sub: 'ISO Certified'         },
+              { icon: <Shield  className="w-4 h-4 text-primary-500" />, label: 'Trade Assurance',  value: 'Protected',    sub: 'Your orders are safe'  },
             ].map((s, i) => (
-              <div key={i} className="flex items-center gap-3 px-5 py-5">
-                <div className="w-10 h-10 bg-primary-50 rounded-xl flex items-center justify-center flex-shrink-0">
+              <div key={i} className={`flex items-center gap-2.5 px-4 py-4 md:px-5 md:py-5 ${i % 2 === 0 && i < 2 ? 'border-r border-gray-100' : ''} ${i < 2 ? 'border-b md:border-b-0 border-gray-100' : ''} ${i === 1 || i === 3 ? 'md:border-r md:border-gray-100' : ''}`}>
+                <div className="w-8 h-8 md:w-10 md:h-10 bg-primary-50 rounded-xl flex items-center justify-center flex-shrink-0">
                   {s.icon}
                 </div>
                 <div>
-                  <p className="text-[10px] text-gray-400 uppercase tracking-wide">{s.label}</p>
-                  <p className="text-gray-900 font-bold text-sm">{s.value}</p>
-                  <p className="text-[10px] text-gray-400">{s.sub}</p>
+                  <p className="text-[9px] md:text-[10px] text-gray-400 uppercase tracking-wide">{s.label}</p>
+                  <p className="text-gray-900 font-bold text-xs md:text-sm">{s.value}</p>
+                  <p className="text-[9px] md:text-[10px] text-gray-400 hidden sm:block">{s.sub}</p>
                 </div>
               </div>
             ))}
@@ -280,7 +282,7 @@ const SupplierDetail = () => {
       </div>
 
       {/* ── Body ── */}
-      <div className="container mx-auto px-4 max-w-6xl py-8 space-y-8">
+      <div className="container mx-auto px-4 max-w-6xl py-5 md:py-8 space-y-5 md:space-y-8">
 
         {/* ── About + Quick Facts ── */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -387,7 +389,7 @@ const SupplierDetail = () => {
         {/* ── Manufacturing Capabilities ── */}
         <div ref={capabilitiesRef}>
           <h2 className="text-xl font-bold text-gray-900 mb-5">Manufacturing Capabilities</h2>
-          <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-7 gap-3">
+          <div className="grid grid-cols-4 sm:grid-cols-4 lg:grid-cols-7 gap-2 md:gap-3">
             {CAPABILITIES.map((c, i) => (
               <div key={i} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex flex-col items-center gap-2 hover:border-primary-200 hover:shadow-md transition-all">
                 <div className="w-12 h-12 bg-primary-50 rounded-xl flex items-center justify-center text-primary-600">
@@ -407,7 +409,7 @@ const SupplierDetail = () => {
               View all certifications <ChevronRight className="w-4 h-4" />
             </button>
           </div>
-          <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-4">
+          <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2 md:gap-4">
             {(supplier.certifications?.length ? supplier.certifications : CERTS).map((cert, i) => (
               <div key={i} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex flex-col items-center gap-2 hover:border-primary-200 transition-all">
                 <div className="w-12 h-12 bg-primary-50 rounded-xl flex items-center justify-center">
@@ -421,7 +423,7 @@ const SupplierDetail = () => {
         </div>
 
         {/* ── CTA Footer ── */}
-        <div ref={contactRef} className="relative bg-[#0f2d1e] rounded-2xl overflow-hidden p-8 md:p-10">
+        <div ref={contactRef} className="relative bg-[#0f2d1e] rounded-2xl overflow-hidden p-6 md:p-10">
           <Image src="/supplier-bg.png" alt="" aria-hidden fill className="object-cover object-center opacity-30 pointer-events-none" />
           <div className="absolute inset-0 bg-[#0f2d1e]/60 pointer-events-none rounded-2xl" />
 
