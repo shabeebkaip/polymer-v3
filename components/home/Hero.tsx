@@ -44,7 +44,7 @@ const Hero: React.FC = () => {
       {/* ── Content: vertically centred, offset up so skyline shows below ── */}
       <div
         className="relative z-10 flex flex-col items-center justify-center w-full h-full"
-        style={{ paddingBottom: '26vh' }}
+        style={{ paddingBottom: '26vh', paddingTop: '2rem' }}
       >
         {/* Saudi origin badge */}
         <div className="animate-fade-in-up">
