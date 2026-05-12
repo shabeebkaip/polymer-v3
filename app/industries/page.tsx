@@ -106,7 +106,7 @@ const Page: React.FC = () => {
           SECTION 1 — HERO
       ══════════════════════════════════════════════ */}
       <section
-        className="relative overflow-hidden min-h-[100dvh] md:min-h-0 md:h-[calc(100dvh-120px)] flex items-center"
+        className="relative overflow-hidden min-h-[100dvh] md:min-h-0 md:h-[calc(100dvh-120px)] flex items-start md:items-center"
         style={{
           backgroundImage: 'url(/industries-bg.png)',
           backgroundSize: 'cover',
@@ -114,10 +114,12 @@ const Page: React.FC = () => {
           backgroundPosition: 'top right',
         }}
       >
-        {/* Stronger gradient on mobile (full cover), fades on desktop */}
-        <div className="absolute inset-0 bg-white/90 md:bg-gradient-to-r md:from-white md:via-white/90 md:to-white/20 pointer-events-none z-0" />
+        {/* Mobile overlay — solid white so text stays readable */}
+        <div className="absolute inset-0 bg-white/80 md:hidden pointer-events-none z-0" />
+        {/* Desktop overlay — gradient fades left→right revealing bg image */}
+        <div className="absolute inset-0 hidden md:block bg-gradient-to-r from-white via-white/85 to-transparent pointer-events-none z-0" />
 
-        <div className="relative z-10 w-full container mx-auto px-4 md:px-6 lg:px-8 py-16 md:py-12 lg:py-0">
+        <div className="relative z-10 w-full container mx-auto px-4 md:px-6 lg:px-8 pt-10 pb-12 md:py-12 lg:py-0">
           <div className="flex flex-col gap-5 md:gap-6 max-w-lg md:max-w-xl lg:w-[50%] lg:max-w-none">
 
             {/* Badge */}
