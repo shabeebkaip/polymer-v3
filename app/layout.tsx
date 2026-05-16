@@ -4,6 +4,7 @@ import { Kanit } from "next/font/google";
 import { Toaster } from "sonner";
 import PageNavigationLoader from "@/components/shared/PageNaigationLoader";
 import ConditionalLayout from "@/components/shared/ConditionalLayout";
+import UserInitializer from "@/components/providers/UserInitializer";
 import type { Metadata } from "next";
 
 const kanit = Kanit({
@@ -47,6 +48,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${kanit.variable}`} suppressHydrationWarning>
       <body className="antialiased">
+        <UserInitializer />
         <PageNavigationLoader />
         <Toaster richColors position="top-right" />
         <ConditionalLayout>

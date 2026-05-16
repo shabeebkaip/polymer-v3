@@ -53,12 +53,6 @@ export const useUserInfo = create<UserStore>((set) => ({
   },
 }));
 
-// Auto-fetch user from cookies if missing and cookies exist
-if (typeof window !== 'undefined') {
-  const { user, isInitialized, loadUserFromCookies } = useUserInfo.getState();
-  const token = Cookies.get('token');
-  const userInfo = Cookies.get('userInfo');
-  if (!user && token && userInfo && !isInitialized) {
-    loadUserFromCookies();
-  }
-}
+// Do NOT initialize here at module level — that runs synchronously before
+// React hydration and causes a server/client HTML mismatch (hydration error).
+// Initialization is handled by UserInitializer in the root layout instead.

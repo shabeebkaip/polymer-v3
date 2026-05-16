@@ -1,33 +1,25 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { useUserInfo } from "@/lib/useUserInfo";
-import Cookies from "js-cookie";
 
+/**
+ * Loads user state from cookies AFTER hydration.
+ * Must run in useEffect so server and initial client render both
+ * produce user=null — preventing a hydration mismatch crash.
+ * Does NOT redirect — public pages are always accessible.
+ */
 const UserInitializer = () => {
-  const router = useRouter();
-  const { user, isInitialized, loadUserFromCookies } = useUserInfo();
-  const mountedRef = useRef(false);
+  const { isInitialized, loadUserFromCookies } = useUserInfo();
 
-  // Initialize user on mount
   useEffect(() => {
-    const token = Cookies.get("token");
-    
-    if (!token) {
-      router.push("/");
-      return;
+    if (!isInitialized) {
+      loadUserFromCookies();
     }
+    // Intentionally empty dep array: run once after first mount only.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-    if (!mountedRef.current) {
-      mountedRef.current = true;
-      if (!isInitialized) {
-        loadUserFromCookies();
-      }
-    }
-  }, [isInitialized, loadUserFromCookies, router, user]); // Add all dependencies
-
-  // This component doesn't render anything, it just initializes user data
   return null;
 };
 

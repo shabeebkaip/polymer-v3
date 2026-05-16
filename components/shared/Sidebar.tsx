@@ -60,20 +60,9 @@ const Sidebar = () => {
   const pathname = usePathname();
   const router = useRouter();
   const { user, isInitialized, loadUserFromCookies } = useUserInfo();
-  const [expandedItems, setExpandedItems] = useState<Set<string>>(() => {
-    // Initialize from localStorage
-    if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('sidebarExpandedItems');
-      if (stored) {
-        try {
-          return new Set(JSON.parse(stored));
-        } catch {
-          return new Set();
-        }
-      }
-    }
-    return new Set();
-  });
+  // Start empty so server render matches initial client render (no hydration mismatch).
+  // localStorage is loaded in useEffect after hydration.
+  const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
 
   // Initialize user data from cookies on mount
   useEffect(() => {
@@ -89,6 +78,18 @@ const Sidebar = () => {
       loadUserFromCookies();
     }
   }, [isInitialized, loadUserFromCookies, router]);
+
+  // Restore expanded state from localStorage after hydration
+  useEffect(() => {
+    const stored = localStorage.getItem('sidebarExpandedItems');
+    if (stored) {
+      try {
+        setExpandedItems(new Set(JSON.parse(stored)));
+      } catch {
+        // ignore malformed storage
+      }
+    }
+  }, []);
 
   // Auto-expand parent items based on current route
   useEffect(() => {
@@ -115,9 +116,7 @@ const Sidebar = () => {
 
   // Persist expandedItems to localStorage whenever it changes
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('sidebarExpandedItems', JSON.stringify(Array.from(expandedItems)));
-    }
+    localStorage.setItem('sidebarExpandedItems', JSON.stringify(Array.from(expandedItems)));
   }, [expandedItems]);
 
   const handleLogout = () => {
