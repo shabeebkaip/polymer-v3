@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { Eye, EyeOff, Upload, CheckCircle2 } from 'lucide-react';
 
 import Input from '@/components/shared/Input';
+import MultiSelect from '@/components/shared/MultiSelect';
 import { getIndustryList, imageUpload } from '@/apiServices/shared';
 import { register } from '@/apiServices/auth';
 import { getCountryList } from '@/lib/useCountries';
@@ -38,7 +39,7 @@ const Register: React.FC = () => {
     phone: '',
     company: '',
     country_code: '+966',
-    industry: '',
+    industry: [],
     address: '',
     location: '',
     company_logo: '',
@@ -615,22 +616,13 @@ const Register: React.FC = () => {
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-sm font-medium text-gray-700">
-                      Industry
-                    </label>
-                    <select
-                      id="industry"
-                      value={data.industry}
-                      onChange={onFieldChange}
-                      className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 bg-white"
-                    >
-                      <option value="">Select Industry</option>
-                      {industryList.map((item) => (
-                        <option key={item._id} value={item._id}>
-                          {item.name}
-                        </option>
-                      ))}
-                    </select>
+                    <MultiSelect
+                      label="Industry"
+                      placeholder="Select industries"
+                      options={industryList}
+                      selected={data.industry}
+                      onChange={(ids) => setData(prev => ({ ...prev, industry: ids }))}
+                    />
                   </div>
                 </div>
 

@@ -21,7 +21,7 @@ export interface RegisterData {
   phone: string;
   company: string;
   country_code: string;
-  industry: string;
+  industry: string[];
   address: string;
   location: string;
   company_logo: string;

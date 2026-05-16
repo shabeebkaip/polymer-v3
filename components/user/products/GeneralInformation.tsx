@@ -98,7 +98,7 @@ const GeneralInformation: React.FC<GeneralInformationProps> = ({
         />
       </div>
 
-      <div className="col-span-full sm:col-span-1 space-y-2">
+      <div className="col-span-full space-y-2">
         <Label htmlFor="description" className="text-sm font-medium text-gray-700">
           Description
           <span className="text-gray-400 text-xs ml-1">(Optional)</span>

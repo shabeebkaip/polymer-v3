@@ -1,38 +1,70 @@
 "use client";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { useUserInfo } from "@/lib/useUserInfo";
 import { getUserInfo } from "@/apiServices/user";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
+import { getCountryList } from "@/lib/useCountries";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Edit2, Save, X, User, Mail, Phone,  MapPin, Globe, Camera, FileText, Loader2 } from "lucide-react";
+import { Edit2, Save, X, User, Mail, Phone, MapPin, Globe, Camera, FileText, Loader2 } from "lucide-react";
 import { editUserProfile } from "@/apiServices/user";
 import { toast } from "sonner";
 import { UserType } from "@/types/user";
-import { postFileUpload } from "@/apiServices/shared";
+import { postFileUpload, getIndustryList } from "@/apiServices/shared";
+import MultiSelect from "@/components/shared/MultiSelect";
+import { Industry } from "@/types/auth";
 
 
 
+
+// Normalize industry from API — can be a single string (old data) or string[]
+const normalizeIndustry = (industry: unknown): string[] => {
+  if (!industry) return [];
+  if (Array.isArray(industry)) return industry;
+  if (typeof industry === "string") return [industry];
+  return [];
+};
 
 const Profile = () => {
   const { setUser: setUserStore } = useUserInfo();
   const [user, setUser] = useState<UserType | null>(null);
+  const [industryList, setIndustryList] = useState<Industry[]>([]);
   const userLoading = !user;
   const [isEditing, setIsEditing] = useState(false);
   const [editedUser, setEditedUser] = useState<UserType>({});
   const [isSaving, setIsSaving] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const countries = useMemo(() => getCountryList().sort((a, b) => a.name.localeCompare(b.name)), []);
 
-  // Fetch user info from API on mount
+  // Fetch user info and industry list on mount
   React.useEffect(() => {
+    getIndustryList().then((res) => {
+      const industries = (res?.data || []).map((item: { _id: string; name: string; bg: string }) => ({
+        _id: item._id,
+        name: item.name,
+        bg: item.bg,
+        image: item.bg,
+      }));
+      setIndustryList(industries);
+    }).catch(() => {});
+
     const fetchUser = async () => {
       try {
         const data = await getUserInfo();
-        const userObj = data?.userInfo || data;
+        const raw = data?.data || data?.userInfo || data;
+        const userObj = { ...raw, industry: normalizeIndustry(raw?.industry) };
         setUser(userObj);
         setEditedUser(userObj);
       } catch {
@@ -45,41 +77,34 @@ const Profile = () => {
   const handleEdit = () => {
     setIsEditing(true);
     setEditedUser(user || {});
+    setFieldErrors({});
   };
 
   const handleCancel = () => {
     setIsEditing(false);
     setEditedUser(user || {});
+    setFieldErrors({});
   };
 
   const handleSave = async () => {
     if (!editedUser) return;
 
-    // Basic validation
-    if (!editedUser.firstName || !editedUser.lastName) {
-      toast.error("First name and last name are required");
+    // Inline field validation
+    const errors: Record<string, string> = {};
+    if (!editedUser.firstName?.trim()) errors.firstName = "First name is required";
+    if (!editedUser.lastName?.trim()) errors.lastName = "Last name is required";
+    if (!editedUser.company?.trim()) errors.company = "Company is required";
+
+    const getTextContent = (html: string) => html ? html.replace(/<[^>]*>/g, '').trim() : '';
+    if (editedUser.about_us && getTextContent(editedUser.about_us).length > 2000) {
+      errors.about_us = "About Us exceeds maximum length of 2000 characters";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
       return;
     }
-
-    if (!editedUser.company) {
-      toast.error("Company is required");
-      return;
-    }
-
-    // Helper function to strip HTML tags and get text content
-    const getTextContent = (html: string) => {
-      return html ? html.replace(/<[^>]*>/g, '').trim() : '';
-    };
-
-
-    // Validate about_us length
-    if (editedUser.about_us) {
-      const aboutUsTextLength = getTextContent(editedUser.about_us).length;
-      if (aboutUsTextLength > 2000) {
-        toast.error("About Us section exceeds maximum length of 2000 characters");
-        return;
-      }
-    }
+    setFieldErrors({});
 
     setIsSaving(true);
     try {
@@ -89,7 +114,7 @@ const Profile = () => {
         lastName: editedUser.lastName?.trim(),
         company: editedUser.company?.trim(),
         website: editedUser.website?.trim(),
-        industry: editedUser.industry?.trim(),
+        industry: editedUser.industry,
         address: editedUser.address?.trim(),
         country_code: editedUser.country_code?.trim(),
         phone: editedUser.phone ? Number(editedUser.phone) : undefined,
@@ -100,18 +125,8 @@ const Profile = () => {
         Expert_role: editedUser.Expert_role?.trim(),
       };
 
-      // For sellers, ensure vat_number and company_logo are present
-      if (user?.user_type === "seller") {
-        if (!updateData.vat_number) {
-          toast.error("VAT number is required for sellers");
-          setIsSaving(false);
-          return;
-        }
-        if (!editedUser.company_logo) {
-          toast.error("Company logo is required for sellers");
-          setIsSaving(false);
-          return;
-        }
+      // Include company_logo for sellers if present
+      if (user?.user_type === "seller" && editedUser.company_logo) {
         updateData.company_logo = editedUser.company_logo;
       }
 
@@ -132,7 +147,8 @@ const Profile = () => {
       if (response.success) {
         // After save, fetch latest user info from API and update both local and store
         const latest = await getUserInfo();
-        const latestUser = latest?.userInfo || latest;
+        const rawLatest = latest?.data || latest?.userInfo || latest;
+        const latestUser = { ...rawLatest, industry: normalizeIndustry(rawLatest?.industry) };
         setUser(latestUser);
         setUserStore(latestUser);
         setEditedUser(latestUser);
@@ -154,10 +170,10 @@ const Profile = () => {
   };
 
   const handleInputChange = (field: string, value: string) => {
-    setEditedUser(prev => ({
-      ...prev,
-      [field]: value
-    }));
+    setEditedUser(prev => ({ ...prev, [field]: value }));
+    if (fieldErrors[field]) {
+      setFieldErrors(prev => { const next = { ...prev }; delete next[field]; return next; });
+    }
   };
 
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -382,18 +398,21 @@ const Profile = () => {
                   {userLoading ? (
                     <Skeleton className="h-12 w-full" />
                   ) : (
-                    <Input
-                      id="firstName"
-                      className={`h-12 text-base transition-all duration-200 ${
-                        isEditing 
-                          ? "border-emerald-300 focus:border-emerald-500 focus:ring-emerald-500" 
+                    <>
+                      <Input
+                        id="firstName"
+                        className={`h-12 text-base transition-all duration-200 ${
+                          fieldErrors.firstName ? "border-red-400 focus:border-red-500" :
+                          isEditing ? "border-emerald-300 focus:border-emerald-500 focus:ring-emerald-500"
                           : "bg-gray-50 border-gray-200"
-                      }`}
-                      placeholder="Enter first name"
-                      value={isEditing ? editedUser?.firstName || "" : user?.firstName || ""}
-                      onChange={(e) => handleInputChange("firstName", e.target.value)}
-                      readOnly={!isEditing}
-                    />
+                        }`}
+                        placeholder="Enter first name"
+                        value={isEditing ? editedUser?.firstName || "" : user?.firstName || ""}
+                        onChange={(e) => handleInputChange("firstName", e.target.value)}
+                        readOnly={!isEditing}
+                      />
+                      {fieldErrors.firstName && <p className="text-xs text-red-500 mt-1">{fieldErrors.firstName}</p>}
+                    </>
                   )}
                 </div>
 
@@ -405,18 +424,21 @@ const Profile = () => {
                   {userLoading ? (
                     <Skeleton className="h-12 w-full" />
                   ) : (
-                    <Input
-                      id="lastName"
-                      className={`h-12 text-base transition-all duration-200 ${
-                        isEditing 
-                          ? "border-emerald-300 focus:border-emerald-500 focus:ring-emerald-500" 
+                    <>
+                      <Input
+                        id="lastName"
+                        className={`h-12 text-base transition-all duration-200 ${
+                          fieldErrors.lastName ? "border-red-400 focus:border-red-500" :
+                          isEditing ? "border-emerald-300 focus:border-emerald-500 focus:ring-emerald-500"
                           : "bg-gray-50 border-gray-200"
-                      }`}
-                      placeholder="Enter last name"
-                      value={isEditing ? editedUser?.lastName || "" : user?.lastName || ""}
-                      onChange={(e) => handleInputChange("lastName", e.target.value)}
-                      readOnly={!isEditing}
-                    />
+                        }`}
+                        placeholder="Enter last name"
+                        value={isEditing ? editedUser?.lastName || "" : user?.lastName || ""}
+                        onChange={(e) => handleInputChange("lastName", e.target.value)}
+                        readOnly={!isEditing}
+                      />
+                      {fieldErrors.lastName && <p className="text-xs text-red-500 mt-1">{fieldErrors.lastName}</p>}
+                    </>
                   )}
                 </div>
 
@@ -448,31 +470,35 @@ const Profile = () => {
                   {userLoading ? (
                     <Skeleton className="h-12 w-full" />
                   ) : (
-                    <div className="flex gap-2">
-                      <Input
-                        id="country_code"
-                        className={`h-12 text-base transition-all duration-200 w-24 ${
-                          isEditing 
-                            ? "border-emerald-300 focus:border-emerald-500 focus:ring-emerald-500" 
-                            : "bg-gray-50 border-gray-200"
-                        }`}
-                        placeholder="+1"
+                    <div className="grid grid-cols-[90px_1fr] gap-2 items-stretch h-12">
+                      <Select
                         value={isEditing ? editedUser?.country_code || "" : user?.country_code || ""}
-                        onChange={(e) => handleInputChange("country_code", e.target.value)}
-                        readOnly={!isEditing}
-                      />
+                        onValueChange={(val) => handleInputChange("country_code", val)}
+                        disabled={!isEditing}
+                      >
+                        <SelectTrigger className={`w-full h-12 text-sm ${!isEditing ? "bg-gray-50 border-gray-200" : "border-emerald-300"}`}>
+                          <SelectValue placeholder="+?" />
+                        </SelectTrigger>
+                        <SelectContent className="max-h-60">
+                          {countries.map((c) => (
+                            <SelectItem key={c.code} value={c.dialCode}>
+                              {c.dialCode}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                       <Input
                         id="phone"
-                        className={`h-12 text-base transition-all duration-200 flex-1 ${
-                          isEditing 
-                            ? "border-emerald-300 focus:border-emerald-500 focus:ring-emerald-500" 
+                        type="tel"
+                        className={`h-12 text-base w-full transition-all duration-200 ${
+                          isEditing
+                            ? "border-emerald-300 focus:border-emerald-500 focus:ring-emerald-500"
                             : "bg-gray-50 border-gray-200"
                         }`}
-                        placeholder="Enter phone number"
-                        value={isEditing ? editedUser?.phone || "" : user?.phone || ""}
+                        placeholder="Phone number"
+                        value={String(isEditing ? editedUser?.phone ?? "" : user?.phone ?? "")}
                         onChange={(e) => handleInputChange("phone", e.target.value)}
                         readOnly={!isEditing}
-                        type="tel"
                       />
                     </div>
                   )}
@@ -486,18 +512,21 @@ const Profile = () => {
                   {userLoading ? (
                     <Skeleton className="h-12 w-full" />
                   ) : (
-                    <Input
-                      id="company"
-                      className={`h-12 text-base transition-all duration-200 ${
-                        isEditing 
-                          ? "border-emerald-300 focus:border-emerald-500 focus:ring-emerald-500" 
+                    <>
+                      <Input
+                        id="company"
+                        className={`h-12 text-base transition-all duration-200 ${
+                          fieldErrors.company ? "border-red-400 focus:border-red-500" :
+                          isEditing ? "border-emerald-300 focus:border-emerald-500 focus:ring-emerald-500"
                           : "bg-gray-50 border-gray-200"
-                      }`}
-                      placeholder="Enter company name"
-                      value={isEditing ? editedUser?.company || "" : user?.company || ""}
-                      onChange={(e) => handleInputChange("company", e.target.value)}
-                      readOnly={!isEditing}
-                    />
+                        }`}
+                        placeholder="Enter company name"
+                        value={isEditing ? editedUser?.company || "" : user?.company || ""}
+                        onChange={(e) => handleInputChange("company", e.target.value)}
+                        readOnly={!isEditing}
+                      />
+                      {fieldErrors.company && <p className="text-xs text-red-500 mt-1">{fieldErrors.company}</p>}
+                    </>
                   )}
                 </div>
 
@@ -573,24 +602,26 @@ const Profile = () => {
 
                 {/* Industry */}
                 <div className="space-y-2">
-                  <Label htmlFor="industry" className="text-sm font-medium text-gray-700">
-                    Industry
-                  </Label>
+                  <Label className="text-sm font-medium text-gray-700">Industry</Label>
                   {userLoading ? (
                     <Skeleton className="h-12 w-full" />
-                  ) : (
-                    <Input
-                      id="industry"
-                      className={`h-12 text-base transition-all duration-200 ${
-                        isEditing 
-                          ? "border-emerald-300 focus:border-emerald-500 focus:ring-emerald-500" 
-                          : "bg-gray-50 border-gray-200"
-                      }`}
-                      placeholder="Enter industry"
-                      value={isEditing ? editedUser?.industry || "" : user?.industry || ""}
-                      onChange={(e) => handleInputChange("industry", e.target.value)}
-                      readOnly={!isEditing}
+                  ) : isEditing ? (
+                    <MultiSelect
+                      label=""
+                      placeholder="Select industries"
+                      options={industryList}
+                      selected={editedUser?.industry || []}
+                      onChange={(ids) => setEditedUser(prev => ({ ...prev, industry: ids }))}
                     />
+                  ) : (
+                    <div className="h-12 px-3 flex items-center bg-gray-50 border border-gray-200 rounded-md text-sm text-gray-700">
+                      {(user?.industry || []).length > 0
+                        ? industryList
+                            .filter(i => (user?.industry || []).includes(i._id))
+                            .map(i => i.name)
+                            .join(", ") || user?.industry?.join(", ")
+                        : <span className="text-gray-400">Not provided</span>}
+                    </div>
                   )}
                 </div>
 
@@ -680,14 +711,17 @@ const Profile = () => {
                   {userLoading ? (
                     <Skeleton className="h-40 w-full" />
                   ) : (
-                    <RichTextEditor
-                      value={isEditing ? editedUser?.about_us || "" : user?.about_us || ""}
-                      onChange={(value) => handleInputChange("about_us", value)}
-                      placeholder="Tell us about your company, expertise, mission, or what you do. You can format your text with bold, italic, lists, and more..."
-                      readOnly={!isEditing}
-                      maxLength={2000}
-                      className="min-h-[160px]"
-                    />
+                    <>
+                      <RichTextEditor
+                        value={isEditing ? editedUser?.about_us || "" : user?.about_us || ""}
+                        onChange={(value) => handleInputChange("about_us", value)}
+                        placeholder="Tell us about your company, expertise, mission, or what you do. You can format your text with bold, italic, lists, and more..."
+                        readOnly={!isEditing}
+                        maxLength={2000}
+                        className="min-h-[160px]"
+                      />
+                      {fieldErrors.about_us && <p className="text-xs text-red-500 mt-1">{fieldErrors.about_us}</p>}
+                    </>
                   )}
                 </div>
               </div>

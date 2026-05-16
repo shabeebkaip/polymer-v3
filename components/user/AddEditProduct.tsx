@@ -13,800 +13,541 @@ import Documents from "./products/Documents";
 import { ProductFormData, ValidationErrors, RequiredField, AddEditProductProps } from "@/types/product";
 import type { UploadedFile } from "@/types/shared";
 import { Button } from "../ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Badge } from "../ui/badge";
-import { ChevronLeft, ChevronRight, Save, RotateCcw, CheckCircle, Package, Settings, Image, FileText, Truck, Box, Leaf, Shield, Upload } from "lucide-react";
+import {
+  Save, RotateCcw, ChevronDown, ChevronUp, CheckCircle2,
+  Package, Truck, ImageIcon, Settings, Box, Shield, Upload,
+  Eye, AlertCircle, MapPin, Tag, Layers,
+} from "lucide-react";
 import { createProduct, updateProduct } from "@/apiServices/products";
 import { initialFormData } from "@/apiServices/constants/userProductCrud";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
-// Form steps configuration
-const FORM_STEPS = [
-  {
-    id: 1,
-    title: "General Information",
-    description: "Basic product details",
-    icon: Package,
-    component: "general"
-  },
-  {
-    id: 2,
-    title: "Product Details", 
-    description: "Technical specifications",
-    icon: Settings,
-    component: "details"
-  },
-  {
-    id: 3,
-    title: "Product Images",
-    description: "Upload product photos",
-    icon: Image,
-    component: "images"
-  },
-  {
-    id: 4,
-    title: "Technical Properties",
-    description: "Material properties",
-    icon: FileText,
-    component: "technical"
-  },
-  {
-    id: 5,
-    title: "Trade Information",
-    description: "Pricing & terms",
-    icon: Truck,
-    component: "trade"
-  },
-  {
-    id: 6,
-    title: "Package Information",
-    description: "Packaging details",
-    icon: Box,
-    component: "package"
-  },
-  {
-    id: 7,
-    title: "Environmental",
-    description: "Environmental data",
-    icon: Leaf,
-    component: "environmental"
-  },
-  {
-    id: 8,
-    title: "Certifications",
-    description: "Increase Buyer Trust – Upload Certificates",
-    icon: Shield,
-    component: "certification"
-  },
-  {
-    id: 9,
-    title: "Documents",
-    description: "Boost Technical Credibility – Upload Documents",
-    icon: Upload,
-    component: "documents"
-  }
+// ─── Completion helpers ───────────────────────────────────────────────────────
+type SectionId = "core" | "images" | "trade" | "technical" | "packaging" | "compliance" | "documents";
+
+function getSectionCompletion(data: ProductFormData): Record<SectionId, boolean> {
+  return {
+    core:
+      !!data.productName?.trim() &&
+      !!data.chemicalName?.trim() &&
+      Array.isArray(data.polymerTypes) && data.polymerTypes.length > 0 &&
+      !!data.physicalForm &&
+      Array.isArray(data.industry) && data.industry.length > 0,
+    images: Array.isArray(data.productImages) && data.productImages.length > 0,
+    trade:
+      !!data.minimum_order_quantity &&
+      !!data.stock &&
+      !!data.uom &&
+      !!data.price &&
+      Array.isArray(data.incoterms) && data.incoterms.length > 0,
+    technical: !!(data.density || data.mfi || data.tensileStrength),
+    packaging: Array.isArray(data.packagingType) && data.packagingType.length > 0,
+    compliance: !!(data.recyclable || data.bioDegradable || data.fdaApproved || data.medicalGrade),
+    documents: [data.safety_data_sheet, data.technical_data_sheet, data.certificate_of_analysis].some(
+      doc => doc && typeof doc === "object" && Object.keys(doc).length > 0
+    ),
+  };
+}
+
+const SECTIONS: { id: SectionId; num: number; title: string; subtitle: string; icon: React.ElementType }[] = [
+  { id: "core",       num: 1, title: "Core Details",               subtitle: "Add basic information about your product",     icon: Package  },
+  { id: "images",     num: 2, title: "Product Images",             subtitle: "Upload high-quality images to showcase your product", icon: ImageIcon },
+  { id: "trade",      num: 3, title: "Trade Information",          subtitle: "Set pricing, quantities, and trade terms",     icon: Truck    },
+  { id: "technical",  num: 4, title: "Technical Properties",       subtitle: "Add technical specifications and properties",  icon: Settings },
+  { id: "packaging",  num: 5, title: "Packaging",                  subtitle: "Provide packaging and pallet information",     icon: Box      },
+  { id: "compliance", num: 6, title: "Compliance & Certifications",subtitle: "Add compliance documents and certificates",    icon: Shield   },
+  { id: "documents",  num: 7, title: "Documents",                  subtitle: "Upload any additional documents",              icon: Upload   },
 ];
 
+// ─── Section Card ─────────────────────────────────────────────────────────────
+function SectionCard({
+  num, title, subtitle, icon: Icon, completed, hasError, defaultOpen, children,
+}: {
+  num: number; title: string; subtitle: string; icon: React.ElementType;
+  completed: boolean; hasError: boolean; defaultOpen: boolean;
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+
+  return (
+    <div className={`bg-white rounded-2xl shadow-sm border transition-all duration-200
+      ${hasError ? "border-red-200" : completed ? "border-emerald-200" : "border-gray-100"}
+      ${open ? "shadow-md" : "hover:shadow-md"}
+    `}>
+      {/* Header */}
+      <button
+        type="button"
+        onClick={() => setOpen(v => !v)}
+        className="w-full flex items-center gap-4 px-5 py-4 text-left group rounded-t-2xl overflow-hidden"
+      >
+        {/* Number badge */}
+        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shrink-0 transition-colors
+          ${completed ? "bg-emerald-600 text-white" : hasError ? "bg-red-500 text-white" : "bg-gray-900 text-white"}`}>
+          {completed ? <CheckCircle2 className="w-4 h-4" /> : num}
+        </div>
+
+        {/* Icon */}
+        <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0
+          ${completed ? "bg-emerald-50" : hasError ? "bg-red-50" : "bg-gray-50"}`}>
+          <Icon className={`w-4 h-4 ${completed ? "text-emerald-600" : hasError ? "text-red-500" : "text-gray-500"}`} />
+        </div>
+
+        {/* Text */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="font-semibold text-gray-900 text-sm">{title}</span>
+            {completed ? (
+              <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-medium">Completed</span>
+            ) : hasError ? (
+              <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-medium">Needs Attention</span>
+            ) : (
+              <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full font-medium">Pending</span>
+            )}
+          </div>
+          <p className="text-xs text-gray-400 mt-0.5 truncate">{subtitle}</p>
+        </div>
+
+        {/* Chevron */}
+        <div className="shrink-0 text-gray-400 group-hover:text-gray-600 transition-colors">
+          {open ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+        </div>
+      </button>
+
+      {/* Content */}
+      {open && (
+        <div className="border-t border-gray-50 px-5 py-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+            {children}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Molecular SVG Illustration ───────────────────────────────────────────────
+function MoleculeIllustration() {
+  return (
+    <svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full opacity-30">
+      <circle cx="100" cy="80" r="18" stroke="white" strokeWidth="2" />
+      <circle cx="50"  cy="45" r="12" stroke="white" strokeWidth="1.5" />
+      <circle cx="155" cy="50" r="14" stroke="white" strokeWidth="1.5" />
+      <circle cx="40"  cy="115" r="10" stroke="white" strokeWidth="1.5" />
+      <circle cx="160" cy="118" r="12" stroke="white" strokeWidth="1.5" />
+      <circle cx="100" cy="148" r="9"  stroke="white" strokeWidth="1.5" />
+      <line x1="100" y1="62"  x2="57"  y2="53"  stroke="white" strokeWidth="1.5" />
+      <line x1="100" y1="62"  x2="148" y2="58"  stroke="white" strokeWidth="1.5" />
+      <line x1="87"  y1="85"  x2="48"  y2="110" stroke="white" strokeWidth="1.5" />
+      <line x1="113" y1="87"  x2="152" y2="110" stroke="white" strokeWidth="1.5" />
+      <line x1="95"  y1="98"  x2="100" y2="139" stroke="white" strokeWidth="1.5" />
+      <circle cx="100" cy="80"  r="6" fill="white" fillOpacity="0.4" />
+      <circle cx="50"  cy="45"  r="4" fill="white" fillOpacity="0.3" />
+      <circle cx="155" cy="50"  r="5" fill="white" fillOpacity="0.3" />
+      <circle cx="40"  cy="115" r="3" fill="white" fillOpacity="0.3" />
+      <circle cx="160" cy="118" r="4" fill="white" fillOpacity="0.3" />
+      <circle cx="100" cy="148" r="3" fill="white" fillOpacity="0.3" />
+    </svg>
+  );
+}
+
+// ─── Main Component ───────────────────────────────────────────────────────────
 const AddEditProduct = ({ product, id }: AddEditProductProps) => {
   const router = useRouter();
-  const isEditMode = id ? true : false;
+  const isEditMode = !!id;
 
   const {
-    chemicalFamilies,
-    polymersTypes,
-    industry,
-    physicalForms,
-    packagingTypes,
-    grades,
-    incoterms,
-    paymentTerms,
-    productFamilies,
+    chemicalFamilies, polymersTypes, industry, physicalForms,
+    packagingTypes, grades, incoterms, paymentTerms, productFamilies,
   } = useDropdowns();
 
-  const [data, setData] = useState<ProductFormData>(
-    product ? product : initialFormData
-  );
+  const [data, setData] = useState<ProductFormData>(product ?? initialFormData);
   const [error, setError] = useState<ValidationErrors>({});
-  const [currentStep, setCurrentStep] = useState(1);
-  const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
+  const [saving, setSaving] = useState(false);
 
-  const onFieldChange = (key: keyof ProductFormData, value: string | number | boolean | UploadedFile[] | Record<string, unknown> | undefined) => {
-    setData((prev) => ({
-      ...prev,
-      [key]: value,
-    }));
-  };
-  const onFieldError = (key: keyof ProductFormData) => {
-    setError((prev) => ({
-      ...prev,
-      [key]: "",
-    }));
-  };
+  const onFieldChange = (
+    key: keyof ProductFormData,
+    value: string | number | boolean | UploadedFile[] | Record<string, unknown> | undefined,
+  ) => setData(prev => ({ ...prev, [key]: value }));
 
-  // Navigation helpers
-  const nextStep = () => {
-    if (currentStep < FORM_STEPS.length) {
-      // Validate current step before moving forward
-      if (!validateCurrentStep()) {
-        toast.error('Please fill in all required fields before proceeding');
-        return;
-      }
-      setCompletedSteps(prev => new Set(prev).add(currentStep));
-      setCurrentStep(currentStep + 1);
-    }
-  };
+  const onFieldError = (key: keyof ProductFormData) =>
+    setError(prev => ({ ...prev, [key]: "" }));
 
-  const validateCurrentStep = (): boolean => {
-    const currentStepConfig = FORM_STEPS[currentStep - 1];
-    const stepFields = getStepFields(currentStepConfig.component);
-    const stepErrors: ValidationErrors = {};
+  const resetForm = () => { setData(initialFormData); setError({}); };
 
-    stepFields.forEach(field => {
-      const value = data[field];
-      
-      // Check if field is required based on step
-      const isRequired = isFieldRequiredForStep(field, currentStepConfig.component);
-      
-      if (isRequired) {
-        if (
-          value === undefined ||
-          value === null ||
-          value === "" ||
-          (Array.isArray(value) && value.length === 0)
-        ) {
-          stepErrors[field] = `${getFieldLabel(field)} is required`;
-        }
-        
-        // Special validation for productImages - backend requires id, name, type, fileUrl
-        if (field === 'productImages' && Array.isArray(value) && value.length > 0) {
-          const hasInvalidImage = value.some((img: UploadedFile) => {
-            return !img.id || !img.name || !img.type || !img.fileUrl;
-          });
-          if (hasInvalidImage) {
-            stepErrors[field] = 'Some images are missing required information. Please re-upload.';
-          }
-        }
-      }
-    });
+  // Completion
+  const completion = getSectionCompletion(data);
+  const completedCount = Object.values(completion).filter(Boolean).length;
+  const totalSections = SECTIONS.length;
+  const completionPct = Math.round((completedCount / totalSections) * 100);
 
-    setError(prev => ({ ...prev, ...stepErrors }));
-    return Object.keys(stepErrors).length === 0;
-  };
-
-  const isFieldRequiredForStep = (field: keyof ProductFormData, stepComponent: string): boolean => {
-    // Define required fields per step (aligned with backend schema)
-    const requiredFieldsByStep: Record<string, (keyof ProductFormData)[]> = {
-      'general': ['productName', 'chemicalName'],
-      'details': ['chemicalFamily', 'polymerType', 'physicalForm', 'industry'],
-      'images': ['productImages'],
-      'trade': ['minimum_order_quantity', 'stock', 'uom', 'price', 'incoterms'],
-      'package': [],
-      'technical': [],
-      'environmental': [],
-      'certification': [],
-      'documents': [],
-    };
-
-    return requiredFieldsByStep[stepComponent]?.includes(field) || false;
-  };
-
-  const getFieldLabel = (field: keyof ProductFormData): string => {
-    const labels: Record<string, string> = {
-      productName: 'Product Name',
-      chemicalName: 'Chemical Name',
-      tradeName: 'Trade Name',
-      chemicalFamily: 'Chemical Family',
-      product_family: 'Product Family',
-      polymerType: 'Polymer Type',
-      physicalForm: 'Physical Form',
-      industry: 'Industry',
-      productImages: 'Product Images',
-      minimum_order_quantity: 'Minimum Order Quantity',
-      stock: 'Stock',
-      uom: 'Unit of Measure',
-      price: 'Price',
-      incoterms: 'Incoterms',
-      paymentTerms: 'Payment Terms',
-      packagingType: 'Packaging Type',
-    };
-    return labels[field as string] || String(field);
-  };
-
-  const prevStep = () => {
-    if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
-    }
-  };
-
-  const goToStep = (step: number) => {
-    setCurrentStep(step);
-  };
-
-  const resetForm = () => {
-    setData(initialFormData);
-    setError({});
-    setCurrentStep(1);
-    setCompletedSteps(new Set());
-  };
-
-  // Helper function to get fields for each step
-  const getStepFields = (stepComponent: string): (keyof ProductFormData)[] => {
-    switch (stepComponent) {
-      case 'general':
-        return ['productName', 'chemicalName', 'tradeName'];
-      case 'details':
-        return ['chemicalFamily', 'product_family', 'polymerType', 'physicalForm', 'industry'];
-      case 'images':
-        return ['productImages'];
-      case 'technical':
-        return ['density', 'mfi', 'tensileStrength'];
-      case 'trade':
-        return ['minimum_order_quantity', 'stock', 'uom', 'price', 'priceTerms', 'incoterms', 'paymentTerms'];
-      case 'package':
-        return ['packagingType', 'packagingWeight'];
-      case 'environmental':
-        return ['recyclable', 'bioDegradable'];
-      case 'certification':
-        return ['fdaApproved', 'medicalGrade'];
-      case 'documents':
-        return ['safety_data_sheet', 'technical_data_sheet', 'certificate_of_analysis'];
-      default:
-        return [];
-    }
-  };
-
-  const handleSubmit = () => {
-    const toastId = toast.loading(
-      isEditMode ? "Updating Product" : "Creating product..."
-    );
-    const validationErrors: ValidationErrors = {};
-
-    // For edit mode, only validate required fields if they're completely empty
-    // For create mode, validate all required fields strictly (aligned with backend schema)
-    const requiredFields: RequiredField[] = [
-      { field: "productName", label: "Product Name" },
-      { field: "chemicalName", label: "Chemical Name" },
-      { field: "chemicalFamily", label: "Chemical Family" },
-      { field: "polymerType", label: "Polymer Type" },
-      { field: "physicalForm", label: "Physical Form" },
-      { field: "minimum_order_quantity", label: "Minimum Order Quantity" },
-      { field: "stock", label: "Stock" },
-      { field: "uom", label: "UOM" },
-      { field: "price", label: "Price" },
-    ];
-
+  // ── Validation ──────────────────────────────────────────────────────────────
+  const validate = (): ValidationErrors => {
+    const errs: ValidationErrors = {};
     if (!isEditMode) {
-      // Strict validation for new products - ALL required fields
-      requiredFields.forEach(({ field, label }) => {
-        const value = data[field];
-        if (
-          value === undefined ||
-          value === null ||
-          value === "" ||
-          (Array.isArray(value) && value.length === 0)
-        ) {
-          validationErrors[field] = `${label} is required`;
-        }
+      const required: RequiredField[] = [
+        { field: "productName", label: "Product Name" },
+        { field: "chemicalName", label: "Chemical Name" },
+        { field: "chemicalFamily", label: "Chemical Family" },
+        { field: "polymerType", label: "Polymer Type" },
+        { field: "physicalForm", label: "Physical Form" },
+        { field: "minimum_order_quantity", label: "Minimum Order Quantity" },
+        { field: "stock", label: "Stock" },
+        { field: "uom", label: "Unit of Measure" },
+        { field: "price", label: "Price" },
+      ];
+      required.forEach(({ field, label }) => {
+        const v = data[field];
+        if (v === undefined || v === null || v === "" || (Array.isArray(v) && v.length === 0))
+          errs[field] = `${label} is required`;
       });
-
-      if (data.industry.length === 0) {
-        validationErrors.industry = "At least one industry must be selected";
-      }
-
-      if (data.incoterms.length === 0) {
-        validationErrors.incoterms = "At least one incoterm must be selected";
-      }
-
-      if (data.productImages.length === 0) {
-        validationErrors.productImages = "At least one product image is required";
-      } else {
-        // Validate productImages internal structure
-        const hasInvalidImage = data.productImages.some((img: UploadedFile) => {
-          return !img.id || !img.name || !img.type || !img.fileUrl;
-        });
-        if (hasInvalidImage) {
-          validationErrors.productImages = "Some images are missing required information. Please re-upload.";
-        }
-      }
-    } else {
-      // Lenient validation for editing - backend schema has no required fields except createdBy
-      // Only validate FDA/Medical certs below (handled separately)
+      if (data.industry.length === 0) errs.industry = "At least one industry is required";
+      if (data.incoterms.length === 0) errs.incoterms = "At least one incoterm is required";
+      if (data.productImages.length === 0) errs.productImages = "At least one product image is required";
+      else if (data.productImages.some((img: UploadedFile) => !img.id || !img.name || !img.type || !img.fileUrl))
+        errs.productImages = "Some images are missing required information. Please re-upload.";
     }
+    if (data.fdaApproved && (!data.fdaCertificate?.id || !data.fdaCertificate?.fileUrl))
+      errs.fdaCertificate = "FDA certificate is required when FDA Approved is enabled";
+    if (data.medicalGrade && (!data.medicalCertificate?.id || !data.medicalCertificate?.fileUrl))
+      errs.medicalCertificate = "Medical certificate is required when Medical Grade is enabled";
+    return errs;
+  };
 
-    // Validate FDA and Medical Grade certificates
-    if (data.fdaApproved) {
-      const cert = data.fdaCertificate;
-      if (!cert || !cert.id || !cert.fileUrl) {
-        validationErrors.fdaCertificate = "FDA Approval certificate is required when FDA Approved is enabled";
-      }
-    }
+  // ── Format & Submit ─────────────────────────────────────────────────────────
+  const formatDataForAPI = (formData: ProductFormData) => {
+    const fmt = { ...formData } as Record<string, unknown>;
+    if (fmt.price) fmt.price = Number(fmt.price);
+    if (fmt.leadTime && typeof fmt.leadTime !== "string") fmt.leadTime = String(fmt.leadTime);
+    if (Array.isArray(fmt.paymentTerms) && fmt.paymentTerms.length > 0) fmt.paymentTerms = fmt.paymentTerms[0];
+    else if (Array.isArray(fmt.paymentTerms)) delete fmt.paymentTerms;
+    (["safety_data_sheet", "technical_data_sheet", "certificate_of_analysis"] as const).forEach(f => {
+      if (Array.isArray(fmt[f])) fmt[f] = (fmt[f] as unknown[]).length > 0 ? (fmt[f] as unknown[])[0] : undefined;
+    });
+    const fieldMappings: Record<string, string> = {
+      melt_flow_index: "mfi", tensile_strength: "tensileStrength",
+      elongation_at_break: "elongationAtBreak", shore_hardness: "shoreHardness", water_absorption: "waterAbsorption",
+    };
+    Object.entries(fieldMappings).forEach(([k, v]) => { if (fmt[k] !== undefined) { fmt[v] = fmt[k]; delete fmt[k]; } });
+    ["minimum_order_quantity","stock","density","mfi","tensileStrength","elongationAtBreak","shoreHardness","waterAbsorption"].forEach(f => {
+      if (fmt[f] && typeof fmt[f] === "string") { const n = Number(fmt[f]); if (!isNaN(n)) fmt[f] = n; }
+    });
+    if (fmt.packagingWeight && typeof fmt.packagingWeight === "number") fmt.packagingWeight = String(fmt.packagingWeight);
+    ["industry","grade","incoterms","packagingType","product_family"].forEach(f => {
+      if (fmt[f] && !Array.isArray(fmt[f])) fmt[f] = [fmt[f]];
+      else if (!fmt[f]) fmt[f] = [];
+    });
+    ["melting_point","glass_transition_temperature","heat_deflection_temperature","moisture_content","ash_content","dielectric_strength","volume_resistivity","flexural_modulus","grades"].forEach(f => delete fmt[f]);
+    fmt.certificates = formData.certificates || [];
+    if (!formData.fdaApproved) fmt.fdaCertificate = null;
+    else if (formData.fdaCertificate && Object.keys(formData.fdaCertificate).length > 0) fmt.fdaCertificate = formData.fdaCertificate;
+    if (!formData.medicalGrade) fmt.medicalCertificate = null;
+    else if (formData.medicalCertificate && Object.keys(formData.medicalCertificate).length > 0) fmt.medicalCertificate = formData.medicalCertificate;
+    Object.keys(fmt).forEach(key => {
+      if (["certificates","fdaCertificate","medicalCertificate"].includes(key)) return;
+      const v = fmt[key];
+      if (v === "" || v === null || v === undefined || (Array.isArray(v) && v.length === 0)) delete fmt[key];
+    });
+    return fmt;
+  };
 
-    if (data.medicalGrade) {
-      const cert = data.medicalCertificate;
-      if (!cert || !cert.id || !cert.fileUrl) {
-        validationErrors.medicalCertificate = "Medical Grade certificate is required when Medical Grade is enabled";
-      }
-    }
-
-    if (Object.keys(validationErrors).length > 0) {
-      console.warn("Validation errors:", validationErrors);
-      
-      const errorCount = Object.keys(validationErrors).length;
-      const errorMessage = isEditMode 
-        ? `Please fill in ${errorCount} required field${errorCount > 1 ? 's' : ''} to save changes`
-        : `Please complete ${errorCount} required field${errorCount > 1 ? 's' : ''} to create the product`;
-      
-      toast.error(errorMessage, { id: toastId });
-
-      setError(validationErrors);
-      
-      // Navigate to the first step that has errors
-      const stepWithError = FORM_STEPS.find(step => {
-        const stepFields = getStepFields(step.component);
-        return stepFields.some((field: keyof ProductFormData) => validationErrors[field]);
-      });
-      
-      if (stepWithError && stepWithError.id !== currentStep) {
-        setCurrentStep(stepWithError.id);
-        toast.info(`Navigated to ${stepWithError.title} section to fix errors`, {
-          duration: 3000
-        });
-      }
-      
+  const handleSubmit = async () => {
+    const errs = validate();
+    if (Object.keys(errs).length > 0) {
+      setError(errs);
+      toast.error(`Fix ${Object.keys(errs).length} required field${Object.keys(errs).length > 1 ? "s" : ""} before submitting`);
       return;
     }
-
-    // Format data according to backend schema requirements
-    const formatDataForAPI = (formData: ProductFormData) => {
-      const formatted = { ...formData } as Record<string, unknown>;
-
-      // Convert price from string to number (required in schema)
-      if (formatted.price) {
-        formatted.price = Number(formatted.price);
+    setSaving(true);
+    const toastId = toast.loading(isEditMode ? "Updating product…" : "Creating product…");
+    try {
+      const res = isEditMode
+        ? await updateProduct(id as string, formatDataForAPI(data))
+        : await createProduct(formatDataForAPI(data));
+      if (res?.success) {
+        toast.success(isEditMode ? "Product updated!" : "Product created!", { id: toastId });
+        if (!isEditMode) setData(initialFormData);
+        setTimeout(() => router.push("/user/products"), 800);
+      } else {
+        toast.error(isEditMode ? "Error updating product" : "Error creating product", { id: toastId });
       }
-
-      // Ensure leadTime is a string (keep as-is if already string)
-      if (formatted.leadTime && typeof formatted.leadTime !== 'string') {
-        formatted.leadTime = String(formatted.leadTime);
-      }
-
-      // Fix paymentTerms - should be single ObjectId, not array
-      if (Array.isArray(formatted.paymentTerms) && formatted.paymentTerms.length > 0) {
-        formatted.paymentTerms = formatted.paymentTerms[0]; // Take first selected payment term
-      } else if (Array.isArray(formatted.paymentTerms)) {
-        delete formatted.paymentTerms; // Remove if empty array
-      }
-
-      // Convert document arrays to single objects (backend expects objects, not arrays)
-      if (Array.isArray(formatted.safety_data_sheet)) {
-        formatted.safety_data_sheet = formatted.safety_data_sheet.length > 0 
-          ? formatted.safety_data_sheet[0] 
-          : undefined;
-      }
-
-      if (Array.isArray(formatted.technical_data_sheet)) {
-        formatted.technical_data_sheet = formatted.technical_data_sheet.length > 0 
-          ? formatted.technical_data_sheet[0] 
-          : undefined;
-      }
-
-      if (Array.isArray(formatted.certificate_of_analysis)) {
-        formatted.certificate_of_analysis = formatted.certificate_of_analysis.length > 0 
-          ? formatted.certificate_of_analysis[0] 
-          : undefined;
-      }
-
-      // Map frontend field names to backend schema field names
-      const fieldMappings = {
-        'melt_flow_index': 'mfi',
-        'tensile_strength': 'tensileStrength',
-        'elongation_at_break': 'elongationAtBreak',
-        'shore_hardness': 'shoreHardness',
-        'water_absorption': 'waterAbsorption'
-      };
-
-      Object.entries(fieldMappings).forEach(([frontendField, backendField]) => {
-        if (formatted[frontendField] !== undefined) {
-          formatted[backendField] = formatted[frontendField];
-          delete formatted[frontendField];
-        }
-      });
-
-      // Convert numeric string fields to numbers based on schema
-      const numericFields = [
-        'minimum_order_quantity', 'stock', 'density', 'mfi', 
-        'tensileStrength', 'elongationAtBreak', 'shoreHardness', 'waterAbsorption'
-      ];
-
-      numericFields.forEach(field => {
-        if (formatted[field] && typeof formatted[field] === 'string') {
-          const numValue = Number(formatted[field]);
-          if (!isNaN(numValue)) {
-            formatted[field] = numValue;
-          }
-        }
-      });
-
-      // Handle packagingWeight - schema expects String, not Number
-      if (formatted.packagingWeight && typeof formatted.packagingWeight === 'number') {
-        formatted.packagingWeight = formatted.packagingWeight.toString();
-      }
-
-      // Ensure arrays are properly formatted for schema
-      const arrayFields = ['industry', 'grade', 'incoterms', 'packagingType', 'product_family'];
-      arrayFields.forEach(field => {
-        if (formatted[field] && !Array.isArray(formatted[field])) {
-          formatted[field] = [formatted[field]];
-        } else if (!formatted[field]) {
-          formatted[field] = [];
-        }
-      });
-
-      // Remove fields that don't exist in schema or are empty
-      const fieldsToRemove = [
-        'melting_point', 'glass_transition_temperature', 'heat_deflection_temperature',
-        'moisture_content', 'ash_content', 'dielectric_strength', 'volume_resistivity',
-        'flexural_modulus', 'grades' // Remove 'grades' if it exists (should be 'grade')
-      ];
-
-      fieldsToRemove.forEach(field => {
-        delete formatted[field];
-      });
-
-      // Always include certificates array (even if empty) to properly handle deletions
-      formatted.certificates = formData.certificates || [];
-
-      // Handle FDA certificate - send null when toggle is off, otherwise include certificate object
-      if (!formData.fdaApproved) {
-        formatted.fdaCertificate = null;
-      } else if (formData.fdaCertificate && Object.keys(formData.fdaCertificate).length > 0) {
-        formatted.fdaCertificate = formData.fdaCertificate;
-      }
-
-      // Handle Medical certificate - send null when toggle is off, otherwise include certificate object
-      if (!formData.medicalGrade) {
-        formatted.medicalCertificate = null;
-      } else if (formData.medicalCertificate && Object.keys(formData.medicalCertificate).length > 0) {
-        formatted.medicalCertificate = formData.medicalCertificate;
-      }
-
-      // Remove empty strings, null, and undefined values
-      // Preserve certificates array and certificate objects (including null) for proper backend handling
-      Object.keys(formatted).forEach(key => {
-        // Skip certificates-related fields - they need explicit values (including empty arrays and null)
-        if (key === 'certificates' || key === 'fdaCertificate' || key === 'medicalCertificate') {
-          return;
-        }
-        
-        const value = formatted[key];
-        if (value === '' || value === null || value === undefined || 
-            (Array.isArray(value) && value.length === 0)) {
-          delete formatted[key];
-        }
-      });
-
-      return formatted;
-    };
-
-    const formattedData = formatDataForAPI(data);
-
-    const apiCall = () =>
-      isEditMode ? updateProduct(id as string, formattedData) : createProduct(formattedData);
-
-    apiCall()
-      .then((res) => {
-        if (res?.success) {
-          toast.success(
-            isEditMode ? "Product updated successfully" : "Product created successfully", 
-            { id: toastId }
-          );
-          setData(initialFormData);
-          setTimeout(() => {
-            router.push("/user/products");
-          }, 1000);
-        } else {
-          toast.error(
-            isEditMode ? "Error updating product" : "Error creating product", 
-            { id: toastId }
-          );
-          console.error("API Error Response:", res);
-        }
-      })
-      .catch((err) => {
-        console.error("Error with product operation:", err);
-        
-        // More detailed error handling
-        let errorMessage = isEditMode ? "Error updating product" : "Error creating product";
-        if (err.response?.data?.message) {
-          errorMessage = err.response.data.message;
-        } else if (err.message) {
-          errorMessage = err.message;
-        }
-        
-        toast.error(errorMessage, { id: toastId });
-      });
+    } catch (err: unknown) {
+      const msg = (err as { response?: { data?: { message?: string } }; message?: string })?.response?.data?.message
+        ?? (err as { message?: string })?.message ?? "Something went wrong";
+      toast.error(msg, { id: toastId });
+    } finally {
+      setSaving(false);
+    }
   };
 
-  // Render the current step component
-  const renderCurrentStep = () => {
-    const currentComponent = FORM_STEPS[currentStep - 1].component;
-    
-    switch (currentComponent) {
-      case 'general':
-        return (
-          <GeneralInformation
-            data={data}
-            onFieldChange={onFieldChange}
-            error={error}
-            onFieldError={onFieldError}
-          />
-        );
-      case 'details':
-        return (
-          <ProductDetails
-            data={data}
-            onFieldChange={(field, value) => onFieldChange(field, value as string | number | boolean | UploadedFile[] | undefined)}
-            chemicalFamilies={chemicalFamilies}
-            polymersTypes={polymersTypes}
-            industry={industry}
-            physicalForms={physicalForms}
-            productFamilies={productFamilies}
-            error={error}
-            onFieldError={onFieldError}
-          />
-        );
-      case 'images':
-        return <ProductImages data={data} onFieldChange={onFieldChange} />;
-      case 'technical':
-        return (
-          <TechnicalProperties
-            data={data}
-            onFieldChange={(field, value) => onFieldChange(field, value as string | number | boolean | UploadedFile[] | undefined)}
-            grades={grades}
-          />
-        );
-      case 'trade':
-        return (
-          <TradeInformation
-            data={data}
-            onFieldChange={(field, value) => onFieldChange(field, value as string | number | boolean | UploadedFile[] | undefined)}
-            incoterms={incoterms}
-            paymentTerms={paymentTerms}
-            error={error}
-            onFieldError={onFieldError}
-          />
-        );
-      case 'package':
-        return (
-          <PackageInformation
-            data={data}
-            onFieldChange={(field, value) => onFieldChange(field, value as string | number | boolean | UploadedFile[] | undefined)}
-            packagingTypes={packagingTypes}
-          />
-        );
-      case 'environmental':
-        return <Environmental data={data} onFieldChange={onFieldChange} />;
-      case 'certification':
-        return <Certification data={data} onFieldChange={onFieldChange} />;
-      case 'documents':
-        return <Documents data={data} onFieldChange={onFieldChange} />;
-      default:
-        return null;
-    }
+  // Error groups per section
+  const sectionErrors: Record<SectionId, boolean> = {
+    core:       ["productName","chemicalName","chemicalFamily","polymerType","physicalForm","industry"].some(f => !!error[f as keyof ValidationErrors]),
+    images:     !!error.productImages,
+    trade:      ["minimum_order_quantity","stock","uom","price","incoterms"].some(f => !!error[f as keyof ValidationErrors]),
+    technical:  false,
+    packaging:  false,
+    compliance: ["fdaCertificate","medicalCertificate"].some(f => !!error[f as keyof ValidationErrors]),
+    documents:  false,
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-primary-50 to-blue-50">
-      <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
-        {/* Header */}
-        <div className="text-center mb-6 sm:mb-8">
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-primary-500 mb-2">
-            {isEditMode ? 'Edit Product' : 'Add New Product'}
-          </h1>
-          <p className="text-sm sm:text-base text-gray-600 px-4">
-            {isEditMode ? 'Update your product information' : 'Create a comprehensive product listing'}
-          </p>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-emerald-50/20 to-gray-50">
+
+      {/* ── Sticky top bar ── */}
+      <div className="bg-white/80 backdrop-blur-md border-b border-gray-200/80 shadow-sm">
+        <div className="w-full px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => router.push("/user/products")}
+              className="text-sm text-gray-500 hover:text-gray-800 flex items-center gap-1.5 transition-colors"
+            >
+              ← Back to Products
+            </button>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={resetForm} className="hidden sm:flex items-center gap-1.5 text-gray-500 border-gray-200 text-xs">
+              <RotateCcw className="w-3.5 h-3.5" />Reset
+            </Button>
+            <Button size="sm" onClick={handleSubmit} disabled={saving}
+              className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white px-4 text-xs font-semibold">
+              <Save className="w-3.5 h-3.5" />
+              {saving ? "Saving…" : isEditMode ? "Save Changes" : "Create Product"}
+            </Button>
+          </div>
         </div>
+      </div>
 
-        {/* Progress Stepper */}
-        <Card className="mb-6 sm:mb-8 border-0 shadow-lg bg-white/70 backdrop-blur-sm">
-          <CardContent className="p-4 sm:p-6">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-2">
-              <h2 className="text-base sm:text-lg font-semibold text-gray-800">
-                Step {currentStep} of {FORM_STEPS.length}
-              </h2>
-              <Badge variant="outline" className="bg-primary-50 text-primary-500 border-primary-500/30 text-xs sm:text-sm">
-                {Math.round(((currentStep - 1) / FORM_STEPS.length) * 100)}% Complete
-              </Badge>
-            </div>
-            
-            {/* Progress bar */}
-            <div className="w-full bg-gray-200 rounded-full h-2 mb-4 sm:mb-6">
-              <div 
-                className="bg-primary-500 h-2 rounded-full transition-all duration-500"
-                style={{ width: `${((currentStep - 1) / FORM_STEPS.length) * 100}%` }}
-              />
-            </div>
+      <div className="w-full px-4 sm:px-0 py-6">
+        <div className="flex flex-col xl:flex-row gap-6 items-start">
 
-            {/* Current step info for mobile */}
-            <div className="mb-4 sm:hidden text-center">
-              <p className="text-sm font-medium text-gray-600">
-                {FORM_STEPS[currentStep - 1].title}
-              </p>
-            </div>
+          {/* ── LEFT: Main form area ── */}
+          <div className="flex-1 min-w-0 flex flex-col gap-4">
 
-            {/* Step indicators */}
-            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-9 gap-1 sm:gap-2">
-              {FORM_STEPS.map((step) => {
-                const Icon = step.icon;
-                const isCompleted = completedSteps.has(step.id);
-                const isCurrent = currentStep === step.id;
-                const isAccessible = step.id <= currentStep || completedSteps.has(step.id);
+            {/* Hero card */}
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-700 via-emerald-600 to-teal-700 p-6 sm:p-8 shadow-xl">
+              <div className="absolute inset-0 opacity-10">
+                <div className="absolute top-0 right-0 w-96 h-96 bg-white rounded-full -translate-y-48 translate-x-48" />
+                <div className="absolute bottom-0 left-1/2 w-64 h-64 bg-white rounded-full translate-y-32" />
+              </div>
+              <div className="absolute right-6 top-0 bottom-0 w-40 sm:w-52 flex items-center opacity-20 pointer-events-none">
+                <MoleculeIllustration />
+              </div>
+              <div className="relative flex flex-col sm:flex-row sm:items-center gap-6">
+                <div className="flex-1 min-w-0">
+                  <p className="text-emerald-200 text-xs font-semibold uppercase tracking-widest mb-1">
+                    {isEditMode ? "Edit Product" : "New Product"}
+                  </p>
+                  <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2 leading-tight">
+                    {isEditMode ? "Update Your Listing" : "Create New Product"}
+                  </h1>
+                  <p className="text-emerald-100 text-sm leading-relaxed max-w-md">
+                    Build a professional product listing to attract verified buyers across the globe.
+                  </p>
+                </div>
 
-                return (
-                  <button
-                    key={step.id}
-                    onClick={() => isAccessible && goToStep(step.id)}
-                    disabled={!isAccessible}
-                    className={`
-                      p-2 sm:p-3 rounded-lg text-center transition-all duration-300 group relative min-h-[3rem] sm:min-h-[4rem]
-                      ${isCurrent 
-                        ? 'bg-primary-500 text-white shadow-lg scale-105' 
-                        : isCompleted
-                        ? 'bg-primary-50 text-primary-500 hover:bg-primary-100 active:bg-primary-200'
-                        : isAccessible
-                        ? 'bg-gray-100 text-gray-600 hover:bg-gray-200 active:bg-gray-300'
-                        : 'bg-gray-50 text-gray-400 cursor-not-allowed'
-                      }
-                    `}
-                  >
-                    <Icon className="w-4 h-4 sm:w-5 sm:h-5 mx-auto mb-1" />
-                    <div className="text-xs font-medium truncate hidden sm:block">{step.title}</div>
-                    <div className="text-xs font-medium truncate sm:hidden">{step.id}</div>
-                    {isCompleted && (
-                      <CheckCircle className="w-2 h-2 sm:w-3 sm:h-3 mx-auto mt-1 text-primary-500" />
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Main Form Content */}
-        <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
-          <CardHeader className="bg-primary-50/50 p-4 sm:p-6">
-            <div className="flex items-center space-x-3">
-              {React.createElement(FORM_STEPS[currentStep - 1].icon, { 
-                className: "w-5 h-5 sm:w-6 sm:h-6 text-primary-500 flex-shrink-0" 
-              })}
-              <div className="min-w-0 flex-1">
-                <CardTitle className="text-lg sm:text-xl text-gray-800 truncate">
-                  {FORM_STEPS[currentStep - 1].title}
-                </CardTitle>
-                <p className="text-xs sm:text-sm text-gray-600 mt-1">
-                  {FORM_STEPS[currentStep - 1].description}
-                </p>
+                {/* Progress */}
+                <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20 shrink-0 min-w-[180px]">
+                  <p className="text-emerald-200 text-xs font-medium mb-1">Completion Progress</p>
+                  <p className="text-white text-3xl font-bold mb-2">{completionPct}%</p>
+                  <div className="w-full bg-white/20 rounded-full h-1.5 mb-2">
+                    <div
+                      className="bg-white h-1.5 rounded-full transition-all duration-500"
+                      style={{ width: `${completionPct}%` }}
+                    />
+                  </div>
+                  <p className="text-emerald-200 text-xs">{completedCount} of {totalSections} sections completed</p>
+                </div>
               </div>
             </div>
-          </CardHeader>
-          
-          <CardContent className="p-4 sm:p-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-              {renderCurrentStep()}
-            </div>
-          </CardContent>
-        </Card>
 
-        {/* Navigation and Actions */}
-        <div className="mt-6 sm:mt-8 flex flex-col gap-4 items-center">
-          {/* Primary Navigation */}
-          <div className="flex gap-3 w-full sm:w-auto justify-center">
-            <Button
-              onClick={prevStep}
-              disabled={currentStep === 1}
-              variant="outline"
-              size="lg"
-              className="flex items-center gap-2 border-primary-500/30 text-primary-500 hover:bg-primary-50 px-6 py-3 min-h-[44px]"
-            >
-              <ChevronLeft className="w-4 h-4" />
-              <span className="hidden sm:inline">Previous</span>
-              <span className="sm:hidden">Prev</span>
-            </Button>
-            
-            {currentStep < FORM_STEPS.length ? (
-              <Button
-                onClick={nextStep}
-                size="lg"
-                className="flex items-center gap-2 bg-primary-500 hover:bg-primary-600 text-white px-6 py-3 min-h-[44px]"
+            {/* Section cards */}
+            {SECTIONS.map(sec => (
+              <SectionCard
+                key={sec.id}
+                num={sec.num}
+                title={sec.title}
+                subtitle={sec.subtitle}
+                icon={sec.icon}
+                completed={completion[sec.id]}
+                hasError={sectionErrors[sec.id]}
+                defaultOpen={sec.id === "core"}
               >
-                <span className="hidden sm:inline">Next</span>
-                <span className="sm:hidden">Next</span>
-                <ChevronRight className="w-4 h-4" />
+                {sec.id === "core" && (
+                  <>
+                    <GeneralInformation data={data} onFieldChange={onFieldChange} error={error} onFieldError={onFieldError} />
+                    <ProductDetails
+                      data={data}
+                      onFieldChange={(f, v) => onFieldChange(f, v as string | number | boolean | UploadedFile[] | undefined)}
+                      chemicalFamilies={chemicalFamilies} polymersTypes={polymersTypes}
+                      industry={industry} physicalForms={physicalForms} productFamilies={productFamilies}
+                      error={error} onFieldError={onFieldError}
+                    />
+                  </>
+                )}
+                {sec.id === "images" && <ProductImages data={data} onFieldChange={onFieldChange} />}
+                {sec.id === "trade" && (
+                  <TradeInformation
+                    data={data}
+                    onFieldChange={(f, v) => onFieldChange(f, v as string | number | boolean | UploadedFile[] | undefined)}
+                    incoterms={incoterms} paymentTerms={paymentTerms} error={error} onFieldError={onFieldError}
+                  />
+                )}
+                {sec.id === "technical" && (
+                  <TechnicalProperties
+                    data={data}
+                    onFieldChange={(f, v) => onFieldChange(f, v as string | number | boolean | UploadedFile[] | undefined)}
+                    grades={grades}
+                  />
+                )}
+                {sec.id === "packaging" && (
+                  <PackageInformation
+                    data={data}
+                    onFieldChange={(f, v) => onFieldChange(f, v as string | number | boolean | UploadedFile[] | undefined)}
+                    packagingTypes={packagingTypes}
+                  />
+                )}
+                {sec.id === "compliance" && (
+                  <>
+                    <Environmental data={data} onFieldChange={onFieldChange} />
+                    <Certification data={data} onFieldChange={onFieldChange} />
+                  </>
+                )}
+                {sec.id === "documents" && <Documents data={data} onFieldChange={onFieldChange} />}
+              </SectionCard>
+            ))}
+
+            {/* Footer */}
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+              <Button variant="outline" onClick={resetForm} className="flex items-center gap-2 text-gray-500 border-gray-200 text-sm">
+                <RotateCcw className="w-4 h-4" />Reset Form
               </Button>
-            ) : (
-              <Button
-                onClick={handleSubmit}
-                size="lg"
-                className="flex items-center gap-2 bg-primary-500 hover:bg-primary-600 text-white shadow-lg px-6 py-3 min-h-[44px]"
-              >
-                <Save className="w-4 h-4" />
-                <span className="hidden sm:inline">{isEditMode ? 'Update Product' : 'Create Product'}</span>
-                <span className="sm:hidden">{isEditMode ? 'Update' : 'Create'}</span>
+              <p className="text-xs text-gray-400 hidden sm:block">All changes are saved automatically</p>
+              <Button onClick={handleSubmit} disabled={saving}
+                className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-6 font-semibold">
+                <CheckCircle2 className="w-4 h-4" />
+                {saving ? "Saving…" : isEditMode ? "Save Changes" : "Create Product"}
               </Button>
-            )}
+            </div>
           </div>
 
-          {/* Secondary Actions */}
-          <div className="flex flex-wrap gap-3 justify-center">
-            {/* Save Changes button - always visible in edit mode */}
-            {isEditMode && (
-              <Button
-                onClick={handleSubmit}
-                size="lg"
-                className="flex items-center gap-2 bg-primary-500 hover:bg-primary-600 text-white shadow-lg px-6 py-3 min-h-[44px]"
-              >
-                <Save className="w-4 h-4" />
-                <span className="hidden sm:inline">Save Changes</span>
-                <span className="sm:hidden">Save</span>
-              </Button>
-            )}
-            
-            <Button
-              onClick={resetForm}
-              variant="outline"
-              size="lg"
-              className="flex items-center gap-2 border-gray-300 text-gray-600 hover:bg-gray-50 px-6 py-3 min-h-[44px]"
-            >
-              <RotateCcw className="w-4 h-4" />
-              <span className="hidden sm:inline">Reset Form</span>
-              <span className="sm:hidden">Reset</span>
-            </Button>
+          {/* ── RIGHT: Sticky sidebar ── */}
+          <div className="w-full xl:w-[300px] shrink-0 xl:sticky xl:top-20 flex flex-col gap-4">
+
+            {/* Completion tracker */}
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-semibold text-gray-900 text-sm">Product Completion</h3>
+                <span className="text-xs font-bold text-emerald-600">{completionPct}% Complete</span>
+              </div>
+              <div className="w-full bg-gray-100 rounded-full h-2 mb-5">
+                <div
+                  className="bg-emerald-500 h-2 rounded-full transition-all duration-500"
+                  style={{ width: `${completionPct}%` }}
+                />
+              </div>
+              <div className="flex flex-col gap-2.5">
+                {SECTIONS.map(sec => {
+                  const done = completion[sec.id];
+                  const err = sectionErrors[sec.id];
+                  return (
+                    <div key={sec.id} className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0
+                          ${done ? "border-emerald-500 bg-emerald-500" : err ? "border-red-400" : "border-gray-300"}`}>
+                          {done && <CheckCircle2 className="w-3 h-3 text-white" />}
+                          {err && !done && <AlertCircle className="w-3 h-3 text-red-400" />}
+                        </div>
+                        <span className="text-xs text-gray-600">{sec.title}</span>
+                      </div>
+                      <span className={`text-xs font-medium ${done ? "text-emerald-600" : err ? "text-red-500" : "text-gray-400"}`}>
+                        {done ? "Completed" : err ? "Fix" : "Pending"}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Live preview */}
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+              <div className="flex items-center gap-2 mb-4">
+                <Eye className="w-4 h-4 text-gray-400" />
+                <h3 className="font-semibold text-gray-900 text-sm">Live Preview</h3>
+              </div>
+
+              <div className="border border-gray-100 rounded-xl overflow-hidden">
+                {/* Image placeholder */}
+                <div className="bg-gray-50 h-32 flex items-center justify-center border-b border-gray-100 relative">
+                  {data.productImages?.[0]?.fileUrl ? (
+                    <img src={data.productImages[0].fileUrl} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="flex flex-col items-center gap-1 text-gray-300">
+                      <ImageIcon className="w-8 h-8" />
+                      <span className="text-xs">No image</span>
+                    </div>
+                  )}
+                  <span className="absolute top-2 right-2 text-xs bg-gray-200 text-gray-500 px-2 py-0.5 rounded-full font-medium">Draft</span>
+                </div>
+
+                <div className="p-3">
+                  <p className="font-semibold text-gray-900 text-sm truncate">
+                    {data.productName || "Product Name"}
+                  </p>
+                  <p className="text-xs text-gray-400 truncate mb-2">
+                    {data.chemicalName || "Chemical Name"}
+                  </p>
+
+                  {data.price && (
+                    <p className="text-emerald-600 font-bold text-base mb-2">
+                      ${Number(data.price).toLocaleString()} <span className="text-xs font-normal text-gray-400">/ {data.uom || "unit"}</span>
+                    </p>
+                  )}
+
+                  <div className="flex flex-col gap-1.5">
+                    {data.minimum_order_quantity && (
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-gray-400 flex items-center gap-1"><Layers className="w-3 h-3" />Min. Order</span>
+                        <span className="text-gray-700 font-medium">{Number(data.minimum_order_quantity).toLocaleString()} {data.uom || ""}</span>
+                      </div>
+                    )}
+                    {data.countryOfOrigin && (
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-gray-400 flex items-center gap-1"><MapPin className="w-3 h-3" />Origin</span>
+                        <span className="text-gray-700 font-medium">{data.countryOfOrigin}</span>
+                      </div>
+                    )}
+                    {data.productName && (
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-gray-400 flex items-center gap-1"><Tag className="w-3 h-3" />Category</span>
+                        <span className="text-gray-700 font-medium truncate max-w-[100px]">{data.productName}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Pro tip */}
+            <div className="bg-amber-50 border border-amber-100 rounded-2xl p-4">
+              <p className="text-sm font-semibold text-amber-800 mb-1">💡 Pro Tip</p>
+              <p className="text-xs text-amber-700 leading-relaxed">
+                Complete all required sections to increase visibility and attract more buyers. Products with images get <strong>3× more enquiries</strong>.
+              </p>
+            </div>
           </div>
         </div>
-
-        {/* Quick Actions */}
-        <Card className="mt-4 sm:mt-6 border-0 bg-primary-50">
-          <CardContent className="p-3 sm:p-4">
-            <div className="flex flex-wrap gap-1 sm:gap-2 justify-center">
-              <Badge variant="secondary" className="text-xs">
-                💡 <span className="hidden sm:inline">Tip: You can navigate between completed steps</span>
-                <span className="sm:hidden">Navigate steps</span>
-              </Badge>
-              <Badge variant="secondary" className="text-xs">
-                📝 <span className="hidden sm:inline">Required fields are marked with validation</span>
-                <span className="sm:hidden">Required fields marked</span>
-              </Badge>
-              <Badge variant="secondary" className="text-xs">
-                💾 <span className="hidden sm:inline">Your progress is automatically saved</span>
-                <span className="sm:hidden">Auto-saved</span>
-              </Badge>
-              {isEditMode && (
-                <Badge variant="secondary" className="text-xs bg-primary-50 text-primary-500">
-                  ✨ <span className="hidden sm:inline">Use &quot;Save Changes&quot; button to save edits at any step</span>
-                  <span className="sm:hidden">Save anytime</span>
-                </Badge>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Floating Save Button for Edit Mode */}
-        {isEditMode && (
-          <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50">
-            <Button
-              onClick={handleSubmit}
-              size="lg"
-              className="flex items-center gap-2 bg-primary-500 hover:bg-primary-600 text-white shadow-2xl rounded-full px-4 py-3 sm:px-6 animate-pulse hover:animate-none transition-all duration-300"
-            >
-              <Save className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span className="hidden sm:inline">Save Changes</span>
-              <span className="sm:hidden">Save</span>
-            </Button>
-          </div>
-        )}
       </div>
+
+      {/* Floating save — edit mode */}
+      {isEditMode && (
+        <div className="fixed bottom-5 right-5 z-50">
+          <Button onClick={handleSubmit} disabled={saving} size="lg"
+            className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white shadow-xl rounded-full px-6">
+            <Save className="w-4 h-4" />{saving ? "Saving…" : "Save Changes"}
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

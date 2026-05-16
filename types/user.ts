@@ -6,7 +6,7 @@ export type UserType =  {
   lastName?: string;
   company?: string;
   website?: string;
-  industry?: string;
+  industry?: string[];
   address?: string;
   country_code?: string;
   phone?: string | number;

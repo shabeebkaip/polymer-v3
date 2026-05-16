@@ -162,6 +162,9 @@ export interface ProductRequestFormData {
 export interface QuickAddFormData {
   polymerTypes: string[];
   productName?: string;
+  chemicalFamily?: string;
+  physicalForm?: string;
+  countryOfOrigin?: string;
   minimum_order_quantity?: number | null;
   uom?: string;
   availability?: string;
