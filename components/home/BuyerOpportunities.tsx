@@ -62,9 +62,9 @@ const BuyerOpportunities: React.FC = () => {
         return dataArray.map((item) => {
           // Determine urgency based on priority field or delivery date
           const priority = item.priority?.toLowerCase() || 'normal';
-          const deliveryDate = new Date(item.deadline);
+          const deliveryDate = new Date((item.delivery_date || item.deadline) as string);
           const daysUntilDelivery = Math.ceil((deliveryDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
-          
+
           let urgency: "low" | "medium" | "high" = "medium";
           if (priority === 'high' || daysUntilDelivery <= 7) {
             urgency = "high";
@@ -74,21 +74,24 @@ const BuyerOpportunities: React.FC = () => {
             urgency = "low";
           }
 
+          const productName = (item.product as { productName?: string })?.productName || String(item.productName || "Product");
+          const buyer = (item.user || item.buyer) as { company?: string; location?: string; isVerified?: boolean; name?: string } | undefined;
+
           const transformedRequest = {
             id: String(item.id || item._id || Math.random()),
             type: "buyer-request" as const,
-            title: `${item.productName || 'Product Request'} - Buyer Opportunity`,
+            title: `${productName} - Buyer Opportunity`,
             buyer: {
-              company: (item.buyer as { company?: string })?.company || "Anonymous Company",
-              location: (item.buyer as { location?: string })?.location || (item.city && item.country ? `${item.city}, ${item.country}` : "Location not specified"),
-              verified: (item.buyer as { isVerified?: boolean })?.isVerified || false,
-              name: (item.buyer as { name?: string })?.name
+              company: buyer?.company || "Anonymous Company",
+              location: buyer?.location || (item.city && item.country ? `${item.city}, ${item.country}` : "Location not specified"),
+              verified: buyer?.isVerified || false,
+              name: buyer?.name
             },
-            product: String(item.productName || "Product"),
+            product: productName,
             quantity: item.uom ? `${item.quantity} ${item.uom}` : `${item.quantity || 'N/A'}`,
             budget: "Contact for quote", // This field is not in the API response
-            deadline: item.deadline,
-            description: String(item.description || `Buyer opportunity for ${item.productName || 'product'}${item.destination ? '. Delivery to ' + item.destination : ''}.`),
+            deadline: (item.delivery_date || item.deadline) as string,
+            description: String(item.description || `Buyer opportunity for ${productName}${item.destination ? '. Delivery to ' + item.destination : ''}.`),
             urgency: urgency,
             responses: (item.responses as { count?: number })?.count || 0,
             // Additional fields from API
