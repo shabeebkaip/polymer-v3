@@ -260,7 +260,7 @@ const FinanceRequestDetail = () => {
             <UserInformation 
               user={{
                 ...financeRequest.productId.createdBy,
-                phone: String(financeRequest.productId.createdBy.phone)
+                phone: financeRequest.productId.createdBy.phone != null ? String(financeRequest.productId.createdBy.phone) : ''
               }} 
               title="Product Supplier" 
             />

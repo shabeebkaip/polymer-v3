@@ -552,11 +552,13 @@ const ProductRequestDetail = () => {
                   <span className="text-sm text-gray-700">{productRequestDetail.product.createdBy.email}</span>
                 </div>
                 
-                <div className="flex items-center gap-2">
-                  <Phone className="w-4 h-4 text-gray-400" />
-                  <span className="text-sm text-gray-700">{productRequestDetail.product.createdBy.phone}</span>
-                </div>
-                
+                {productRequestDetail.product.createdBy.phone && (
+                  <div className="flex items-center gap-2">
+                    <Phone className="w-4 h-4 text-gray-400" />
+                    <span className="text-sm text-gray-700">{productRequestDetail.product.createdBy.phone}</span>
+                  </div>
+                )}
+
                 <div className="flex items-start gap-2">
                   <MapPin className="w-4 h-4 text-gray-400 mt-0.5" />
                   <span className="text-sm text-gray-700">{productRequestDetail.product.createdBy.address}</span>
@@ -584,11 +586,13 @@ const ProductRequestDetail = () => {
                   <span className="text-sm text-gray-700">{productRequestDetail.user.email}</span>
                 </div>
                 
-                <div className="flex items-center gap-2">
-                  <Phone className="w-4 h-4 text-gray-400" />
-                  <span className="text-sm text-gray-700">{productRequestDetail.user.phone}</span>
-                </div>
-                
+                {productRequestDetail.user.phone && (
+                  <div className="flex items-center gap-2">
+                    <Phone className="w-4 h-4 text-gray-400" />
+                    <span className="text-sm text-gray-700">{productRequestDetail.user.phone}</span>
+                  </div>
+                )}
+
                 <div className="flex items-start gap-2">
                   <MapPin className="w-4 h-4 text-gray-400 mt-0.5" />
                   <span className="text-sm text-gray-700">{productRequestDetail.user.address}</span>
