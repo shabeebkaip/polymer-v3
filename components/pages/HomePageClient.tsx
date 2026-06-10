@@ -3,7 +3,6 @@ import Hero from "@/components/home/Hero";
 import Categories from "@/components/home/Categories";
 import ProductsByBrand from "@/components/home/ProductsByBrand";
 import Benefits from "@/components/home/Benefits";
-import FeaturedSuppliers from "@/components/home/FeaturedSuppliers";
 import HomeDataProvider from "@/components/providers/HomeDataProvider";
 import DealsAndRequests from "@/components/home/DealsAndRequests";
 import { HomePageClientProps } from "@/types/home";
@@ -16,7 +15,6 @@ export default function HomePageClient({ initialData }: HomePageClientProps) {
         <DealsAndRequests />
         <Categories />
         <ProductsByBrand />
-        <FeaturedSuppliers />
         <Benefits />
       </div>
     </HomeDataProvider>
