@@ -22,7 +22,6 @@ const TABS = ['Overview', 'Products', 'Certifications', 'Industries', 'Capabilit
 /* ── Trust badges ── */
 const TRUST_BADGES = [
   { icon: <BadgeCheck className="w-6 h-6 text-primary-600" />, title: 'Verified Supplier',  sub: 'Platform Verified'      },
-  { icon: <Shield      className="w-6 h-6 text-primary-600" />, title: 'Trade Assurance',    sub: 'Secure Transactions'    },
   { icon: <Award       className="w-6 h-6 text-primary-600" />, title: 'ISO Certified',      sub: 'Quality Management'     },
   { icon: <Globe       className="w-6 h-6 text-primary-600" />, title: 'Global Shipping',    sub: 'Worldwide Delivery'     },
   { icon: <Zap         className="w-6 h-6 text-primary-600" />, title: 'Fast Response',      sub: 'Average < 2 hrs'        },
@@ -259,12 +258,11 @@ const SupplierDetail = () => {
       {/* ── Performance bar — white card BELOW hero ── */}
       <div className="bg-white border-b border-gray-100 shadow-sm">
         <div className="container mx-auto px-4 max-w-6xl">
-          <div className="grid grid-cols-2 md:grid-cols-4">
+          <div className="grid grid-cols-2 md:grid-cols-3">
             {[
               { icon: <Clock   className="w-4 h-4 text-primary-500" />, label: 'Response Time',    value: '< 2 hrs',      sub: 'Average response'     },
               { icon: <Truck   className="w-4 h-4 text-primary-500" />, label: 'On-time Delivery', value: '98%',          sub: 'Reliable & consistent' },
               { icon: <Factory className="w-4 h-4 text-primary-500" />, label: 'Supplier Type',    value: 'Manufacturer', sub: 'ISO Certified'         },
-              { icon: <Shield  className="w-4 h-4 text-primary-500" />, label: 'Trade Assurance',  value: 'Protected',    sub: 'Your orders are safe'  },
             ].map((s, i) => (
               <div key={i} className={`flex items-center gap-2.5 px-4 py-4 md:px-5 md:py-5 ${i % 2 === 0 && i < 2 ? 'border-r border-gray-100' : ''} ${i < 2 ? 'border-b md:border-b-0 border-gray-100' : ''} ${i === 1 || i === 3 ? 'md:border-r md:border-gray-100' : ''}`}>
                 <div className="w-8 h-8 md:w-10 md:h-10 bg-primary-50 rounded-xl flex items-center justify-center flex-shrink-0">

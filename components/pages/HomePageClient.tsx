@@ -12,9 +12,9 @@ export default function HomePageClient({ initialData }: HomePageClientProps) {
     <HomeDataProvider initialData={initialData}>
       <div className="bg-gradient-to-b from-white via-gray-50 to-white">
         <Hero />
+        <ProductsByBrand />
         <DealsAndRequests />
         <Categories />
-        <ProductsByBrand />
         <Benefits />
       </div>
     </HomeDataProvider>
