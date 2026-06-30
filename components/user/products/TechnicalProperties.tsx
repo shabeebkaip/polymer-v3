@@ -5,6 +5,12 @@ import { Card, CardContent } from "../../ui/card";
 import { Gauge, Layers, Thermometer } from "lucide-react";
 import { ProductFormData, TechnicalPropertiesProps } from "@/types/product";
 import MultiSelect from "@/components/shared/MultiSelect";
+import ConfidenceBadge from "@/components/ai-import/ConfidenceBadge";
+
+type Props = TechnicalPropertiesProps & {
+  aiFilledFields?: Record<string, { confidence: string }>;
+  clearAiField?: (field: string) => void;
+};
 
 // Technical property categories based on backend schema
 const PROPERTY_CATEGORIES = [
@@ -44,11 +50,27 @@ const PROPERTY_CATEGORIES = [
   }
 ];
 
-const TechnicalProperties: React.FC<TechnicalPropertiesProps> = ({
+const TechnicalProperties: React.FC<Props> = ({
   data,
   onFieldChange,
   grades = [],
+  aiFilledFields,
+  clearAiField,
 }) => {
+  const aiCls = (field: string) => {
+    const ai = aiFilledFields?.[field];
+    if (!ai) return "";
+    return ai.confidence === "low" ? " border-orange-300 bg-orange-50" : " border-teal-300 bg-teal-50";
+  };
+
+  const AiChip = ({ field }: { field: string }) => {
+    const ai = aiFilledFields?.[field];
+    if (!ai) return null;
+    return ai.confidence === "low"
+      ? <ConfidenceBadge level="low" />
+      : <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-teal-50 text-teal-700 border border-teal-200">✦ AI</span>;
+  };
+
   return (
     <>
       {/* Grades Selection */}
@@ -67,7 +89,7 @@ const TechnicalProperties: React.FC<TechnicalPropertiesProps> = ({
               placeholder="Select applicable grades"
               options={grades}
               selected={data.grade || []}
-              onChange={(selected) => onFieldChange("grade", selected)}
+              onChange={(selected) => { clearAiField?.("grade"); onFieldChange("grade", selected); }}
             />
           </CardContent>
         </Card>
@@ -96,9 +118,10 @@ const TechnicalProperties: React.FC<TechnicalPropertiesProps> = ({
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {category.fields.map((field) => (
                     <div key={field.key} className="space-y-1.5">
-                      <Label htmlFor={field.key} className="text-xs font-medium text-gray-700">
+                      <Label htmlFor={field.key} className="text-xs font-medium text-gray-700 flex items-center gap-1">
                         {field.label}
-                        <span className="text-gray-400 text-xs ml-1">({field.unit})</span>
+                        <span className="text-gray-400 text-xs">({field.unit})</span>
+                        <AiChip field={field.key} />
                       </Label>
                       <div className="relative">
                         <Input
@@ -107,8 +130,8 @@ const TechnicalProperties: React.FC<TechnicalPropertiesProps> = ({
                           step="0.01"
                           placeholder={field.placeholder}
                           value={(data as Record<string, unknown>)?.[field.key] as string || ""}
-                          onChange={(e) => onFieldChange(field.key as keyof ProductFormData, e.target.value)}
-                          className="pr-16 h-9 text-sm"
+                          onChange={(e) => { clearAiField?.(field.key); onFieldChange(field.key as keyof ProductFormData, e.target.value); }}
+                          className={`pr-16 h-9 text-sm${aiCls(field.key)}`}
                         />
                         <div className="absolute right-3 top-2 text-xs text-gray-500 pointer-events-none">
                           {field.unit}

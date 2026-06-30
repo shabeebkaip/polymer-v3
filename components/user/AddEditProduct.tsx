@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { useDropdowns } from "@/lib/useDropdowns";
 import GeneralInformation from "./products/GeneralInformation";
 import ProductDetails from "./products/ProductDetails";
@@ -16,8 +16,9 @@ import { Button } from "../ui/button";
 import {
   Save, RotateCcw, ChevronDown, ChevronUp, CheckCircle2,
   Package, Truck, ImageIcon, Settings, Box, Shield, Upload,
-  Eye, AlertCircle, MapPin, Tag, Layers,
+  Eye, AlertCircle, MapPin, Tag, Layers, Sparkles, CheckCheck,
 } from "lucide-react";
+import AiCatalogModal, { type AiFilledFields } from "@/components/ai-import/AiCatalogModal";
 import { createProduct, updateProduct } from "@/apiServices/products";
 import { initialFormData } from "@/apiServices/constants/userProductCrud";
 import { toast } from "sonner";
@@ -165,6 +166,32 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
   const [error, setError] = useState<ValidationErrors>({});
   const [saving, setSaving] = useState(false);
 
+  // AI import
+  const [showAiModal, setShowAiModal] = useState(false);
+  const [aiFilledFields, setAiFilledFields] = useState<AiFilledFields>({});
+  const [aiFillCount, setAiFillCount] = useState(0);
+  const [aiSessionId, setAiSessionId] = useState<string | null>(null);
+
+  const handleAiApply = useCallback(
+    ({ fields, aiFilledFields: filled, sessionId }: { fields: Record<string, unknown>; aiFilledFields: AiFilledFields; sessionId: string }) => {
+      const normalized = { ...fields };
+      // buildDiff stores polymer type as polymerTypes (array); SearchableSelect binds to polymerType (string)
+      if (Array.isArray(normalized.polymerTypes) && (normalized.polymerTypes as unknown[]).length > 0) {
+        normalized.polymerType = (normalized.polymerTypes as unknown[])[0];
+      }
+      setData(prev => ({ ...prev, ...normalized }));
+      setAiFilledFields(filled);
+      setAiFillCount(Object.keys(filled).length);
+      setAiSessionId(sessionId);
+    },
+    [],
+  );
+
+  const clearAiField = useCallback(
+    (field: string) => setAiFilledFields(prev => { const n = { ...prev }; delete n[field]; return n; }),
+    [],
+  );
+
   const onFieldChange = (
     key: keyof ProductFormData,
     value: string | number | boolean | UploadedFile[] | Record<string, unknown> | undefined,
@@ -237,7 +264,7 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
       if (fmt[f] && !Array.isArray(fmt[f])) fmt[f] = [fmt[f]];
       else if (!fmt[f]) fmt[f] = [];
     });
-    ["melting_point","glass_transition_temperature","heat_deflection_temperature","moisture_content","ash_content","dielectric_strength","volume_resistivity","flexural_modulus","grades"].forEach(f => delete fmt[f]);
+    ["melting_point","glass_transition_temperature","heat_deflection_temperature","moisture_content","ash_content","dielectric_strength","volume_resistivity","flexuralModulus","grades"].forEach(f => delete fmt[f]);
     fmt.certificates = formData.certificates || [];
     if (!formData.fdaApproved) fmt.fdaCertificate = null;
     else if (formData.fdaCertificate && Object.keys(formData.fdaCertificate).length > 0) fmt.fdaCertificate = formData.fdaCertificate;
@@ -261,9 +288,11 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
     setSaving(true);
     const toastId = toast.loading(isEditMode ? "Updating product…" : "Creating product…");
     try {
+      const payload = formatDataForAPI(data);
+      if (aiSessionId) { payload.aiSessionId = aiSessionId; payload.createdVia = "ai"; }
       const res = isEditMode
-        ? await updateProduct(id as string, formatDataForAPI(data))
-        : await createProduct(formatDataForAPI(data));
+        ? await updateProduct(id as string, payload)
+        : await createProduct(payload);
       if (res?.success) {
         toast.success(isEditMode ? "Product updated!" : "Product created!", { id: toastId });
         if (!isEditMode) setData(initialFormData);
@@ -361,6 +390,48 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
               </div>
             </div>
 
+            {/* AI Assist banner */}
+            <div className="bg-teal-50 border border-teal-200 rounded-2xl px-5 py-4">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                <div className="flex items-start gap-3 flex-1 min-w-0">
+                  <div className="w-9 h-9 rounded-xl bg-teal-100 flex items-center justify-center shrink-0 mt-0.5">
+                    {aiFillCount > 0
+                      ? <CheckCheck className="w-4 h-4 text-teal-600" />
+                      : <Sparkles className="w-4 h-4 text-teal-600" />}
+                  </div>
+                  <div className="min-w-0">
+                    {aiFillCount > 0 ? (
+                      <>
+                        <p className="text-sm font-semibold text-teal-900">Catalog imported · {aiFillCount} fields filled</p>
+                        <p className="text-xs text-teal-700 mt-0.5">Review the pre-filled fields above and make any corrections.</p>
+                      </>
+                    ) : (
+                      <>
+                        <p className="text-sm font-semibold text-teal-900">Import from a catalog</p>
+                        <p className="text-xs text-teal-700 mt-0.5">Upload a PDF or spreadsheet — Claude fills the form fields</p>
+                      </>
+                    )}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowAiModal(true)}
+                  className="w-full sm:w-auto shrink-0 flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-sm font-semibold transition-colors shadow-sm"
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  {aiFillCount > 0 ? "Import another" : "Upload Catalog"}
+                </button>
+              </div>
+            </div>
+
+            <AiCatalogModal
+              open={showAiModal}
+              onOpenChange={setShowAiModal}
+              isEditMode={isEditMode}
+              existingData={data as Record<string, unknown>}
+              onApply={handleAiApply}
+            />
+
             {/* Section cards */}
             {SECTIONS.map(sec => (
               <SectionCard
@@ -375,13 +446,14 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
               >
                 {sec.id === "core" && (
                   <>
-                    <GeneralInformation data={data} onFieldChange={onFieldChange} error={error} onFieldError={onFieldError} />
+                    <GeneralInformation data={data} onFieldChange={onFieldChange} error={error} onFieldError={onFieldError} aiFilledFields={aiFilledFields} clearAiField={clearAiField} />
                     <ProductDetails
                       data={data}
                       onFieldChange={(f, v) => onFieldChange(f, v as string | number | boolean | UploadedFile[] | undefined)}
                       chemicalFamilies={chemicalFamilies} polymersTypes={polymersTypes}
                       industry={industry} physicalForms={physicalForms} productFamilies={productFamilies}
                       error={error} onFieldError={onFieldError}
+                      aiFilledFields={aiFilledFields} clearAiField={clearAiField}
                     />
                   </>
                 )}
@@ -391,6 +463,7 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
                     data={data}
                     onFieldChange={(f, v) => onFieldChange(f, v as string | number | boolean | UploadedFile[] | undefined)}
                     incoterms={incoterms} paymentTerms={paymentTerms} error={error} onFieldError={onFieldError}
+                    aiFilledFields={aiFilledFields} clearAiField={clearAiField}
                   />
                 )}
                 {sec.id === "technical" && (
@@ -398,6 +471,7 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
                     data={data}
                     onFieldChange={(f, v) => onFieldChange(f, v as string | number | boolean | UploadedFile[] | undefined)}
                     grades={grades}
+                    aiFilledFields={aiFilledFields} clearAiField={clearAiField}
                   />
                 )}
                 {sec.id === "packaging" && (

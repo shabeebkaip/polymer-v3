@@ -5,8 +5,14 @@ import { Card, CardContent } from '../../ui/card';
 import { ProductDetailsProps } from '@/types/product';
 import MultiSelect from '@/components/shared/MultiSelect';
 import SearchableSelect from '@/components/shared/SearchableSelect';
+import ConfidenceBadge from '@/components/ai-import/ConfidenceBadge';
 
-const ProductDetails: React.FC<ProductDetailsProps> = ({
+type Props = ProductDetailsProps & {
+  aiFilledFields?: Record<string, { confidence: string }>;
+  clearAiField?: (field: string) => void;
+};
+
+const ProductDetails: React.FC<Props> = ({
   data,
   onFieldChange,
   chemicalFamilies,
@@ -16,7 +22,29 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
   productFamilies,
   onFieldError,
   error,
+  aiFilledFields,
+  clearAiField,
 }) => {
+  const aiCls = (field: string) => {
+    const ai = aiFilledFields?.[field];
+    if (!ai) return "";
+    return ai.confidence === "low" ? " border-orange-300 bg-orange-50" : " border-teal-300 bg-teal-50";
+  };
+
+  const aiWrapCls = (field: string) => {
+    const ai = aiFilledFields?.[field];
+    if (!ai) return "";
+    return ai.confidence === "low" ? " ring-1 ring-orange-200 rounded-lg" : " ring-1 ring-teal-200 rounded-lg";
+  };
+
+  const AiChip = ({ field }: { field: string }) => {
+    const ai = aiFilledFields?.[field];
+    if (!ai) return null;
+    return ai.confidence === "low"
+      ? <ConfidenceBadge level="low" />
+      : <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-teal-50 text-teal-700 border border-teal-200">✦ AI</span>;
+  };
+
   return (
     <>
       <div className="col-span-full">
@@ -32,13 +60,18 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
+              {/* Chemical Family */}
+              <div className={`space-y-1.5${aiWrapCls('chemicalFamily')}`}>
+                <div className="flex items-center gap-1.5">
+                  <Label className="text-xs font-medium text-gray-700">Chemical Family</Label>
+                  <AiChip field="chemicalFamily" />
+                </div>
                 <SearchableSelect
-                  label="Chemical Family"
                   placeholder="Select Chemical Family"
                   options={[...chemicalFamilies, { _id: 'other', name: 'Other' }]}
                   value={data.chemicalFamily || ''}
                   onChange={(val) => {
+                    clearAiField?.('chemicalFamily');
                     onFieldChange('chemicalFamily', val);
                     onFieldError('chemicalFamily');
                   }}
@@ -56,13 +89,18 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
                 )}
               </div>
 
-              <div className="space-y-1.5">
+              {/* Polymer Type — AI key is polymerTypes */}
+              <div className={`space-y-1.5${aiWrapCls('polymerTypes')}`}>
+                <div className="flex items-center gap-1.5">
+                  <Label className="text-xs font-medium text-gray-700">Polymer Type</Label>
+                  <AiChip field="polymerTypes" />
+                </div>
                 <SearchableSelect
-                  label="Polymer Type"
                   placeholder="Select Polymer Type"
                   options={[...polymersTypes, { _id: 'other', name: 'Other' }]}
                   value={data.polymerType || ''}
                   onChange={(val) => {
+                    clearAiField?.('polymerTypes');
                     onFieldChange('polymerType', val);
                     onFieldError('polymerType');
                   }}
@@ -80,13 +118,18 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
                 )}
               </div>
 
-              <div className="space-y-1.5">
+              {/* Physical Form */}
+              <div className={`space-y-1.5${aiWrapCls('physicalForm')}`}>
+                <div className="flex items-center gap-1.5">
+                  <Label className="text-xs font-medium text-gray-700">Physical Form</Label>
+                  <AiChip field="physicalForm" />
+                </div>
                 <SearchableSelect
-                  label="Physical Form"
                   placeholder="Select Physical Form"
                   options={[...physicalForms, { _id: 'other', name: 'Other' }]}
                   value={data.physicalForm || ''}
                   onChange={(val) => {
+                    clearAiField?.('physicalForm');
                     onFieldChange('physicalForm', val);
                     onFieldError('physicalForm');
                   }}
@@ -104,17 +147,22 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
                 )}
               </div>
 
-              <div className="space-y-1.5">
-                <Label className="text-xs font-medium text-gray-700 flex items-center gap-1">
-                  Industries
-                  <span className="text-red-500">*</span>
-                </Label>
+              {/* Industries */}
+              <div className={`space-y-1.5${aiWrapCls('industry')}`}>
+                <div className="flex items-center gap-1.5">
+                  <Label className="text-xs font-medium text-gray-700 flex items-center gap-1">
+                    Industries
+                    <span className="text-red-500">*</span>
+                  </Label>
+                  <AiChip field="industry" />
+                </div>
                 <MultiSelect
                   label=""
                   placeholder="Select Industries"
                   options={industry}
                   selected={data.industry || []}
                   onChange={(selected) => {
+                    clearAiField?.('industry');
                     onFieldChange('industry', selected);
                     onFieldError('industry');
                   }}
@@ -143,44 +191,47 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="manufacturingMethod" className="text-xs font-medium text-gray-700">
+                <Label htmlFor="manufacturingMethod" className="text-xs font-medium text-gray-700 flex items-center gap-1">
                   Manufacturing Method
                   <span className="text-gray-400 text-xs ml-1">(Optional)</span>
+                  <AiChip field="manufacturingMethod" />
                 </Label>
                 <Input
                   id="manufacturingMethod"
                   placeholder="e.g., Injection Molding"
                   value={data.manufacturingMethod || ''}
-                  onChange={(e) => onFieldChange('manufacturingMethod', e.target.value)}
-                  className="h-9 text-sm"
+                  onChange={(e) => { clearAiField?.('manufacturingMethod'); onFieldChange('manufacturingMethod', e.target.value); }}
+                  className={`h-9 text-sm${aiCls('manufacturingMethod')}`}
                 />
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="countryOfOrigin" className="text-xs font-medium text-gray-700">
+                <Label htmlFor="countryOfOrigin" className="text-xs font-medium text-gray-700 flex items-center gap-1">
                   Country of Origin
                   <span className="text-gray-400 text-xs ml-1">(Optional)</span>
+                  <AiChip field="countryOfOrigin" />
                 </Label>
                 <Input
                   id="countryOfOrigin"
                   placeholder="e.g., Saudi Arabia"
                   value={data.countryOfOrigin || ''}
-                  onChange={(e) => onFieldChange('countryOfOrigin', e.target.value)}
-                  className="h-9 text-sm"
+                  onChange={(e) => { clearAiField?.('countryOfOrigin'); onFieldChange('countryOfOrigin', e.target.value); }}
+                  className={`h-9 text-sm${aiCls('countryOfOrigin')}`}
                 />
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="color" className="text-xs font-medium text-gray-700">
+                <Label htmlFor="color" className="text-xs font-medium text-gray-700 flex items-center gap-1">
                   Color
                   <span className="text-gray-400 text-xs ml-1">(Optional)</span>
+                  <AiChip field="color" />
                 </Label>
                 <Input
                   id="color"
                   placeholder="e.g., Natural, White"
                   value={data.color || ''}
-                  onChange={(e) => onFieldChange('color', e.target.value)}
-                  className="h-9 text-sm"
+                  onChange={(e) => { clearAiField?.('color'); onFieldChange('color', e.target.value); }}
+                  className={`h-9 text-sm${aiCls('color')}`}
                 />
               </div>
             </div>

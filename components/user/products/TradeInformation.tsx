@@ -6,15 +6,36 @@ import { uomDropdown } from '@/lib/utils';
 import { TradeInformationProps } from '@/types/product';
 import MultiSelect from '@/components/shared/MultiSelect';
 import SearchableSelect from '@/components/shared/SearchableSelect';
+import ConfidenceBadge from '@/components/ai-import/ConfidenceBadge';
 
-const TradeInformation: React.FC<TradeInformationProps> = ({
+type Props = TradeInformationProps & {
+  aiFilledFields?: Record<string, { confidence: string }>;
+  clearAiField?: (field: string) => void;
+};
+
+const TradeInformation: React.FC<Props> = ({
   data,
   onFieldChange,
   incoterms = [],
   paymentTerms = [],
   error,
   onFieldError,
+  aiFilledFields,
+  clearAiField,
 }) => {
+  const aiCls = (field: string) => {
+    const ai = aiFilledFields?.[field];
+    if (!ai) return "";
+    return ai.confidence === "low" ? " border-orange-300 bg-orange-50" : " border-teal-300 bg-teal-50";
+  };
+
+  const AiChip = ({ field }: { field: string }) => {
+    const ai = aiFilledFields?.[field];
+    if (!ai) return null;
+    return ai.confidence === "low"
+      ? <ConfidenceBadge level="low" />
+      : <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-teal-50 text-teal-700 border border-teal-200">✦ AI</span>;
+  };
   const [moqError, setMoqError] = React.useState<string>('');
   const [stockError, setStockError] = React.useState<string>('');
   const [priceError, setPriceError] = React.useState<string>('');
@@ -57,6 +78,7 @@ const TradeInformation: React.FC<TradeInformationProps> = ({
                 >
                   Minimum Order Quantity
                   <span className="text-red-500">*</span>
+                  <AiChip field="minimum_order_quantity" />
                 </Label>
                 <Input
                   id="minimum_order_quantity"
@@ -69,6 +91,7 @@ const TradeInformation: React.FC<TradeInformationProps> = ({
                     setMoqError(validationError);
 
                     if (!validationError) {
+                      clearAiField?.('minimum_order_quantity');
                       onFieldChange('minimum_order_quantity', value);
                       onFieldError('minimum_order_quantity');
                     }
@@ -76,7 +99,7 @@ const TradeInformation: React.FC<TradeInformationProps> = ({
                   error={!!(moqError || error?.minimum_order_quantity)}
                   helperText={moqError || error?.minimum_order_quantity}
                   className={`h-9 text-sm ${
-                    moqError || error?.minimum_order_quantity ? 'border-red-300' : ''
+                    moqError || error?.minimum_order_quantity ? 'border-red-300' : aiCls('minimum_order_quantity')
                   }`}
                 />
               </div>
@@ -88,6 +111,7 @@ const TradeInformation: React.FC<TradeInformationProps> = ({
                 >
                   Stock Quantity
                   <span className="text-red-500">*</span>
+                  <AiChip field="stock" />
                 </Label>
                 <Input
                   id="stock"
@@ -100,13 +124,14 @@ const TradeInformation: React.FC<TradeInformationProps> = ({
                     setStockError(validationError);
 
                     if (!validationError) {
+                      clearAiField?.('stock');
                       onFieldChange('stock', value);
                       onFieldError('stock');
                     }
                   }}
                   error={!!(stockError || error?.stock)}
                   helperText={stockError || error?.stock}
-                  className={`h-9 text-sm ${stockError || error?.stock ? 'border-red-300' : ''}`}
+                  className={`h-9 text-sm ${stockError || error?.stock ? 'border-red-300' : aiCls('stock')}`}
                 />
               </div>
 
@@ -117,6 +142,7 @@ const TradeInformation: React.FC<TradeInformationProps> = ({
                   options={uomDropdown.map((uom) => ({ _id: uom, name: uom }))}
                   value={data.uom}
                   onChange={(val) => {
+                    clearAiField?.('uom');
                     onFieldChange('uom', val);
                     onFieldError('uom');
                   }}
@@ -133,6 +159,7 @@ const TradeInformation: React.FC<TradeInformationProps> = ({
                 >
                   Price per Unit
                   <span className="text-red-500">*</span>
+                  <AiChip field="price" />
                 </Label>
                 <div className="relative">
                   <Input
@@ -146,6 +173,7 @@ const TradeInformation: React.FC<TradeInformationProps> = ({
                       setPriceError(validationError);
 
                       if (!validationError) {
+                        clearAiField?.('price');
                         onFieldChange('price', value);
                         onFieldError('price');
                       }
@@ -153,7 +181,7 @@ const TradeInformation: React.FC<TradeInformationProps> = ({
                     error={!!(priceError || error?.price)}
                     helperText={priceError || error?.price}
                     className={`pr-20 h-9 text-sm ${
-                      priceError || error?.price ? 'border-red-300' : ''
+                      priceError || error?.price ? 'border-red-300' : aiCls('price')
                     }`}
                   />
                   <div className="absolute right-3 top-2 text-xs text-gray-500 pointer-events-none">
@@ -199,14 +227,15 @@ const TradeInformation: React.FC<TradeInformationProps> = ({
                     { _id: 'negotiable', name: 'Negotiable' },
                   ]}
                   value={data.priceTerms}
-                  onChange={(val) => onFieldChange('priceTerms', val as 'fixed' | 'negotiable')}
+                  onChange={(val) => { clearAiField?.('priceTerms'); onFieldChange('priceTerms', val as 'fixed' | 'negotiable'); }}
                 />
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="leadTime" className="text-xs font-medium text-gray-700">
+                <Label htmlFor="leadTime" className="text-xs font-medium text-gray-700 flex items-center gap-1">
                   Lead Time
                   <span className="text-gray-400 text-xs ml-1">(Optional)</span>
+                  <AiChip field="leadTime" />
                 </Label>
                 <div className="relative">
                   <Input
@@ -214,8 +243,8 @@ const TradeInformation: React.FC<TradeInformationProps> = ({
                     type="number"
                     placeholder="Enter lead time"
                     value={data.leadTime ?? ''}
-                    onChange={(e) => onFieldChange('leadTime', e.target.value)}
-                    className="pr-16 h-9 text-sm"
+                    onChange={(e) => { clearAiField?.('leadTime'); onFieldChange('leadTime', e.target.value); }}
+                    className={`pr-16 h-9 text-sm${aiCls('leadTime')}`}
                   />
                   <div className="absolute right-3 top-2 text-xs text-gray-500 pointer-events-none">
                     days
