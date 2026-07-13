@@ -1,150 +1,48 @@
 "use client";
 
-import React, { useCallback, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
 import {
-  Upload, Loader2, AlertCircle, FileText, FileSpreadsheet, Image as ImageIcon, Sparkles,
+  Upload, Loader2, AlertCircle, AlertTriangle, FileText,
+  FileSpreadsheet, Image as ImageIcon, Sparkles, ArrowRight,
 } from "lucide-react";
-import axiosInstance from "@/lib/axiosInstance";
 import ConfidenceBadge from "./ConfidenceBadge";
-import type { AiParseResponse, ExtractedProduct, RefMatch, RefMatches } from "@/types/ai";
+import ProductPicker from "./ProductPicker";
+import type { AiModalPhase, ExtractedProduct, ReadyDiff } from "@/types/ai";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-type ModalState = "idle" | "parsing" | "diff" | "rejected" | "error";
-type Confidence = "high" | "medium" | "low" | "unknown";
-
-export type AiFilledFields = Record<string, { confidence: string }>;
-
-interface ApplyPayload {
-  fields: Record<string, unknown>;
-  aiFilledFields: AiFilledFields;
-  sessionId: string;
-}
+// Re-export so AddEditProduct can still import AiFilledFields from this file
+export type { AiFilledFields } from "@/types/ai";
 
 interface AiCatalogModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  isEditMode?: boolean;
-  existingData?: Record<string, unknown>;
-  onApply: (payload: ApplyPayload) => void;
+
+  // Controlled state from useAiProcessing hook
+  phase: AiModalPhase;
+  loadingMsg: string;
+  loadingSubMsg: string;
+  loadingStage: 1 | 2 | 3 | 4;
+  uploadedFileName?: string | null;
+  readyDiff: ReadyDiff | null;
+  errorMsg: string;
+  pickItems: ExtractedProduct[] | null;
+  usedIndices?: Set<number>;
+
+  // Callbacks
+  onFile: (file: File) => void;
+  onMinimise: () => void;
+  onApplyDiff: (includeAll: boolean) => void;
+  onPick: (idx: number) => void;
+  onClearAll?: () => void;
 }
 
-// ── Field label map (for diff review) ────────────────────────────────────────
+// ── Dropzone ──────────────────────────────────────────────────────────────────
 
-const FIELD_LABELS: Record<string, string> = {
-  productName: "Product Name", tradeName: "Trade Name",
-  chemicalName: "Chemical Name", description: "Description",
-  manufacturingMethod: "Manufacturing Method", countryOfOrigin: "Country of Origin",
-  color: "Color", additives: "Additives", polymerTypes: "Polymer Type(s)",
-  chemicalFamily: "Chemical Family", physicalForm: "Physical Form",
-  industry: "Industry", grade: "Grade",
-  density: "Density", mfi: "MFI", tensileStrength: "Tensile Strength",
-  elongationAtBreak: "Elongation at Break", flexuralModulus: "Flexural Modulus",
-  shoreHardness: "Shore Hardness", waterAbsorption: "Water Absorption",
-  availability: "Availability", minimum_order_quantity: "Min. Order Qty",
-  stock: "Stock", uom: "Unit of Measure", price: "Price",
-  priceTerms: "Price Terms", leadTime: "Lead Time",
-  packagingWeight: "Packaging Weight", storageConditions: "Storage Conditions",
-  shelfLife: "Shelf Life", materialType: "Material Type",
-  form: "Form", supplierType: "Supplier Type",
-  recyclable: "Recyclable", bioDegradable: "Bio-Degradable",
-  fdaApproved: "FDA Approved", medicalGrade: "Medical Grade",
-};
-
-// ── Extraction → form data mapper ─────────────────────────────────────────────
-
-interface DiffRow {
-  key: string;
-  label: string;
-  displayValue: string;
-  confidence: Confidence;
-  skipped?: boolean;
-}
-
-function buildDiff(
-  product: ExtractedProduct,
-  refMatches: RefMatches,
-): { fields: Record<string, unknown>; filled: AiFilledFields; rows: DiffRow[] } {
-  const fields: Record<string, unknown> = {};
-  const filled: AiFilledFields = {};
-  const rows: DiffRow[] = [];
-
-  const add = (key: string, value: unknown, confidence: string, display: string) => {
-    if (value == null || value === "" || (Array.isArray(value) && value.length === 0)) return;
-    fields[key] = value;
-    filled[key] = { confidence };
-    rows.push({ key, label: FIELD_LABELS[key] ?? key, displayValue: display, confidence: (confidence as Confidence) });
-  };
-
-  const str = (key: string, val: string | null | undefined) =>
-    val && add(key, val, "high", val);
-  str("productName", product.productName);
-  str("tradeName", product.tradeName);
-  str("chemicalName", product.chemicalName);
-  str("description", product.description);
-  str("manufacturingMethod", product.manufacturingMethod);
-  str("countryOfOrigin", product.countryOfOrigin);
-  str("color", product.color);
-  str("additives", product.additives);
-  str("uom", product.uom);
-  str("leadTime", product.leadTime);
-  str("packagingWeight", product.packagingWeight);
-  str("storageConditions", product.storageConditions);
-  str("shelfLife", product.shelfLife);
-  str("availability", product.availability);
-  str("priceTerms", product.priceTerms);
-  str("materialType", product.materialType);
-  str("form", product.form);
-  str("supplierType", product.supplierType);
-
-  const num = (key: string, val: number | null | undefined) =>
-    val != null && add(key, val, "high", String(val));
-  num("density", product.density);
-  num("mfi", product.mfi);
-  num("tensileStrength", product.tensileStrength);
-  num("elongationAtBreak", product.elongationAtBreak);
-  num("flexuralModulus", product.flexuralModulus);
-  num("shoreHardness", product.shoreHardness);
-  num("waterAbsorption", product.waterAbsorption);
-  num("minimum_order_quantity", product.minimum_order_quantity);
-  num("stock", product.stock);
-  num("price", product.price);
-
-  // Boolean fields — explicit to avoid string-indexing the typed interface
-  if (product.recyclable != null) add("recyclable", product.recyclable, "high", product.recyclable ? "Yes" : "No");
-  if (product.bioDegradable != null) add("bioDegradable", product.bioDegradable, "high", product.bioDegradable ? "Yes" : "No");
-  if (product.fdaApproved != null) add("fdaApproved", product.fdaApproved, "high", product.fdaApproved ? "Yes" : "No");
-  if (product.medicalGrade != null) add("medicalGrade", product.medicalGrade, "high", product.medicalGrade ? "Yes" : "No");
-
-  // Ref fields — explicit to avoid string-indexing RefMatches
-  const applyRef = (formKey: string, match: RefMatch | null | undefined, confidence: string) => {
-    if (match?.match?._id) add(formKey, match.match._id, confidence, match.match.name ?? match.match._id);
-  };
-  applyRef("chemicalFamily", refMatches?.chemicalFamily, "medium");
-  applyRef("physicalForm", refMatches?.physicalForm, "medium");
-
-  if (refMatches?.polymerType?.match?._id) {
-    add("polymerTypes", [refMatches.polymerType.match._id], "medium", refMatches.polymerType.match.name ?? "");
-  }
-
-  const refArr = (formKey: string, arr: (RefMatch | null)[] | undefined) => {
-    if (!Array.isArray(arr)) return;
-    const ids = arr.filter(m => m?.match?._id).map(m => m!.match!._id);
-    const names = arr.filter(m => m?.match?.name).map(m => m!.match!.name).join(", ");
-    if (ids.length > 0) add(formKey, ids, "medium", names);
-  };
-  refArr("industry", refMatches?.industry ?? undefined);
-  refArr("grade", refMatches?.grade ?? undefined);
-
-  return { fields, filled, rows };
-}
-
-// ── Dropzone area ─────────────────────────────────────────────────────────────
-
-const MAX_BYTES = 20 * 1024 * 1024; // 20 MB
+const MAX_BYTES = 20 * 1024 * 1024;
 const ACCEPT_RE = /\.(pdf|xlsx|xls|csv|jpg|jpeg|png|webp|gif)$/i;
 
 function isAcceptable(f: File) {
@@ -194,6 +92,7 @@ function Dropzone({ onFile, disabled }: { onFile: (f: File) => void; disabled: b
               [FileSpreadsheet, "XLSX"],
               [FileSpreadsheet, "CSV"],
               [ImageIcon, "JPG/PNG"],
+              [ImageIcon, "WEBP"],
             ] as [React.ElementType, string][]).map(([Icon, label]) => (
               <span key={label} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gray-50 text-xs text-gray-600 border border-gray-100">
                 <Icon size={11} />{label}
@@ -219,138 +118,144 @@ function Dropzone({ onFile, disabled }: { onFile: (f: File) => void; disabled: b
 
 // ── Main modal ────────────────────────────────────────────────────────────────
 
-export default function AiCatalogModal({ open, onOpenChange, isEditMode = false, existingData, onApply }: AiCatalogModalProps) {
-  const [state, setState] = useState<ModalState>("idle");
-  const [errorMsg, setErrorMsg] = useState("");
-  const [diffRows, setDiffRows] = useState<DiffRow[]>([]);
-  const [pendingPayload, setPendingPayload] = useState<ApplyPayload | null>(null);
-  const cancelRef = useRef(false);
+export default function AiCatalogModal({
+  open, onOpenChange,
+  phase, loadingMsg, loadingSubMsg, loadingStage, uploadedFileName,
+  readyDiff, errorMsg, pickItems, usedIndices,
+  onFile, onMinimise, onApplyDiff, onPick, onClearAll,
+}: AiCatalogModalProps) {
 
-  const reset = () => { setState("idle"); setErrorMsg(""); setDiffRows([]); setPendingPayload(null); };
-
-  const handleClose = (val: boolean) => {
-    if (!val) { cancelRef.current = true; reset(); }
+  // X during parsing → minimise; all other states → normal close
+  const handleOpenChange = (val: boolean) => {
+    if (!val && phase === "parsing") { onMinimise(); return; }
     onOpenChange(val);
   };
 
-  const handleFile = useCallback(async (file: File) => {
-    cancelRef.current = false;
-    setState("parsing");
-    setErrorMsg("");
-    try {
-      const form = new FormData();
-      form.append("file", file);
-      const res = await axiosInstance.post<AiParseResponse>("/ai/parse", form);
-      if (cancelRef.current) return;
-      const { sessionId, products } = res.data;
-
-      if (!sessionId || !products?.length) {
-        setState("rejected");
-        return;
-      }
-
-      const { fields, filled, rows } = buildDiff(products[0].product, products[0].refMatches);
-      const payload: ApplyPayload = { fields, aiFilledFields: filled, sessionId };
-
-      // Mark rows whose key already has a non-empty value in the form
-      if (existingData) {
-        rows.forEach(r => {
-          const v = existingData[r.key];
-          if (v != null && v !== "" && !(Array.isArray(v) && v.length === 0)) r.skipped = true;
-        });
-      }
-
-      if (!isEditMode) {
-        const filteredFields: Record<string, unknown> = {};
-        const filteredFilled: AiFilledFields = {};
-        rows.filter(r => !r.skipped).forEach(r => {
-          filteredFields[r.key] = fields[r.key];
-          filteredFilled[r.key] = filled[r.key];
-        });
-        onApply({ ...payload, fields: filteredFields, aiFilledFields: filteredFilled });
-        handleClose(false);
-        return;
-      }
-
-      setDiffRows(rows);
-      setPendingPayload(payload);
-      setState("diff");
-    } catch (err: unknown) {
-      if (cancelRef.current) return;
-      const serverMsg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
-      setErrorMsg(serverMsg
-        ? `Something went wrong while processing your file. Please try again or use a different file.`
-        : "Upload failed. Please check your connection and try again.");
-      setState("error");
-    }
-  }, [isEditMode, onApply, existingData]);
-
-  const applyDiff = (includeAll: boolean) => {
-    if (!pendingPayload) return;
-    const applicableRows = diffRows.filter(r => !r.skipped);
-    if (!includeAll) {
-      const safe: Record<string, unknown> = {};
-      const safeFilled: AiFilledFields = {};
-      applicableRows
-        .filter(r => r.confidence === "high" || r.confidence === "medium")
-        .forEach(r => {
-          safe[r.key] = pendingPayload.fields[r.key];
-          safeFilled[r.key] = pendingPayload.aiFilledFields[r.key];
-        });
-      onApply({ ...pendingPayload, fields: safe, aiFilledFields: safeFilled });
-    } else {
-      const allFields: Record<string, unknown> = {};
-      const allFilled: AiFilledFields = {};
-      applicableRows.forEach(r => {
-        allFields[r.key] = pendingPayload.fields[r.key];
-        allFilled[r.key] = pendingPayload.aiFilledFields[r.key];
-      });
-      onApply({ ...pendingPayload, fields: allFields, aiFilledFields: allFilled });
-    }
-    handleClose(false);
-  };
-
+  const diffRows = readyDiff?.rows ?? [];
   const activeRows = diffRows.filter(r => !r.skipped);
   const highMedCount = activeRows.filter(r => r.confidence === "high" || r.confidence === "medium").length;
+  const unknownCount = diffRows.filter(r => r.confidence === "unknown").length;
+  const showQualityWarning = readyDiff?.extractionMethod === "vision" && diffRows.length > 0 && unknownCount / diffRows.length >= 0.4;
+
+  // Modal title per phase
+  const title = phase === "diff" ? "Review extracted fields"
+    : phase === "pick" ? "Choose a product"
+    : phase === "parsing" ? loadingMsg
+    : phase === "rejected" ? "No product data found"
+    : phase === "ocrFailed" ? "Couldn't read this document"
+    : phase === "error" ? (errorMsg.startsWith("Upload failed") ? "Upload failed" : "Something went wrong")
+    : "Import from a catalog";
 
   return (
-    <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-lg w-full">
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent className="max-w-lg w-full max-h-[90dvh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-base font-semibold">
-            <Sparkles className="w-4 h-4 text-teal-600" />
-            {state === "diff" ? "Review extracted fields" : "Import from a catalog"}
+            <Sparkles className="w-4 h-4 text-teal-600 shrink-0" />
+            {title}
           </DialogTitle>
         </DialogHeader>
 
         {/* IDLE */}
-        {state === "idle" && <Dropzone onFile={handleFile} disabled={false} />}
+        {phase === "idle" && <Dropzone onFile={onFile} disabled={false} />}
 
         {/* PARSING */}
-        {state === "parsing" && (
-          <div className="flex flex-col items-center gap-4 py-12">
-            <div className="w-14 h-14 rounded-2xl flex items-center justify-center bg-teal-50">
-              <Loader2 className="w-7 h-7 text-teal-600 animate-spin" />
+        {phase === "parsing" && (
+          <div className="flex flex-col items-center gap-3 py-10 px-2">
+            <div className="w-14 h-14 rounded-2xl bg-teal-50 flex items-center justify-center">
+              <Loader2 className="w-7 h-7 text-teal-600 animate-spin motion-reduce:animate-none" />
             </div>
-            <div className="text-center">
-              <p className="font-semibold text-gray-900">Analyzing catalog…</p>
-              <p className="text-sm text-gray-500 mt-1">Claude is extracting specs and matching references</p>
+
+            {uploadedFileName && (
+              <p className="text-xs text-gray-400 max-w-full truncate px-4">{uploadedFileName}</p>
+            )}
+
+            <div className="text-center space-y-1">
+              <p className="text-sm font-semibold text-gray-900">{loadingMsg}</p>
+              {loadingSubMsg && <p className="text-xs text-gray-500">{loadingSubMsg}</p>}
             </div>
+
+            {/* Stage progress dots (decorative) */}
+            <div className="flex gap-2" aria-hidden="true">
+              {[1, 2, 3, 4].map(i => (
+                <span key={i} className={`w-2 h-2 rounded-full ${
+                  i < loadingStage ? "bg-teal-200" : i === loadingStage ? "bg-teal-500" : "bg-gray-200"
+                }`} />
+              ))}
+            </div>
+
+            {/* Stage 1-2: text link; Stage 3+: pill button */}
+            {loadingStage >= 3 ? (
+              <button
+                type="button"
+                onClick={onMinimise}
+                className="mt-2 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-teal-200 bg-teal-50 text-sm font-medium text-teal-700 hover:bg-teal-100 transition-colors"
+              >
+                <ArrowRight className="w-4 h-4" />
+                Continue in background
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={onMinimise}
+                className="text-xs text-teal-600 underline underline-offset-2 hover:text-teal-700 transition-colors"
+                style={{ minHeight: "44px", display: "flex", alignItems: "center" }}
+              >
+                Continue in background →
+              </button>
+            )}
           </div>
         )}
 
-        {/* DIFF REVIEW (edit mode) */}
-        {state === "diff" && (
+        {/* PRODUCT PICK (multi-product catalog) */}
+        {phase === "pick" && pickItems && (
+          <ProductPicker
+            items={pickItems}
+            usedIndices={usedIndices}
+            onPick={onPick}
+          />
+        )}
+
+        {/* DIFF REVIEW */}
+        {phase === "diff" && readyDiff && (
           <div className="flex flex-col gap-4">
+            {/* Confidence legend */}
+            <div className="flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-gray-500" aria-label="Confidence legend">
+              <span className="flex items-center gap-1">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block" aria-hidden="true" />High — safe to keep
+              </span>
+              <span className="flex items-center gap-1">
+                <span className="w-2 h-2 rounded-full bg-amber-400 inline-block" aria-hidden="true" />Med — worth a quick check
+              </span>
+              <span className="flex items-center gap-1">
+                <span className="w-2 h-2 rounded-full bg-orange-400 inline-block" aria-hidden="true" />Low — please verify
+              </span>
+              <span className="flex items-center gap-1">
+                <span className="w-2 h-2 rounded-full bg-red-400 inline-block" aria-hidden="true" />Missing — fill manually
+              </span>
+            </div>
+
             <p className="text-sm text-gray-500">
               Claude found <span className="font-semibold text-gray-900">{diffRows.length} fields</span>
               {diffRows.some(r => r.skipped) && (
                 <> · <span className="text-amber-600">{diffRows.filter(r => r.skipped).length} already set</span></>
               )}.
             </p>
+
+            {showQualityWarning && (
+              <div className="flex items-start gap-2.5 px-3.5 py-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-700">
+                <AlertTriangle className="w-3.5 h-3.5 text-amber-500 shrink-0 mt-0.5" />
+                <span>Some pages weren&apos;t readable — fields marked &lsquo;missing&rsquo; need manual entry.</span>
+              </div>
+            )}
+
             <div className="max-h-64 overflow-y-auto rounded-xl border border-gray-100 divide-y divide-gray-50">
               {diffRows.map(row => (
-                <div key={row.key} className={`flex items-center justify-between gap-3 px-4 py-2.5 ${row.skipped ? "opacity-50" : ""}`}>
+                <div
+                  key={row.key}
+                  className={`flex items-center justify-between gap-3 px-4 py-3 ${row.skipped ? "opacity-50" : ""}`}
+                  aria-label={row.skipped ? `${row.label} — already set, will not be overwritten` : undefined}
+                >
                   <div className="min-w-0">
                     <p className={`text-xs font-medium truncate ${row.skipped ? "text-gray-400 line-through" : "text-gray-700"}`}>{row.label}</p>
                     <p className="text-xs text-gray-400 truncate">{row.displayValue}</p>
@@ -362,50 +267,112 @@ export default function AiCatalogModal({ open, onOpenChange, isEditMode = false,
                 </div>
               ))}
             </div>
+
             <div className="flex flex-col sm:flex-row gap-2">
               <button
-                onClick={() => applyDiff(false)}
+                onClick={() => onApplyDiff(false)}
                 disabled={highMedCount === 0}
+                style={{ minHeight: "44px" }}
                 className="flex-1 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 disabled:opacity-40 text-white text-sm font-semibold transition-colors"
               >
                 Apply {highMedCount} field{highMedCount !== 1 ? "s" : ""}
               </button>
               {activeRows.length > highMedCount && (
                 <button
-                  onClick={() => applyDiff(true)}
+                  onClick={() => onApplyDiff(true)}
+                  style={{ minHeight: "44px" }}
                   className="flex-1 py-2.5 rounded-xl border border-gray-200 text-gray-700 text-sm font-medium hover:bg-gray-50 transition-colors"
                 >
                   Apply all ({activeRows.length})
                 </button>
               )}
             </div>
+
+            {onClearAll && (
+              <button
+                type="button"
+                onClick={onClearAll}
+                className="w-full text-center text-xs text-gray-400 hover:text-red-500 transition-colors py-1"
+                style={{ minHeight: "44px" }}
+              >
+                Clear all AI data
+              </button>
+            )}
           </div>
         )}
 
         {/* REJECTION */}
-        {state === "rejected" && (
+        {phase === "rejected" && (
           <div className="flex flex-col gap-4">
             <div className="flex items-start gap-3 p-4 rounded-xl bg-amber-50 border border-amber-200">
               <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm font-medium text-amber-800">No polymer data found</p>
-                <p className="text-xs text-amber-700 mt-0.5">The file doesn&apos;t appear to contain polymer catalog data. Try a text-based PDF, Excel sheet, or CSV with product specifications.</p>
+                <p className="text-sm font-medium text-amber-800">No product data found</p>
+                <p className="text-xs text-amber-700 mt-1">
+                  This file doesn&apos;t look like a polymer catalog or TDS. Make sure it contains
+                  product specifications — not a brochure, certificate, or Safety Data Sheet.
+                </p>
+                <ul className="mt-2 space-y-0.5 text-xs text-amber-700 list-disc list-inside">
+                  <li>Text-based PDFs work best</li>
+                  <li>Excel sheets with product data columns work well</li>
+                  <li>Scanned images may not extract correctly</li>
+                </ul>
               </div>
             </div>
-            <button onClick={reset} className="w-full py-2.5 rounded-xl border border-gray-200 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
-              Try another file
+            <button
+              onClick={() => onOpenChange(false)}
+              style={{ minHeight: "44px" }}
+              className="w-full py-2.5 rounded-xl border border-gray-200 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+            >
+              Try a different file
             </button>
           </div>
         )}
 
+        {/* OCR FAILED */}
+        {phase === "ocrFailed" && (
+          <div className="flex flex-col gap-4">
+            <div className="flex items-start gap-3 p-4 rounded-xl bg-red-50 border border-red-200">
+              <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-medium text-red-800">Couldn&apos;t read this document</p>
+                <p className="text-xs text-red-700 mt-0.5">
+                  This looks like a scanned image. For best results, upload a text-based PDF.
+                  If you only have a scan, try re-scanning at 300 DPI or higher.
+                </p>
+              </div>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <button
+                onClick={() => onOpenChange(false)}
+                style={{ minHeight: "44px" }}
+                className="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                Try a different file
+              </button>
+              <button
+                onClick={() => onOpenChange(false)}
+                style={{ minHeight: "44px" }}
+                className="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                Fill manually
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* ERROR */}
-        {state === "error" && (
+        {phase === "error" && (
           <div className="flex flex-col gap-4">
             <div className="flex items-start gap-3 p-4 rounded-xl bg-red-50 border border-red-200">
               <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
               <p className="text-sm text-red-700">{errorMsg}</p>
             </div>
-            <button onClick={reset} className="w-full py-2.5 rounded-xl border border-gray-200 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+            <button
+              onClick={() => onOpenChange(false)}
+              style={{ minHeight: "44px" }}
+              className="w-full py-2.5 rounded-xl border border-gray-200 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+            >
               Try again
             </button>
           </div>

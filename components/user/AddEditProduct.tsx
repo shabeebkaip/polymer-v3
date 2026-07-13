@@ -16,9 +16,11 @@ import { Button } from "../ui/button";
 import {
   Save, RotateCcw, ChevronDown, ChevronUp, CheckCircle2,
   Package, Truck, ImageIcon, Settings, Box, Shield, Upload,
-  Eye, AlertCircle, MapPin, Tag, Layers, Sparkles, CheckCheck,
+  Eye, AlertCircle, MapPin, Tag, Layers, Sparkles, CheckCheck, Plus,
 } from "lucide-react";
 import AiCatalogModal, { type AiFilledFields } from "@/components/ai-import/AiCatalogModal";
+import AiProcessingWidget from "@/components/ai-import/AiProcessingWidget";
+import { useAiProcessing } from "@/lib/useAiProcessing";
 import { createProduct, updateProduct } from "@/apiServices/products";
 import { initialFormData } from "@/apiServices/constants/userProductCrud";
 import { toast } from "sonner";
@@ -167,7 +169,6 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
   const [saving, setSaving] = useState(false);
 
   // AI import
-  const [showAiModal, setShowAiModal] = useState(false);
   const [aiFilledFields, setAiFilledFields] = useState<AiFilledFields>({});
   const [aiFillCount, setAiFillCount] = useState(0);
   const [aiSessionId, setAiSessionId] = useState<string | null>(null);
@@ -187,10 +188,24 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
     [],
   );
 
+  const aiProcessing = useAiProcessing({
+    isEditMode,
+    existingData: data as Record<string, unknown>,
+    onApply: handleAiApply,
+  });
+
   const clearAiField = useCallback(
     (field: string) => setAiFilledFields(prev => { const n = { ...prev }; delete n[field]; return n; }),
     [],
   );
+
+  const handleAiClear = useCallback(() => {
+    setAiFilledFields({});
+    setAiFillCount(0);
+    setAiSessionId(null);
+    aiProcessing.clearAiData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [aiProcessing.clearAiData]);
 
   const onFieldChange = (
     key: keyof ProductFormData,
@@ -201,6 +216,10 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
     setError(prev => ({ ...prev, [key]: "" }));
 
   const resetForm = () => { setData(initialFormData); setError({}); };
+
+  const catalogRemaining = aiProcessing.catalogMemory
+    ? aiProcessing.catalogMemory.products.length - aiProcessing.catalogMemory.usedIndices.size
+    : 0;
 
   // Completion
   const completion = getSectionCompletion(data);
@@ -295,6 +314,7 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
         : await createProduct(payload);
       if (res?.success) {
         toast.success(isEditMode ? "Product updated!" : "Product created!", { id: toastId });
+        aiProcessing.onFormSubmit();
         if (!isEditMode) setData(initialFormData);
         setTimeout(() => router.push("/user/products"), 800);
       } else {
@@ -403,7 +423,11 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
                     {aiFillCount > 0 ? (
                       <>
                         <p className="text-sm font-semibold text-teal-900">Catalog imported · {aiFillCount} fields filled</p>
-                        <p className="text-xs text-teal-700 mt-0.5">Review the pre-filled fields above and make any corrections.</p>
+                        <p className="text-xs text-teal-700 mt-0.5">
+                          {catalogRemaining > 0
+                            ? `${catalogRemaining} more product${catalogRemaining !== 1 ? "s" : ""} available in this catalog`
+                            : "Review the pre-filled fields above and make any corrections."}
+                        </p>
                       </>
                     ) : (
                       <>
@@ -413,23 +437,61 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
                     )}
                   </div>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setShowAiModal(true)}
-                  className="w-full sm:w-auto shrink-0 flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-sm font-semibold transition-colors shadow-sm"
-                >
-                  <Sparkles className="w-3.5 h-3.5" />
-                  {aiFillCount > 0 ? "Import another" : "Upload Catalog"}
-                </button>
+                <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto shrink-0">
+                  {catalogRemaining > 0 && (
+                    <button
+                      type="button"
+                      onClick={aiProcessing.reopenCatalogPicker}
+                      style={{ minHeight: "44px" }}
+                      className="w-full sm:w-auto shrink-0 flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-teal-200 bg-white text-teal-700 text-sm font-medium transition-colors hover:bg-teal-50"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      Add another from this catalog
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={aiProcessing.openModal}
+                    style={{ minHeight: "44px" }}
+                    className="w-full sm:w-auto shrink-0 flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-sm font-semibold transition-colors shadow-sm"
+                  >
+                    <Sparkles className="w-3.5 h-3.5" />
+                    {aiFillCount > 0 ? "Import another" : "Upload Catalog"}
+                  </button>
+                </div>
               </div>
             </div>
 
             <AiCatalogModal
-              open={showAiModal}
-              onOpenChange={setShowAiModal}
-              isEditMode={isEditMode}
-              existingData={data as Record<string, unknown>}
-              onApply={handleAiApply}
+              open={aiProcessing.modalOpen}
+              onOpenChange={aiProcessing.handleModalOpenChange}
+              phase={aiProcessing.modalPhase}
+              loadingMsg={aiProcessing.loadingMsg}
+              loadingSubMsg={aiProcessing.loadingSubMsg}
+              loadingStage={aiProcessing.loadingStage}
+              uploadedFileName={aiProcessing.uploadedFileName}
+              readyDiff={aiProcessing.readyDiff}
+              errorMsg={aiProcessing.modalErrorMsg}
+              pickItems={aiProcessing.pickItems}
+              usedIndices={aiProcessing.catalogMemory?.usedIndices}
+              onFile={aiProcessing.handleFile}
+              onMinimise={aiProcessing.minimise}
+              onApplyDiff={aiProcessing.applyDiff}
+              onPick={aiProcessing.pickProduct}
+              onClearAll={aiFillCount > 0 ? handleAiClear : undefined}
+            />
+
+            <AiProcessingWidget
+              bgState={aiProcessing.bgState}
+              bgFailReason={aiProcessing.bgFailReason}
+              fieldCount={aiProcessing.fieldCount}
+              pickCount={aiProcessing.pickItems?.length ?? 0}
+              loadingStage={aiProcessing.loadingStage}
+              fileName={aiProcessing.uploadedFileName ?? undefined}
+              onCancel={aiProcessing.cancelBg}
+              onApply={aiProcessing.applyReady}
+              onRetry={aiProcessing.retry}
+              onDismiss={aiProcessing.dismissWidget}
             />
 
             {/* Section cards */}

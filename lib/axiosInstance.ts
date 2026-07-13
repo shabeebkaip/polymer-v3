@@ -41,8 +41,12 @@ axiosInstance.interceptors.response.use(
       return Promise.reject(error);
     }
     
+    // Never retry AI parse — a timeout means Claude is still working server-side;
+    // retrying starts a new LLM job and the old one keeps running.
+    if (config.url?.includes("/ai/parse")) return Promise.reject(error);
+
     // Only retry on timeout errors or 5xx server errors
-    const shouldRetry = 
+    const shouldRetry =
       error.code === 'ECONNABORTED' || // Timeout
       (error.response && error.response.status >= 500);
     

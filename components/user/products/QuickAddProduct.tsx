@@ -4,9 +4,13 @@ import { useDropdowns } from "@/lib/useDropdowns";
 import { createProduct } from "@/apiServices/products";
 import { QuickAddFormData } from "@/types/product";
 import { getCountryList } from "@/lib/useCountries";
-import axiosInstance from "@/lib/axiosInstance";
+import type { ApplyPayload } from "@/types/ai";
+import { useAiProcessing } from "@/lib/useAiProcessing";
+import ProductPicker from "@/components/ai-import/ProductPicker";
+import AiProcessingWidget from "@/components/ai-import/AiProcessingWidget";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
-  CheckCircle2, ChevronDown, Upload, X, FileText,
+  CheckCircle2, ChevronDown, X,
   Loader2, Plus, Zap, ArrowRight, Package, Clock, AlertCircle,
   Sparkles, Globe, TrendingUp, MapPin, Brain,
 } from "lucide-react";
@@ -14,6 +18,12 @@ import { toast } from "sonner";
 
 const UOM_OPTIONS = [
   "Kilogram", "Gram", "Metric Ton", "Pound", "Liter", "Cubic Meter",
+];
+
+// The only form fields Quick Add exposes — AI fill is restricted to these
+const QUICK_ADD_AI_FIELDS = [
+  "polymerTypes", "productName", "chemicalFamily", "physicalForm",
+  "countryOfOrigin", "minimum_order_quantity", "uom", "availability",
 ];
 
 const AVAILABILITY_OPTIONS = [
@@ -254,61 +264,61 @@ export default function QuickAddProduct({ onSwitchToAdvanced, onSuccess }: Quick
   const [submitted, setSubmitted] = useState(false);
   const [createdProductId, setCreatedProductId] = useState<string | null>(null);
 
-  // AI import state
-  const [aiParsing, setAiParsing] = useState(false);
-  const [aiError, setAiError] = useState<string | null>(null);
+  // AI import state — parse/session lifecycle lives in useAiProcessing
   const [aiSessionId, setAiSessionId] = useState<string | null>(null);
-  const [aiSourceFile, setAiSourceFile] = useState<string | null>(null);
   const [aiFilledFields, setAiFilledFields] = useState<Record<string, { confidence: string }>>({});
   const aiFileInputRef = useRef<HTMLInputElement>(null);
 
   const clearAiField = (field: string) =>
     setAiFilledFields(prev => { const n = { ...prev }; delete n[field]; return n; });
 
-  const aiCls = (field: string) =>
-    aiFilledFields[field] ? " border-teal-200 bg-teal-50/30 focus:border-teal-400" : "";
+  const aiCls = (field: string) => {
+    const ai = aiFilledFields[field];
+    if (!ai) return "";
+    return ai.confidence === "low" || ai.confidence === "unknown"
+      ? " border-orange-300 bg-orange-50/60 focus:border-orange-400"
+      : " border-teal-200 bg-teal-50/30 focus:border-teal-400";
+  };
 
-  const handleAiFile = useCallback(async (file: File) => {
-    const MAX = 20 * 1024 * 1024;
-    if (file.size > MAX) { toast.error("File exceeds 20 MB limit."); return; }
-    setAiParsing(true);
-    setAiError(null);
-    try {
-      const fd = new FormData();
-      fd.append("file", file);
-      const res = await axiosInstance.post("/ai/parse", fd);
-      const { sessionId, products } = res.data;
-      if (!sessionId || !products?.length) {
-        setAiError(res.data.rejectionReason || "No polymer data detected.");
-        return;
-      }
-      setAiSessionId(sessionId);
-      setAiSourceFile(file.name);
-      const p = products[0].product;
-      const refs = products[0].refMatches;
-      const updates: Partial<QuickAddFormData> = {};
-      const filled: Record<string, { confidence: string }> = {};
-      const set = (k: keyof QuickAddFormData, v: unknown, conf: string) => {
-        if (v == null || v === "" || (Array.isArray(v) && v.length === 0)) return;
-        (updates as Record<string, unknown>)[k] = v;
-        filled[k] = { confidence: conf };
-      };
-      if (refs?.polymerType?.match?._id) set("polymerTypes", [refs.polymerType.match._id], "high");
-      if (p.productName) set("productName", p.productName, "high");
-      if (refs?.chemicalFamily?.match?._id) set("chemicalFamily", refs.chemicalFamily.match._id, "high");
-      if (refs?.physicalForm?.match?._id) set("physicalForm", refs.physicalForm.match._id, "high");
-      if (p.countryOfOrigin) set("countryOfOrigin", p.countryOfOrigin, "high");
-      if (p.minimum_order_quantity != null) set("minimum_order_quantity", p.minimum_order_quantity, "high");
-      if (p.uom) set("uom", p.uom, "high");
-      if (p.availability) set("availability", p.availability, "high");
-      setForm(prev => ({ ...prev, ...updates }));
-      setAiFilledFields(filled);
-    } catch {
-      setAiError("Something went wrong while processing your file. Please try again.");
-    } finally {
-      setAiParsing(false);
-    }
+  const [tooltipField, setTooltipField] = useState<string | null>(null);
+  const aiTooltipMsg = (field: string) => {
+    const conf = aiFilledFields[field]?.confidence;
+    if (conf === "low") return "Claude wasn't certain about this value — please verify.";
+    if (conf === "unknown") return "Claude couldn't determine this — fill it in manually.";
+    return null;
+  };
+
+  const handleAiApply = useCallback(({ fields, aiFilledFields: filled, sessionId }: ApplyPayload) => {
+    setForm(prev => ({ ...prev, ...(fields as Partial<QuickAddFormData>) }));
+    setAiFilledFields(filled);
+    setAiSessionId(sessionId);
   }, []);
+
+  const aiP = useAiProcessing({
+    isEditMode: false,
+    allowedFields: QUICK_ADD_AI_FIELDS,
+    onApply: handleAiApply,
+  });
+  const { openModal: aiOpenModal, handleFile: aiHandleFile } = aiP;
+
+  const handleAiFile = useCallback((file: File) => {
+    if (file.size > 20 * 1024 * 1024) { toast.error("File exceeds 20 MB limit."); return; }
+    // "Modal open" = attended: single-product results auto-apply into the form
+    aiOpenModal();
+    aiHandleFile(file);
+  }, [aiOpenModal, aiHandleFile]);
+
+  const clearAiImport = () => {
+    setAiSessionId(null);
+    setAiFilledFields({});
+    aiP.clearAiData();
+  };
+
+  const aiParsing = aiP.modalOpen && aiP.modalPhase === "parsing";
+  const aiErrorPhase = aiP.modalOpen && ["rejected", "ocrFailed", "error"].includes(aiP.modalPhase);
+  const catalogRemaining = aiP.catalogMemory
+    ? aiP.catalogMemory.products.length - aiP.catalogMemory.usedIndices.size
+    : 0;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -336,6 +346,7 @@ export default function QuickAddProduct({ onSwitchToAdvanced, onSuccess }: Quick
         const pid = res._id || res.data?._id || res.data?.product?._id;
         setCreatedProductId(pid || null);
         setSubmitted(true);
+        aiP.onFormSubmit();
         onSuccess?.(pid);
       } else {
         toast.error(res?.message || "Failed to add product. Please try again.");
@@ -355,6 +366,10 @@ export default function QuickAddProduct({ onSwitchToAdvanced, onSuccess }: Quick
     setForm({ polymerTypes: [], productName: "", chemicalFamily: "", physicalForm: "", countryOfOrigin: "", minimum_order_quantity: null, uom: "Metric Ton", availability: "", productListFile: null });
     setCreatedProductId(null);
     setSubmitted(false);
+    // Clear per-product AI state but keep catalogMemory — seller may add the
+    // next product from the same catalog via "Use catalog again"
+    setAiSessionId(null);
+    setAiFilledFields({});
   };
 
   // ── Success Screen ──────────────────────────────────────────────
@@ -467,35 +482,53 @@ export default function QuickAddProduct({ onSwitchToAdvanced, onSuccess }: Quick
 
             {/* Field 1: Polymer Types */}
             <div className="px-4 py-4 sm:px-6 sm:py-5">
-              <FieldWrapper num={1} required label="Polymer Types" hint="Select all polymer types you supply" aiState={aiFilledFields.polymerTypes ? "filled" : undefined}>
-                <SearchableMultiSelect
-                  options={polymersTypes}
-                  selected={form.polymerTypes}
-                  onToggle={(id) => {
-                    clearAiField("polymerTypes");
-                    setForm((prev) => ({
-                      ...prev,
-                      polymerTypes: prev.polymerTypes.includes(id)
-                        ? prev.polymerTypes.filter((t) => t !== id)
-                        : [...prev.polymerTypes, id],
-                    }));
-                    setErrors((prev) => ({ ...prev, polymerTypes: "" }));
-                  }}
-                  placeholder="Search and select polymer types…"
-                  error={errors.polymerTypes}
-                />
+              <FieldWrapper num={1} required label="Polymer Types" hint="Select all polymer types you supply" aiState={aiFilledFields.polymerTypes?.confidence === "low" || aiFilledFields.polymerTypes?.confidence === "unknown" ? "low" : aiFilledFields.polymerTypes ? "filled" : undefined}>
+                <>
+                  <div onClick={() => { if (aiTooltipMsg("polymerTypes")) setTooltipField("polymerTypes"); }}>
+                    <SearchableMultiSelect
+                      options={polymersTypes}
+                      selected={form.polymerTypes}
+                      onToggle={(id) => {
+                        clearAiField("polymerTypes");
+                        setForm((prev) => ({
+                          ...prev,
+                          polymerTypes: prev.polymerTypes.includes(id)
+                            ? prev.polymerTypes.filter((t) => t !== id)
+                            : [...prev.polymerTypes, id],
+                        }));
+                        setErrors((prev) => ({ ...prev, polymerTypes: "" }));
+                      }}
+                      placeholder="Search and select polymer types…"
+                      error={errors.polymerTypes}
+                    />
+                  </div>
+                  {tooltipField === "polymerTypes" && aiTooltipMsg("polymerTypes") && (
+                    <p className="mt-1.5 text-xs text-orange-600 flex items-center gap-1.5">
+                      <AlertCircle className="w-3 h-3 shrink-0" />{aiTooltipMsg("polymerTypes")}
+                    </p>
+                  )}
+                </>
               </FieldWrapper>
             </div>
 
             {/* Field 2: Chemical Family */}
             <div className="px-4 py-4 sm:px-6 sm:py-5">
-              <FieldWrapper num={2} label="Chemical Family" hint="Helps buyers filter by chemistry (e.g. Polyolefins, ABS)" aiState={aiFilledFields.chemicalFamily ? "filled" : undefined}>
-                <SearchableSingleSelect
-                  options={chemicalFamilies}
-                  value={form.chemicalFamily || ""}
-                  onChange={(id) => { clearAiField("chemicalFamily"); setForm((prev) => ({ ...prev, chemicalFamily: id })); }}
-                  placeholder="Search and select a chemical family…"
-                />
+              <FieldWrapper num={2} label="Chemical Family" hint="Helps buyers filter by chemistry (e.g. Polyolefins, ABS)" aiState={aiFilledFields.chemicalFamily?.confidence === "low" || aiFilledFields.chemicalFamily?.confidence === "unknown" ? "low" : aiFilledFields.chemicalFamily ? "filled" : undefined}>
+                <>
+                  <div onClick={() => { if (aiTooltipMsg("chemicalFamily")) setTooltipField("chemicalFamily"); }}>
+                    <SearchableSingleSelect
+                      options={chemicalFamilies}
+                      value={form.chemicalFamily || ""}
+                      onChange={(id) => { clearAiField("chemicalFamily"); setForm((prev) => ({ ...prev, chemicalFamily: id })); }}
+                      placeholder="Search and select a chemical family…"
+                    />
+                  </div>
+                  {tooltipField === "chemicalFamily" && aiTooltipMsg("chemicalFamily") && (
+                    <p className="mt-1.5 text-xs text-orange-600 flex items-center gap-1.5">
+                      <AlertCircle className="w-3 h-3 shrink-0" />{aiTooltipMsg("chemicalFamily")}
+                    </p>
+                  )}
+                </>
               </FieldWrapper>
             </div>
           </div>
@@ -505,58 +538,81 @@ export default function QuickAddProduct({ onSwitchToAdvanced, onSuccess }: Quick
 
             {/* Field 3: Product Name */}
             <div className="px-4 py-4 sm:px-6 sm:py-5">
-              <FieldWrapper num={3} label="Product Name" hint="A clear name helps buyers identify your product" aiState={aiFilledFields.productName ? "filled" : undefined}>
-                <input
-                  type="text"
-                  value={form.productName || ""}
-                  onChange={(e) => { clearAiField("productName"); setForm((prev) => ({ ...prev, productName: e.target.value })); }}
-                  placeholder="e.g. LDPE Film, PP Homopolymer"
-                  className={`w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-100 focus:border-emerald-400 focus:bg-white hover:border-gray-300 transition-all placeholder:text-gray-400${aiCls("productName")}`}
-                />
+              <FieldWrapper num={3} label="Product Name" hint="A clear name helps buyers identify your product" aiState={aiFilledFields.productName?.confidence === "low" || aiFilledFields.productName?.confidence === "unknown" ? "low" : aiFilledFields.productName ? "filled" : undefined}>
+                <>
+                  <input
+                    type="text"
+                    value={form.productName || ""}
+                    onFocus={() => { if (aiTooltipMsg("productName")) setTooltipField("productName"); }}
+                    onChange={(e) => { clearAiField("productName"); setForm((prev) => ({ ...prev, productName: e.target.value })); }}
+                    placeholder="e.g. LDPE Film, PP Homopolymer"
+                    className={`w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-100 focus:border-emerald-400 focus:bg-white hover:border-gray-300 transition-all placeholder:text-gray-400${aiCls("productName")}`}
+                  />
+                  {tooltipField === "productName" && aiTooltipMsg("productName") && (
+                    <p className="mt-1.5 text-xs text-orange-600 flex items-center gap-1.5">
+                      <AlertCircle className="w-3 h-3 shrink-0" />{aiTooltipMsg("productName")}
+                    </p>
+                  )}
+                </>
               </FieldWrapper>
             </div>
 
             {/* Field 4: Physical Form */}
             <div className="px-4 py-4 sm:px-6 sm:py-5">
-              <FieldWrapper num={4} label="Physical Form" hint="How the material is supplied" aiState={aiFilledFields.physicalForm ? "filled" : undefined}>
-                <div className="flex flex-wrap gap-2">
-                  {physicalForms.map((pf: { _id: string; name: string }) => {
-                    const active = form.physicalForm === pf._id;
-                    return (
-                      <button
-                        key={pf._id}
-                        type="button"
-                        onClick={() => { clearAiField("physicalForm"); setForm((prev) => ({ ...prev, physicalForm: prev.physicalForm === pf._id ? "" : pf._id })); }}
-                        className={`px-3 py-1.5 rounded-full text-xs font-medium border-2 transition-all ${
-                          active
-                            ? "bg-emerald-600 border-emerald-600 text-white shadow-sm"
-                            : "bg-gray-50 border-gray-200 text-gray-600 hover:border-emerald-300 hover:text-emerald-700"
-                        }`}
-                      >
-                        {pf.name}
-                      </button>
-                    );
-                  })}
-                </div>
+              <FieldWrapper num={4} label="Physical Form" hint="How the material is supplied" aiState={aiFilledFields.physicalForm?.confidence === "low" || aiFilledFields.physicalForm?.confidence === "unknown" ? "low" : aiFilledFields.physicalForm ? "filled" : undefined}>
+                <>
+                  <div className="flex flex-wrap gap-2" onClick={() => { if (aiTooltipMsg("physicalForm")) setTooltipField("physicalForm"); }}>
+                    {physicalForms.map((pf: { _id: string; name: string }) => {
+                      const active = form.physicalForm === pf._id;
+                      return (
+                        <button
+                          key={pf._id}
+                          type="button"
+                          onClick={() => { clearAiField("physicalForm"); setForm((prev) => ({ ...prev, physicalForm: prev.physicalForm === pf._id ? "" : pf._id })); }}
+                          className={`px-3 py-1.5 rounded-full text-xs font-medium border-2 transition-all ${
+                            active
+                              ? "bg-emerald-600 border-emerald-600 text-white shadow-sm"
+                              : "bg-gray-50 border-gray-200 text-gray-600 hover:border-emerald-300 hover:text-emerald-700"
+                          }`}
+                        >
+                          {pf.name}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  {tooltipField === "physicalForm" && aiTooltipMsg("physicalForm") && (
+                    <p className="mt-1.5 text-xs text-orange-600 flex items-center gap-1.5">
+                      <AlertCircle className="w-3 h-3 shrink-0" />{aiTooltipMsg("physicalForm")}
+                    </p>
+                  )}
+                </>
               </FieldWrapper>
             </div>
 
             {/* Field 5: Country of Origin */}
             <div className="px-4 py-4 sm:px-6 sm:py-5 sm:col-span-2 lg:col-span-1">
-              <FieldWrapper num={5} label="Country of Origin" hint="Where is the material manufactured?" aiState={aiFilledFields.countryOfOrigin ? "filled" : undefined}>
-                <div className="relative">
-                  <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-                  <select
-                    value={form.countryOfOrigin || ""}
-                    onChange={(e) => { clearAiField("countryOfOrigin"); setForm((prev) => ({ ...prev, countryOfOrigin: e.target.value })); }}
-                    className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-100 focus:border-emerald-400 focus:bg-white hover:border-gray-300 transition-all text-gray-600 appearance-none"
-                  >
-                    <option value="">Select country…</option>
-                    {countries.map((c) => (
-                      <option key={c.code} value={c.name}>{c.name}</option>
-                    ))}
-                  </select>
-                </div>
+              <FieldWrapper num={5} label="Country of Origin" hint="Where is the material manufactured?" aiState={aiFilledFields.countryOfOrigin?.confidence === "low" || aiFilledFields.countryOfOrigin?.confidence === "unknown" ? "low" : aiFilledFields.countryOfOrigin ? "filled" : undefined}>
+                <>
+                  <div className="relative">
+                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                    <select
+                      value={form.countryOfOrigin || ""}
+                      onFocus={() => { if (aiTooltipMsg("countryOfOrigin")) setTooltipField("countryOfOrigin"); }}
+                      onChange={(e) => { clearAiField("countryOfOrigin"); setForm((prev) => ({ ...prev, countryOfOrigin: e.target.value })); }}
+                      className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-100 focus:border-emerald-400 focus:bg-white hover:border-gray-300 transition-all text-gray-600 appearance-none"
+                    >
+                      <option value="">Select country…</option>
+                      {countries.map((c) => (
+                        <option key={c.code} value={c.name}>{c.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                  {tooltipField === "countryOfOrigin" && aiTooltipMsg("countryOfOrigin") && (
+                    <p className="mt-1.5 text-xs text-orange-600 flex items-center gap-1.5">
+                      <AlertCircle className="w-3 h-3 shrink-0" />{aiTooltipMsg("countryOfOrigin")}
+                    </p>
+                  )}
+                </>
               </FieldWrapper>
             </div>
           </div>
@@ -566,51 +622,72 @@ export default function QuickAddProduct({ onSwitchToAdvanced, onSuccess }: Quick
 
             {/* Field 6: MOQ + Unit */}
             <div className="px-4 py-4 sm:px-6 sm:py-5">
-              <FieldWrapper num={6} label="Min. Order Quantity" hint="Minimum amount buyers can order" aiState={aiFilledFields.minimum_order_quantity ? "filled" : undefined}>
-                <div className="flex gap-2">
-                  <input
-                    type="number"
-                    min={1}
-                    value={form.minimum_order_quantity ?? ""}
-                    onChange={(e) => { clearAiField("minimum_order_quantity"); setForm((prev) => ({ ...prev, minimum_order_quantity: e.target.value ? Number(e.target.value) : null })); }}
-                    placeholder="e.g. 1000"
-                    className={`flex-1 min-w-0 px-3 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-100 focus:border-emerald-400 focus:bg-white hover:border-gray-300 transition-all placeholder:text-gray-400${aiCls("minimum_order_quantity")}`}
-                  />
-                  <select
-                    value={form.uom || ""}
-                    onChange={(e) => { clearAiField("uom"); setForm((prev) => ({ ...prev, uom: e.target.value })); }}
-                    className="w-28 px-2 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-100 focus:border-emerald-400 focus:bg-white hover:border-gray-300 transition-all text-gray-600"
-                  >
-                    <option value="">Unit</option>
-                    {UOM_OPTIONS.map((u) => <option key={u} value={u}>{u}</option>)}
-                  </select>
-                </div>
+              <FieldWrapper num={6} label="Min. Order Quantity" hint="Minimum amount buyers can order" aiState={aiFilledFields.minimum_order_quantity?.confidence === "low" || aiFilledFields.minimum_order_quantity?.confidence === "unknown" ? "low" : aiFilledFields.minimum_order_quantity ? "filled" : undefined}>
+                <>
+                  <div className="flex gap-2">
+                    <input
+                      type="number"
+                      min={1}
+                      value={form.minimum_order_quantity ?? ""}
+                      onFocus={() => { if (aiTooltipMsg("minimum_order_quantity")) setTooltipField("minimum_order_quantity"); }}
+                      onChange={(e) => { clearAiField("minimum_order_quantity"); setForm((prev) => ({ ...prev, minimum_order_quantity: e.target.value ? Number(e.target.value) : null })); }}
+                      placeholder="e.g. 1000"
+                      className={`flex-1 min-w-0 px-3 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-100 focus:border-emerald-400 focus:bg-white hover:border-gray-300 transition-all placeholder:text-gray-400${aiCls("minimum_order_quantity")}`}
+                    />
+                    <select
+                      value={form.uom || ""}
+                      onFocus={() => { if (aiTooltipMsg("uom")) setTooltipField("uom"); }}
+                      onChange={(e) => { clearAiField("uom"); setForm((prev) => ({ ...prev, uom: e.target.value })); }}
+                      className="w-28 px-2 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-100 focus:border-emerald-400 focus:bg-white hover:border-gray-300 transition-all text-gray-600"
+                    >
+                      <option value="">Unit</option>
+                      {UOM_OPTIONS.map((u) => <option key={u} value={u}>{u}</option>)}
+                    </select>
+                  </div>
+                  {(tooltipField === "minimum_order_quantity" && aiTooltipMsg("minimum_order_quantity")) && (
+                    <p className="mt-1.5 text-xs text-orange-600 flex items-center gap-1.5">
+                      <AlertCircle className="w-3 h-3 shrink-0" />{aiTooltipMsg("minimum_order_quantity")}
+                    </p>
+                  )}
+                  {(tooltipField === "uom" && aiTooltipMsg("uom")) && (
+                    <p className="mt-1.5 text-xs text-orange-600 flex items-center gap-1.5">
+                      <AlertCircle className="w-3 h-3 shrink-0" />{aiTooltipMsg("uom")}
+                    </p>
+                  )}
+                </>
               </FieldWrapper>
             </div>
 
             {/* Field 7: Availability */}
             <div className="px-4 py-4 sm:px-6 sm:py-5">
-              <FieldWrapper num={7} label="Availability" hint="Let buyers know current stock status" aiState={aiFilledFields.availability ? "filled" : undefined}>
-                <div className="flex flex-col gap-2">
-                  {AVAILABILITY_OPTIONS.map((opt) => {
-                    const Icon = opt.icon;
-                    const active = form.availability === opt.value;
-                    return (
-                      <button
-                        key={opt.value}
-                        type="button"
-                        onClick={() => { clearAiField("availability"); setForm((prev) => ({ ...prev, availability: prev.availability === opt.value ? "" : opt.value })); }}
-                        className={`flex items-center gap-3 px-3 py-2.5 rounded-xl border-2 text-sm font-medium transition-all text-left ${
-                          active ? `${opt.activeBg} ${opt.activeBorder} text-white shadow-sm` : `bg-gray-50 border-gray-200 ${opt.color} hover:bg-white hover:border-gray-300`
-                        }`}
-                      >
-                        <Icon className={`w-4 h-4 shrink-0 ${active ? "text-white" : ""}`} />
-                        <span className={`text-xs font-semibold ${active ? "text-white" : ""}`}>{opt.label}</span>
-                        {active && <span className="ml-auto text-white/80 text-xs">✓</span>}
-                      </button>
-                    );
-                  })}
-                </div>
+              <FieldWrapper num={7} label="Availability" hint="Let buyers know current stock status" aiState={aiFilledFields.availability?.confidence === "low" || aiFilledFields.availability?.confidence === "unknown" ? "low" : aiFilledFields.availability ? "filled" : undefined}>
+                <>
+                  <div className="flex flex-col gap-2" onClick={() => { if (aiTooltipMsg("availability")) setTooltipField("availability"); }}>
+                    {AVAILABILITY_OPTIONS.map((opt) => {
+                      const Icon = opt.icon;
+                      const active = form.availability === opt.value;
+                      return (
+                        <button
+                          key={opt.value}
+                          type="button"
+                          onClick={() => { clearAiField("availability"); setForm((prev) => ({ ...prev, availability: prev.availability === opt.value ? "" : opt.value })); }}
+                          className={`flex items-center gap-3 px-3 py-2.5 rounded-xl border-2 text-sm font-medium transition-all text-left ${
+                            active ? `${opt.activeBg} ${opt.activeBorder} text-white shadow-sm` : `bg-gray-50 border-gray-200 ${opt.color} hover:bg-white hover:border-gray-300`
+                          }`}
+                        >
+                          <Icon className={`w-4 h-4 shrink-0 ${active ? "text-white" : ""}`} />
+                          <span className={`text-xs font-semibold ${active ? "text-white" : ""}`}>{opt.label}</span>
+                          {active && <span className="ml-auto text-white/80 text-xs">✓</span>}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  {tooltipField === "availability" && aiTooltipMsg("availability") && (
+                    <p className="mt-1.5 text-xs text-orange-600 flex items-center gap-1.5">
+                      <AlertCircle className="w-3 h-3 shrink-0" />{aiTooltipMsg("availability")}
+                    </p>
+                  )}
+                </>
               </FieldWrapper>
             </div>
 
@@ -626,59 +703,138 @@ export default function QuickAddProduct({ onSwitchToAdvanced, onSuccess }: Quick
                   onChange={e => { const f = e.target.files?.[0]; if (f) handleAiFile(f); e.target.value = ""; }}
                 />
 
-                {aiSourceFile && !aiParsing ? (
+                {aiSessionId && !aiParsing ? (
                   /* Success state */
                   <div className="flex items-center gap-3 px-4 py-3 bg-teal-50 border-2 border-teal-200 rounded-xl">
                     <div className="w-9 h-9 rounded-lg bg-teal-100 flex items-center justify-center shrink-0">
                       <Brain className="w-5 h-5 text-teal-600" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-teal-800 truncate">{aiSourceFile}</p>
-                      <p className="text-xs text-teal-600">{Object.keys(aiFilledFields).length} fields pre-filled by Claude</p>
+                      <p className="text-sm font-medium text-teal-800 truncate">{aiP.uploadedFileName ?? "Catalog"}</p>
+                      <p className="text-xs text-teal-600">{Object.keys(aiFilledFields).length} fields filled by Claude</p>
+                      {catalogRemaining > 0 && (
+                        <button type="button" onClick={aiP.reopenCatalogPicker}
+                          className="mt-0.5 text-xs text-teal-600 underline underline-offset-2 hover:text-teal-700 transition-colors">
+                          Use catalog again → ({catalogRemaining} more product{catalogRemaining !== 1 ? "s" : ""})
+                        </button>
+                      )}
                     </div>
-                    <button type="button" onClick={() => { setAiSourceFile(null); setAiSessionId(null); setAiFilledFields({}); }}
-                      className="w-7 h-7 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-400 hover:text-red-500 hover:border-red-200 transition-all">
+                    <button type="button" aria-label="Clear AI data" onClick={clearAiImport}
+                      className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-400 hover:text-red-500 hover:border-red-200 transition-all shrink-0">
                       <X className="w-3.5 h-3.5" />
                     </button>
                   </div>
+                ) : aiParsing ? (
+                  /* Parsing state */
+                  <div className="border-2 border-dashed border-teal-300 bg-teal-50/40 rounded-xl px-4 py-5 text-center cursor-not-allowed">
+                    <div className="flex flex-col items-center gap-1">
+                      <Loader2 className="w-7 h-7 text-teal-500 animate-spin motion-reduce:animate-none" />
+                      {aiP.uploadedFileName && (
+                        <p className="text-[11px] text-gray-500 truncate max-w-[200px] mt-1">{aiP.uploadedFileName}</p>
+                      )}
+                      <p className="text-xs font-medium text-gray-700">{aiP.loadingMsg}</p>
+                      {aiP.loadingSubMsg && <p className="text-[11px] text-gray-500">{aiP.loadingSubMsg}</p>}
+                      <button type="button" onClick={aiP.minimise}
+                        style={{ minHeight: "44px" }}
+                        className="flex items-center text-xs text-teal-600 underline underline-offset-2 hover:text-teal-700 transition-colors cursor-pointer">
+                        Work in the background →
+                      </button>
+                    </div>
+                  </div>
                 ) : (
-                  /* Dropzone */
+                  /* Idle dropzone */
                   <div
-                    className={`border-2 border-dashed rounded-xl px-4 py-6 text-center transition-all ${
-                      aiParsing ? "border-teal-300 bg-teal-50/40 cursor-not-allowed opacity-80"
-                      : "border-gray-200 bg-gray-50 hover:border-teal-300 hover:bg-teal-50/20 cursor-pointer"
-                    }`}
-                    onClick={() => !aiParsing && aiFileInputRef.current?.click()}
+                    role="button"
+                    tabIndex={0}
+                    className="border-2 border-dashed rounded-xl px-4 py-6 text-center transition-all border-gray-200 bg-gray-50 hover:border-teal-300 hover:bg-teal-50/20 cursor-pointer focus:outline-none focus:ring-2 focus:ring-teal-400"
+                    onClick={() => aiFileInputRef.current?.click()}
+                    onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); aiFileInputRef.current?.click(); } }}
                     onDragOver={e => e.preventDefault()}
-                    onDrop={e => { e.preventDefault(); const f = e.dataTransfer.files?.[0]; if (f && !aiParsing) handleAiFile(f); }}
+                    onDrop={e => { e.preventDefault(); const f = e.dataTransfer.files?.[0]; if (f) handleAiFile(f); }}
                   >
-                    {aiParsing ? (
-                      <div className="flex flex-col items-center gap-2">
-                        <Loader2 className="w-7 h-7 text-teal-500 animate-spin" />
-                        <p className="text-xs text-gray-600 font-medium">Claude is parsing your catalog…</p>
+                    <div className="flex flex-col items-center gap-2">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-teal-100 to-emerald-100 flex items-center justify-center">
+                        <Sparkles className="w-5 h-5 text-teal-600" />
                       </div>
-                    ) : (
-                      <div className="flex flex-col items-center gap-2">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-teal-100 to-emerald-100 flex items-center justify-center">
-                          <Sparkles className="w-5 h-5 text-teal-600" />
-                        </div>
-                        <p className="text-xs font-medium text-gray-600">
-                          <span className="text-teal-600 underline underline-offset-2">Browse</span> or drag & drop
-                        </p>
-                        <p className="text-xs text-gray-400">PDF, XLSX, CSV — up to 20 MB</p>
-                      </div>
-                    )}
+                      <p className="text-xs font-medium text-gray-600">
+                        <span className="text-teal-600 underline underline-offset-2">Browse</span> or drag & drop
+                      </p>
+                      <p className="text-xs text-gray-400">PDF, XLSX, CSV, JPG, PNG — up to 20 MB</p>
+                    </div>
                   </div>
                 )}
 
-                {aiError && (
-                  <div className="mt-2 flex items-start gap-2 p-3 rounded-lg bg-red-50 border border-red-100 text-xs text-red-700">
-                    <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />{aiError}
+                {/* Catalog memory survives product creation — continue from the same catalog */}
+                {!aiParsing && !aiSessionId && catalogRemaining > 0 && (
+                  <button type="button" onClick={aiP.reopenCatalogPicker}
+                    style={{ minHeight: "44px" }}
+                    className="mt-1 flex items-center text-xs text-teal-600 underline underline-offset-2 hover:text-teal-700 transition-colors">
+                    Use previous catalog again → ({catalogRemaining} more product{catalogRemaining !== 1 ? "s" : ""})
+                  </button>
+                )}
+
+                {aiErrorPhase && (
+                  <div className={`mt-2 flex items-start gap-2 p-3 rounded-lg border text-xs ${
+                    aiP.modalPhase === "rejected" || aiP.modalErrorMsg.startsWith("This catalog took too long")
+                      ? "bg-amber-50 border-amber-100 text-amber-700"
+                      : "bg-red-50 border-red-100 text-red-700"
+                  }`}>
+                    <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                    <div className="flex-1">
+                      <p>
+                        {aiP.modalPhase === "rejected"
+                          ? "No product data found. Make sure the file is a TDS or product catalog, not a brochure or SDS."
+                          : aiP.modalPhase === "ocrFailed"
+                          ? "This document couldn't be read. For best results, use a text-based PDF or a high-resolution scan (300 DPI+)."
+                          : aiP.modalErrorMsg || "Upload failed — check your connection and try again."}
+                      </p>
+                      <button type="button" onClick={() => aiP.handleModalOpenChange(false)}
+                        style={{ minHeight: "44px" }}
+                        className="flex items-center font-semibold underline underline-offset-2">
+                        Try again
+                      </button>
+                    </div>
                   </div>
                 )}
               </FieldWrapper>
             </div>
           </div>
+
+          {/* Multi-product picker (shadcn dialog) */}
+          <Dialog
+            open={aiP.modalOpen && aiP.modalPhase === "pick" && !!aiP.pickItems}
+            onOpenChange={v => { if (!v) aiP.handleModalOpenChange(false); }}
+          >
+            <DialogContent className="max-w-lg w-full max-h-[90dvh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2 text-base font-semibold">
+                  <Sparkles className="w-4 h-4 text-teal-600" />
+                  Choose a product
+                </DialogTitle>
+              </DialogHeader>
+              {aiP.pickItems && (
+                <ProductPicker
+                  items={aiP.pickItems}
+                  usedIndices={aiP.catalogMemory?.usedIndices}
+                  onPick={aiP.pickProduct}
+                />
+              )}
+            </DialogContent>
+          </Dialog>
+
+          {/* Background processing widget (after "Work in the background") */}
+          <AiProcessingWidget
+            bgState={aiP.bgState}
+            bgFailReason={aiP.bgFailReason}
+            fieldCount={aiP.fieldCount}
+            pickCount={aiP.pickItems?.length ?? 0}
+            loadingStage={aiP.loadingStage}
+            fileName={aiP.uploadedFileName ?? undefined}
+            onCancel={aiP.cancelBg}
+            onApply={aiP.applyReady}
+            onRetry={aiP.retry}
+            onDismiss={aiP.dismissWidget}
+          />
 
           {/* CTA Footer */}
           <div className="px-4 py-4 sm:px-6 bg-gray-50 border-t border-gray-100 rounded-b-2xl flex flex-col sm:flex-row items-center gap-4">
