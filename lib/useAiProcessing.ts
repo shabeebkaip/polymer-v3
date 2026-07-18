@@ -400,11 +400,20 @@ export function useAiProcessing({ isEditMode, existingData, allowedFields, onApp
       const form = new FormData();
       form.append("file", file);
       const initRes = await axiosInstance.post<{ sessionId: string; status: string }>("/ai/parse", form, { timeout: 600000 });
-      if (cancelRef.current || parseSeqRef.current !== seq) { stopAll(); return; }
+      if (cancelRef.current || parseSeqRef.current !== seq) {
+        // ponytail: stale/cancelled request — not a bug, but log so a silent
+        // dead-end (no polling, no UI change) is never mistaken for one again.
+        console.warn("[ai-import] parse aborted before polling started (cancelled or superseded)");
+        stopAll();
+        return;
+      }
 
       const { sessionId } = initRes.data;
 
-      pollIntervalRef.current = setInterval(async () => {
+      // Fire the first status check immediately — don't wait a full interval tick
+      // to discover the poll can't even reach the backend (this is what let a
+      // dead polling path go unnoticed: nothing observable for a full 4s+).
+      const poll = async () => {
         try {
           const pollRes = await axiosInstance.get<{
             status: string;
@@ -439,8 +448,11 @@ export function useAiProcessing({ isEditMode, existingData, allowedFields, onApp
             extractionMethod: pollRes.data.extractionMethod ?? "text",
             sessionId: pollRes.data.sessionId ?? sessionId,
           });
-        } catch {
+        } catch (pollErr) {
           if (cancelRef.current || parseSeqRef.current !== seq) { stopAll(); return; }
+          // Surface the real failure instead of dying silently — this is exactly
+          // what let the staging polling failure go unnoticed for so long.
+          console.error("[ai-import] session status poll failed", pollErr);
           stopAll();
           if (modalOpenRef.current) {
             setModalErrorMsg("Upload failed — check your connection and try again.");
@@ -450,11 +462,15 @@ export function useAiProcessing({ isEditMode, existingData, allowedFields, onApp
             setBgFailReason("error");
           }
         }
-      }, 4000);
+      };
+
+      pollIntervalRef.current = setInterval(poll, 4000);
+      poll();
 
     } catch (err: unknown) {
       stopAll();
       if (cancelRef.current || parseSeqRef.current !== seq) return;
+      console.error("[ai-import] initial parse request failed", err);
       const serverMsg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
       const msg = serverMsg
         ? "Something went wrong while processing your file. Please try again or use a different file."
