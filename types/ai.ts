@@ -44,6 +44,9 @@ export interface ExtractedProduct {
   packagingWeight?: ConfidentString | null;
   storageConditions?: ConfidentString | null;
   shelfLife?: ConfidentString | null;
+  // §14.3 "mfi (190°C/2.16kg)" trailing parenthetical — test-condition text with
+  // no existing display anywhere else in the form (§21.9 point 1).
+  mfi_conditions?: ConfidentString | null;
   recyclable?: boolean | null;
   bioDegradable?: boolean | null;
   fdaApproved?: boolean | null;
@@ -75,12 +78,37 @@ export interface ParsedProductEntry {
 
 // ── Shared cross-component types ─────────────────────────────────────────────
 
-export type AiFilledFields = Record<string, { confidence: string }>;
+// §21.9 point 1 — `conditions` carries mfi_conditions (the only field with no
+// existing display elsewhere); every other numeric field's unit is rendered
+// from a static per-field label already shown in TechnicalProperties.tsx, so
+// no live `unit` passthrough is needed (design correction, §14.3).
+export type AiFilledFields = Record<string, { confidence: string; conditions?: string }>;
+
+// §14.0/§21.9 point 4 — refmatch.service.js's three real match tiers on the
+// five taxonomy fields, used as the "needs review" signal instead of the
+// never-assigned "low" confidence.
+export type TaxonomyFieldKey = "chemicalFamily" | "physicalForm" | "polymerType" | "industry" | "grade";
+
+export interface TaxonomyReviewItem {
+  key: string; // stable per-render key: formKey, or `${formKey}-${index}` for array fields
+  formKey: TaxonomyFieldKey;
+  isArray: boolean; // true for industry/grade (multi-select, per-item tier)
+  tier: "confirm" | "manual";
+  query: string; // raw catalogue text — render as plain text only, never markdown/HTML (§21.9 security note)
+  suggestedId?: string;
+  suggestedName?: string;
+  label: string;
+}
 
 export interface ApplyPayload {
   fields: Record<string, unknown>;
   aiFilledFields: AiFilledFields;
   sessionId: string;
+  // §14.2 "Needs Your Attention" — the persistent review surface needs this
+  // sibling structure; `aiFilledFields`'s own `conditions` field already
+  // covers the other plumbing gap (§21.9 point 1), so no separate `rows`
+  // structure is threaded through here (YAGNI — nothing in §14 reads it).
+  taxonomyReview: TaxonomyReviewItem[];
 }
 
 export interface DiffRow {
@@ -89,12 +117,14 @@ export interface DiffRow {
   displayValue: string;
   confidence: ConfidenceLevel;
   skipped?: boolean;
+  conditions?: string; // e.g. mfi's "190°C/2.16kg"
 }
 
 export interface ReadyDiff {
   payload: ApplyPayload;
   rows: DiffRow[];
   extractionMethod: "text" | "vision";
+  taxonomyReview: TaxonomyReviewItem[];
 }
 
 export type AiModalPhase = "idle" | "parsing" | "pick" | "diff" | "rejected" | "ocrFailed" | "error";

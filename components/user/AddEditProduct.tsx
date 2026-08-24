@@ -17,8 +17,8 @@ import { Button } from "../ui/button";
 import {
   Save, RotateCcw, ChevronDown, ChevronUp, CheckCircle2,
   ImageIcon, Settings, Box, Shield, Upload,
-  Eye, MapPin, Tag, Layers, Sparkles, CheckCheck, Plus,
-  FileText, FileSpreadsheet, AlertCircle,
+  Eye, MapPin, Tag, Layers,
+  FileText, FileSpreadsheet, AlertCircle, FileCheck,
 } from "lucide-react";
 import AiCatalogModal, { type AiFilledFields } from "@/components/ai-import/AiCatalogModal";
 import AiProcessingWidget from "@/components/ai-import/AiProcessingWidget";
@@ -26,6 +26,8 @@ import { useAiProcessing } from "@/lib/useAiProcessing";
 import { createProduct, updateProduct } from "@/apiServices/products";
 import { initialFormData } from "@/apiServices/constants/userProductCrud";
 import { QUICK_ADD_DRAFT_KEY, QUICK_ADD_DRAFT_TTL_MS } from "@/components/user/products/QuickAddProduct";
+import CatalogFindings, { getVisibleTaxonomyReview } from "@/components/user/products/CatalogFindings";
+import type { TaxonomyReviewItem } from "@/types/ai";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
@@ -120,6 +122,7 @@ const FIELD_FOCUS_ID: Record<string, string> = {
   incoterms: "incoterms-field",
   fdaCertificate: "fdaCertificate-field",
   medicalCertificate: "medicalCertificate-field",
+  grade: "grade-field",
 };
 
 const REQUIRED_FIELD_ORDER = [
@@ -237,13 +240,16 @@ const ACCEPT_PILLS: [React.ElementType, string][] = [
 ];
 
 function CatalogDropzone({
-  aiFillCount, catalogRemaining, onOpenModal, onHandleFile, onReopenCatalogPicker,
+  aiFillCount, catalogRemaining, uploadedFileName, onOpenModal, onHandleFile,
+  onReopenCatalogPicker, onRemove,
 }: {
   aiFillCount: number;
   catalogRemaining: number;
+  uploadedFileName?: string | null;
   onOpenModal: () => void;
   onHandleFile: (file: File) => void;
   onReopenCatalogPicker: () => void;
+  onRemove: () => void;
 }) {
   const [rejectionMsg, setRejectionMsg] = useState("");
 
@@ -275,84 +281,92 @@ function CatalogDropzone({
 
   const success = aiFillCount > 0;
 
+  // §14.5 — compact post-extraction source bar, supersedes §13.2's tall
+  // success card. getRootProps/getInputProps stay wired here too, so a drop
+  // directly onto the bar still re-triggers import exactly like "Replace".
+  if (success) {
+    return (
+      <div
+        {...getRootProps()}
+        id="catalog-source-bar"
+        aria-label="Catalog imported. Drop a new file here to replace it."
+        className="bg-white border border-gray-200 rounded-xl px-4 py-3 flex items-center justify-between gap-3 flex-wrap sm:flex-nowrap cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
+      >
+        <input {...getInputProps()} className="hidden" />
+        <div className="flex items-center gap-2.5 min-w-0">
+          <div className="w-8 h-8 rounded-lg bg-teal-100 flex items-center justify-center shrink-0">
+            <FileCheck className="w-4 h-4 text-teal-600" />
+          </div>
+          <div className="min-w-0">
+            <p className="text-sm font-medium text-gray-900 truncate max-w-[220px]">{uploadedFileName ?? "Catalog"}</p>
+            <p className="text-xs text-gray-500">{aiFillCount} field{aiFillCount !== 1 ? "s" : ""} found</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-3 shrink-0">
+          {catalogRemaining > 0 && (
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); onReopenCatalogPicker(); }}
+              className="text-xs font-medium text-emerald-700 hover:text-emerald-800"
+            >
+              Add another
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); onOpenModal(); }}
+            className="text-xs font-medium text-teal-700 hover:text-teal-800"
+          >
+            Replace
+          </button>
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); onRemove(); }}
+            className="text-xs font-medium text-gray-500 hover:text-red-600"
+          >
+            Remove
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
       <div
         {...getRootProps()}
         aria-label="Upload a catalog file to auto-fill this form. Accepts PDF, Excel, CSV, or image files, up to 20 megabytes."
-        className={
-          success
-            ? "bg-teal-50 border border-teal-200 rounded-2xl px-4 sm:px-6 py-8 sm:py-10 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
-            : `bg-white rounded-2xl border-2 border-dashed transition-colors px-4 py-8 sm:px-6 sm:py-10 lg:py-14 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2
-              ${isDragActive ? "border-teal-400 bg-teal-50" : "border-gray-200 hover:border-teal-400 hover:bg-teal-50/40"}`
-        }
+        className={`bg-white rounded-2xl border-2 border-dashed transition-colors px-4 py-8 sm:px-6 sm:py-10 lg:py-14 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2
+              ${isDragActive ? "border-teal-400 bg-teal-50" : "border-gray-200 hover:border-teal-400 hover:bg-teal-50/40"}`}
       >
         <input {...getInputProps()} className="hidden" />
-        {success ? (
-          <div className="flex flex-col items-center gap-4 text-center">
-            <div className="w-10 h-10 rounded-xl bg-teal-100 flex items-center justify-center">
-              <CheckCheck className="w-5 h-5 text-teal-600" />
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-teal-900">Catalog imported · {aiFillCount} fields filled</p>
-              <p className="text-xs text-teal-700 mt-0.5">
-                {catalogRemaining > 0
-                  ? `${catalogRemaining} more product${catalogRemaining !== 1 ? "s" : ""} available in this catalog`
-                  : "Review the pre-filled fields below and make any corrections."}
-              </p>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-2">
-              {catalogRemaining > 0 && (
-                <button
-                  type="button"
-                  onClick={(e) => { e.stopPropagation(); onReopenCatalogPicker(); }}
-                  style={{ minHeight: "44px" }}
-                  className="flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-teal-200 bg-white text-teal-700 text-sm font-medium transition-colors hover:bg-teal-50"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  Add another from this catalog
-                </button>
-              )}
-              <button
-                type="button"
-                onClick={(e) => { e.stopPropagation(); onOpenModal(); }}
-                style={{ minHeight: "44px" }}
-                className="flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-sm font-semibold transition-colors shadow-sm"
-              >
-                <Sparkles className="w-3.5 h-3.5" />
-                Import another
-              </button>
-            </div>
+        <div className="flex flex-col items-center gap-4 text-center">
+          <div className="w-16 h-16 rounded-2xl flex items-center justify-center bg-gradient-to-br from-teal-600 to-emerald-600 shadow-md">
+            <Upload className="text-white" size={28} />
           </div>
-        ) : (
-          <div className="flex flex-col items-center gap-4 text-center">
-            <div className="w-16 h-16 rounded-2xl flex items-center justify-center bg-gradient-to-br from-teal-600 to-emerald-600 shadow-md">
-              <Upload className="text-white" size={28} />
-            </div>
-            <div>
-              <p className="text-lg sm:text-xl font-semibold text-gray-900">
-                {isDragActive ? "Drop to import" : "Drop a catalog to auto-fill this form"}
-              </p>
-              <p className="text-sm text-gray-500 mt-1">
-                PDF, Excel, CSV, or image — Claude reads it and fills in what it finds. Up to 20 MB.
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-2 justify-center">
-              {ACCEPT_PILLS.map(([Icon, label]) => (
-                <span key={label} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gray-50 text-xs text-gray-600 border border-gray-100">
-                  <Icon size={11} />{label}
-                </span>
-              ))}
-            </div>
-            <button
-              type="button"
-              className="mt-1 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white shadow-md
-                bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 transition-all"
-            >
-              Choose a file
-            </button>
+          <div>
+            <p className="text-lg sm:text-xl font-semibold text-gray-900">
+              {isDragActive ? "Drop to import" : "Drop a catalog to auto-fill this form"}
+            </p>
+            <p className="text-sm text-gray-500 mt-1">
+              PDF, Excel, CSV, or image — Claude reads it and fills in what it finds. Up to 20 MB.
+            </p>
           </div>
-        )}
+          <div className="flex flex-wrap gap-2 justify-center">
+            {ACCEPT_PILLS.map(([Icon, label]) => (
+              <span key={label} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gray-50 text-xs text-gray-600 border border-gray-100">
+                <Icon size={11} />{label}
+              </span>
+            ))}
+          </div>
+          <button
+            type="button"
+            className="mt-1 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white shadow-md
+              bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 transition-all"
+          >
+            Choose a file
+          </button>
+        </div>
       </div>
       {rejectionMsg && (
         <div className="mt-3 flex items-start gap-3 p-4 rounded-lg bg-red-50 border border-red-100 text-sm text-red-700">
@@ -390,9 +404,22 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
   const [aiFilledFields, setAiFilledFields] = useState<AiFilledFields>({});
   const [aiFillCount, setAiFillCount] = useState(0);
   const [aiSessionId, setAiSessionId] = useState<string | null>(null);
+  // §14 "Found in Your Catalogue" — the persistent review surface needs the
+  // taxonomy review metadata the transient AI modal already had access to
+  // (§21.9's plumbing note), so it's captured here alongside aiFilledFields.
+  const [taxonomyReview, setTaxonomyReview] = useState<TaxonomyReviewItem[]>([]);
+  // Bumped once per successful apply (initial import, Replace, or "Add
+  // another") — NOT on aiFillCount changes from per-card edits/dismissals,
+  // which must not re-announce (§14.9). aiFillCount alone can't drive this:
+  // a same-session "Add another" pick never passes back through 0.
+  const [applyGen, setApplyGen] = useState(0);
+  const [ariaLiveMsg, setAriaLiveMsg] = useState("");
 
   const handleAiApply = useCallback(
-    ({ fields, aiFilledFields: filled, sessionId }: { fields: Record<string, unknown>; aiFilledFields: AiFilledFields; sessionId: string }) => {
+    ({ fields, aiFilledFields: filled, sessionId, taxonomyReview: review }: {
+      fields: Record<string, unknown>; aiFilledFields: AiFilledFields; sessionId: string;
+      taxonomyReview?: TaxonomyReviewItem[];
+    }) => {
       const normalized = { ...fields };
       // buildDiff stores polymer type as polymerTypes (array); SearchableSelect binds to polymerType (string)
       if (Array.isArray(normalized.polymerTypes) && (normalized.polymerTypes as unknown[]).length > 0) {
@@ -402,6 +429,8 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
       setAiFilledFields(filled);
       setAiFillCount(Object.keys(filled).length);
       setAiSessionId(sessionId);
+      setTaxonomyReview(review ?? []);
+      setApplyGen(g => g + 1);
     },
     [],
   );
@@ -421,7 +450,9 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
     setAiFilledFields({});
     setAiFillCount(0);
     setAiSessionId(null);
+    setTaxonomyReview([]);
     aiProcessing.clearAiData();
+    toast.info("Catalogue import cleared. Values you kept remain in the form.");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [aiProcessing.clearAiData]);
 
@@ -429,6 +460,18 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
     key: keyof ProductFormData,
     value: string | number | boolean | UploadedFile[] | Record<string, unknown> | undefined,
   ) => setData(prev => ({ ...prev, [key]: value }));
+
+  // §14.3 "dismissed" state — a stronger action than edit-clears-badge: clears
+  // both the AI flag AND resets the field to its empty-equivalent, so no
+  // stale extracted value is left with no visible indication of where it came from.
+  const dismissAiField = useCallback((key: string) => {
+    clearAiField(key);
+    setData(prev => {
+      const current = (prev as Record<string, unknown>)[key];
+      const empty: string | boolean | string[] = Array.isArray(current) ? [] : typeof current === "boolean" ? false : "";
+      return { ...prev, [key]: empty };
+    });
+  }, [clearAiField]);
 
   const onFieldError = (key: keyof ProductFormData) =>
     setError(prev => ({ ...prev, [key]: "" }));
@@ -513,33 +556,88 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
     el.focus();
   }, []);
 
-  // fdaCertificate/medicalCertificate live inside a collapsed SectionCard
-  // nested inside the collapsed Advanced panel — both levels must open and
-  // paint before we call scrollIntoView/focus (§13.9 — never focus a still
-  // display:none element).
+  // fdaCertificate/medicalCertificate/grade live inside a collapsed
+  // SectionCard nested inside the collapsed Advanced panel — both levels must
+  // open and paint before we call scrollIntoView/focus (§13.9 — never focus a
+  // still display:none element). "Pick from list" (§14.2b) reuses this same
+  // path for grade's manual-tier taxonomy row.
+  const PENDING_FIELD_SECTION: Record<string, SectionId> = {
+    fdaCertificate: "compliance", medicalCertificate: "compliance", grade: "technical",
+  };
+
   useEffect(() => {
     if (!pendingFocusRef.current) return;
-    if (!advancedOpen || !sectionOpen.compliance) return;
     const key = pendingFocusRef.current;
+    const sec = PENDING_FIELD_SECTION[key];
+    if (!advancedOpen || (sec && !sectionOpen[sec])) return;
     pendingFocusRef.current = null;
     requestAnimationFrame(() => focusField(key));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [advancedOpen, sectionOpen.compliance]);
+  }, [advancedOpen, sectionOpen.compliance, sectionOpen.technical]);
 
   const revealAndFocusField = useCallback((fieldKey: string) => {
-    if (fieldKey === "fdaCertificate" || fieldKey === "medicalCertificate") {
+    const sec = PENDING_FIELD_SECTION[fieldKey];
+    if (sec) {
       pendingFocusRef.current = fieldKey;
       setAdvancedOpen(true);
-      setSectionOpen(prev => ({ ...prev, compliance: true }));
+      setSectionOpen(prev => ({ ...prev, [sec]: true }));
     } else {
       focusField(fieldKey);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [focusField]);
 
   const focusFirstInvalid = useCallback((errs: ValidationErrors) => {
     const firstKey = REQUIRED_FIELD_ORDER.find(k => !!errs[k as keyof ValidationErrors]);
     if (firstKey) revealAndFocusField(firstKey);
   }, [revealAndFocusField]);
+
+  // ── §14.2 "Needs Your Attention" — confirm/manual taxonomy tier resolution ──
+  const resolveTaxonomy = useCallback((item: TaxonomyReviewItem, action: "use" | "reject") => {
+    if (action === "use" && item.suggestedId) {
+      if (item.isArray) {
+        setData(prev => {
+          const current = (prev[item.formKey] as string[]) || [];
+          return current.includes(item.suggestedId!) ? prev : { ...prev, [item.formKey]: [...current, item.suggestedId!] };
+        });
+      } else {
+        onFieldChange(item.formKey as keyof ProductFormData, item.suggestedId);
+      }
+    } else if (action === "reject" && !item.isArray) {
+      onFieldChange(item.formKey as keyof ProductFormData, "");
+    }
+    // Array "reject" — nothing to clear, the item was never added (§14.2a).
+    setTaxonomyReview(prev => prev.filter(t => t.key !== item.key));
+  }, []);
+
+  const pickFromList = useCallback((item: TaxonomyReviewItem) => {
+    revealAndFocusField(item.formKey);
+  }, [revealAndFocusField]);
+
+  const visibleTaxonomyReview = getVisibleTaxonomyReview(taxonomyReview, data);
+
+  // ── §14.9 Accessibility — status announcement + focus-to-first-decision on
+  // extraction complete. Keyed on applyGen (bumped once per successful apply:
+  // initial import, Replace, or "Add another"), not aiFillCount, so per-card
+  // edits/dismissals never re-announce and same-session re-picks still do.
+  const focusDomId = useCallback((domId: string) => {
+    const matches = document.querySelectorAll(`#${CSS.escape(domId)}`);
+    const el = (Array.from(matches).find(n => (n as HTMLElement).offsetParent !== null) ?? matches[0]) as HTMLElement | undefined;
+    el?.focus();
+  }, []);
+
+  useEffect(() => {
+    if (applyGen === 0) return;
+    const attentionCount = visibleTaxonomyReview.length;
+    const msg = `Catalogue processed — ${aiFillCount} field${aiFillCount === 1 ? "" : "s"} found.`
+      + (attentionCount > 0 ? ` ${attentionCount} need${attentionCount === 1 ? "s" : ""} your attention.` : "");
+    setAriaLiveMsg(msg);
+    requestAnimationFrame(() => {
+      if (attentionCount > 0) focusDomId("needs-attention-heading");
+      else focusDomId("found-in-catalogue-heading");
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [applyGen]);
 
   // ── Validation ──────────────────────────────────────────────────────────────
   const validate = (): ValidationErrors => {
@@ -589,7 +687,7 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
       elongation_at_break: "elongationAtBreak", shore_hardness: "shoreHardness", water_absorption: "waterAbsorption",
     };
     Object.entries(fieldMappings).forEach(([k, v]) => { if (fmt[k] !== undefined) { fmt[v] = fmt[k]; delete fmt[k]; } });
-    ["minimum_order_quantity","stock","density","mfi","tensileStrength","elongationAtBreak","shoreHardness","waterAbsorption"].forEach(f => {
+    ["minimum_order_quantity","stock","density","mfi","tensileStrength","elongationAtBreak","shoreHardness","waterAbsorption","flexuralModulus"].forEach(f => {
       if (fmt[f] && typeof fmt[f] === "string") { const n = Number(fmt[f]); if (!isNaN(n)) fmt[f] = n; }
     });
     if (fmt.packagingWeight && typeof fmt.packagingWeight === "number") fmt.packagingWeight = String(fmt.packagingWeight);
@@ -597,7 +695,11 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
       if (fmt[f] && !Array.isArray(fmt[f])) fmt[f] = [fmt[f]];
       else if (!fmt[f]) fmt[f] = [];
     });
-    ["melting_point","glass_transition_temperature","heat_deflection_temperature","moisture_content","ash_content","dielectric_strength","volume_resistivity","flexuralModulus","grades"].forEach(f => delete fmt[f]);
+    // §14.7 / §21.9 point 2 — flexuralModulus WAS unconditionally deleted here
+    // even though the backend schema already persists it (models/product.js);
+    // the only bug was this frontend sanitizer. Kept off this delete-list now
+    // that the card (§14.4) can promise the value actually saves.
+    ["melting_point","glass_transition_temperature","heat_deflection_temperature","moisture_content","ash_content","dielectric_strength","volume_resistivity","grades"].forEach(f => delete fmt[f]);
     fmt.certificates = formData.certificates || [];
     if (!formData.fdaApproved) fmt.fdaCertificate = null;
     else if (formData.fdaCertificate && Object.keys(formData.fdaCertificate).length > 0) fmt.fdaCertificate = formData.fdaCertificate;
@@ -659,8 +761,19 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-emerald-50/20 to-gray-50">
 
-      {/* ── Sticky top bar ── */}
-      <div className="bg-white/80 backdrop-blur-md border-b border-gray-200/80 shadow-sm">
+      {/* aria-live region (§14.9) — shared status announcement for extraction
+          complete; per-card edits/dismissals deliberately do not re-announce. */}
+      <div id="ai-import-status" aria-live="polite" className="sr-only">{ariaLiveMsg}</div>
+
+      {/* ── Sticky top bar ──
+          M-0 backlog 8: this bar and the footer bar both carry a Create
+          Product action; that's only non-redundant if this bar is genuinely
+          sticky (it renders `backdrop-blur-md` as if it already were, but was
+          missing the positioning classes) — the top action is now always
+          reachable while scrolling a long form, the footer one is the natural
+          end-of-form action, matching how DESIGN_SPEC §13.0/§14.8 already
+          describe this bar. */}
+      <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-200/80 shadow-sm">
         <div className="w-full px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <button
@@ -727,10 +840,31 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
             <CatalogDropzone
               aiFillCount={aiFillCount}
               catalogRemaining={catalogRemaining}
+              uploadedFileName={aiProcessing.uploadedFileName}
               onOpenModal={aiProcessing.openModal}
               onHandleFile={aiProcessing.handleFile}
               onReopenCatalogPicker={aiProcessing.reopenCatalogPicker}
+              onRemove={handleAiClear}
             />
+
+            {/* "Found in Your Catalogue" review surface (§14) — only renders
+                once an extraction has applied at least one field; absent
+                otherwise, matching §13 exactly with zero extra chrome. */}
+            {aiFillCount > 0 && (
+              <CatalogFindings
+                data={data}
+                onFieldChange={(f, v) => onFieldChange(f, v as string | number | boolean | UploadedFile[] | undefined)}
+                aiFilledFields={aiFilledFields}
+                clearAiField={clearAiField}
+                dismissAiField={dismissAiField}
+                taxonomyReview={taxonomyReview}
+                onResolveTaxonomy={resolveTaxonomy}
+                onPickFromList={pickFromList}
+                grades={grades}
+                completedRequired={completedRequired}
+                totalRequired={totalRequired}
+              />
+            )}
 
             <AiCatalogModal
               open={aiProcessing.modalOpen}
@@ -928,7 +1062,11 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
               <Button variant="outline" onClick={resetForm} className="flex items-center gap-2 text-gray-500 border-gray-200 text-sm">
                 <RotateCcw className="w-4 h-4" />Reset Form
               </Button>
-              <p className="text-xs text-gray-400 hidden sm:block">All changes are saved automatically</p>
+              {/* M-0 backlog 7 — there is no autosave anywhere in this form;
+                  this used to falsely claim there was. */}
+              <p className="text-xs text-gray-400 hidden sm:block">
+                Not saved yet — click &ldquo;{isEditMode ? "Save Changes" : "Create Product"}&rdquo; to save your progress
+              </p>
               <Button onClick={handleSubmit} disabled={saving}
                 className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-6 font-semibold">
                 <CheckCircle2 className="w-4 h-4" />
@@ -941,8 +1079,10 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
           <div className="w-full xl:w-[300px] shrink-0 xl:sticky xl:top-20 flex flex-col gap-4">
 
             {/* Completion tracker (§13.5) — required-vs-optional model, sole
-                source of truth for completion on this page. */}
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                source of truth for completion on this page. `id` is the
+                §14.8 mobile anchor target for the Needs Your Attention
+                "see the checklist in the sidebar" line. */}
+            <div id="completion-tracker" className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 scroll-mt-20">
               <h3 className="font-semibold text-gray-900 text-sm mb-4">Product Completion</h3>
 
               <div className="flex items-center justify-between mb-1.5">

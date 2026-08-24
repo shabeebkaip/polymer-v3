@@ -5,7 +5,7 @@ import axiosInstance from "@/lib/axiosInstance";
 import type {
   AiFilledFields, AiModalPhase, ApplyPayload, AiParseResponse,
   BgFailReason, BgState, DiffRow, ExtractedProduct, ReadyDiff,
-  ParsedProductEntry,
+  ParsedProductEntry, TaxonomyReviewItem, TaxonomyFieldKey,
 } from "@/types/ai";
 import type { RefMatch, RefMatches } from "@/types/ai";
 
@@ -33,13 +33,19 @@ const FIELD_LABELS: Record<string, string> = {
 
 // ── buildDiff ─────────────────────────────────────────────────────────────────
 
+const TAXONOMY_LABELS: Record<TaxonomyFieldKey, string> = {
+  chemicalFamily: "Chemical Family", physicalForm: "Physical Form",
+  polymerType: "Polymer Type", industry: "Industry", grade: "Grade",
+};
+
 function buildDiff(
   product: ExtractedProduct,
   refMatches: RefMatches,
-): { fields: Record<string, unknown>; filled: AiFilledFields; rows: DiffRow[] } {
+): { fields: Record<string, unknown>; filled: AiFilledFields; rows: DiffRow[]; taxonomyReview: TaxonomyReviewItem[] } {
   const fields: Record<string, unknown> = {};
   const filled: AiFilledFields = {};
   const rows: DiffRow[] = [];
+  const taxonomyReview: TaxonomyReviewItem[] = [];
 
   const add = (key: string, value: unknown, confidence: string, display: string) => {
     if (value == null || value === "" || (Array.isArray(value) && value.length === 0)) return;
@@ -90,27 +96,61 @@ function buildDiff(
   if (product.fdaApproved != null) add("fdaApproved", product.fdaApproved, "high", product.fdaApproved ? "Yes" : "No");
   if (product.medicalGrade != null) add("medicalGrade", product.medicalGrade, "high", product.medicalGrade ? "Yes" : "No");
 
-  const applyRef = (formKey: string, match: RefMatch | null | undefined, confidence: string) => {
-    if (match?.match?._id) add(formKey, match.match._id, confidence, match.match.name ?? match.match._id);
-  };
-  applyRef("chemicalFamily", refMatches?.chemicalFamily, product.chemicalFamily?.confidence ?? "medium");
-  applyRef("physicalForm", refMatches?.physicalForm, product.physicalForm?.confidence ?? "medium");
-
-  if (refMatches?.polymerType?.match?._id) {
-    add("polymerTypes", [refMatches.polymerType.match._id],
-      product.polymerType?.confidence ?? "medium", refMatches.polymerType.match.name ?? "");
+  // mfi test-condition passthrough (e.g. "190°C/2.16kg") — attach to the mfi
+  // row/filled entry that was just added above, if any (§14.3 trailing parenthetical).
+  const mfiConditions = product.mfi_conditions?.value;
+  if (mfiConditions && filled.mfi) {
+    filled.mfi.conditions = mfiConditions;
+    const mfiRow = rows.find(r => r.key === "mfi");
+    if (mfiRow) mfiRow.conditions = mfiConditions;
   }
 
-  const refArr = (formKey: string, arr: (RefMatch | null)[] | undefined) => {
-    if (!Array.isArray(arr)) return;
-    const ids = arr.filter(m => m?.match?._id).map(m => m!.match!._id);
-    const names = arr.filter(m => m?.match?.name).map(m => m!.match!.name).join(", ");
-    if (ids.length > 0) add(formKey, ids, "medium", names);
+  // ── Taxonomy — tier-aware (§14.0/§21.9 point 4) ──────────────────────────
+  // Only "auto"-tier matches auto-apply. "confirm"/"manual" no longer get
+  // silently applied identically to a confident match (the pre-existing bug)
+  // — they become review items instead, carrying the raw catalogue `query`
+  // text that was previously discarded.
+  const applySingularRef = (formKey: TaxonomyFieldKey, addKey: string, match: RefMatch | null | undefined, confidence: string) => {
+    if (!match) return;
+    if (match.tier === "auto" && match.match?._id) {
+      add(addKey, addKey === "polymerTypes" ? [match.match._id] : match.match._id, confidence, match.match.name ?? match.match._id);
+    } else if (match.tier === "confirm" || match.tier === "manual") {
+      taxonomyReview.push({
+        key: formKey, formKey, isArray: false, tier: match.tier, query: match.query,
+        suggestedId: match.match?._id, suggestedName: match.match?.name, label: TAXONOMY_LABELS[formKey],
+      });
+    }
   };
-  refArr("industry", refMatches?.industry ?? undefined);
-  refArr("grade", refMatches?.grade ?? undefined);
+  applySingularRef("chemicalFamily", "chemicalFamily", refMatches?.chemicalFamily, product.chemicalFamily?.confidence ?? "medium");
+  applySingularRef("physicalForm", "physicalForm", refMatches?.physicalForm, product.physicalForm?.confidence ?? "medium");
+  // polymerType's form field is `polymerType` (singular) but buildDiff has
+  // historically filled `polymerTypes` (array) — handleAiApply collapses it
+  // back to `polymerType` on bulk-apply; the review row's own "Use this"
+  // handler (CatalogFindings) writes `polymerType` directly, so both paths converge.
+  applySingularRef("polymerType", "polymerTypes", refMatches?.polymerType, product.polymerType?.confidence ?? "medium");
 
-  return { fields, filled, rows };
+  const refArrTiered = (formKey: TaxonomyFieldKey, arr: (RefMatch | null)[] | undefined) => {
+    if (!Array.isArray(arr)) return;
+    const autoIds: string[] = [];
+    const autoNames: string[] = [];
+    arr.forEach((m, idx) => {
+      if (!m) return;
+      if (m.tier === "auto" && m.match?._id) {
+        autoIds.push(m.match._id);
+        if (m.match.name) autoNames.push(m.match.name);
+      } else if (m.tier === "confirm" || m.tier === "manual") {
+        taxonomyReview.push({
+          key: `${formKey}-${idx}`, formKey, isArray: true, tier: m.tier, query: m.query,
+          suggestedId: m.match?._id, suggestedName: m.match?.name, label: TAXONOMY_LABELS[formKey],
+        });
+      }
+    });
+    if (autoIds.length > 0) add(formKey, autoIds, "medium", autoNames.join(", "));
+  };
+  refArrTiered("industry", refMatches?.industry ?? undefined);
+  refArrTiered("grade", refMatches?.grade ?? undefined);
+
+  return { fields, filled, rows, taxonomyReview };
 }
 
 // ── OCR detection ─────────────────────────────────────────────────────────────
@@ -203,7 +243,7 @@ export function useAiProcessing({ isEditMode, existingData, allowedFields, onApp
   // ── Apply helpers ─────────────────────────────────────────────────────────
 
   const applyFiltered = (diff: ReadyDiff, includeAll: boolean) => {
-    const { payload, rows } = diff;
+    const { payload, rows, taxonomyReview } = diff;
     const applicable = rows.filter(r => !r.skipped);
     const target = includeAll
       ? applicable
@@ -214,7 +254,9 @@ export function useAiProcessing({ isEditMode, existingData, allowedFields, onApp
       filteredFields[r.key] = payload.fields[r.key];
       filteredFilled[r.key] = payload.aiFilledFields[r.key];
     });
-    onApplyRef.current({ ...payload, fields: filteredFields, aiFilledFields: filteredFilled });
+    // §21.9's plumbing note — the persistent "Found in Your Catalogue" surface
+    // needs the taxonomy review metadata, not just flattened fields.
+    onApplyRef.current({ ...payload, fields: filteredFields, aiFilledFields: filteredFilled, taxonomyReview });
     return target.length;
   };
 
@@ -226,14 +268,15 @@ export function useAiProcessing({ isEditMode, existingData, allowedFields, onApp
     extractionMethod: "vision" | "text",
     sessionId: string,
   ) => {
-    let { fields, filled, rows } = buildDiff(products[idx].product, products[idx].refMatches);
+    let { fields, filled, rows, taxonomyReview } = buildDiff(products[idx].product, products[idx].refMatches);
     if (allowedFieldsRef.current) {
       const allowed = new Set(allowedFieldsRef.current);
       rows = rows.filter(r => allowed.has(r.key));
       fields = Object.fromEntries(Object.entries(fields).filter(([k]) => allowed.has(k)));
       filled = Object.fromEntries(Object.entries(filled).filter(([k]) => allowed.has(k)));
+      taxonomyReview = taxonomyReview.filter(t => allowed.has(t.formKey));
     }
-    const payload: ApplyPayload = { fields, aiFilledFields: filled, sessionId };
+    const payload: ApplyPayload = { fields, aiFilledFields: filled, sessionId, taxonomyReview: [] };
 
     const ed = existingDataRef.current;
     if (ed) {
@@ -241,9 +284,16 @@ export function useAiProcessing({ isEditMode, existingData, allowedFields, onApp
         const v = ed[r.key];
         if (v != null && v !== "" && !(Array.isArray(v) && v.length === 0)) r.skipped = true;
       });
+      // Same skip-if-filled rule (§14.6) applied to taxonomy review rows — a
+      // field that already has a manual value never gets a review row either.
+      taxonomyReview = taxonomyReview.filter(item => {
+        const v = ed[item.formKey];
+        const hasValue = item.isArray ? Array.isArray(v) && v.length > 0 : (v != null && v !== "");
+        return !hasValue;
+      });
     }
 
-    const diff: ReadyDiff = { payload, rows, extractionMethod };
+    const diff: ReadyDiff = { payload, rows, extractionMethod, taxonomyReview };
     setReadyDiff(diff);
 
     if (modalOpenRef.current) {

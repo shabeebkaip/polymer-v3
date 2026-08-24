@@ -15,7 +15,9 @@ const UOM_OPTIONS = [
   "Kilogram", "Gram", "Metric Ton", "Pound", "Liter", "Cubic Meter",
 ];
 
-const AVAILABILITY_OPTIONS = [
+// Exported so the "Found in Your Catalogue" surface (CatalogFindings.tsx,
+// §14.3) can reuse the same option set verbatim for its availability chip.
+export const AVAILABILITY_OPTIONS = [
   {
     value: "In Stock", label: "In Stock", icon: CheckCircle2,
     color: "text-emerald-600", activeBg: "bg-emerald-600",
