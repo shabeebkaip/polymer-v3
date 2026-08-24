@@ -1,15 +1,13 @@
 import path from "path";
 import { test, expect, Page } from "@playwright/test";
 import { cleanupE2EProducts, E2E_PRODUCT_PREFIX } from "./test-cleanup";
+import { catalogFixture, requireE2ECredentials } from "./test-config";
 
 const TEST_IMAGE_PATH = path.join(__dirname, "fixtures", "test-image.png");
 
 // DESIGN_SPEC §14 — "Found in Your Catalogue" / "Needs Your Attention" review
 // surface + the flexuralModulus/availability persistence fixes it depends on
 // (§14.7/§21.9). Credentials: QA staging seller (MEMORY: project_test_accounts).
-const EMAIL = "qa.seller.01@test.com";
-const PASSWORD = "QaTest@123#";
-const CATALOG_DIR = "/Users/shabeeb/Documents/Shab.co/polymersHub/polymer-ai-parser-poc/test-catalogs/files";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5050/api";
 
 test.afterEach(async ({ page }) => {
@@ -17,9 +15,10 @@ test.afterEach(async ({ page }) => {
 });
 
 async function login(page: Page) {
+  const { email, password } = requireE2ECredentials();
   await page.goto("/auth/login");
-  await page.fill("#email", EMAIL);
-  await page.fill("#password", PASSWORD);
+  await page.fill("#email", email);
+  await page.fill("#password", password);
   await page.click('button:has-text("Sign In")');
   await page.waitForURL(/\/user\/dashboard/, { timeout: 15000 });
 }
@@ -39,7 +38,7 @@ test("M-A — catalog import surfaces Found in Your Catalogue + Needs Your Atten
   await page.goto("/user/products/add?mode=advanced");
 
   const dropzoneCard = page.locator('[aria-label^="Upload a catalog file"]').locator("visible=true").first();
-  await dropzoneCard.locator('input[type="file"]').setInputFiles(`${CATALOG_DIR}/01_happy_flow_pp_grades.pdf`);
+  await dropzoneCard.locator('input[type="file"]').setInputFiles(catalogFixture("01_happy_flow_pp_grades.pdf"));
 
   await expect(page.locator('[data-slot="dialog-content"]')).toBeVisible({ timeout: 5000 });
   await expect(

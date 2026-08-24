@@ -53,10 +53,10 @@ const FIELD_CARDS: FieldCardConfig[] = [
   { key: "additives", label: "Additives", group: "Technical Properties", kind: "text" },
   { key: "grade", label: "Grade", group: "Technical Properties", kind: "multiselect" },
 
-  { key: "packagingWeight", label: "Packaging Weight", group: "Packaging & Logistics", kind: "number" },
+  { key: "packagingWeight", label: "Packaging Weight", group: "Packaging & Logistics", kind: "text" },
   { key: "storageConditions", label: "Storage Conditions", group: "Packaging & Logistics", kind: "text" },
   { key: "shelfLife", label: "Shelf Life", group: "Packaging & Logistics", kind: "text" },
-  { key: "leadTime", label: "Lead Time", group: "Packaging & Logistics", kind: "number" },
+  { key: "leadTime", label: "Lead Time", group: "Packaging & Logistics", kind: "text" },
 
   { key: "recyclable", label: "Recyclable", group: "Certifications & Compliance", kind: "boolean" },
   { key: "bioDegradable", label: "Bio-Degradable", group: "Certifications & Compliance", kind: "boolean" },
@@ -87,9 +87,9 @@ function truncate(text: string, max = 120) {
   return text.length > max ? `${text.slice(0, max)}…` : text;
 }
 
-function ChipGroup({ options, value, onChange }: { options: { value: string; label: string }[]; value: string; onChange: (v: string) => void }) {
+function ChipGroup({ id, labelledBy, options, value, onChange }: { id: string; labelledBy: string; options: { value: string; label: string }[]; value: string; onChange: (v: string) => void }) {
   return (
-    <div className="flex flex-wrap gap-1.5" role="group">
+    <div id={id} className="flex flex-wrap gap-1.5" role="group" aria-labelledby={labelledBy}>
       {options.map(opt => {
         const active = value === opt.value;
         return (
@@ -130,13 +130,17 @@ interface CatalogFindingsProps {
   grades: Array<{ _id: string; name: string }>;
   completedRequired: number;
   totalRequired: number;
+  needsAttentionHeadingId: string;
+  foundHeadingId: string;
 }
 
 const CatalogFindings: React.FC<CatalogFindingsProps> = ({
   data, onFieldChange, aiFilledFields, clearAiField, dismissAiField,
   taxonomyReview, onResolveTaxonomy, onPickFromList, grades,
   completedRequired, totalRequired,
+  needsAttentionHeadingId, foundHeadingId,
 }) => {
+  const instanceId = React.useId().replace(/:/g, "");
   const visibleReview = getVisibleTaxonomyReview(taxonomyReview, data);
   const confirmRows = visibleReview.filter(i => i.tier === "confirm");
   const manualRows = visibleReview.filter(i => i.tier === "manual");
@@ -153,6 +157,8 @@ const CatalogFindings: React.FC<CatalogFindingsProps> = ({
 
   const renderValue = (cfg: FieldCardConfig) => {
     const raw = (data as Record<string, unknown>)[cfg.key];
+    const controlId = `${instanceId}-${cfg.key}`;
+    const labelId = `${controlId}-label`;
     const commonInputCls = "h-9 text-sm border-teal-200 focus:border-teal-400";
 
     const handleChange = (value: string | number | boolean | string[]) => {
@@ -164,6 +170,7 @@ const CatalogFindings: React.FC<CatalogFindingsProps> = ({
       case "textarea":
         return (
           <Textarea
+            id={controlId}
             value={(raw as string) || ""}
             onChange={e => handleChange(e.target.value)}
             className={`min-h-[70px] text-sm resize-y border-teal-200 focus:border-teal-400`}
@@ -174,6 +181,7 @@ const CatalogFindings: React.FC<CatalogFindingsProps> = ({
         return (
           <div className="relative">
             <Input
+              id={controlId}
               type="number"
               step="0.01"
               value={(raw as string | number) ?? ""}
@@ -190,14 +198,16 @@ const CatalogFindings: React.FC<CatalogFindingsProps> = ({
         );
       case "boolean":
         return (
-          <label className="flex items-center gap-2 cursor-pointer w-fit">
-            <Checkbox checked={!!raw} onCheckedChange={v => handleChange(Boolean(v))} className="w-4 h-4" />
+          <div className="flex items-center gap-2 w-fit" role="group" aria-labelledby={labelId}>
+            <Checkbox id={controlId} checked={!!raw} onCheckedChange={v => handleChange(Boolean(v))} className="w-4 h-4" />
             <span className="text-sm text-gray-700">{raw ? "Yes" : "No"}</span>
-          </label>
+          </div>
         );
       case "multiselect":
         return (
           <MultiSelect
+            id={controlId}
+            ariaLabelledby={labelId}
             label=""
             placeholder="Select applicable grades"
             options={grades}
@@ -208,6 +218,8 @@ const CatalogFindings: React.FC<CatalogFindingsProps> = ({
       case "chip":
         return (
           <ChipGroup
+            id={controlId}
+            labelledBy={labelId}
             options={cfg.chipOptions ?? []}
             value={(raw as string) || ""}
             onChange={v => handleChange(v)}
@@ -216,6 +228,7 @@ const CatalogFindings: React.FC<CatalogFindingsProps> = ({
       default:
         return (
           <Input
+            id={controlId}
             value={(raw as string) || ""}
             onChange={e => handleChange(e.target.value)}
             className={commonInputCls}
@@ -230,7 +243,7 @@ const CatalogFindings: React.FC<CatalogFindingsProps> = ({
       {hasNeedsAttention && (
         <div className="flex flex-col gap-2 mb-1">
           <h2
-            id="needs-attention-heading"
+            id={needsAttentionHeadingId}
             tabIndex={-1}
             className="text-xs font-semibold uppercase tracking-wide text-amber-700 mb-1 outline-none"
           >
@@ -312,7 +325,7 @@ const CatalogFindings: React.FC<CatalogFindingsProps> = ({
         return (
           <div key={group}>
             <h2
-              id={isFirstGroup ? "found-in-catalogue-heading" : undefined}
+              id={isFirstGroup ? foundHeadingId : undefined}
               tabIndex={isFirstGroup ? -1 : undefined}
               className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-2 outline-none"
             >
@@ -322,7 +335,11 @@ const CatalogFindings: React.FC<CatalogFindingsProps> = ({
               {fields.map(cfg => (
                 <div key={cfg.key} className="bg-white rounded-xl border border-teal-200 bg-teal-50/20 px-4 py-3">
                   <div className="flex items-center justify-between gap-2 mb-1.5">
-                    <Label className="text-xs font-semibold text-gray-700 flex items-center gap-1.5">
+                    <Label
+                      id={`${instanceId}-${cfg.key}-label`}
+                      htmlFor={`${instanceId}-${cfg.key}`}
+                      className="text-xs font-semibold text-gray-700 flex items-center gap-1.5"
+                    >
                       {cfg.label}
                       <AiChip />
                     </Label>

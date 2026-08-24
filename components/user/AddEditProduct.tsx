@@ -380,6 +380,9 @@ function CatalogDropzone({
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) => {
+  const catalogInstanceId = React.useId().replace(/:/g, "");
+  const needsAttentionHeadingId = `${catalogInstanceId}-needs-attention-heading`;
+  const foundHeadingId = `${catalogInstanceId}-found-in-catalogue-heading`;
   const router = useRouter();
   const isEditMode = !!id;
 
@@ -633,8 +636,8 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
       + (attentionCount > 0 ? ` ${attentionCount} need${attentionCount === 1 ? "s" : ""} your attention.` : "");
     setAriaLiveMsg(msg);
     requestAnimationFrame(() => {
-      if (attentionCount > 0) focusDomId("needs-attention-heading");
-      else focusDomId("found-in-catalogue-heading");
+      if (attentionCount > 0) focusDomId(needsAttentionHeadingId);
+      else focusDomId(foundHeadingId);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [applyGen]);
@@ -863,6 +866,8 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
                 grades={grades}
                 completedRequired={completedRequired}
                 totalRequired={totalRequired}
+                needsAttentionHeadingId={needsAttentionHeadingId}
+                foundHeadingId={foundHeadingId}
               />
             )}
 

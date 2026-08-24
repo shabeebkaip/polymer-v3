@@ -168,13 +168,15 @@ export interface DropdownItem {
 
 export interface MultiSelectProps {
   label: string;
+  id?: string;
+  ariaLabelledby?: string;
   placeholder?: string;
   options: DropdownItem[];
   selected: string[];
   onChange: (selected: string[]) => void;
   error?: boolean;
   helperText?: string;
-  onFocus?: React.FocusEventHandler<HTMLDivElement>;
+  onFocus?: React.FocusEventHandler<HTMLButtonElement>;
 }
 
 export interface QuoteDealRequestModalProps {

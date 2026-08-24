@@ -1,15 +1,15 @@
 import { test, expect, Page } from "@playwright/test";
+import { requireE2ECredentials } from "./test-config";
 import { cleanupE2EProducts, E2E_PRODUCT_PREFIX } from "./test-cleanup";
 
 // Milestone 1 (T1.1 + T1.2) regression coverage for the Quick Add modal shell.
 // Credentials: QA staging seller account (MEMORY: project_test_accounts).
-const EMAIL = "qa.seller.01@test.com";
-const PASSWORD = "QaTest@123#";
 
 async function login(page: Page) {
+  const { email, password } = requireE2ECredentials();
   await page.goto("/auth/login");
-  await page.fill("#email", EMAIL);
-  await page.fill("#password", PASSWORD);
+  await page.fill("#email", email);
+  await page.fill("#password", password);
   await page.click('button:has-text("Sign In")');
   await page.waitForURL(/\/user\/dashboard/, { timeout: 15000 });
 }
@@ -51,7 +51,7 @@ test.describe("Quick Add modal — Milestone 1 shell", () => {
   test("empty-state Add Your First Product opens the same modal and restores focus to itself (not the header trigger)", async ({ page }) => {
     await login(page);
     await gotoProducts(page);
-    // Only meaningful when the seller truly has zero products (qa.seller.01 is seeded empty).
+    // Only meaningful when the configured seller truly has zero products.
     const emptyState = page.getByText("No products yet");
     if (await emptyState.count() === 0) test.skip(true, "Seller account is not empty — cannot exercise empty-state CTA");
 

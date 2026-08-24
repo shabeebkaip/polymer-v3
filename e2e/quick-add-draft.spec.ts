@@ -1,10 +1,9 @@
 import { test, expect, Page } from "@playwright/test";
+import { catalogFixture, requireE2ECredentials } from "./test-config";
 import { cleanupE2EProducts, E2E_PRODUCT_PREFIX } from "./test-cleanup";
 
 // T2.3-REV (AI removal from Quick Add) + T3.4 (shared draft, Quick Add <-> Detailed)
 // regression coverage. Credentials: QA staging seller account (MEMORY: project_test_accounts).
-const EMAIL = "qa.seller.01@test.com";
-const PASSWORD = "QaTest@123#";
 const DRAFT_KEY = "polymer-v3:quickAddDraft";
 
 // W2 (docs/PROJECT_PLAN.md §16): delete any E2E_PRODUCT_PREFIX-tagged
@@ -14,9 +13,10 @@ test.afterEach(async ({ page }) => {
 });
 
 async function login(page: Page) {
+  const { email, password } = requireE2ECredentials();
   await page.goto("/auth/login");
-  await page.fill("#email", EMAIL);
-  await page.fill("#password", PASSWORD);
+  await page.fill("#email", email);
+  await page.fill("#password", password);
   await page.click('button:has-text("Sign In")');
   await page.waitForURL(/\/user\/dashboard/, { timeout: 15000 });
 }
@@ -310,9 +310,7 @@ test.describe("T3.4 — shared in-progress draft (Quick Add <-> Detailed)", () =
     // mounts a second, hidden copy of this page), then its hidden file input.
     const dropzoneCard = page.locator('[aria-label^="Upload a catalog file"]').locator("visible=true").first();
     const fileInput = dropzoneCard.locator('input[type="file"]');
-    await fileInput.setInputFiles(
-      "/Users/shabeeb/Documents/Shab.co/polymersHub/polymer-ai-parser-poc/test-catalogs/files/09_minimal_data.pdf"
-    );
+    await fileInput.setInputFiles(catalogFixture("09_minimal_data.pdf"));
 
     // R9 wiring check: dropping/selecting a file must open the modal directly
     // into its parsing phase — not parse silently with the modal still closed.

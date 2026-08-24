@@ -1,7 +1,7 @@
 import type { Page } from "@playwright/test";
 
 // W2 (docs/PROJECT_PLAN.md §16): e2e-created products must self-clean so the
-// shared staging seller (qa.seller.01) doesn't accumulate unbounded rows.
+// shared staging seller doesn't accumulate unbounded rows.
 //
 // Any product a test actually submits through the UI should have its name
 // prefixed with this string. Import it wherever a spec fills the product

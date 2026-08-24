@@ -1,23 +1,23 @@
-import { test, expect, Page } from "@playwright/test";
+import { test, expect, Page, TestInfo } from "@playwright/test";
+import { requireE2ECredentials } from "./test-config";
 
 // QA-only, adversarial: mock /ai/parse + /ai/session/:id so we can inject a
 // malicious `query` string into a manual-tier taxonomy refMatch without
 // needing a crafted PDF fixture. Confirms CatalogFindings renders raw
 // catalogue text as literal text, never HTML/markdown/script execution.
-const EMAIL = "qa.seller.01@test.com";
-const PASSWORD = "QaTest@123#";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5050/api";
 const XSS_PAYLOAD = '<script>window.__qa_xss_fired = true;</script><img src=x onerror="window.__qa_xss_fired_img = true">';
 
 async function login(page: Page) {
+  const { email, password } = requireE2ECredentials();
   await page.goto("/auth/login");
-  await page.fill("#email", EMAIL);
-  await page.fill("#password", PASSWORD);
+  await page.fill("#email", email);
+  await page.fill("#password", password);
   await page.click('button:has-text("Sign In")');
   await page.waitForURL(/\/user\/dashboard/, { timeout: 15000 });
 }
 
-test("XSS: manual-tier taxonomy raw query text renders as literal text, never executes", async ({ page }) => {
+test("XSS: manual-tier taxonomy raw query text renders as literal text, never executes", async ({ page }, testInfo: TestInfo) => {
   test.setTimeout(60_000);
   const dialogs: string[] = [];
   page.on("dialog", (d) => { dialogs.push(d.message()); d.dismiss(); });
@@ -91,5 +91,5 @@ test("XSS: manual-tier taxonomy raw query text renders as literal text, never ex
   expect(boldFromPayload).toBe(0);
   expect(bodyText).toContain("Suggested <b>Bold</b> Name");
 
-  await page.screenshot({ path: "/private/tmp/claude-501/-Users-shabeeb-Documents-Shab-co-polymersHub/31f2cb6c-e036-4945-bb51-42ae7aeec21c/scratchpad/xss-check.png", fullPage: true });
+  await page.screenshot({ path: testInfo.outputPath("xss-check.png"), fullPage: true });
 });

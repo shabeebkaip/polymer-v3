@@ -1,4 +1,5 @@
 import { test, expect, Page } from "@playwright/test";
+import { requireE2ECredentials } from "./test-config";
 import { cleanupE2EProducts } from "./test-cleanup";
 
 // Regression coverage for the "Back to Quick Add" navigation fix:
@@ -16,14 +17,13 @@ import { cleanupE2EProducts } from "./test-cleanup";
 // document.body regardless of which tree instance opened it) -> two stacked
 // "Quick add product" dialogs. Verify exactly one dialog survives, at both a
 // desktop and a mobile viewport (both trees exist in the DOM at every width).
-const EMAIL = "qa.seller.01@test.com";
-const PASSWORD = "QaTest@123#";
 const NAME_INPUT = 'input[placeholder="e.g. LDPE Film, PP Homopolymer"]';
 
 async function login(page: Page) {
+  const { email, password } = requireE2ECredentials();
   await page.goto("/auth/login");
-  await page.fill("#email", EMAIL);
-  await page.fill("#password", PASSWORD);
+  await page.fill("#email", email);
+  await page.fill("#password", password);
   await page.click('button:has-text("Sign In")');
   await page.waitForURL(/\/user\/dashboard/, { timeout: 15000 });
 }

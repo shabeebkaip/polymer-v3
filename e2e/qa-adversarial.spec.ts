@@ -1,11 +1,9 @@
 import { test, expect, Page } from "@playwright/test";
 import { cleanupE2EProducts, E2E_PRODUCT_PREFIX } from "./test-cleanup";
+import { catalogFixture, requireE2ECredentials } from "./test-config";
 
 // QA-only adversarial coverage for DESIGN_SPEC §14, independent of the
 // developer's own catalog-findings.spec.ts (different fixtures/scenarios).
-const EMAIL = "qa.seller.01@test.com";
-const PASSWORD = "QaTest@123#";
-const CATALOG_DIR = "/Users/shabeeb/Documents/Shab.co/polymersHub/polymer-ai-parser-poc/test-catalogs/files";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5050/api";
 
 test.afterEach(async ({ page }) => {
@@ -13,9 +11,10 @@ test.afterEach(async ({ page }) => {
 });
 
 async function login(page: Page) {
+  const { email, password } = requireE2ECredentials();
   await page.goto("/auth/login");
-  await page.fill("#email", EMAIL);
-  await page.fill("#password", PASSWORD);
+  await page.fill("#email", email);
+  await page.fill("#password", password);
   await page.click('button:has-text("Sign In")');
   await page.waitForURL(/\/user\/dashboard/, { timeout: 15000 });
 }
@@ -26,7 +25,7 @@ function visible(page: Page, selector: string) {
 
 async function uploadAndWait(page: Page, fixture: string) {
   const dropzoneCard = page.locator('[aria-label^="Upload a catalog file"]').locator("visible=true").first();
-  await dropzoneCard.locator('input[type="file"]').setInputFiles(`${CATALOG_DIR}/${fixture}`);
+  await dropzoneCard.locator('input[type="file"]').setInputFiles(catalogFixture(fixture));
   await expect(page.locator('[data-slot="dialog-content"]')).toBeVisible({ timeout: 5000 });
   await expect(
     page.getByText("Choose a product").or(page.getByText("Review extracted fields"))
@@ -50,7 +49,7 @@ async function reUploadViaBar(page: Page, fixture: string) {
   // real drag-and-drop targets the visible bar div, not this input) — do not
   // filter on visible=true here, that would never match a real file input.
   const barInput = page.locator("#catalog-source-bar").locator("visible=true").first().locator("input[type='file']");
-  await barInput.setInputFiles(`${CATALOG_DIR}/${fixture}`);
+  await barInput.setInputFiles(catalogFixture(fixture));
   await expect(page.locator('[data-slot="dialog-content"]')).toBeVisible({ timeout: 5000 });
   await expect(
     page.getByText("Choose a product").or(page.getByText("Review extracted fields"))
@@ -204,7 +203,7 @@ test("network failure mid-parse surfaces an honest error, no crash", async ({ pa
   await login(page);
   await page.goto("/user/products/add?mode=advanced");
   const dropzoneCard = page.locator('[aria-label^="Upload a catalog file"]').locator("visible=true").first();
-  await dropzoneCard.locator('input[type="file"]').setInputFiles(`${CATALOG_DIR}/01_happy_flow_pp_grades.pdf`);
+  await dropzoneCard.locator('input[type="file"]').setInputFiles(catalogFixture("01_happy_flow_pp_grades.pdf"));
 
   // Give the app a moment to surface a failure state (modal error, inline
   // rejection message, or toast — any honest error is acceptable; a silent
@@ -212,6 +211,7 @@ test("network failure mid-parse surfaces an honest error, no crash", async ({ pa
   await page.waitForTimeout(4000);
   const errorSignals = await page.locator("text=/fail|error|try again|couldn.t/i").locator("visible=true").count();
   console.log("error-ish text nodes visible after aborted /ai/parse:", errorSignals);
+  expect(errorSignals).toBeGreaterThan(0);
   expect(pageErrors).toEqual([]);
 });
 
@@ -354,9 +354,9 @@ test("§14.9 focus moves to Needs Your Attention (or Found in Catalogue) heading
   await uploadAndWait(page, "01_happy_flow_pp_grades.pdf");
 
   const hasAttention = await visible(page, "h2:has-text('Needs Your Attention')").count() > 0;
-  const expectedId = hasAttention ? "needs-attention-heading" : "found-in-catalogue-heading";
+  const expectedIdSuffix = hasAttention ? "-needs-attention-heading" : "-found-in-catalogue-heading";
 
-  await expect.poll(() => page.evaluate(() => document.activeElement?.id), { timeout: 5000 }).toBe(expectedId);
+  await expect.poll(() => page.evaluate(() => document.activeElement?.id), { timeout: 5000 }).toMatch(new RegExp(`${expectedIdSuffix}$`));
 
   // The aria-live region's actual text content (not just visual copy).
   // Pre-existing dual desktop/mobile render tree (app/user/layout.tsx,

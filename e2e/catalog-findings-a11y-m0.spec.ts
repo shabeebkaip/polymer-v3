@@ -1,21 +1,19 @@
-import path from "path";
-import { test, expect, Page } from "@playwright/test";
+import { test, expect, Page, TestInfo } from "@playwright/test";
 import { cleanupE2EProducts } from "./test-cleanup";
+import { catalogFixture, requireE2ECredentials } from "./test-config";
 
 // M-0 (docs/PROJECT_PLAN.md backlog 7/8) + §14.8/§14.9 responsive/keyboard
 // coverage for the "Found in Your Catalogue" surface.
-const EMAIL = "qa.seller.01@test.com";
-const PASSWORD = "QaTest@123#";
-const CATALOG_DIR = "/Users/shabeeb/Documents/Shab.co/polymersHub/polymer-ai-parser-poc/test-catalogs/files";
 
 test.afterEach(async ({ page }) => {
   await cleanupE2EProducts(page);
 });
 
 async function login(page: Page) {
+  const { email, password } = requireE2ECredentials();
   await page.goto("/auth/login");
-  await page.fill("#email", EMAIL);
-  await page.fill("#password", PASSWORD);
+  await page.fill("#email", email);
+  await page.fill("#password", password);
   await page.click('button:has-text("Sign In")');
   await page.waitForURL(/\/user\/dashboard/, { timeout: 15000 });
 }
@@ -51,13 +49,13 @@ test.describe("M-0 — pre-existing bug fixes", () => {
 });
 
 test.describe("§14.8 responsive + §14.9 keyboard", () => {
-  test("320px/375px single-column layout, and keyboard-only operation of Needs Your Attention", async ({ page }) => {
+  test("320px/375px single-column layout, and keyboard-only operation of Needs Your Attention", async ({ page }, testInfo: TestInfo) => {
     test.setTimeout(90_000);
     await login(page);
     await page.goto("/user/products/add?mode=advanced");
 
     const dropzoneCard = page.locator('[aria-label^="Upload a catalog file"]').locator("visible=true").first();
-    await dropzoneCard.locator('input[type="file"]').setInputFiles(`${CATALOG_DIR}/01_happy_flow_pp_grades.pdf`);
+    await dropzoneCard.locator('input[type="file"]').setInputFiles(catalogFixture("01_happy_flow_pp_grades.pdf"));
     await expect(page.locator('[data-slot="dialog-content"]')).toBeVisible({ timeout: 5000 });
     await expect(
       page.getByText("Choose a product").or(page.getByText("Review extracted fields"))
@@ -107,7 +105,7 @@ test.describe("§14.8 responsive + §14.9 keyboard", () => {
     const gridCols = await anyCardGrid.evaluate((el) => getComputedStyle(el).gridTemplateColumns.split(" ").length);
     console.log("375px card grid column count:", gridCols);
     expect(gridCols).toBe(1);
-    await page.screenshot({ path: "/private/tmp/claude-501/-Users-shabeeb-Documents-Shab-co-polymersHub/31f2cb6c-e036-4945-bb51-42ae7aeec21c/scratchpad/06-mobile-375.png", fullPage: true });
+    await page.screenshot({ path: testInfo.outputPath("mobile-375.png"), fullPage: true });
   });
 
   // Fresh page load AT 320px (not a runtime resize from a wider viewport) —
@@ -117,14 +115,14 @@ test.describe("§14.8 responsive + §14.9 keyboard", () => {
   // *other*, still-idle tree instance; loading fresh at 320px from the start
   // (how a real phone visitor actually arrives) sidesteps that entirely and
   // is the behavior that matters.
-  test("320px — fresh mobile load: compact bar wraps, no overflow, single column", async ({ page }) => {
+  test("320px — fresh mobile load: compact bar wraps, no overflow, single column", async ({ page }, testInfo: TestInfo) => {
     test.setTimeout(90_000);
     await page.setViewportSize({ width: 320, height: 900 });
     await login(page);
     await page.goto("/user/products/add?mode=advanced");
 
     const dropzoneCard = page.locator('[aria-label^="Upload a catalog file"]').locator("visible=true").first();
-    await dropzoneCard.locator('input[type="file"]').setInputFiles(`${CATALOG_DIR}/01_happy_flow_pp_grades.pdf`);
+    await dropzoneCard.locator('input[type="file"]').setInputFiles(catalogFixture("01_happy_flow_pp_grades.pdf"));
     await expect(page.locator('[data-slot="dialog-content"]')).toBeVisible({ timeout: 5000 });
     await expect(
       page.getByText("Choose a product").or(page.getByText("Review extracted fields"))
@@ -146,6 +144,6 @@ test.describe("§14.8 responsive + §14.9 keyboard", () => {
     console.log("320px (fresh load) card grid column count:", gridCols);
     expect(gridCols).toBe(1);
 
-    await page.screenshot({ path: "/private/tmp/claude-501/-Users-shabeeb-Documents-Shab-co-polymersHub/31f2cb6c-e036-4945-bb51-42ae7aeec21c/scratchpad/07-mobile-320.png", fullPage: true });
+    await page.screenshot({ path: testInfo.outputPath("mobile-320.png"), fullPage: true });
   });
 });
