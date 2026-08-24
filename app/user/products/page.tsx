@@ -3,18 +3,75 @@ import { getProductList } from "@/apiServices/products";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import UserProductCard from "@/components/user/UserProductCard";
+import QuickAddProduct from "@/components/user/products/QuickAddProduct";
 import { useUserInfo } from "@/lib/useUserInfo";
-import React, { useEffect, useState } from "react";
-import { Package, Plus, Search, TrendingUp, BarChart3 } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import React, { Suspense, useEffect, useRef, useState } from "react";
+import { Package, Plus, Search, TrendingUp, BarChart3, Zap } from "lucide-react";
 import { Product } from "@/types/product";
 
-const ProductsPage: React.FC = () => {
+const QUICK_ADD_ARRIVAL_GUARD_KEY = "polymer-v3:quickAddArrivalGuard";
+// T16 item 4 — survives the Quick Add / Detailed round trip, which unmounts this
+// page. Tab-scoped (sessionStorage), same pattern as the quickAdd draft.
+const PRODUCTS_SEARCH_KEY = "polymer-v3:productsSearch";
+
+const ProductsPageInner: React.FC = () => {
   const { user } = useUserInfo();
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [error, setError] = useState<string | null>(null);
+  // ponytail: local-state-only modal per PROJECT_PLAN decision #2 — no URL/history-backed routing
+  const [quickAddOpen, setQuickAddOpen] = useState(false);
+
+  // One-shot "open on arrival" trigger — consumed once, then stripped from the
+  // URL, so modal state itself stays local (not route-backed). Set by the
+  // add/page.tsx "Back to Quick Add" link so it lands here with the modal open
+  // instead of the old full-page quick form.
+  //
+  // ponytail: app/user/layout.tsx mounts {children} twice (desktop + mobile
+  // trees, one CSS-hidden per breakpoint) — both copies of this component run
+  // this effect, and the Radix Dialog portals to document.body regardless of
+  // which copy opened it, so without a cross-instance guard we'd open two
+  // stacked dialogs. sessionStorage is the one thing both instances share;
+  // the flag is cleared on the next tick once both have had a chance to read
+  // it, so it doesn't block a later genuine "Back to Quick Add" arrival.
+  useEffect(() => {
+    if (searchParams.get("quickAdd") !== "1") return;
+    if (sessionStorage.getItem(QUICK_ADD_ARRIVAL_GUARD_KEY)) return;
+    sessionStorage.setItem(QUICK_ADD_ARRIVAL_GUARD_KEY, "1");
+    setQuickAddOpen(true);
+    router.replace("/user/products");
+    setTimeout(() => sessionStorage.removeItem(QUICK_ADD_ARRIVAL_GUARD_KEY), 0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
+  // Root cause of the focus-restore bug: Radix Dialog only restores focus to
+  // `context.triggerRef`, which is populated exclusively by `DialogTrigger`.
+  // We use two plain buttons (header + empty-state) as triggers, so that ref
+  // is never set. Track whichever one was actually clicked ourselves and
+  // hand it to `onCloseAutoFocus` below instead.
+  const quickAddTriggerRef = useRef<HTMLButtonElement | null>(null);
+  const openQuickAdd = (e: React.MouseEvent<HTMLButtonElement>) => {
+    quickAddTriggerRef.current = e.currentTarget;
+    setQuickAddOpen(true);
+  };
+
+  // Restore the search term after mount (not in the initial useState) so the
+  // first client render always matches the server render — same hydration-safety
+  // pattern as T16 item 2, applied here to avoid reintroducing that bug.
+  useEffect(() => {
+    const saved = sessionStorage.getItem(PRODUCTS_SEARCH_KEY);
+    if (saved) setSearchTerm(saved);
+  }, []);
+
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value);
+    sessionStorage.setItem(PRODUCTS_SEARCH_KEY, value);
+  };
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -129,7 +186,13 @@ const ProductsPage: React.FC = () => {
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-r from-green-600/5 to-emerald-600/5 rounded-2xl"></div>
               <div className="relative bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50 p-6">
-                <div className="flex items-center justify-between gap-6">
+                {/* ponytail: title+buttons switch to a single side-by-side row only at
+                    lg (1024px). The two-button group's content width (~322px, buttons
+                    are shrink-0/whitespace-nowrap by design) doesn't fit next to the
+                    title between 640-1000px — confirmed by measuring actual overflow
+                    there. Below lg, stay stacked/full-width (verified overflow-free at
+                    every width down to 320px) rather than guessing a narrower breakpoint. */}
+                <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                   <div className="flex items-center gap-4">
                     <div className="bg-gradient-to-br from-green-600 to-emerald-600 p-3 rounded-xl shadow-md">
                       <Package className="w-6 h-6 text-white" />
@@ -143,16 +206,23 @@ const ProductsPage: React.FC = () => {
                       </p>
                     </div>
                   </div>
-                  
-                  <Button
-                    className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-6 py-2.5 shadow-md hover:shadow-lg transition-all duration-200 font-semibold"
-                    onClick={() => {
-                      window.location.href = "/user/products/add";
-                    }}
-                  >
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add New Product
-                  </Button>
+
+                  <div className="flex flex-col gap-2 w-full lg:w-auto sm:flex-row sm:gap-3">
+                    <Button
+                      variant="outline"
+                      className="border-gray-300 text-gray-700 hover:bg-gray-50 px-6 py-2.5 font-semibold w-full sm:w-auto"
+                      onClick={() => router.push("/user/products/add?mode=advanced")}
+                    >
+                      Add Detailed Product
+                    </Button>
+                    <Button
+                      className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-6 py-2.5 shadow-md hover:shadow-lg transition-all duration-200 font-semibold w-full sm:w-auto"
+                      onClick={openQuickAdd}
+                    >
+                      <Zap className="w-4 h-4 mr-2" />
+                      Quick Add
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -230,7 +300,7 @@ const ProductsPage: React.FC = () => {
                 <Input
                   placeholder="Search by product name, chemical, or polymer type..."
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={(e) => handleSearchChange(e.target.value)}
                   className="pl-12 h-12 bg-gray-50/50 border-gray-200 focus:bg-white focus:border-green-500 rounded-xl text-base"
                 />
               </div>
@@ -274,9 +344,7 @@ const ProductsPage: React.FC = () => {
               {!searchTerm && (
                 <Button
                   className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-6"
-                  onClick={() => {
-                    window.location.href = "/user/products/add";
-                  }}
+                  onClick={openQuickAdd}
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   Add Your First Product
@@ -295,8 +363,56 @@ const ProductsPage: React.FC = () => {
         </>
       )}
       </div>
+
+      {/* Quick Add modal shell — T1.1/T1.2. Sticky header outside scroll region;
+          QuickAddProduct owns its own scrollable body + sticky footer internally. */}
+      <Dialog open={quickAddOpen} onOpenChange={setQuickAddOpen}>
+        <DialogContent
+          onCloseAutoFocus={(e) => {
+            e.preventDefault();
+            quickAddTriggerRef.current?.focus();
+          }}
+          className="flex flex-col gap-0 overflow-hidden p-0
+            w-screen h-[100dvh] max-w-none max-h-[100dvh] rounded-none top-0 left-0 translate-x-0 translate-y-0
+            sm:w-[92vw] sm:max-w-[1440px] sm:h-[85dvh] sm:rounded-lg
+            sm:top-[50%] sm:left-[50%] sm:-translate-x-1/2 sm:-translate-y-1/2"
+        >
+          <div className="shrink-0 flex items-center gap-3 border-b border-gray-100 px-6 py-4">
+            <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center shrink-0">
+              <Zap className="w-4 h-4 text-emerald-600" />
+            </div>
+            <DialogTitle className="text-lg font-semibold text-gray-900">
+              Quick add product
+            </DialogTitle>
+            <DialogDescription className="sr-only">
+              Create a new product to add to your inventory.
+            </DialogDescription>
+          </div>
+          <div className="flex-1 min-h-0">
+            <QuickAddProduct
+              onSwitchToAdvanced={() => {
+                setQuickAddOpen(false);
+                router.push("/user/products/add?mode=advanced");
+              }}
+              onSuccess={() => setQuickAddOpen(false)}
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
+
+const ProductsPage: React.FC = () => (
+  <Suspense
+    fallback={
+      <div className="min-h-screen flex items-center justify-center text-gray-600">
+        Loading...
+      </div>
+    }
+  >
+    <ProductsPageInner />
+  </Suspense>
+);
 
 export default ProductsPage;

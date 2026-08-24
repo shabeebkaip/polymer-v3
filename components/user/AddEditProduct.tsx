@@ -10,7 +10,7 @@ import PackageInformation from "./products/PackageInformation";
 import Environmental from "./products/Environmental";
 import Certification from "./products/Certifications";
 import Documents from "./products/Documents";
-import { ProductFormData, ValidationErrors, RequiredField, AddEditProductProps } from "@/types/product";
+import { ProductFormData, QuickAddFormData, ValidationErrors, RequiredField, AddEditProductProps } from "@/types/product";
 import type { UploadedFile } from "@/types/shared";
 import { Button } from "../ui/button";
 import {
@@ -23,8 +23,56 @@ import AiProcessingWidget from "@/components/ai-import/AiProcessingWidget";
 import { useAiProcessing } from "@/lib/useAiProcessing";
 import { createProduct, updateProduct } from "@/apiServices/products";
 import { initialFormData } from "@/apiServices/constants/userProductCrud";
+import { QUICK_ADD_DRAFT_KEY, QUICK_ADD_DRAFT_TTL_MS } from "@/components/user/products/QuickAddProduct";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+
+// ─── Shared draft — reverse write (T16 item 1) ────────────────────────────────
+// Symmetric counterpart to add/page.tsx's readDraft(). Writes Detailed's current
+// values back into the shared Quick Add draft on "Back to Quick Add", mapped to
+// QuickAddFormData shape (inverse of §14.3). Detailed-only fields have no home
+// there and are correctly dropped.
+function writeDraftFromDetailed(data: ProductFormData, seedPolymerType?: string) {
+  if (typeof window === "undefined") return;
+  let existingTypes: string[] = [];
+  let existingProductListFile: QuickAddFormData["productListFile"] = null;
+  try {
+    const raw = sessionStorage.getItem(QUICK_ADD_DRAFT_KEY);
+    if (raw) {
+      const draft = JSON.parse(raw) as { ts: number; values: QuickAddFormData };
+      if (draft?.ts && draft.values && Date.now() - draft.ts <= QUICK_ADD_DRAFT_TTL_MS) {
+        existingTypes = draft.values.polymerTypes ?? [];
+        existingProductListFile = draft.values.productListFile ?? null;
+      }
+    }
+  } catch {
+    // malformed draft — fall through to the empty fallback below
+  }
+
+  // polymerType (singular) -> polymerTypes (array). Only collapse to the single
+  // current value when the seller actually changed it in Detailed; if it's still
+  // whatever it arrived pre-seeded as (or empty), keep the existing multi-select
+  // array from Quick Add rather than silently dropping every type but the first.
+  const touched = data.polymerType !== (seedPolymerType ?? "");
+  const polymerTypes = touched && data.polymerType
+    ? [data.polymerType]
+    : existingTypes.length > 0
+      ? existingTypes
+      : data.polymerType ? [data.polymerType] : [];
+
+  const values: QuickAddFormData = {
+    polymerTypes,
+    productName: data.productName || "",
+    chemicalFamily: data.chemicalFamily || "",
+    physicalForm: data.physicalForm || "",
+    countryOfOrigin: data.countryOfOrigin || "",
+    minimum_order_quantity: data.minimum_order_quantity ?? null,
+    uom: data.uom || "",
+    availability: data.availability || "",
+    productListFile: data.productListFile ?? existingProductListFile,
+  };
+  sessionStorage.setItem(QUICK_ADD_DRAFT_KEY, JSON.stringify({ ts: Date.now(), values }));
+}
 
 // ─── Completion helpers ───────────────────────────────────────────────────────
 type SectionId = "core" | "images" | "trade" | "technical" | "packaging" | "compliance" | "documents";
@@ -155,7 +203,7 @@ function MoleculeIllustration() {
 }
 
 // ─── Main Component ───────────────────────────────────────────────────────────
-const AddEditProduct = ({ product, id }: AddEditProductProps) => {
+const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) => {
   const router = useRouter();
   const isEditMode = !!id;
 
@@ -216,6 +264,13 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
     setError(prev => ({ ...prev, [key]: "" }));
 
   const resetForm = () => { setData(initialFormData); setError({}); };
+
+  // T16 item 1 — symmetric write-on-switch: write current Detailed values back
+  // into the shared draft before handing off navigation to the caller.
+  const handleBackToQuickAdd = () => {
+    writeDraftFromDetailed(data, product?.polymerType);
+    onBackToQuickAdd?.();
+  };
 
   const catalogRemaining = aiProcessing.catalogMemory
     ? aiProcessing.catalogMemory.products.length - aiProcessing.catalogMemory.usedIndices.size
@@ -315,7 +370,10 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
       if (res?.success) {
         toast.success(isEditMode ? "Product updated!" : "Product created!", { id: toastId });
         aiProcessing.onFormSubmit();
-        if (!isEditMode) setData(initialFormData);
+        if (!isEditMode) {
+          setData(initialFormData);
+          sessionStorage.removeItem(QUICK_ADD_DRAFT_KEY);
+        }
         setTimeout(() => router.push("/user/products"), 800);
       } else {
         toast.error(isEditMode ? "Error updating product" : "Error creating product", { id: toastId });
@@ -353,6 +411,14 @@ const AddEditProduct = ({ product, id }: AddEditProductProps) => {
             >
               ← Back to Products
             </button>
+            {onBackToQuickAdd && (
+              <button
+                onClick={handleBackToQuickAdd}
+                className="text-sm text-gray-500 hover:text-gray-800 flex items-center gap-1.5 transition-colors"
+              >
+                ← Back to Quick Add
+              </button>
+            )}
           </div>
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm" onClick={resetForm} className="hidden sm:flex items-center gap-1.5 text-gray-500 border-gray-200 text-xs">

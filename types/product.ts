@@ -432,6 +432,9 @@ export interface RequiredField {
 export interface AddEditProductProps {
   product?: ProductFormData;
   id?: string;
+  // T16 item 1 — only passed by the add-product route (quick<->detailed switch).
+  // Edit mode ([id]/page.tsx) never passes this, so no "Back to Quick Add" link there.
+  onBackToQuickAdd?: () => void;
 }
 
 export interface UserProductCardProps {
