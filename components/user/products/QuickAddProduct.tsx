@@ -287,6 +287,7 @@ export default function QuickAddProduct({ onSwitchToAdvanced, onSuccess }: Quick
   const [form, setForm] = useState<QuickAddFormData>(INITIAL_QUICK_FORM);
   const [errors, setErrors] = useState<Partial<Record<keyof QuickAddFormData, string>>>({});
   const [submitting, setSubmitting] = useState(false);
+  const [disclosureOpen, setDisclosureOpen] = useState(false);
 
   useEffect(() => {
     const draft = readQuickAddDraft();
@@ -356,12 +357,14 @@ export default function QuickAddProduct({ onSwitchToAdvanced, onSuccess }: Quick
       <form onSubmit={handleSubmit} className="flex flex-col h-full min-h-0">
         <div className="flex-1 min-h-0 overflow-y-auto">
 
-          {/* Row 1: Polymer Types + Chemical Family */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-gray-100">
-
-            {/* Field 1: Polymer Types */}
-            <div className="px-4 py-4 sm:px-6 sm:py-5">
-              <FieldWrapper num={1} required label="Polymer Types" hint="Select all polymer types you supply">
+          {/* Row 1: Polymer Types — the only required field, anchor card (DESIGN_SPEC §12.4) */}
+          <div className="px-4 py-4 sm:px-6 sm:py-5">
+            <div className="rounded-2xl bg-emerald-50/40 border border-emerald-100 p-4 sm:p-5">
+              <FieldWrapper
+                required
+                label="Polymer Types"
+                hint="Select all polymer types you supply. This is the only required field — everything else can be added later."
+              >
                 <SearchableMultiSelect
                   options={polymersTypes}
                   selected={form.polymerTypes}
@@ -379,26 +382,14 @@ export default function QuickAddProduct({ onSwitchToAdvanced, onSuccess }: Quick
                 />
               </FieldWrapper>
             </div>
-
-            {/* Field 2: Chemical Family */}
-            <div className="px-4 py-4 sm:px-6 sm:py-5">
-              <FieldWrapper num={2} label="Chemical Family" hint="Helps buyers filter by chemistry (e.g. Polyolefins, ABS)">
-                <SearchableSingleSelect
-                  options={chemicalFamilies}
-                  value={form.chemicalFamily || ""}
-                  onChange={(id) => setForm((prev) => ({ ...prev, chemicalFamily: id }))}
-                  placeholder="Search and select a chemical family…"
-                />
-              </FieldWrapper>
-            </div>
           </div>
 
-          {/* Row 2: Product Name + Physical Form + Country */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 divide-y sm:divide-x sm:divide-y-0 lg:divide-x divide-gray-100 border-t border-gray-100">
+          {/* Row 2: Product Name + Chemical Family */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-gray-100 border-t border-gray-100">
 
-            {/* Field 3: Product Name */}
+            {/* Product Name */}
             <div className="px-4 py-4 sm:px-6 sm:py-5">
-              <FieldWrapper num={3} label="Product Name" hint="A clear name helps buyers identify your product">
+              <FieldWrapper label="Product Name" hint="A clear name helps buyers identify your product.">
                 <input
                   type="text"
                   value={form.productName || ""}
@@ -409,9 +400,25 @@ export default function QuickAddProduct({ onSwitchToAdvanced, onSuccess }: Quick
               </FieldWrapper>
             </div>
 
-            {/* Field 4: Physical Form */}
+            {/* Chemical Family */}
             <div className="px-4 py-4 sm:px-6 sm:py-5">
-              <FieldWrapper num={4} label="Physical Form" hint="How the material is supplied">
+              <FieldWrapper label="Chemical Family" hint="Helps buyers filter by chemistry (e.g. Polyolefins, ABS).">
+                <SearchableSingleSelect
+                  options={chemicalFamilies}
+                  value={form.chemicalFamily || ""}
+                  onChange={(id) => setForm((prev) => ({ ...prev, chemicalFamily: id }))}
+                  placeholder="Search and select a chemical family…"
+                />
+              </FieldWrapper>
+            </div>
+          </div>
+
+          {/* Row 3: Physical Form + Availability — one-tap chip fields */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-gray-100 border-t border-gray-100">
+
+            {/* Physical Form */}
+            <div className="px-4 py-4 sm:px-6 sm:py-5">
+              <FieldWrapper label="Physical Form" hint="How you supply this product.">
                 <div className="flex flex-wrap gap-2">
                   {physicalForms.map((pf: { _id: string; name: string }) => {
                     const active = form.physicalForm === pf._id;
@@ -434,56 +441,9 @@ export default function QuickAddProduct({ onSwitchToAdvanced, onSuccess }: Quick
               </FieldWrapper>
             </div>
 
-            {/* Field 5: Country of Origin */}
-            <div className="px-4 py-4 sm:px-6 sm:py-5 sm:col-span-2 lg:col-span-1">
-              <FieldWrapper num={5} label="Country of Origin" hint="Where is the material manufactured?">
-                <div className="relative">
-                  <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-                  <select
-                    value={form.countryOfOrigin || ""}
-                    onChange={(e) => setForm((prev) => ({ ...prev, countryOfOrigin: e.target.value }))}
-                    className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-100 focus:border-emerald-400 focus:bg-white hover:border-gray-300 transition-all text-gray-600 appearance-none"
-                  >
-                    <option value="">Select country…</option>
-                    {countries.map((c) => (
-                      <option key={c.code} value={c.name}>{c.name}</option>
-                    ))}
-                  </select>
-                </div>
-              </FieldWrapper>
-            </div>
-          </div>
-
-          {/* Row 3: MOQ | Availability */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-gray-100 border-t border-gray-100">
-
-            {/* Field 6: MOQ + Unit */}
+            {/* Availability */}
             <div className="px-4 py-4 sm:px-6 sm:py-5">
-              <FieldWrapper num={6} label="Min. Order Quantity" hint="Minimum amount buyers can order">
-                <div className="flex gap-2">
-                  <input
-                    type="number"
-                    min={1}
-                    value={form.minimum_order_quantity ?? ""}
-                    onChange={(e) => setForm((prev) => ({ ...prev, minimum_order_quantity: e.target.value ? Number(e.target.value) : null }))}
-                    placeholder="e.g. 1000"
-                    className="flex-1 min-w-0 px-3 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-100 focus:border-emerald-400 focus:bg-white hover:border-gray-300 transition-all placeholder:text-gray-400"
-                  />
-                  <select
-                    value={form.uom || ""}
-                    onChange={(e) => setForm((prev) => ({ ...prev, uom: e.target.value }))}
-                    className="w-28 px-2 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-100 focus:border-emerald-400 focus:bg-white hover:border-gray-300 transition-all text-gray-600"
-                  >
-                    <option value="">Unit</option>
-                    {UOM_OPTIONS.map((u) => <option key={u} value={u}>{u}</option>)}
-                  </select>
-                </div>
-              </FieldWrapper>
-            </div>
-
-            {/* Field 7: Availability */}
-            <div className="px-4 py-4 sm:px-6 sm:py-5">
-              <FieldWrapper num={7} label="Availability" hint="Let buyers know current stock status">
+              <FieldWrapper label="Availability" hint="Let buyers know current stock status.">
                 <div className="flex flex-col gap-2">
                   {AVAILABILITY_OPTIONS.map((opt) => {
                     const Icon = opt.icon;
@@ -508,6 +468,74 @@ export default function QuickAddProduct({ onSwitchToAdvanced, onSuccess }: Quick
             </div>
           </div>
 
+          {/* Row 4: Progressive disclosure — Country of Origin + MOQ (DESIGN_SPEC §12.5) */}
+          <div className="px-4 py-4 sm:px-6 sm:py-5 border-t border-gray-100">
+            <div className="rounded-xl border border-dashed border-gray-200 bg-gray-50/40">
+              <button
+                type="button"
+                onClick={() => setDisclosureOpen((v) => !v)}
+                aria-expanded={disclosureOpen}
+                aria-controls="quick-add-disclosure-panel"
+                className="w-full flex items-center justify-between px-4 py-3 min-h-[44px] text-sm font-medium text-gray-700"
+              >
+                <span>
+                  {disclosureOpen
+                    ? "Hide Country of Origin & Min. Order Quantity"
+                    : "Add Country of Origin & Min. Order Quantity"}
+                </span>
+                <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${disclosureOpen ? "rotate-180" : ""}`} />
+              </button>
+              {disclosureOpen && (
+                <div id="quick-add-disclosure-panel" className="px-4 pb-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+                  {/* Country of Origin */}
+                  <div>
+                    <FieldWrapper label="Country of Origin" hint="Where is this product manufactured?">
+                      <div className="relative">
+                        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                        <select
+                          value={form.countryOfOrigin || ""}
+                          onChange={(e) => setForm((prev) => ({ ...prev, countryOfOrigin: e.target.value }))}
+                          className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-100 focus:border-emerald-400 focus:bg-white hover:border-gray-300 transition-all text-gray-600 appearance-none"
+                        >
+                          <option value="">Select country…</option>
+                          {countries.map((c) => (
+                            <option key={c.code} value={c.name}>{c.name}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </FieldWrapper>
+                  </div>
+
+                  {/* Min. Order Quantity + Unit */}
+                  <div>
+                    <FieldWrapper label="Min. Order Quantity" hint="Minimum quantity buyers can order.">
+                      <div className="flex gap-2">
+                        <input
+                          type="number"
+                          min={1}
+                          value={form.minimum_order_quantity ?? ""}
+                          onChange={(e) => setForm((prev) => ({ ...prev, minimum_order_quantity: e.target.value ? Number(e.target.value) : null }))}
+                          placeholder="e.g. 1000"
+                          className="flex-1 min-w-0 px-3 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-100 focus:border-emerald-400 focus:bg-white hover:border-gray-300 transition-all placeholder:text-gray-400"
+                        />
+                        <select
+                          value={form.uom || ""}
+                          onChange={(e) => setForm((prev) => ({ ...prev, uom: e.target.value }))}
+                          className="w-28 px-2 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-100 focus:border-emerald-400 focus:bg-white hover:border-gray-300 transition-all text-gray-600"
+                        >
+                          <option value="">Unit</option>
+                          {UOM_OPTIONS.map((u) => <option key={u} value={u}>{u}</option>)}
+                        </select>
+                      </div>
+                    </FieldWrapper>
+                  </div>
+
+                </div>
+              )}
+            </div>
+          </div>
+
         </div>{/* end scrollable body */}
 
         {/* CTA Footer — fixed outside the scrollable body (DESIGN_SPEC §2.1) */}
@@ -518,9 +546,9 @@ export default function QuickAddProduct({ onSwitchToAdvanced, onSuccess }: Quick
             className="flex-1 sm:max-w-xs flex items-center justify-center gap-2 py-3 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 disabled:cursor-not-allowed text-white rounded-xl font-semibold text-sm transition-all shadow-md shadow-emerald-200 hover:shadow-lg hover:shadow-emerald-300 hover:-translate-y-0.5"
           >
             {submitting ? (
-              <><Loader2 className="w-4 h-4 animate-spin" />Adding Materials…</>
+              <><Loader2 className="w-4 h-4 animate-spin" />Adding Product…</>
             ) : (
-              <><Zap className="w-4 h-4" />Add Materials<ArrowRight className="w-4 h-4 ml-0.5" /></>
+              <><Zap className="w-4 h-4" />Add Product<ArrowRight className="w-4 h-4 ml-0.5" /></>
             )}
           </button>
           <p className="text-xs text-gray-400">
@@ -535,31 +563,25 @@ export default function QuickAddProduct({ onSwitchToAdvanced, onSuccess }: Quick
   );
 }
 
-// Reusable field wrapper with number badge, label and hint
+// Reusable field wrapper — label + hint. No numbered badge (DESIGN_SPEC §12.4):
+// only the sole required field (Polymer Types) gets a "Required" pill; the 6
+// optional fields get no pill and no "(optional)" tag.
 function FieldWrapper({
-  num, label, hint, required, children,
+  label, hint, required, children,
 }: {
-  num: number; label: string; hint: string; required?: boolean;
+  label: string; hint: string; required?: boolean;
   children: React.ReactNode;
 }) {
-  const badgeCls = required ? "bg-emerald-100" : "bg-gray-100";
-  const textCls = required ? "text-emerald-700" : "text-gray-500";
-
   return (
-    <div className="flex items-start gap-4">
-      <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${badgeCls}`}>
-        <span className={`text-xs font-bold ${textCls}`}>{num}</span>
-      </div>
-      <div className="flex-1 min-w-0">
-        <label className="block text-sm font-semibold text-gray-800 mb-0.5">
-          {label}
-          {required
-            ? <span className="ml-1.5 text-xs font-normal text-white bg-emerald-500 px-1.5 py-0.5 rounded-full">Required</span>
-            : <span className="ml-1.5 text-xs font-normal text-gray-400">(optional)</span>}
-        </label>
-        <p className="text-xs text-gray-400 mb-3">{hint}</p>
-        {children}
-      </div>
+    <div className="flex-1 min-w-0">
+      <label className={`block text-sm mb-0.5 ${required ? "font-semibold text-gray-900" : "font-medium text-gray-700"}`}>
+        {label}
+        {required && (
+          <span className="ml-1.5 text-xs font-normal text-white bg-emerald-500 px-1.5 py-0.5 rounded-full">Required</span>
+        )}
+      </label>
+      <p className="text-xs text-gray-400 mb-3">{hint}</p>
+      {children}
     </div>
   );
 }

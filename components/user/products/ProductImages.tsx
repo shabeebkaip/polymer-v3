@@ -33,7 +33,7 @@ const ProductImages: React.FC<ProductImagesProps> = ({ data, onFieldChange }) =>
 
   return (
     <>
-      <div className="col-span-full">
+      <div className="col-span-full" id="productImages-field" tabIndex={-1}>
         <Card className="border-gray-200 bg-white">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-3">

@@ -473,6 +473,7 @@ export interface GeneralInformationProps {
   onFieldChange: (field: keyof ProductFormData, value: string | number | boolean) => void;
   onFieldError: (field: keyof ProductFormData) => void;
   error: Partial<Record<keyof ProductFormData, string>>;
+  fieldGroup: "required" | "advanced";
 }
 
 export interface PackagingType {
@@ -502,6 +503,7 @@ export interface ProductDetailsProps {
   productFamilies: Array<{ _id: string; name: string }>;
   onFieldError: (field: keyof ProductFormData) => void;
   error: Partial<Record<keyof ProductFormData, string>>;
+  fieldGroup: "required" | "advanced";
 }
 
 export interface ProductImagesProps {
@@ -522,4 +524,5 @@ export interface TradeInformationProps {
   paymentTerms?: Array<{ _id: string; name: string }>;
   error: Partial<Record<keyof ProductFormData, string>>;
   onFieldError: (field: keyof ProductFormData) => void;
+  fieldGroup: "required" | "advanced";
 }

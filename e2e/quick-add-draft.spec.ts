@@ -68,12 +68,6 @@ async function selectPhysicalForm(page: Page): Promise<string> {
   return name;
 }
 
-// Expand a collapsed SectionCard on the detailed form by its title.
-async function expandSection(page: Page, title: string) {
-  const header = page.locator(`button:has-text("${title}")`).locator("visible=true").first();
-  await header.click();
-}
-
 test.describe("T2.3-REV — AI catalog import removed from Quick Add", () => {
   test("no dropzone/file input/AI affordance anywhere in Quick Add", async ({ page }) => {
     await login(page);
@@ -118,13 +112,15 @@ test.describe("T3.4 — shared in-progress draft (Quick Add <-> Detailed)", () =
     const familyName = await selectChemicalFamily(page);
     const formName = await selectPhysicalForm(page);
     await visible(page, 'input[placeholder="e.g. LDPE Film, PP Homopolymer"]').fill("Draft Test Product");
+    // MOQ lives behind the collapsed disclosure toggle (DESIGN_SPEC §12.5) — open it first.
+    await visible(page, 'button:has-text("Add Country of Origin & Min. Order Quantity")').click();
     await visible(page, 'input[placeholder="e.g. 1000"]').fill("500");
     await visible(page, "text=Availability").locator("xpath=..").locator('button:has-text("On Request")').click();
 
     await visible(page, 'button:has-text("Add Detailed Product")').click();
 
     // Detailed form (core section, open by default) shows the carried values.
-    await expect(visible(page, "text=Core Details")).toBeVisible();
+    await expect(visible(page, "text=Required Information")).toBeVisible();
     await expect(page.locator('input[value="Draft Test Product"]').first()).toBeVisible();
     await expect(page.getByText(familyName, { exact: true }).first()).toBeVisible();
     await expect(page.getByText(first, { exact: true }).first()).toBeVisible();
@@ -132,9 +128,8 @@ test.describe("T3.4 — shared in-progress draft (Quick Add <-> Detailed)", () =
     // No console crash — page still fully interactive.
     await expect(visible(page, 'button:has-text("Create Product")')).toBeVisible();
 
-    // Trade section carries MOQ.
-    await expandSection(page, "Trade Information");
-    await expect(page.locator("#minimum_order_quantity")).toHaveValue("500");
+    // Trade & Pricing fields are always visible in the Required Information card.
+    await expect(page.locator("#minimum_order_quantity").locator("visible=true").first()).toHaveValue("500");
   });
 
   test("retain on return: Back to Quick Add reopens the My Products modal with entered values", async ({ page }) => {
@@ -146,7 +141,7 @@ test.describe("T3.4 — shared in-progress draft (Quick Add <-> Detailed)", () =
     const [first] = await selectTwoPolymerTypes(page);
 
     await visible(page, 'button:has-text("Add Detailed Product")').click();
-    await expect(visible(page, "text=Core Details")).toBeVisible();
+    await expect(visible(page, "text=Required Information")).toBeVisible();
 
     // Back to Quick Add now returns to My Products with the modal reopened —
     // not the old in-place full-page quick form.
@@ -167,7 +162,7 @@ test.describe("T3.4 — shared in-progress draft (Quick Add <-> Detailed)", () =
     await visibleInDialog(page, 'input[placeholder="e.g. LDPE Film, PP Homopolymer"]').fill("Modal Roundtrip Product");
     await visibleInDialog(page, 'button:has-text("Add Detailed Product")').click();
     await page.waitForURL(/mode=advanced/, { timeout: 10000 });
-    await expect(visible(page, "text=Core Details")).toBeVisible();
+    await expect(visible(page, "text=Required Information")).toBeVisible();
     await expect(page.locator('input[value="Modal Roundtrip Product"]').first()).toBeVisible();
 
     await visible(page, 'button:has-text("Back to Products")').click();
@@ -182,7 +177,7 @@ test.describe("T3.4 — shared in-progress draft (Quick Add <-> Detailed)", () =
     await clearDraft(page);
     await page.goto("/user/products/add");
     await visible(page, 'button:has-text("Add Detailed Product")').click();
-    await expect(visible(page, "text=Core Details")).toBeVisible();
+    await expect(visible(page, "text=Required Information")).toBeVisible();
     await expect(page.locator('input[value=""]').first()).toBeDefined();
 
     const draftAfterEmptySwitch = await page.evaluate((key) => sessionStorage.getItem(key), DRAFT_KEY);
@@ -227,10 +222,9 @@ test.describe("T3.4 — shared in-progress draft (Quick Add <-> Detailed)", () =
     await page.goto("/user/products");
     await visible(page, 'button:has-text("Add Detailed Product")').click();
     await page.waitForURL(/mode=advanced/, { timeout: 10000 });
-    await expect(visible(page, "text=Core Details")).toBeVisible();
+    await expect(visible(page, "text=Required Information")).toBeVisible();
     await expect(page.locator(`input[value="${E2E_PRODUCT_PREFIX}Clear On Create Product"]`)).toHaveCount(0);
-    await expandSection(page, "Trade Information");
-    await expect(page.locator("#minimum_order_quantity")).toHaveValue("");
+    await expect(page.locator("#minimum_order_quantity").locator("visible=true").first()).toHaveValue("");
   });
 
   test("TTL: a draft older than 5 minutes is ignored on both hydrate and seed", async ({ page }) => {
@@ -255,7 +249,7 @@ test.describe("T3.4 — shared in-progress draft (Quick Add <-> Detailed)", () =
       }));
     }, DRAFT_KEY);
     await page.goto("/user/products/add?mode=advanced");
-    await expect(visible(page, "text=Core Details")).toBeVisible();
+    await expect(visible(page, "text=Required Information")).toBeVisible();
     await expect(page.locator('input[value="Stale Draft Product"]')).toHaveCount(0);
   });
 
@@ -300,24 +294,29 @@ test.describe("T3.4 — shared in-progress draft (Quick Add <-> Detailed)", () =
     await expect(page.locator('input[value="Refresh Trait Product"]').first()).toBeVisible();
 
     await page.reload();
-    await expect(visible(page, "text=Core Details")).toBeVisible();
+    await expect(visible(page, "text=Required Information")).toBeVisible();
     await expect(page.locator('input[value="Refresh Trait Product"]').first()).toBeVisible();
     expect(errors).toEqual([]);
   });
 
-  test("regression: detailed form AI catalog import still works end-to-end", async ({ page }) => {
+  test("regression: detailed form AI catalog import still works end-to-end via the page-level dropzone", async ({ page }) => {
     test.setTimeout(90_000);
     await login(page);
     await page.goto("/user/products/add?mode=advanced");
-    await expect(visible(page, "text=Import from a catalog")).toBeVisible();
+    await expect(visible(page, "text=Drop a catalog to auto-fill this form")).toBeVisible();
 
-    await visible(page, 'button:has-text("Upload Catalog")').click();
-    await expect(page.getByText("Drop a polymer catalog")).toBeVisible();
-
-    const fileInput = page.locator('input[type="file"]');
+    // §13.2/R9 — scope to the visible dropzone card (aria-label) first (the
+    // app's dual mobile/desktop tree — see the `visible()` helper's comment —
+    // mounts a second, hidden copy of this page), then its hidden file input.
+    const dropzoneCard = page.locator('[aria-label^="Upload a catalog file"]').locator("visible=true").first();
+    const fileInput = dropzoneCard.locator('input[type="file"]');
     await fileInput.setInputFiles(
       "/Users/shabeeb/Documents/Shab.co/polymersHub/polymer-ai-parser-poc/test-catalogs/files/09_minimal_data.pdf"
     );
+
+    // R9 wiring check: dropping/selecting a file must open the modal directly
+    // into its parsing phase — not parse silently with the modal still closed.
+    await expect(page.locator('[data-slot="dialog-content"]')).toBeVisible({ timeout: 5000 });
 
     // Parsing kicks off — either resolves to a ready/apply state, a multi-product
     // pick step, or a graceful rejection; either way the AI pipeline must

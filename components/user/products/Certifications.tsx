@@ -111,6 +111,8 @@ const Certification: React.FC<CertificationProps> = ({ data, onFieldChange }) =>
           return (
             <Card
               key={String(cert.key)}
+              id={`${certificateFieldKey}-field`}
+              tabIndex={-1}
               className={`transition-all ${
                 isSelected ? 'border-gray-400 bg-gray-50' : 'border-gray-200 bg-white'
               }`}
@@ -156,7 +158,10 @@ const Certification: React.FC<CertificationProps> = ({ data, onFieldChange }) =>
                     </div>
 
                     {/* Description */}
-                    <p className="text-xs text-gray-600 mb-3 ml-6">{cert.description}</p>
+                    <p className="text-xs text-gray-600 mb-1 ml-6">{cert.description}</p>
+                    <p className="text-xs text-gray-500 mt-1 mb-3 ml-6">
+                      Requires a certificate upload once enabled.
+                    </p>
 
                     {/* Certificate Upload Section */}
                     {isSelected && (

@@ -1,5 +1,5 @@
 "use client";
-import React, { Suspense, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import AddEditProduct from "@/components/user/AddEditProduct";
 import QuickAddProduct, {
@@ -46,11 +46,24 @@ const AddProductInner = () => {
     searchParams.get("mode") === "advanced" ? "advanced" : "quick"
   );
 
+  // Blank on both the server render and the very first client render so
+  // hydration can never mismatch — readDraft() reads sessionStorage, which
+  // doesn't exist server-side (same class of bug T16 item 2 already fixed for
+  // QuickAddProduct's own state, applied here to the detailed form's seed).
+  // Once mounted, in-place Quick Add -> Detailed switches (never SSR'd) read
+  // the draft synchronously as before; a genuine hard reload with an actual
+  // draft present instead flips the seed a tick later and remounts (key
+  // change) exactly once. The key only changes when there's a real draft to
+  // seed — no draft means "blank" before and after mount, so the common case
+  // (no draft) never remounts at all.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   if (mode === "advanced") {
-    // Re-read on every entry into advanced mode (initial mount + in-place back/switch).
-    const seed = readDraft();
+    const seed = mounted ? readDraft() : undefined;
     return (
       <AddEditProduct
+        key={seed ? "seeded" : "blank"}
         product={seed}
         // Back to Quick Add must return to the My Products modal (where Quick
         // Add now lives), not flip local state to the old full-page quick form
