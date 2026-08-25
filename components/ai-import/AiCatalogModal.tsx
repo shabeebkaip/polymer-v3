@@ -131,6 +131,8 @@ export default function AiCatalogModal({
     onOpenChange(val);
   };
 
+  const conflictCount = readyDiff?.payload.conflicts.length ?? 0;
+
   const diffRows = readyDiff?.rows ?? [];
   const activeRows = diffRows.filter(r => !r.skipped);
   const highMedCount = activeRows.filter(r => r.confidence === "high" || r.confidence === "medium").length;
@@ -271,11 +273,14 @@ export default function AiCatalogModal({
             <div className="flex flex-col sm:flex-row gap-2">
               <button
                 onClick={() => onApplyDiff(false)}
-                disabled={highMedCount === 0}
                 style={{ minHeight: "44px" }}
-                className="flex-1 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 disabled:opacity-40 text-white text-sm font-semibold transition-colors"
+                className="flex-1 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-sm font-semibold transition-colors"
               >
-                Apply {highMedCount} field{highMedCount !== 1 ? "s" : ""}
+                {highMedCount > 0
+                  ? `Apply ${highMedCount} field${highMedCount !== 1 ? "s" : ""}`
+                  : conflictCount > 0
+                    ? `Review ${conflictCount} conflict${conflictCount !== 1 ? "s" : ""}`
+                    : "Continue"}
               </button>
               {activeRows.length > highMedCount && (
                 <button

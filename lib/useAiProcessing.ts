@@ -8,6 +8,8 @@ import type {
   ParsedProductEntry, TaxonomyReviewItem, TaxonomyFieldKey,
 } from "@/types/ai";
 import type { RefMatch, RefMatches } from "@/types/ai";
+import type { ConflictValue } from "@/types/ai";
+import { conflictSuppressionKey, partitionAiRows } from "@/lib/aiConflicts";
 
 // ── Field label map ───────────────────────────────────────────────────────────
 
@@ -225,6 +227,7 @@ export function useAiProcessing({ isEditMode, existingData, allowedFields, onApp
   const parseSeqRef = useRef(0);
   const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const cancelRef = useRef(false);
+  const resolvedConflictsRef = useRef<Set<string>>(new Set());
   // Stage timers (replaces single loadingTimerRef)
   const stageTimerRefs = useRef<ReturnType<typeof setTimeout>[]>([]);
 
@@ -276,14 +279,17 @@ export function useAiProcessing({ isEditMode, existingData, allowedFields, onApp
       filled = Object.fromEntries(Object.entries(filled).filter(([k]) => allowed.has(k)));
       taxonomyReview = taxonomyReview.filter(t => allowed.has(t.formKey));
     }
-    const payload: ApplyPayload = { fields, aiFilledFields: filled, sessionId, taxonomyReview: [] };
-
     const ed = existingDataRef.current;
+    const partition = partitionAiRows({
+      rows,
+      fields,
+      existingData: ed,
+      suppressed: resolvedConflictsRef.current,
+    });
+    rows = partition.rows;
+    const conflicts = partition.conflicts;
+
     if (ed) {
-      rows.forEach(r => {
-        const v = ed[r.key];
-        if (v != null && v !== "" && !(Array.isArray(v) && v.length === 0)) r.skipped = true;
-      });
       // Same skip-if-filled rule (§14.6) applied to taxonomy review rows — a
       // field that already has a manual value never gets a review row either.
       taxonomyReview = taxonomyReview.filter(item => {
@@ -292,6 +298,15 @@ export function useAiProcessing({ isEditMode, existingData, allowedFields, onApp
         return !hasValue;
       });
     }
+
+    const payload: ApplyPayload = {
+      fields,
+      aiFilledFields: filled,
+      sessionId,
+      taxonomyReview: [],
+      conflicts,
+      foundCount: rows.length,
+    };
 
     const diff: ReadyDiff = { payload, rows, extractionMethod, taxonomyReview };
     setReadyDiff(diff);
@@ -596,6 +611,14 @@ export function useAiProcessing({ isEditMode, existingData, allowedFields, onApp
     setUploadedFileName(null);
   }, []);
 
+  const suppressConflict = useCallback((fieldKey: string, catalogueValue: ConflictValue) => {
+    resolvedConflictsRef.current.add(conflictSuppressionKey(fieldKey, catalogueValue));
+  }, []);
+
+  const clearConflictSuppressions = useCallback(() => {
+    resolvedConflictsRef.current.clear();
+  }, []);
+
   // ── Widget actions ────────────────────────────────────────────────────────
 
   const cancelBg = useCallback(() => {
@@ -684,6 +707,8 @@ export function useAiProcessing({ isEditMode, existingData, allowedFields, onApp
     catalogMemory,
     reopenCatalogPicker,
     clearAiData,
+    suppressConflict,
+    clearConflictSuppressions,
     // Widget
     bgState,
     bgFailReason,

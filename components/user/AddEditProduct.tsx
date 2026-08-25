@@ -27,7 +27,7 @@ import { createProduct, updateProduct } from "@/apiServices/products";
 import { initialFormData } from "@/apiServices/constants/userProductCrud";
 import { QUICK_ADD_DRAFT_KEY, QUICK_ADD_DRAFT_TTL_MS } from "@/components/user/products/QuickAddProduct";
 import CatalogFindings, { getVisibleTaxonomyReview } from "@/components/user/products/CatalogFindings";
-import type { TaxonomyReviewItem } from "@/types/ai";
+import type { ApplyPayload, ConflictItem, TaxonomyReviewItem } from "@/types/ai";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
@@ -383,6 +383,7 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
   const catalogInstanceId = React.useId().replace(/:/g, "");
   const needsAttentionHeadingId = `${catalogInstanceId}-needs-attention-heading`;
   const foundHeadingId = `${catalogInstanceId}-found-in-catalogue-heading`;
+  const requiredHeadingId = `${catalogInstanceId}-required-information-heading`;
   const router = useRouter();
   const isEditMode = !!id;
 
@@ -411,6 +412,8 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
   // taxonomy review metadata the transient AI modal already had access to
   // (§21.9's plumbing note), so it's captured here alongside aiFilledFields.
   const [taxonomyReview, setTaxonomyReview] = useState<TaxonomyReviewItem[]>([]);
+  const [conflicts, setConflicts] = useState<ConflictItem[]>([]);
+  const [latestFoundCount, setLatestFoundCount] = useState(0);
   // Bumped once per successful apply (initial import, Replace, or "Add
   // another") — NOT on aiFillCount changes from per-card edits/dismissals,
   // which must not re-announce (§14.9). aiFillCount alone can't drive this:
@@ -419,10 +422,7 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
   const [ariaLiveMsg, setAriaLiveMsg] = useState("");
 
   const handleAiApply = useCallback(
-    ({ fields, aiFilledFields: filled, sessionId, taxonomyReview: review }: {
-      fields: Record<string, unknown>; aiFilledFields: AiFilledFields; sessionId: string;
-      taxonomyReview?: TaxonomyReviewItem[];
-    }) => {
+    ({ fields, aiFilledFields: filled, sessionId, taxonomyReview: review, conflicts: nextConflicts, foundCount }: ApplyPayload) => {
       const normalized = { ...fields };
       // buildDiff stores polymer type as polymerTypes (array); SearchableSelect binds to polymerType (string)
       if (Array.isArray(normalized.polymerTypes) && (normalized.polymerTypes as unknown[]).length > 0) {
@@ -433,6 +433,8 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
       setAiFillCount(Object.keys(filled).length);
       setAiSessionId(sessionId);
       setTaxonomyReview(review ?? []);
+      setConflicts(nextConflicts);
+      setLatestFoundCount(foundCount);
       setApplyGen(g => g + 1);
     },
     [],
@@ -454,15 +456,17 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
     setAiFillCount(0);
     setAiSessionId(null);
     setTaxonomyReview([]);
+    setConflicts([]);
+    setLatestFoundCount(0);
     aiProcessing.clearAiData();
     toast.info("Catalogue import cleared. Values you kept remain in the form.");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [aiProcessing.clearAiData]);
 
-  const onFieldChange = (
+  const onFieldChange = useCallback((
     key: keyof ProductFormData,
-    value: string | number | boolean | UploadedFile[] | Record<string, unknown> | undefined,
-  ) => setData(prev => ({ ...prev, [key]: value }));
+    value: string | number | boolean | string[] | UploadedFile[] | Record<string, unknown> | undefined,
+  ) => setData(prev => ({ ...prev, [key]: value })), []);
 
   // §14.3 "dismissed" state — a stronger action than edit-clears-badge: clears
   // both the AI flag AND resets the field to its empty-equivalent, so no
@@ -479,7 +483,12 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
   const onFieldError = (key: keyof ProductFormData) =>
     setError(prev => ({ ...prev, [key]: "" }));
 
-  const resetForm = () => { setData(initialFormData); setError({}); };
+  const resetForm = () => {
+    setData(initialFormData);
+    setError({});
+    setConflicts([]);
+    aiProcessing.clearConflictSuppressions();
+  };
 
   // T16 item 1 — symmetric write-on-switch: write current Detailed values back
   // into the shared draft before handing off navigation to the caller.
@@ -611,13 +620,32 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
     }
     // Array "reject" — nothing to clear, the item was never added (§14.2a).
     setTaxonomyReview(prev => prev.filter(t => t.key !== item.key));
-  }, []);
+  }, [onFieldChange]);
 
   const pickFromList = useCallback((item: TaxonomyReviewItem) => {
     revealAndFocusField(item.formKey);
   }, [revealAndFocusField]);
 
   const visibleTaxonomyReview = getVisibleTaxonomyReview(taxonomyReview, data);
+
+  const resolveConflict = useCallback((conflict: ConflictItem, action: "keep" | "use") => {
+    if (action === "keep") {
+      aiProcessing.suppressConflict(conflict.fieldKey, conflict.catalogueValue);
+      setAriaLiveMsg(`Kept current value for ${conflict.label}.`);
+    } else {
+      onFieldChange(conflict.fieldKey as keyof ProductFormData, conflict.catalogueValue);
+      if (!aiFilledFields[conflict.fieldKey]) setAiFillCount(count => count + 1);
+      setAiFilledFields(prev => ({
+        ...prev,
+        [conflict.fieldKey]: {
+          confidence: conflict.confidence,
+          ...(conflict.conditions ? { conditions: conflict.conditions } : {}),
+        },
+      }));
+      setAriaLiveMsg(`Using catalogue value for ${conflict.label}.`);
+    }
+    setConflicts(prev => prev.filter(item => item.id !== conflict.id));
+  }, [aiFilledFields, aiProcessing, onFieldChange]);
 
   // ── §14.9 Accessibility — status announcement + focus-to-first-decision on
   // extraction complete. Keyed on applyGen (bumped once per successful apply:
@@ -631,13 +659,13 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
 
   useEffect(() => {
     if (applyGen === 0) return;
-    const attentionCount = visibleTaxonomyReview.length;
-    const msg = `Catalogue processed — ${aiFillCount} field${aiFillCount === 1 ? "" : "s"} found.`
-      + (attentionCount > 0 ? ` ${attentionCount} need${attentionCount === 1 ? "s" : ""} your attention.` : "");
+    const attentionCount = conflicts.length + visibleTaxonomyReview.length;
+    const msg = `Catalogue processed. ${latestFoundCount} field${latestFoundCount === 1 ? "" : "s"} found.`
+      + (attentionCount > 0 ? ` ${attentionCount} need review.` : "");
     setAriaLiveMsg(msg);
     requestAnimationFrame(() => {
       if (attentionCount > 0) focusDomId(needsAttentionHeadingId);
-      else focusDomId(foundHeadingId);
+      else focusDomId(aiFillCount > 0 ? foundHeadingId : requiredHeadingId);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [applyGen]);
@@ -735,6 +763,8 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
       if (res?.success) {
         toast.success(isEditMode ? "Product updated!" : "Product created!", { id: toastId });
         aiProcessing.onFormSubmit();
+        aiProcessing.clearConflictSuppressions();
+        setConflicts([]);
         if (!isEditMode) {
           setData(initialFormData);
           sessionStorage.removeItem(QUICK_ADD_DRAFT_KEY);
@@ -853,7 +883,7 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
             {/* "Found in Your Catalogue" review surface (§14) — only renders
                 once an extraction has applied at least one field; absent
                 otherwise, matching §13 exactly with zero extra chrome. */}
-            {aiFillCount > 0 && (
+            {(aiFillCount > 0 || conflicts.length > 0 || taxonomyReview.length > 0) && (
               <CatalogFindings
                 data={data}
                 onFieldChange={(f, v) => onFieldChange(f, v as string | number | boolean | UploadedFile[] | undefined)}
@@ -861,6 +891,8 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
                 clearAiField={clearAiField}
                 dismissAiField={dismissAiField}
                 taxonomyReview={taxonomyReview}
+                conflicts={conflicts}
+                onResolveConflict={resolveConflict}
                 onResolveTaxonomy={resolveTaxonomy}
                 onPickFromList={pickFromList}
                 grades={grades}
@@ -868,6 +900,7 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
                 totalRequired={totalRequired}
                 needsAttentionHeadingId={needsAttentionHeadingId}
                 foundHeadingId={foundHeadingId}
+                requiredHeadingId={requiredHeadingId}
               />
             )}
 
@@ -887,7 +920,7 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
               onMinimise={aiProcessing.minimise}
               onApplyDiff={aiProcessing.applyDiff}
               onPick={aiProcessing.pickProduct}
-              onClearAll={aiFillCount > 0 ? handleAiClear : undefined}
+              onClearAll={aiFillCount > 0 || conflicts.length > 0 ? handleAiClear : undefined}
             />
 
             <AiProcessingWidget
@@ -912,7 +945,7 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
                     <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-gray-900">Required Information</p>
+                    <p id={requiredHeadingId} tabIndex={-1} className="text-sm font-semibold text-gray-900 outline-none">Required Information</p>
                     <p className="text-xs text-gray-400 mt-0.5">Fill in everything below to publish your listing — nothing here is optional.</p>
                   </div>
                 </div>

@@ -5,9 +5,9 @@ import { Input } from "../../ui/input";
 import { Textarea } from "../../ui/textarea";
 import { Checkbox } from "../../ui/checkbox";
 import MultiSelect from "@/components/shared/MultiSelect";
-import { HelpCircle, CircleAlert, X } from "lucide-react";
+import { HelpCircle, CircleAlert, TriangleAlert, X } from "lucide-react";
 import type { ProductFormData } from "@/types/product";
-import type { AiFilledFields, TaxonomyReviewItem } from "@/types/ai";
+import type { AiFilledFields, ConflictItem, TaxonomyReviewItem } from "@/types/ai";
 import { AVAILABILITY_OPTIONS } from "./QuickAddProduct";
 
 // ─── DESIGN_SPEC §14 — "Found in Your Catalogue" + "Needs Your Attention" ──────
@@ -72,6 +72,18 @@ const FIELD_CARDS: FieldCardConfig[] = [
 // compatibility only and must never render.
 const GROUP_ORDER: GroupName[] = ["Product Identity", "Technical Properties", "Packaging & Logistics", "Certifications & Compliance", "Other"];
 
+const CONFLICT_UNITS: Record<string, string> = {
+  density: "g/cm³", mfi: "g/10 min", tensileStrength: "MPa",
+  elongationAtBreak: "%", flexuralModulus: "MPa",
+  shoreHardness: "Shore A/D", waterAbsorption: "%",
+};
+
+function formatConflictValue(value: unknown): string {
+  if (typeof value === "boolean") return value ? "Yes" : "No";
+  if (Array.isArray(value)) return value.join(", ");
+  return String(value ?? "");
+}
+
 // Live-visibility rule (§14.2): confirm-tier rows are removed from state on
 // resolve; manual-tier rows passively disappear once the seller fills the
 // real field through any path (its own dropdown, or "Use this" elsewhere).
@@ -125,6 +137,8 @@ interface CatalogFindingsProps {
   clearAiField: (field: string) => void;
   dismissAiField: (field: string) => void;
   taxonomyReview: TaxonomyReviewItem[];
+  conflicts: ConflictItem[];
+  onResolveConflict: (conflict: ConflictItem, action: "keep" | "use") => void;
   onResolveTaxonomy: (item: TaxonomyReviewItem, action: "use" | "reject") => void;
   onPickFromList: (item: TaxonomyReviewItem) => void;
   grades: Array<{ _id: string; name: string }>;
@@ -132,21 +146,23 @@ interface CatalogFindingsProps {
   totalRequired: number;
   needsAttentionHeadingId: string;
   foundHeadingId: string;
+  requiredHeadingId: string;
 }
 
 const CatalogFindings: React.FC<CatalogFindingsProps> = ({
   data, onFieldChange, aiFilledFields, clearAiField, dismissAiField,
-  taxonomyReview, onResolveTaxonomy, onPickFromList, grades,
+  taxonomyReview, conflicts, onResolveConflict, onResolveTaxonomy, onPickFromList, grades,
   completedRequired, totalRequired,
-  needsAttentionHeadingId, foundHeadingId,
+  needsAttentionHeadingId, foundHeadingId, requiredHeadingId,
 }) => {
   const instanceId = React.useId().replace(/:/g, "");
+  const rootRef = React.useRef<HTMLDivElement>(null);
   const visibleReview = getVisibleTaxonomyReview(taxonomyReview, data);
   const confirmRows = visibleReview.filter(i => i.tier === "confirm");
   const manualRows = visibleReview.filter(i => i.tier === "manual");
-  const showMissingLine = completedRequired < totalRequired && visibleReview.length > 0;
+  const showMissingLine = completedRequired < totalRequired && (conflicts.length > 0 || visibleReview.length > 0);
   const missingCount = totalRequired - completedRequired;
-  const hasNeedsAttention = confirmRows.length > 0 || manualRows.length > 0 || showMissingLine;
+  const hasNeedsAttention = conflicts.length > 0 || confirmRows.length > 0 || manualRows.length > 0 || showMissingLine;
 
   const groupsWithCards = GROUP_ORDER.map(group => ({
     group,
@@ -154,6 +170,22 @@ const CatalogFindings: React.FC<CatalogFindingsProps> = ({
   })).filter(g => g.fields.length > 0);
 
   let firstGroupHeadingAssigned = false;
+
+  const conflictRowId = (conflict: ConflictItem) => `${instanceId}-${conflict.id}`;
+
+  const resolveConflictAndFocus = (conflict: ConflictItem, action: "keep" | "use") => {
+    const currentIndex = conflicts.findIndex(item => item.id === conflict.id);
+    const nextConflict = currentIndex >= 0 ? conflicts[currentIndex + 1] : undefined;
+    onResolveConflict(conflict, action);
+    requestAnimationFrame(() => {
+      const target = nextConflict
+        ? document.getElementById(conflictRowId(nextConflict))
+        : rootRef.current?.querySelector<HTMLElement>("[data-taxonomy-review-row]")
+          ?? document.getElementById(foundHeadingId)
+          ?? document.getElementById(requiredHeadingId);
+      target?.focus();
+    });
+  };
 
   const renderValue = (cfg: FieldCardConfig) => {
     const raw = (data as Record<string, unknown>)[cfg.key];
@@ -238,7 +270,7 @@ const CatalogFindings: React.FC<CatalogFindingsProps> = ({
   };
 
   return (
-    <div className="flex flex-col gap-4">
+    <div ref={rootRef} className="flex flex-col gap-4">
       {/* ── Needs Your Attention (§14.2) ── */}
       {hasNeedsAttention && (
         <div className="flex flex-col gap-2 mb-1">
@@ -250,8 +282,72 @@ const CatalogFindings: React.FC<CatalogFindingsProps> = ({
             Needs Your Attention
           </h2>
 
+          {conflicts.length > 0 && (
+            <ul className="flex flex-col gap-2" aria-label="Existing value conflicts">
+              {conflicts.map(conflict => {
+                const currentValue = (data as Record<string, unknown>)[conflict.fieldKey];
+                const unit = CONFLICT_UNITS[conflict.fieldKey];
+                const currentLabelId = `${conflictRowId(conflict)}-current-label`;
+                const catalogueLabelId = `${conflictRowId(conflict)}-catalogue-label`;
+                return (
+                  <li key={conflict.id}>
+                    <fieldset
+                      id={conflictRowId(conflict)}
+                      tabIndex={-1}
+                      className="min-w-0 rounded-xl border border-amber-200 bg-white px-4 py-4 outline-none focus-visible:ring-2 focus-visible:ring-teal-700 focus-visible:ring-offset-2"
+                    >
+                      <legend className="px-1 text-sm font-semibold text-gray-900">
+                        {conflict.label}: Different value found
+                      </legend>
+                      <div className="mt-2 flex items-start gap-2 text-amber-700">
+                        <TriangleAlert aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0" />
+                        <p className="text-xs">Choose which value to keep.</p>
+                      </div>
+                      <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2">
+                        <div role="group" aria-labelledby={currentLabelId} className="min-w-0 rounded-lg border border-gray-200 bg-gray-50 p-3">
+                          <p id={currentLabelId} className="text-xs font-semibold text-gray-600">Your current value</p>
+                          <p className="mt-1 break-words text-sm font-medium tabular-nums text-gray-900">
+                            <bdi>{formatConflictValue(currentValue)}</bdi>{unit ? <span dir="ltr"> {unit}</span> : null}
+                          </p>
+                        </div>
+                        <div role="group" aria-labelledby={catalogueLabelId} className="min-w-0 rounded-lg border border-teal-200 bg-teal-50/40 p-3">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <p id={catalogueLabelId} className="text-xs font-semibold text-gray-600">Catalogue value</p>
+                            <span className="rounded border border-teal-200 bg-teal-50 px-1.5 py-0.5 text-xs font-semibold text-teal-700">From catalogue</span>
+                          </div>
+                          <p className="mt-1 break-words text-sm font-medium tabular-nums text-gray-900">
+                            <bdi>{conflict.displayValue}</bdi>{unit ? <span dir="ltr"> {unit}</span> : null}
+                            {conflict.conditions ? <span dir="ltr"> ({conflict.conditions})</span> : null}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:justify-end">
+                        <button
+                          type="button"
+                          aria-label={`Keep current value for ${conflict.label}`}
+                          onClick={() => resolveConflictAndFocus(conflict, "keep")}
+                          className="min-h-[44px] w-full rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700 focus-visible:ring-offset-2 sm:w-auto"
+                        >
+                          Keep current
+                        </button>
+                        <button
+                          type="button"
+                          aria-label={`Use catalogue value for ${conflict.label}`}
+                          onClick={() => resolveConflictAndFocus(conflict, "use")}
+                          className="min-h-[44px] w-full rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700 focus-visible:ring-offset-2 sm:w-auto"
+                        >
+                          Use catalogue value
+                        </button>
+                      </div>
+                    </fieldset>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+
           {confirmRows.map(item => (
-            <div key={item.key} className="bg-white rounded-xl border border-amber-200 px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-3">
+            <div key={item.key} data-taxonomy-review-row tabIndex={-1} className="bg-white rounded-xl border border-amber-200 px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-3 outline-none">
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5 mb-1">
                   <HelpCircle className="w-4 h-4 text-amber-600 shrink-0" />
@@ -286,7 +382,7 @@ const CatalogFindings: React.FC<CatalogFindingsProps> = ({
           ))}
 
           {manualRows.map(item => (
-            <div key={item.key} className="bg-white rounded-xl border border-gray-200 px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-3">
+            <div key={item.key} data-taxonomy-review-row tabIndex={-1} className="bg-white rounded-xl border border-gray-200 px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-3 outline-none">
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5 mb-1">
                   <CircleAlert className="w-4 h-4 text-gray-500 shrink-0" />

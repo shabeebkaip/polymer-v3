@@ -100,6 +100,18 @@ export interface TaxonomyReviewItem {
   label: string;
 }
 
+export type ConflictValue = string | number | boolean | string[];
+
+export interface ConflictItem {
+  id: string;
+  fieldKey: string;
+  label: string;
+  catalogueValue: ConflictValue;
+  displayValue: string;
+  confidence: ConfidenceLevel;
+  conditions?: string;
+}
+
 export interface ApplyPayload {
   fields: Record<string, unknown>;
   aiFilledFields: AiFilledFields;
@@ -109,6 +121,8 @@ export interface ApplyPayload {
   // covers the other plumbing gap (§21.9 point 1), so no separate `rows`
   // structure is threaded through here (YAGNI — nothing in §14 reads it).
   taxonomyReview: TaxonomyReviewItem[];
+  conflicts: ConflictItem[];
+  foundCount: number;
 }
 
 export interface DiffRow {
