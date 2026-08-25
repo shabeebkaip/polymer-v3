@@ -87,11 +87,34 @@ function formatConflictValue(value: unknown): string {
 // Live-visibility rule (§14.2): confirm-tier rows are removed from state on
 // resolve; manual-tier rows passively disappear once the seller fills the
 // real field through any path (its own dropdown, or "Use this" elsewhere).
-export function getVisibleTaxonomyReview(items: TaxonomyReviewItem[], data: ProductFormData): TaxonomyReviewItem[] {
+//
+// W2 fix — for a singular field "filled" just means non-empty. For an ARRAY
+// field (industry/grade) that check is wrong: an auto-matched sibling from
+// the SAME extraction can make the array non-empty while a different,
+// unmatched item in that array still needs a manual pick. `arrayBaseline`
+// carries how many items were already auto-applied to that array at the
+// moment of the current extraction (handleAiApply's `fields[formKey]`), so a
+// manual row is only considered resolved once the array has grown BEYOND
+// that baseline — one row retired per extra item added, in the same order
+// refArrTiered (useAiProcessing.ts) assigned them (its per-item `key`s are
+// already `${formKey}-${idx}` in that order, so a plain forward scan here
+// retires the earliest-still-open row for each field first).
+export function getVisibleTaxonomyReview(
+  items: TaxonomyReviewItem[],
+  data: ProductFormData,
+  arrayBaseline: Record<string, number> = {},
+): TaxonomyReviewItem[] {
+  const arrayRetired: Record<string, number> = {};
   return items.filter(item => {
     if (item.tier !== "manual") return true;
     const v = (data as Record<string, unknown>)[item.formKey];
-    return item.isArray ? !(Array.isArray(v) && v.length > 0) : !(v != null && v !== "");
+    if (!item.isArray) return !(v != null && v !== "");
+    const currentLength = Array.isArray(v) ? v.length : 0;
+    const baseline = arrayBaseline[item.formKey] ?? 0;
+    const retired = arrayRetired[item.formKey] ?? 0;
+    const resolved = currentLength > baseline + retired;
+    if (resolved) arrayRetired[item.formKey] = retired + 1;
+    return !resolved;
   });
 }
 
@@ -137,6 +160,7 @@ interface CatalogFindingsProps {
   clearAiField: (field: string) => void;
   dismissAiField: (field: string) => void;
   taxonomyReview: TaxonomyReviewItem[];
+  taxonomyArrayBaseline: Record<string, number>;
   conflicts: ConflictItem[];
   onResolveConflict: (conflict: ConflictItem, action: "keep" | "use") => void;
   onResolveTaxonomy: (item: TaxonomyReviewItem, action: "use" | "reject") => void;
@@ -153,14 +177,14 @@ interface CatalogFindingsProps {
 
 const CatalogFindings: React.FC<CatalogFindingsProps> = ({
   data, onFieldChange, aiFilledFields, clearAiField, dismissAiField,
-  taxonomyReview, conflicts, onResolveConflict, onResolveTaxonomy, onPickFromList, grades,
+  taxonomyReview, taxonomyArrayBaseline, conflicts, onResolveConflict, onResolveTaxonomy, onPickFromList, grades,
   completedRequired, totalRequired,
   needsAttentionHeadingId, foundHeadingId, requiredHeadingId,
   completionTrackerId, onFocusCompletion,
 }) => {
   const instanceId = React.useId().replace(/:/g, "");
   const rootRef = React.useRef<HTMLDivElement>(null);
-  const visibleReview = getVisibleTaxonomyReview(taxonomyReview, data);
+  const visibleReview = getVisibleTaxonomyReview(taxonomyReview, data, taxonomyArrayBaseline);
   const confirmRows = visibleReview.filter(i => i.tier === "confirm");
   const manualRows = visibleReview.filter(i => i.tier === "manual");
   const showMissingLine = completedRequired < totalRequired && (conflicts.length > 0 || visibleReview.length > 0);

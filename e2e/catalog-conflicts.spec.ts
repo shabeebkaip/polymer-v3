@@ -439,3 +439,74 @@ test("M-B manual form remains unchanged when no catalogue is selected", async ({
   await expect(page.getByRole("heading", { name: "Needs Your Attention" }).locator("visible=true")).toHaveCount(0);
   await expect(page.getByText("Found in Your Catalogue", { exact: true }).locator("visible=true")).toHaveCount(0);
 });
+
+// Bug 1 regression — create-mode save with NO AI session/catalogue involved
+// at all (plain manual entry) must still navigate to /user/products reliably.
+// Guards against the fragile bare setTimeout(() => router.push(...), 800)
+// pattern that used to gate this navigation.
+test("plain manual create (no catalogue, no AI session) navigates to /user/products", async ({ page }) => {
+  let savePayload: Record<string, unknown> | undefined;
+  await page.route("**/product/create", async route => {
+    savePayload = route.request().postDataJSON() as Record<string, unknown>;
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ success: true, data: { _id: "manual-created" } }),
+    });
+  });
+  await page.route("**/file/upload", route => route.fulfill({
+    status: 200,
+    contentType: "application/json",
+    body: JSON.stringify({
+      id: "mock-image",
+      fileUrl: "data:image/png;base64,iVBORw0KGgo=",
+      originalFilename: "mock-product.png",
+      format: "png",
+      resourceType: "image",
+    }),
+  }));
+
+  await page.goto("/user/products/add?mode=advanced");
+  await visible(page, "#productName").fill("Manual Only PP");
+  await visible(page, "#chemicalName").fill("Polypropylene");
+
+  await visible(page, 'button[aria-label="Select Chemical Family"]').click();
+  await page.getByRole("option", { name: "Polyolefin", exact: true }).locator("visible=true").first().click();
+  await page.keyboard.press("Escape");
+
+  await visible(page, 'button[aria-label="Select Polymer Type"]').click();
+  await page.getByRole("option", { name: "Polypropylene", exact: true }).locator("visible=true").first().click();
+  await page.keyboard.press("Escape");
+
+  await visible(page, 'button[aria-label="Select Physical Form"]').click();
+  await page.getByRole("option", { name: "Pellets", exact: true }).locator("visible=true").first().click();
+  await page.keyboard.press("Escape");
+
+  await visible(page, 'button[aria-label="Select Industries"]').click();
+  await page.getByRole("option", { name: "Packaging", exact: true }).locator("visible=true").first().click();
+  await page.keyboard.press("Escape");
+
+  await visible(page, "#minimum_order_quantity").fill("10");
+  await visible(page, "#stock").fill("500");
+  await page.locator("#uom-field").locator("visible=true").first().locator("button").click();
+  await page.getByRole("option", { name: "Kilogram", exact: true }).locator("visible=true").first().click();
+  await page.keyboard.press("Escape");
+  await visible(page, "#price").fill("1200");
+
+  await visible(page, 'button[aria-label="Select Incoterms"]').click();
+  await page.getByRole("option", { name: "FOB", exact: true }).locator("visible=true").first().click();
+  await page.keyboard.press("Escape");
+
+  await page.locator("#productImages-field").locator("visible=true").first().locator('input[type="file"]').setInputFiles({
+    name: "mock-product.png",
+    mimeType: "image/png",
+    buffer: Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]),
+  });
+  await expect(visible(page, "text=1 image uploaded")).toBeVisible();
+
+  await visible(page, 'button:has-text("Create Product")').click();
+  await expect.poll(() => savePayload).toBeTruthy();
+  expect(savePayload?.aiSessionId).toBeUndefined();
+  expect(savePayload?.createdVia).toBeUndefined();
+  await page.waitForURL(url => url.pathname === "/user/products", { timeout: 5_000 });
+});

@@ -413,6 +413,11 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
   // taxonomy review metadata the transient AI modal already had access to
   // (§21.9's plumbing note), so it's captured here alongside aiFilledFields.
   const [taxonomyReview, setTaxonomyReview] = useState<TaxonomyReviewItem[]>([]);
+  // W2 — items auto-applied per array taxonomy field (industry/grade) by the
+  // current extraction, so a manual-tier row for a different unmatched item
+  // in that same array isn't hidden just because an auto-matched sibling
+  // made the array non-empty (see CatalogFindings' getVisibleTaxonomyReview).
+  const [taxonomyArrayBaseline, setTaxonomyArrayBaseline] = useState<Record<string, number>>({});
   const [conflicts, setConflicts] = useState<ConflictItem[]>([]);
   const [latestFoundCount, setLatestFoundCount] = useState(0);
   // Bumped once per successful apply (initial import, Replace, or "Add
@@ -452,6 +457,13 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
       setAiFillCount(Object.keys(nextFilled).length);
       setAiSessionId(sessionId);
       setTaxonomyReview(review ?? []);
+      const arrayBaseline: Record<string, number> = {};
+      (review ?? []).forEach(item => {
+        if (!item.isArray || arrayBaseline[item.formKey] != null) return;
+        const applied = fields[item.formKey];
+        arrayBaseline[item.formKey] = Array.isArray(applied) ? applied.length : 0;
+      });
+      setTaxonomyArrayBaseline(arrayBaseline);
       setConflicts(nextConflicts);
       setLatestFoundCount(foundCount);
       setApplyGen(g => g + 1);
@@ -510,6 +522,7 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
     setAiFillCount(0);
     setAiSessionId(null);
     setTaxonomyReview([]);
+    setTaxonomyArrayBaseline({});
     setConflicts([]);
     setLatestFoundCount(0);
     aiProcessing.clearAiData();
@@ -671,7 +684,7 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
     revealAndFocusField(item.formKey);
   }, [revealAndFocusField]);
 
-  const visibleTaxonomyReview = getVisibleTaxonomyReview(taxonomyReview, data);
+  const visibleTaxonomyReview = getVisibleTaxonomyReview(taxonomyReview, data, taxonomyArrayBaseline);
 
   const resolveConflict = useCallback((conflict: ConflictItem, action: "keep" | "use") => {
     if (action === "keep") {
@@ -827,7 +840,18 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
           setData(initialFormData);
           sessionStorage.removeItem(QUICK_ADD_DRAFT_KEY);
         }
-        setTimeout(() => router.push("/user/products"), 800);
+        // Bug 1 fix — navigate directly instead of via a bare setTimeout. The
+        // old 800ms timer wasn't tied to this component's lifecycle (no ref,
+        // no cleanup): anything that unmounts/remounts AddEditProduct before
+        // it fires (e.g. the add page's `key={seed ? "seeded" : "blank"}`
+        // remount, which the sessionStorage.removeItem two lines up can
+        // itself trigger on the next parent render) silently drops the
+        // scheduled navigation even though the success toast/aria-live
+        // already fired — the seller is left on a blank form with no
+        // signal their product wasn't actually re-opened. Toaster lives in
+        // the root layout (app/layout.tsx) and persists across client-side
+        // navigation, so the success toast stays visible without a delay.
+        router.push("/user/products");
       } else {
         setAriaLiveMsg(isEditMode ? "Product could not be saved." : "Product could not be created.");
         toast.error(isEditMode ? "Error updating product" : "Error creating product", { id: toastId });
@@ -979,6 +1003,7 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
                 clearAiField={clearAiField}
                 dismissAiField={dismissAiField}
                 taxonomyReview={taxonomyReview}
+                taxonomyArrayBaseline={taxonomyArrayBaseline}
                 conflicts={conflicts}
                 onResolveConflict={resolveConflict}
                 onResolveTaxonomy={resolveTaxonomy}
