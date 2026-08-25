@@ -62,7 +62,9 @@ test("M-A — catalog import surfaces Found in Your Catalogue + Needs Your Atten
   await expect(visible(page, "h2:has-text('Packaging & Logistics')")).toBeVisible();
 
   // §14.9 — aria-live announcement fires on extraction complete.
-  const liveText = await page.locator("#ai-import-status").first().textContent();
+  const catalogueStatus = page.locator('[role="status"][aria-atomic="true"][id$="-catalogue-status"]');
+  await expect(catalogueStatus).toHaveCount(1);
+  const liveText = await catalogueStatus.textContent();
   expect(liveText).toContain("Catalogue processed");
 
   // §14.2 — Needs Your Attention (confirm/manual taxonomy tiers), when present.

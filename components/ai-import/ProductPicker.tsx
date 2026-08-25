@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { CheckCircle2, Search } from "lucide-react";
+import { CheckCircle2, ChevronRight, Search } from "lucide-react";
 import type { ExtractedProduct } from "@/types/ai";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -92,10 +92,15 @@ export default function ProductPicker({ items, usedIndices = new Set(), onPick }
   }, [items, query, sortBy]);
 
   const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "ArrowDown" && filtered.length > 0) {
+    if (["ArrowDown", "Home"].includes(e.key) && filtered.length > 0) {
       e.preventDefault();
       setFocusedIdx(0);
       rowRefs.current[0]?.focus();
+    } else if (["ArrowUp", "End"].includes(e.key) && filtered.length > 0) {
+      e.preventDefault();
+      const last = filtered.length - 1;
+      setFocusedIdx(last);
+      rowRefs.current[last]?.focus();
     }
   };
 
@@ -110,6 +115,15 @@ export default function ProductPicker({ items, usedIndices = new Set(), onPick }
       const prev = focusedIdx > 0 ? focusedIdx - 1 : filtered.length - 1;
       setFocusedIdx(prev);
       rowRefs.current[prev]?.focus();
+    } else if (e.key === "Home" && filtered.length > 0) {
+      e.preventDefault();
+      setFocusedIdx(0);
+      rowRefs.current[0]?.focus();
+    } else if (e.key === "End" && filtered.length > 0) {
+      e.preventDefault();
+      const last = filtered.length - 1;
+      setFocusedIdx(last);
+      rowRefs.current[last]?.focus();
     } else if ((e.key === "Enter" || e.key === " ") && focusedIdx >= 0) {
       e.preventDefault();
       const { originalIndex } = filtered[focusedIdx];
@@ -127,7 +141,7 @@ export default function ProductPicker({ items, usedIndices = new Set(), onPick }
 
       {/* Search */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+        <Search aria-hidden="true" className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
         <input
           type="search"
           autoFocus
@@ -136,7 +150,7 @@ export default function ProductPicker({ items, usedIndices = new Set(), onPick }
           onKeyDown={handleSearchKeyDown}
           placeholder="Search by name, type, or grade…"
           aria-label="Search products"
-          className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-teal-100 focus:border-teal-400 focus:bg-white transition-all"
+          className="min-h-[44px] w-full ps-9 pe-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-teal-700 focus:ring-offset-2 focus:border-teal-400 focus:bg-white transition-all motion-reduce:transition-none"
         />
       </div>
 
@@ -149,7 +163,7 @@ export default function ProductPicker({ items, usedIndices = new Set(), onPick }
           value={sortBy}
           onChange={e => setSortBy(e.target.value as "name" | "richness")}
           aria-label="Sort by"
-          className="text-xs text-gray-500 border-0 bg-transparent cursor-pointer focus:outline-none focus:ring-2 focus:ring-teal-400 rounded"
+          className="min-h-[44px] text-xs text-gray-500 border-0 bg-transparent cursor-pointer focus:outline-none focus:ring-2 focus:ring-teal-700 focus:ring-offset-2 rounded"
         >
           <option value="name">A–Z</option>
           <option value="richness">Most data first</option>
@@ -185,7 +199,7 @@ export default function ProductPicker({ items, usedIndices = new Set(), onPick }
               onClick={() => !isUsed && onPick(originalIndex)}
               onFocus={() => setFocusedIdx(displayIdx)}
               className={[
-                "w-full flex items-center gap-3 px-4 py-3.5 text-left transition-colors",
+                "w-full min-w-0 flex items-center gap-3 px-4 py-3.5 text-start transition-colors motion-reduce:transition-none",
                 "focus:outline-none focus:ring-2 focus:ring-teal-400 focus:ring-inset",
                 isUsed
                   ? "opacity-50 pointer-events-none cursor-default bg-transparent"
@@ -194,19 +208,19 @@ export default function ProductPicker({ items, usedIndices = new Set(), onPick }
             >
               {/* Text */}
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-800 truncate">
-                  <HighlightMatch text={label} query={query} />
+                <p className="break-words text-sm font-medium text-gray-800">
+                  <bdi><HighlightMatch text={label} query={query} /></bdi>
                 </p>
                 {sub && (
-                  <p className="text-xs text-gray-500 truncate">{sub}</p>
+                  <p className="break-words text-xs text-gray-500"><bdi>{sub}</bdi></p>
                 )}
               </div>
               {/* Right */}
               <div className="flex items-center gap-2 shrink-0">
                 <RichnessIndicator fieldCount={countFilledFields(product)} />
                 {isUsed
-                  ? <CheckCircle2 className="w-4 h-4 text-teal-400 shrink-0" />
-                  : <span className="shrink-0 text-xs font-semibold text-teal-600">Use →</span>
+                  ? <CheckCircle2 aria-hidden="true" className="w-4 h-4 text-teal-400 shrink-0" />
+                  : <span className="inline-flex shrink-0 items-center gap-1 text-xs font-semibold text-teal-600">Use <ChevronRight aria-hidden="true" className="h-3.5 w-3.5 rtl:rotate-180" /></span>
                 }
               </div>
             </button>
@@ -214,8 +228,8 @@ export default function ProductPicker({ items, usedIndices = new Set(), onPick }
         })}
 
         {filtered.length === 0 && (
-          <div className="px-4 py-8 text-center text-sm text-gray-400">
-            No products match &ldquo;{query}&rdquo;
+          <div role="status" aria-live="polite" className="px-4 py-8 text-center text-sm text-gray-400">
+            No products match &ldquo;<bdi>{query}</bdi>&rdquo;
           </div>
         )}
       </div>

@@ -110,7 +110,7 @@ function ChipGroup({ id, labelledBy, options, value, onChange }: { id: string; l
             type="button"
             onClick={() => onChange(opt.value)}
             aria-pressed={active}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors min-h-[36px] ${
+            className={`min-h-[44px] px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700 focus-visible:ring-offset-2 motion-reduce:transition-none ${
               active ? "bg-emerald-600 border-emerald-600 text-white" : "bg-white border-gray-200 text-gray-600 hover:border-emerald-300"
             }`}
           >
@@ -147,6 +147,8 @@ interface CatalogFindingsProps {
   needsAttentionHeadingId: string;
   foundHeadingId: string;
   requiredHeadingId: string;
+  completionTrackerId: string;
+  onFocusCompletion: () => void;
 }
 
 const CatalogFindings: React.FC<CatalogFindingsProps> = ({
@@ -154,6 +156,7 @@ const CatalogFindings: React.FC<CatalogFindingsProps> = ({
   taxonomyReview, conflicts, onResolveConflict, onResolveTaxonomy, onPickFromList, grades,
   completedRequired, totalRequired,
   needsAttentionHeadingId, foundHeadingId, requiredHeadingId,
+  completionTrackerId, onFocusCompletion,
 }) => {
   const instanceId = React.useId().replace(/:/g, "");
   const rootRef = React.useRef<HTMLDivElement>(null);
@@ -183,7 +186,10 @@ const CatalogFindings: React.FC<CatalogFindingsProps> = ({
         : rootRef.current?.querySelector<HTMLElement>("[data-taxonomy-review-row]")
           ?? document.getElementById(foundHeadingId)
           ?? document.getElementById(requiredHeadingId);
-      target?.focus();
+      if (!target) return;
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      target.scrollIntoView({ block: "center", behavior: reduceMotion ? "auto" : "smooth" });
+      target.focus();
     });
   };
 
@@ -218,10 +224,10 @@ const CatalogFindings: React.FC<CatalogFindingsProps> = ({
               step="0.01"
               value={(raw as string | number) ?? ""}
               onChange={e => handleChange(e.target.value)}
-              className={cfg.unit ? `pr-20 ${commonInputCls}` : commonInputCls}
+              className={cfg.unit ? `pe-20 ${commonInputCls}` : commonInputCls}
             />
             {cfg.unit && (
-              <div className="absolute right-3 top-2 text-xs text-gray-400 pointer-events-none">
+              <div dir="ltr" className="absolute end-3 top-2 text-xs text-gray-400 pointer-events-none">
                 {cfg.unit}
                 {cfg.key === "mfi" && aiFilledFields.mfi?.conditions && ` (${aiFilledFields.mfi.conditions})`}
               </div>
@@ -277,7 +283,7 @@ const CatalogFindings: React.FC<CatalogFindingsProps> = ({
           <h2
             id={needsAttentionHeadingId}
             tabIndex={-1}
-            className="text-xs font-semibold uppercase tracking-wide text-amber-700 mb-1 outline-none"
+            className="scroll-mt-24 rounded text-xs font-semibold uppercase tracking-wide text-amber-700 mb-1 outline-none focus:ring-2 focus:ring-teal-700 focus:ring-offset-2"
           >
             Needs Your Attention
           </h2>
@@ -294,7 +300,7 @@ const CatalogFindings: React.FC<CatalogFindingsProps> = ({
                     <fieldset
                       id={conflictRowId(conflict)}
                       tabIndex={-1}
-                      className="min-w-0 rounded-xl border border-amber-200 bg-white px-4 py-4 outline-none focus-visible:ring-2 focus-visible:ring-teal-700 focus-visible:ring-offset-2"
+                      className="scroll-mt-24 min-w-0 rounded-xl border border-amber-200 bg-white px-4 py-4 outline-none focus:ring-2 focus:ring-teal-700 focus:ring-offset-2"
                     >
                       <legend className="px-1 text-sm font-semibold text-gray-900">
                         {conflict.label}: Different value found
@@ -347,17 +353,17 @@ const CatalogFindings: React.FC<CatalogFindingsProps> = ({
           )}
 
           {confirmRows.map(item => (
-            <div key={item.key} data-taxonomy-review-row tabIndex={-1} className="bg-white rounded-xl border border-amber-200 px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-3 outline-none">
+            <div key={item.key} data-taxonomy-review-row tabIndex={-1} className="scroll-mt-24 bg-white rounded-xl border border-amber-200 px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-3 outline-none focus:ring-2 focus:ring-teal-700 focus:ring-offset-2">
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5 mb-1">
-                  <HelpCircle className="w-4 h-4 text-amber-600 shrink-0" />
+                  <HelpCircle aria-hidden="true" className="w-4 h-4 text-amber-600 shrink-0" />
                   <span className="text-xs font-medium text-amber-700">Plausible match — please confirm</span>
                 </div>
-                <p className="text-xs text-gray-500 italic truncate">
-                  {item.label}: &ldquo;{truncate(item.query)}&rdquo;
+                <p className="text-xs text-gray-500 italic break-words">
+                  {item.label}: &ldquo;<bdi>{truncate(item.query)}</bdi>&rdquo;
                 </p>
                 <p className="text-sm font-medium text-gray-900 mt-0.5">
-                  → {item.suggestedName ?? "Unknown"}
+                  <span aria-hidden="true" className="inline-block rtl:rotate-180">→</span>{" "}<bdi>{item.suggestedName ?? "Unknown"}</bdi>
                 </p>
               </div>
               <div className="flex gap-2 shrink-0">
@@ -365,7 +371,7 @@ const CatalogFindings: React.FC<CatalogFindingsProps> = ({
                   type="button"
                   onClick={() => onResolveTaxonomy(item, "use")}
                   style={{ minHeight: "44px", minWidth: "44px" }}
-                  className="flex-1 sm:flex-initial px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium transition-colors"
+                  className="flex-1 sm:flex-initial px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700 focus-visible:ring-offset-2 motion-reduce:transition-none"
                 >
                   Use this
                 </button>
@@ -373,7 +379,7 @@ const CatalogFindings: React.FC<CatalogFindingsProps> = ({
                   type="button"
                   onClick={() => onResolveTaxonomy(item, "reject")}
                   style={{ minHeight: "44px", minWidth: "44px" }}
-                  className="flex-1 sm:flex-initial px-4 py-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 text-sm font-medium transition-colors"
+                  className="flex-1 sm:flex-initial px-4 py-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700 focus-visible:ring-offset-2 motion-reduce:transition-none"
                 >
                   Not this
                 </button>
@@ -382,21 +388,21 @@ const CatalogFindings: React.FC<CatalogFindingsProps> = ({
           ))}
 
           {manualRows.map(item => (
-            <div key={item.key} data-taxonomy-review-row tabIndex={-1} className="bg-white rounded-xl border border-gray-200 px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-3 outline-none">
+            <div key={item.key} data-taxonomy-review-row tabIndex={-1} className="scroll-mt-24 bg-white rounded-xl border border-gray-200 px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-3 outline-none focus:ring-2 focus:ring-teal-700 focus:ring-offset-2">
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5 mb-1">
-                  <CircleAlert className="w-4 h-4 text-gray-500 shrink-0" />
+                  <CircleAlert aria-hidden="true" className="w-4 h-4 text-gray-500 shrink-0" />
                   <span className="text-xs font-medium text-gray-600">No confident match — pick manually</span>
                 </div>
-                <p className="text-xs text-gray-500 truncate">
-                  {item.label} — Catalogue said: &ldquo;{truncate(item.query)}&rdquo;
+                <p className="text-xs text-gray-500 break-words">
+                  {item.label} — Catalogue said: &ldquo;<bdi>{truncate(item.query)}</bdi>&rdquo;
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => onPickFromList(item)}
                 style={{ minHeight: "44px" }}
-                className="shrink-0 text-sm font-medium text-teal-700 hover:text-teal-800 underline text-left sm:text-center"
+                className="shrink-0 min-w-[44px] rounded text-sm font-medium text-teal-700 hover:text-teal-800 underline text-start sm:text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700 focus-visible:ring-offset-2"
               >
                 Pick from list
               </button>
@@ -404,12 +410,14 @@ const CatalogFindings: React.FC<CatalogFindingsProps> = ({
           ))}
 
           {showMissingLine && (
-            <a
-              href="#completion-tracker"
-              className="text-xs text-gray-500 underline text-teal-700 hover:text-teal-800 sm:no-underline sm:text-gray-500 sm:pointer-events-none sm:hover:text-gray-500"
+            <button
+              type="button"
+              aria-controls={completionTrackerId}
+              onClick={onFocusCompletion}
+              className="min-h-[44px] rounded text-start text-xs text-teal-700 underline hover:text-teal-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700 focus-visible:ring-offset-2"
             >
               {missingCount} required field{missingCount !== 1 ? "s" : ""} still need attention — see the checklist in the sidebar.
-            </a>
+            </button>
           )}
         </div>
       )}
@@ -423,13 +431,13 @@ const CatalogFindings: React.FC<CatalogFindingsProps> = ({
             <h2
               id={isFirstGroup ? foundHeadingId : undefined}
               tabIndex={isFirstGroup ? -1 : undefined}
-              className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-2 outline-none"
+              className="scroll-mt-24 rounded text-xs font-semibold uppercase tracking-wide text-gray-400 mb-2 outline-none focus:ring-2 focus:ring-teal-700 focus:ring-offset-2"
             >
               {group}
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {fields.map(cfg => (
-                <div key={cfg.key} className="bg-white rounded-xl border border-teal-200 bg-teal-50/20 px-4 py-3">
+                <div key={cfg.key} className="min-w-0 bg-white rounded-xl border border-teal-200 bg-teal-50/20 px-4 py-3">
                   <div className="flex items-center justify-between gap-2 mb-1.5">
                     <Label
                       id={`${instanceId}-${cfg.key}-label`}
@@ -444,9 +452,9 @@ const CatalogFindings: React.FC<CatalogFindingsProps> = ({
                       onClick={() => dismissAiField(cfg.key)}
                       aria-label={`Remove ${cfg.label} from catalogue`}
                       style={{ minHeight: "44px", minWidth: "44px" }}
-                      className="text-gray-400 hover:text-gray-600 flex items-center justify-center rounded shrink-0"
+                      className="text-gray-400 hover:text-gray-600 flex items-center justify-center rounded shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700 focus-visible:ring-offset-2"
                     >
-                      <X className="w-3.5 h-3.5" />
+                      <X aria-hidden="true" className="w-3.5 h-3.5" />
                     </button>
                   </div>
                   {renderValue(cfg)}

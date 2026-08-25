@@ -1,12 +1,21 @@
 import type { Page } from "@playwright/test";
 
 // W2 (docs/PROJECT_PLAN.md §16): e2e-created products must self-clean so the
-// shared staging seller doesn't accumulate unbounded rows.
+// shared staging seller doesn't accumulate unbounded rows. The run + worker
+// scope prevents fully-parallel tests from deleting another worker's product.
 //
 // Any product a test actually submits through the UI should have its name
 // prefixed with this string. Import it wherever a spec fills the product
 // name input right before a real submit/create.
-export const E2E_PRODUCT_PREFIX = "E2E-TEST-";
+const identifier = (value: string) => value.replace(/[^a-zA-Z0-9_-]/g, "-");
+const runScope = identifier(
+  process.env.POLYMERS_E2E_RUN_ID?.trim() || `standalone-${process.pid}`,
+);
+const workerScope = identifier(
+  process.env.TEST_WORKER_INDEX?.trim() || `pid-${process.pid}`,
+);
+
+export const E2E_PRODUCT_PREFIX = `E2E-TEST-${runScope}-${workerScope}-`;
 
 // ponytail: same fallback the app itself already uses (apiServices'
 // axiosInstance.ts) — .env isn't auto-loaded into the Playwright test
@@ -14,11 +23,10 @@ export const E2E_PRODUCT_PREFIX = "E2E-TEST-";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5050/api";
 
 /**
- * Deletes every product owned by the logged-in seller whose name starts with
- * E2E_PRODUCT_PREFIX. Call from an `afterEach` after `login(page)` has run
- * (reuses the same JWT the UI login already put in the "token" cookie —
- * no second login). Safe to call even if the test created nothing, or isn't
- * logged in (no-ops instead of throwing).
+ * Deletes products owned by the logged-in seller whose name starts with this
+ * run worker's E2E_PRODUCT_PREFIX. Call from an `afterEach` after login(page)
+ * has run (reuses the JWT the UI login put in the "token" cookie — no second
+ * login). Safe to call when the test created nothing or is not logged in.
  */
 export async function cleanupE2EProducts(page: Page): Promise<void> {
   const cookie = await page.context().cookies().then((cookies) => cookies.find((c) => c.name === "token"));

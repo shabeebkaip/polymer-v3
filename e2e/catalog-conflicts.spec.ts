@@ -120,13 +120,29 @@ function persistedProduct(data: Record<string, unknown>, id: string) {
 }
 
 async function uploadQueuedCatalogue(page: Page, sequence: number) {
-  const source = page.locator('[aria-label^="Upload a catalog file"], #catalog-source-bar').locator("visible=true").first();
-  await expect(source).toBeVisible();
-  await source.locator('input[type="file"]').setInputFiles({
+  const sourceBar = page.locator('#catalog-source-bar').locator("visible=true");
+  const hasSourceBar = await sourceBar.count() > 0;
+  if (hasSourceBar) {
+    await sourceBar.getByRole("button", { name: "Replace" }).click();
+  }
+
+  const uploadInput = hasSourceBar
+    ? page.getByRole("dialog").locator('input[type="file"]')
+    : page.locator('[aria-label^="Upload a catalog file"]').locator("visible=true").first().locator('input[type="file"]');
+  await expect(uploadInput).toHaveCount(1);
+  await uploadInput.setInputFiles({
     name: `conflict-${sequence + 1}.pdf`,
     mimeType: "application/pdf",
     buffer: Buffer.from("%PDF-1.4 deterministic mocked catalogue"),
   });
+}
+
+async function applyReviewedCatalogue(page: Page) {
+  const review = page.getByRole("dialog", { name: "Review extracted fields" });
+  await expect(review).toBeVisible();
+  const commit = review.getByRole("button", { name: /^(Apply|Continue|Review \d+ conflict)/ }).first();
+  await expect(commit).toBeEnabled();
+  await commit.click();
 }
 
 async function seedDensity(page: Page, value: string) {
@@ -169,6 +185,7 @@ test("M-B conflict lifecycle preserves seller data, supports keyboard decisions,
   catalogues.enqueue(extracted({ density: numeric(0.92) }));
   await uploadQueuedCatalogue(page, catalogues.completedGenerations);
   await expect.poll(() => catalogues.completedGenerations).toBe(1);
+  await applyReviewedCatalogue(page);
 
   const needsAttention = page.getByRole("heading", { name: "Needs Your Attention" }).locator("visible=true").first();
   const densityConflict = page.getByRole("group", { name: "Density: Different value found" }).locator("visible=true").first();
@@ -180,7 +197,9 @@ test("M-B conflict lifecycle preserves seller data, supports keyboard decisions,
   await expect(densityConflict).toContainText("0.92 g/cm³");
   await expect(densityConflict).toContainText("From catalogue");
   await expect(visible(page, "#density")).toHaveValue("0.95");
-  await expect(page.locator("#ai-import-status").first()).toContainText("Catalogue processed. 1 field found. 1 need review.");
+  const catalogueStatus = page.locator('[role="status"][aria-atomic="true"][id$="-catalogue-status"]');
+  await expect(catalogueStatus).toHaveCount(1);
+  await expect(catalogueStatus).toContainText("Catalogue processed. 1 field found. 1 need review.");
 
   const conflictValues = densityConflict.locator(".grid");
   await expect(conflictValues).toHaveCSS("grid-template-columns", /[0-9.]+px [0-9.]+px/);
@@ -193,18 +212,20 @@ test("M-B conflict lifecycle preserves seller data, supports keyboard decisions,
   await page.keyboard.press("Enter");
   await expect(densityConflict).toBeHidden();
   await expect(visible(page, "#density")).toHaveValue("0.95");
-  await expect(page.locator("#ai-import-status").first()).toContainText("Kept current value for Density.");
+  await expect(catalogueStatus).toContainText("Kept current value for Density.");
   await expect(page.getByText("Required Information", { exact: true }).locator("visible=true").first()).toBeFocused();
 
   catalogues.enqueue(extracted({ density: numeric(0.92) }));
   await uploadQueuedCatalogue(page, catalogues.completedGenerations);
   await expect.poll(() => catalogues.completedGenerations).toBe(2);
+  await applyReviewedCatalogue(page);
   await expect(page.getByRole("group", { name: "Density: Different value found" }).locator("visible=true")).toHaveCount(0);
   await expect(visible(page, "#density")).toHaveValue("0.95");
 
   catalogues.enqueue(extracted({ density: numeric(0.91) }));
   await uploadQueuedCatalogue(page, catalogues.completedGenerations);
   await expect.poll(() => catalogues.completedGenerations).toBe(3);
+  await applyReviewedCatalogue(page);
   const changedProposal = page.getByRole("group", { name: "Density: Different value found" }).locator("visible=true").first();
   await expect(changedProposal).toContainText("0.91 g/cm³");
   const useChanged = changedProposal.getByRole("button", { name: "Use catalogue value for Density" });
@@ -212,12 +233,13 @@ test("M-B conflict lifecycle preserves seller data, supports keyboard decisions,
   await page.keyboard.press("Space");
   await expect(changedProposal).toBeHidden();
   await expect(visible(page, "#density")).toHaveValue("0.91");
-  await expect(page.locator("#ai-import-status").first()).toContainText("Using catalogue value for Density.");
+  await expect(catalogueStatus).toContainText("Using catalogue value for Density.");
 
   await visible(page, "#density").fill("0.93");
   catalogues.enqueue(extracted({ density: numeric(0.94) }));
   await uploadQueuedCatalogue(page, catalogues.completedGenerations);
   await expect.poll(() => catalogues.completedGenerations).toBe(4);
+  await applyReviewedCatalogue(page);
   const protectedEdit = page.getByRole("group", { name: "Density: Different value found" }).locator("visible=true").first();
   await expect(protectedEdit).toContainText("0.93 g/cm³");
   await expect(protectedEdit).toContainText("0.94 g/cm³");
@@ -244,6 +266,7 @@ test("M-B conflict lifecycle preserves seller data, supports keyboard decisions,
   }));
   await uploadQueuedCatalogue(page, catalogues.completedGenerations);
   await expect.poll(() => catalogues.completedGenerations).toBe(5);
+  await applyReviewedCatalogue(page);
   await expect(page.getByRole("group", { name: "Density: Different value found" }).locator("visible=true")).toHaveCount(0);
   await expect(visible(page, "#density")).toHaveValue("0.94");
 
@@ -373,12 +396,14 @@ test("M-B replaces stale conflict generations atomically and renders catalogue t
   catalogues.enqueue(extracted({ density: numeric(0.92) }));
   await uploadQueuedCatalogue(page, catalogues.completedGenerations);
   await expect.poll(() => catalogues.completedGenerations).toBe(1);
+  await applyReviewedCatalogue(page);
   await expect(page.getByRole("group", { name: "Density: Different value found" }).locator("visible=true").first()).toBeVisible();
 
   const literal = '<img src=x onerror="document.body.dataset.xss=1">';
   catalogues.enqueue(extracted({ leadTime: text(literal) }));
   await uploadQueuedCatalogue(page, catalogues.completedGenerations);
   await expect.poll(() => catalogues.completedGenerations).toBe(2);
+  await applyReviewedCatalogue(page);
   await expect(page.getByRole("group", { name: "Density: Different value found" }).locator("visible=true")).toHaveCount(0);
   const literalConflict = page.getByRole("group", { name: "Lead Time: Different value found" }).locator("visible=true").first();
   await expect(literalConflict).toContainText(literal);
@@ -395,6 +420,7 @@ test("M-B conflict comparison and actions reflow to one column with 44px targets
   catalogues.enqueue(extracted({ density: numeric(0.92) }));
   await uploadQueuedCatalogue(page, catalogues.completedGenerations);
   await expect.poll(() => catalogues.completedGenerations).toBe(1);
+  await applyReviewedCatalogue(page);
 
   const conflict = page.getByRole("group", { name: "Density: Different value found" }).locator("visible=true").first();
   const grid = conflict.locator(".grid");

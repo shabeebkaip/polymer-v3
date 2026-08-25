@@ -21,7 +21,7 @@ const ENVIRONMENTAL_FEATURES = [
   },
 ];
 
-const Environmental: React.FC<EnvironmentalProps> = ({ data, onFieldChange }) => {
+const Environmental: React.FC<EnvironmentalProps> = ({ data, onFieldChange, clearAiField }) => {
   return (
     <>
       <div className="col-span-full">
@@ -51,15 +51,15 @@ const Environmental: React.FC<EnvironmentalProps> = ({ data, onFieldChange }) =>
                     className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
                       isSelected ? 'bg-gray-50 border-gray-300' : 'border-gray-200 hover:bg-gray-50'
                     }`}
-                    onClick={() => onFieldChange(feature.key, !isSelected)}
+                    onClick={() => { clearAiField?.(String(feature.key)); onFieldChange(feature.key, !isSelected); }}
                   >
                     <Checkbox
                       id={String(feature.key)}
                       checked={isSelected}
-                      onCheckedChange={(checked) => onFieldChange(feature.key, Boolean(checked))}
+                      onCheckedChange={(checked) => { clearAiField?.(String(feature.key)); onFieldChange(feature.key, Boolean(checked)); }}
                       className="w-4 h-4"
                     />
-                    <Icon className="w-5 h-5 text-gray-700 flex-shrink-0" />
+                    <Icon aria-hidden="true" className="w-5 h-5 text-gray-700 flex-shrink-0" />
                     <div className="flex-1">
                       <Label
                         htmlFor={String(feature.key)}

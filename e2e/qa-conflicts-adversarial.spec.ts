@@ -95,12 +95,23 @@ async function installQueue(page: Page) {
 }
 
 async function upload(page: Page, expectedSequence: number) {
-  const source = page.locator('[aria-label^="Upload a catalog file"], #catalog-source-bar').locator("visible=true").first();
-  await source.locator('input[type="file"]').setInputFiles({
+  const sourceBar = page.locator("#catalog-source-bar").locator("visible=true");
+  const hasSourceBar = await sourceBar.count() > 0;
+  if (hasSourceBar) await sourceBar.getByRole("button", { name: "Replace" }).click();
+  const input = hasSourceBar
+    ? page.getByRole("dialog").locator('input[type="file"]')
+    : page.locator('[aria-label^="Upload a catalog file"]').locator("visible=true").first().locator('input[type="file"]');
+  await input.setInputFiles({
     name: `qa-conflict-${expectedSequence}.pdf`,
     mimeType: "application/pdf",
     buffer: Buffer.from("%PDF-1.4 mocked QA catalogue"),
   });
+}
+
+async function applyReviewedCatalogue(page: Page) {
+  const review = page.getByRole("dialog", { name: "Review extracted fields" });
+  await expect(review).toBeVisible();
+  await review.getByRole("button", { name: /^(Apply|Continue|Review \d+ conflict)/ }).first().click();
 }
 
 async function openTechnicalAndSeedDensity(page: Page, density: string) {
@@ -158,6 +169,7 @@ test("QA equal normalized create values are silent and never autosave", async ({
   }));
   await upload(page, 1);
   await expect.poll(() => queue.count).toBe(1);
+  await applyReviewedCatalogue(page);
 
   await expect(page.getByRole("group", { name: /Different value found/ }).locator("visible=true")).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "Needs Your Attention" }).locator("visible=true")).toHaveCount(0);
@@ -193,6 +205,7 @@ test("QA zero-applied conflicts precede taxonomy, replace atomically, preserve u
   }));
   await upload(page, 1);
   await expect.poll(() => queue.count).toBe(1);
+  await applyReviewedCatalogue(page);
 
   const heading = page.getByRole("heading", { name: "Needs Your Attention" }).locator("visible=true").first();
   const conflicts = page.locator('fieldset:has(legend:text("Different value found"))').locator("visible=true");
@@ -212,7 +225,9 @@ test("QA zero-applied conflicts precede taxonomy, replace atomically, preserve u
   const taxonomyRow = page.locator("[data-taxonomy-review-row]").locator("visible=true").first();
   await expect(taxonomyRow).toContainText("Chemical Family");
   expect((await conflicts.nth(1).boundingBox())!.y).toBeLessThan((await taxonomyRow.boundingBox())!.y);
-  await expect(page.locator("#ai-import-status").first()).toContainText("Catalogue processed. 2 fields found. 3 need review.");
+  const catalogueStatus = page.locator('[role="status"][aria-atomic="true"][id$="-catalogue-status"]');
+  await expect(catalogueStatus).toHaveCount(1);
+  await expect(catalogueStatus).toContainText("Catalogue processed. 2 fields found. 3 need review.");
 
   const keepFirst = conflicts.nth(0).getByRole("button", { name: "Keep current value for Product Name" });
   await keepFirst.focus();
@@ -225,6 +240,7 @@ test("QA zero-applied conflicts precede taxonomy, replace atomically, preserve u
   queue.enqueue(extracted({ leadTime: text(literal) }));
   await upload(page, 2);
   await expect.poll(() => queue.count).toBe(2);
+  await applyReviewedCatalogue(page);
 
   await expect(page.getByRole("group", { name: "Density: Different value found" }).locator("visible=true")).toHaveCount(0);
   const replacement = page.getByRole("group", { name: "Lead Time: Different value found" }).locator("visible=true").first();
@@ -266,7 +282,7 @@ test("QA edit-mode false-to-true Use writes canonical boolean only on explicit u
   queue.enqueue(extracted({ recyclable: true }));
   await upload(page, 1);
   await expect.poll(() => queue.count).toBe(1);
-  await page.getByRole("button", { name: "Review 1 conflict" }).locator("visible=true").first().click();
+  await applyReviewedCatalogue(page);
 
   const conflict = page.getByRole("group", { name: "Recyclable: Different value found" }).locator("visible=true").first();
   await expect(conflict).toContainText("Your current valueNo");
@@ -277,7 +293,9 @@ test("QA edit-mode false-to-true Use writes canonical boolean only on explicit u
   await use.focus();
   await page.keyboard.press("Space");
   await expect(conflict).toBeHidden();
-  await expect(page.locator("#ai-import-status").first()).toContainText("Using catalogue value for Recyclable.");
+  const catalogueStatus = page.locator('[role="status"][aria-atomic="true"][id$="-catalogue-status"]');
+  await expect(catalogueStatus).toHaveCount(1);
+  await expect(catalogueStatus).toContainText("Using catalogue value for Recyclable.");
   expect(updateCalls).toBe(0);
 
   await visible(page, 'button:has-text("Save Changes")').click();

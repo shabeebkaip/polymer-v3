@@ -125,12 +125,6 @@ const FIELD_FOCUS_ID: Record<string, string> = {
   grade: "grade-field",
 };
 
-const REQUIRED_FIELD_ORDER = [
-  "productName", "chemicalName", "chemicalFamily", "polymerType", "physicalForm", "industry",
-  "productImages", "minimum_order_quantity", "stock", "uom", "price", "incoterms",
-  "fdaCertificate", "medicalCertificate",
-];
-
 const prefersReducedMotion = () =>
   typeof window !== "undefined" && !!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
@@ -144,7 +138,7 @@ function SectionCard({
   children: React.ReactNode;
 }) {
   return (
-    <div className={`bg-white rounded-2xl shadow-sm border transition-all duration-200
+    <div className={`bg-white rounded-2xl shadow-sm border transition-all duration-200 motion-reduce:transition-none
       ${hasError ? "border-red-200" : completed ? "border-emerald-200" : "border-gray-100"}
       ${open ? "shadow-md" : "hover:shadow-md"}
     `}>
@@ -153,12 +147,12 @@ function SectionCard({
         type="button"
         onClick={onToggle}
         aria-expanded={open}
-        className="w-full flex items-center gap-4 px-5 py-4 text-left group rounded-t-2xl overflow-hidden min-h-[44px]"
+        className="w-full flex items-center gap-4 px-5 py-4 text-start group rounded-t-2xl overflow-hidden min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-teal-700"
       >
         {/* Icon */}
         <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0
           ${completed ? "bg-emerald-50" : hasError ? "bg-red-50" : "bg-gray-50"}`}>
-          <Icon className={`w-4 h-4 ${completed ? "text-emerald-600" : hasError ? "text-red-500" : "text-gray-500"}`} />
+          <Icon aria-hidden="true" className={`w-4 h-4 ${completed ? "text-emerald-600" : hasError ? "text-red-500" : "text-gray-500"}`} />
         </div>
 
         {/* Text */}
@@ -178,7 +172,7 @@ function SectionCard({
 
         {/* Chevron */}
         <div className="shrink-0 text-gray-400 group-hover:text-gray-600 transition-colors">
-          {open ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          {open ? <ChevronUp aria-hidden="true" className="w-4 h-4" /> : <ChevronDown aria-hidden="true" className="w-4 h-4" />}
         </div>
       </button>
 
@@ -287,27 +281,27 @@ function CatalogDropzone({
   if (success) {
     return (
       <div
-        {...getRootProps()}
         id="catalog-source-bar"
-        aria-label="Catalog imported. Drop a new file here to replace it."
-        className="bg-white border border-gray-200 rounded-xl px-4 py-3 flex items-center justify-between gap-3 flex-wrap sm:flex-nowrap cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
+        aria-label="Imported catalogue source"
+        className="flex min-w-0 flex-wrap items-center justify-between gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3 sm:flex-nowrap"
       >
-        <input {...getInputProps()} className="hidden" />
         <div className="flex items-center gap-2.5 min-w-0">
           <div className="w-8 h-8 rounded-lg bg-teal-100 flex items-center justify-center shrink-0">
             <FileCheck className="w-4 h-4 text-teal-600" />
           </div>
           <div className="min-w-0">
-            <p className="text-sm font-medium text-gray-900 truncate max-w-[220px]">{uploadedFileName ?? "Catalog"}</p>
+            <p className="max-w-[220px] break-words text-sm font-medium text-gray-900" title={uploadedFileName ?? "Catalogue"}>
+              <bdi>{uploadedFileName ?? "Catalogue"}</bdi>
+            </p>
             <p className="text-xs text-gray-500">{aiFillCount} field{aiFillCount !== 1 ? "s" : ""} found</p>
           </div>
         </div>
-        <div className="flex items-center gap-3 shrink-0">
+        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center sm:gap-3">
           {catalogRemaining > 0 && (
             <button
               type="button"
               onClick={(e) => { e.stopPropagation(); onReopenCatalogPicker(); }}
-              className="text-xs font-medium text-emerald-700 hover:text-emerald-800"
+              className="min-h-[44px] rounded-lg px-3 text-xs font-medium text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700 focus-visible:ring-offset-2"
             >
               Add another
             </button>
@@ -315,14 +309,14 @@ function CatalogDropzone({
           <button
             type="button"
             onClick={(e) => { e.stopPropagation(); onOpenModal(); }}
-            className="text-xs font-medium text-teal-700 hover:text-teal-800"
+            className="min-h-[44px] rounded-lg px-3 text-xs font-medium text-teal-700 hover:bg-teal-50 hover:text-teal-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700 focus-visible:ring-offset-2"
           >
             Replace
           </button>
           <button
             type="button"
             onClick={(e) => { e.stopPropagation(); onRemove(); }}
-            className="text-xs font-medium text-gray-500 hover:text-red-600"
+            className="min-h-[44px] rounded-lg px-3 text-xs font-medium text-gray-500 hover:bg-red-50 hover:text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700 focus-visible:ring-offset-2"
           >
             Remove
           </button>
@@ -384,6 +378,11 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
   const needsAttentionHeadingId = `${catalogInstanceId}-needs-attention-heading`;
   const foundHeadingId = `${catalogInstanceId}-found-in-catalogue-heading`;
   const requiredHeadingId = `${catalogInstanceId}-required-information-heading`;
+  const statusId = `${catalogInstanceId}-catalogue-status`;
+  const completionTrackerId = `${catalogInstanceId}-completion-tracker`;
+  const completionHeadingId = `${catalogInstanceId}-completion-heading`;
+  const validationSummaryId = `${catalogInstanceId}-validation-summary`;
+  const validationHeadingId = `${catalogInstanceId}-validation-heading`;
   const router = useRouter();
   const isEditMode = !!id;
 
@@ -394,6 +393,7 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
 
   const [data, setData] = useState<ProductFormData>(product ?? initialFormData);
   const [error, setError] = useState<ValidationErrors>({});
+  const [validationAttempt, setValidationAttempt] = useState(0);
   const [saving, setSaving] = useState(false);
 
   // Advanced & Optional Details disclosure + its nested SectionCards (controlled
@@ -406,6 +406,7 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
 
   // AI import
   const [aiFilledFields, setAiFilledFields] = useState<AiFilledFields>({});
+  const aiFilledFieldsRef = useRef<AiFilledFields>({});
   const [aiFillCount, setAiFillCount] = useState(0);
   const [aiSessionId, setAiSessionId] = useState<string | null>(null);
   // §14 "Found in Your Catalogue" — the persistent review surface needs the
@@ -422,15 +423,33 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
   const [ariaLiveMsg, setAriaLiveMsg] = useState("");
 
   const handleAiApply = useCallback(
-    ({ fields, aiFilledFields: filled, sessionId, taxonomyReview: review, conflicts: nextConflicts, foundCount }: ApplyPayload) => {
+    ({ fields, extractedFieldKeys, aiFilledFields: filled, sessionId, taxonomyReview: review, conflicts: nextConflicts, foundCount }: ApplyPayload) => {
       const normalized = { ...fields };
       // buildDiff stores polymer type as polymerTypes (array); SearchableSelect binds to polymerType (string)
       if (Array.isArray(normalized.polymerTypes) && (normalized.polymerTypes as unknown[]).length > 0) {
         normalized.polymerType = (normalized.polymerTypes as unknown[])[0];
       }
-      setData(prev => ({ ...prev, ...normalized }));
-      setAiFilledFields(filled);
-      setAiFillCount(Object.keys(filled).length);
+      const extractedKeys = new Set(extractedFieldKeys.map(key => key === "polymerTypes" ? "polymerType" : key));
+      const conflictKeys = new Set(nextConflicts.map(conflict => conflict.fieldKey));
+      const previousFilled = aiFilledFieldsRef.current;
+      const nextFilled: AiFilledFields = { ...filled };
+      Object.entries(previousFilled).forEach(([key, metadata]) => {
+        if (extractedKeys.has(key) && !conflictKeys.has(key) && !nextFilled[key]) nextFilled[key] = metadata;
+      });
+
+      setData(prev => {
+        const next = { ...prev } as ProductFormData;
+        Object.keys(previousFilled).forEach(key => {
+          if (extractedKeys.has(key) || conflictKeys.has(key)) return;
+          const current = (next as unknown as Record<string, unknown>)[key];
+          const empty = Array.isArray(current) ? [] : typeof current === "boolean" ? false : "";
+          (next as unknown as Record<string, unknown>)[key] = empty;
+        });
+        return { ...next, ...normalized };
+      });
+      aiFilledFieldsRef.current = nextFilled;
+      setAiFilledFields(nextFilled);
+      setAiFillCount(Object.keys(nextFilled).length);
       setAiSessionId(sessionId);
       setTaxonomyReview(review ?? []);
       setConflicts(nextConflicts);
@@ -440,18 +459,53 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
     [],
   );
 
+  const focusAfterCatalogueMinimise = useCallback(() => {
+    const requiredTargets: Array<{ missing: boolean; id: string }> = [
+      { missing: !data.productName?.trim(), id: "productName" },
+      { missing: !data.chemicalName?.trim(), id: "chemicalName" },
+      { missing: !data.chemicalFamily, id: "chemicalFamily-field" },
+      { missing: !data.polymerType, id: "polymerType-field" },
+      { missing: !data.physicalForm, id: "physicalForm-field" },
+      { missing: !Array.isArray(data.industry) || data.industry.length === 0, id: "industry-field" },
+      { missing: !Array.isArray(data.productImages) || data.productImages.length === 0, id: "productImages-field" },
+      { missing: !data.minimum_order_quantity, id: "minimum_order_quantity" },
+      { missing: !data.stock, id: "stock" },
+      { missing: !data.uom, id: "uom-field" },
+      { missing: !data.price, id: "price" },
+      { missing: !Array.isArray(data.incoterms) || data.incoterms.length === 0, id: "incoterms-field" },
+    ];
+    const target = requiredTargets.find(item => item.missing);
+    const container = target ? document.getElementById(target.id) : document.getElementById("catalog-source-bar");
+    const focusable = container?.matches("input,button,select,textarea,[tabindex='0']")
+      ? container as HTMLElement
+      : container?.querySelector<HTMLElement>("input:not([type='hidden']),button,select,textarea,[tabindex='0']");
+    const fallback = document.querySelector<HTMLElement>('[aria-label^="Upload a catalog file"]');
+    const destination = focusable ?? fallback;
+    destination?.scrollIntoView({ block: "center", behavior: prefersReducedMotion() ? "auto" : "smooth" });
+    destination?.focus();
+  }, [data]);
+
   const aiProcessing = useAiProcessing({
     isEditMode,
     existingData: data as Record<string, unknown>,
+    suppressResultToasts: true,
+    onStatusMessage: setAriaLiveMsg,
+    onMinimiseFocus: focusAfterCatalogueMinimise,
     onApply: handleAiApply,
   });
 
   const clearAiField = useCallback(
-    (field: string) => setAiFilledFields(prev => { const n = { ...prev }; delete n[field]; return n; }),
+    (field: string) => setAiFilledFields(prev => {
+      const next = { ...prev };
+      delete next[field];
+      aiFilledFieldsRef.current = next;
+      return next;
+    }),
     [],
   );
 
   const handleAiClear = useCallback(() => {
+    aiFilledFieldsRef.current = {};
     setAiFilledFields({});
     setAiFillCount(0);
     setAiSessionId(null);
@@ -484,6 +538,7 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
     setError(prev => ({ ...prev, [key]: "" }));
 
   const resetForm = () => {
+    aiFilledFieldsRef.current = {};
     setData(initialFormData);
     setError({});
     setConflicts([]);
@@ -557,12 +612,7 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
 
   const focusField = useCallback((fieldKey: string) => {
     const domId = FIELD_FOCUS_ID[fieldKey] ?? fieldKey;
-    // ponytail: app/user/layout.tsx mounts {children} twice (separate desktop/
-    // mobile trees, CSS-toggled — pre-existing, out of scope here), so a plain
-    // getElementById can return the currently-hidden copy's element. Prefer
-    // whichever match is actually laid out (offsetParent !== null).
-    const matches = document.querySelectorAll(`#${CSS.escape(domId)}`);
-    const el = (Array.from(matches).find(n => (n as HTMLElement).offsetParent !== null) ?? matches[0]) as HTMLElement | undefined;
+    const el = document.getElementById(domId);
     if (!el) return;
     el.scrollIntoView({ block: "center", behavior: prefersReducedMotion() ? "auto" : "smooth" });
     el.focus();
@@ -598,11 +648,6 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [focusField]);
-
-  const focusFirstInvalid = useCallback((errs: ValidationErrors) => {
-    const firstKey = REQUIRED_FIELD_ORDER.find(k => !!errs[k as keyof ValidationErrors]);
-    if (firstKey) revealAndFocusField(firstKey);
-  }, [revealAndFocusField]);
 
   // ── §14.2 "Needs Your Attention" — confirm/manual taxonomy tier resolution ──
   const resolveTaxonomy = useCallback((item: TaxonomyReviewItem, action: "use" | "reject") => {
@@ -642,6 +687,13 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
           ...(conflict.conditions ? { conditions: conflict.conditions } : {}),
         },
       }));
+      aiFilledFieldsRef.current = {
+        ...aiFilledFieldsRef.current,
+        [conflict.fieldKey]: {
+          confidence: conflict.confidence,
+          ...(conflict.conditions ? { conditions: conflict.conditions } : {}),
+        },
+      };
       setAriaLiveMsg(`Using catalogue value for ${conflict.label}.`);
     }
     setConflicts(prev => prev.filter(item => item.id !== conflict.id));
@@ -652,16 +704,16 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
   // initial import, Replace, or "Add another"), not aiFillCount, so per-card
   // edits/dismissals never re-announce and same-session re-picks still do.
   const focusDomId = useCallback((domId: string) => {
-    const matches = document.querySelectorAll(`#${CSS.escape(domId)}`);
-    const el = (Array.from(matches).find(n => (n as HTMLElement).offsetParent !== null) ?? matches[0]) as HTMLElement | undefined;
-    el?.focus();
+    const el = document.getElementById(domId);
+    if (!el) return;
+    el.scrollIntoView({ block: "center", behavior: prefersReducedMotion() ? "auto" : "smooth" });
+    el.focus();
   }, []);
 
   useEffect(() => {
     if (applyGen === 0) return;
     const attentionCount = conflicts.length + visibleTaxonomyReview.length;
-    const msg = `Catalogue processed. ${latestFoundCount} field${latestFoundCount === 1 ? "" : "s"} found.`
-      + (attentionCount > 0 ? ` ${attentionCount} need review.` : "");
+    const msg = `Catalogue processed. ${latestFoundCount} field${latestFoundCount === 1 ? "" : "s"} found. ${attentionCount} need review.`;
     setAriaLiveMsg(msg);
     requestAnimationFrame(() => {
       if (attentionCount > 0) focusDomId(needsAttentionHeadingId);
@@ -669,6 +721,10 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [applyGen]);
+
+  useEffect(() => {
+    if (validationAttempt > 0) requestAnimationFrame(() => focusDomId(validationSummaryId));
+  }, [focusDomId, validationAttempt, validationSummaryId]);
 
   // ── Validation ──────────────────────────────────────────────────────────────
   const validate = (): ValidationErrors => {
@@ -748,11 +804,12 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
     const errs = validate();
     if (Object.keys(errs).length > 0) {
       setError(errs);
+      setValidationAttempt(attempt => attempt + 1);
       toast.error(`Fix ${Object.keys(errs).length} required field${Object.keys(errs).length > 1 ? "s" : ""} before submitting`);
-      focusFirstInvalid(errs);
       return;
     }
     setSaving(true);
+    setAriaLiveMsg(isEditMode ? "Saving product." : "Creating product.");
     const toastId = toast.loading(isEditMode ? "Updating product…" : "Creating product…");
     try {
       const payload = formatDataForAPI(data);
@@ -761,6 +818,7 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
         ? await updateProduct(id as string, payload)
         : await createProduct(payload);
       if (res?.success) {
+        setAriaLiveMsg(isEditMode ? "Product saved successfully." : "Product created successfully.");
         toast.success(isEditMode ? "Product updated!" : "Product created!", { id: toastId });
         aiProcessing.onFormSubmit();
         aiProcessing.clearConflictSuppressions();
@@ -771,12 +829,14 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
         }
         setTimeout(() => router.push("/user/products"), 800);
       } else {
+        setAriaLiveMsg(isEditMode ? "Product could not be saved." : "Product could not be created.");
         toast.error(isEditMode ? "Error updating product" : "Error creating product", { id: toastId });
       }
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { message?: string } }; message?: string })?.response?.data?.message
         ?? (err as { message?: string })?.message ?? "Something went wrong";
       toast.error(msg, { id: toastId });
+      setAriaLiveMsg(`Save failed. ${msg}`);
     } finally {
       setSaving(false);
     }
@@ -790,13 +850,14 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
     compliance: ["fdaCertificate","medicalCertificate"].some(f => !!error[f as keyof ValidationErrors]),
     documents:  false,
   };
+  const validationErrors = Object.entries(error).filter((entry): entry is [string, string] => Boolean(entry[1]));
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-emerald-50/20 to-gray-50">
 
       {/* aria-live region (§14.9) — shared status announcement for extraction
           complete; per-card edits/dismissals deliberately do not re-announce. */}
-      <div id="ai-import-status" aria-live="polite" className="sr-only">{ariaLiveMsg}</div>
+      <div id={statusId} role="status" aria-live="polite" aria-atomic="true" className="sr-only">{ariaLiveMsg}</div>
 
       {/* ── Sticky top bar ──
           M-0 backlog 8: this bar and the footer bar both carry a Create
@@ -806,25 +867,25 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
           reachable while scrolling a long form, the footer one is the natural
           end-of-form action, matching how DESIGN_SPEC §13.0/§14.8 already
           describe this bar. */}
-      <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-200/80 shadow-sm">
-        <div className="w-full px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
+      <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-200/80 shadow-sm pt-[env(safe-area-inset-top)]">
+        <div className="flex min-h-14 w-full flex-wrap items-center justify-between gap-2 px-4 py-2 sm:flex-nowrap sm:px-6">
+          <div className="flex min-w-0 flex-wrap items-center gap-2 sm:gap-3">
             <button
               onClick={() => router.push("/user/products")}
-              className="text-sm text-gray-500 hover:text-gray-800 flex items-center gap-1.5 transition-colors"
+              className="min-h-[44px] rounded text-sm text-gray-500 hover:text-gray-800 flex items-center gap-1.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700 focus-visible:ring-offset-2 motion-reduce:transition-none"
             >
-              ← Back to Products
+              <span aria-hidden="true" className="inline-block rtl:-scale-x-100">←</span> Back to Products
             </button>
             {onBackToQuickAdd && (
               <button
                 onClick={handleBackToQuickAdd}
-                className="text-sm text-gray-500 hover:text-gray-800 flex items-center gap-1.5 transition-colors"
+                className="min-h-[44px] rounded text-sm text-gray-500 hover:text-gray-800 flex items-center gap-1.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700 focus-visible:ring-offset-2 motion-reduce:transition-none"
               >
-                ← Back to Quick Add
+                <span aria-hidden="true" className="inline-block rtl:-scale-x-100">←</span> Back to Quick Add
               </button>
             )}
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex shrink-0 items-center gap-2">
             <Button variant="outline" size="sm" onClick={resetForm} className="hidden sm:flex items-center gap-1.5 text-gray-500 border-gray-200 text-xs">
               <RotateCcw className="w-3.5 h-3.5" />Reset
             </Button>
@@ -837,7 +898,7 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
         </div>
       </div>
 
-      <div className="w-full px-4 sm:px-0 py-6">
+      <div className="w-full min-w-0 py-6">
         <div className="flex flex-col xl:flex-row gap-6 items-start">
 
           {/* ── LEFT: Main form area ── */}
@@ -847,10 +908,10 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
                 solely owned by the sidebar tracker below. */}
             <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-700 via-emerald-600 to-teal-700 px-6 py-4 sm:px-8 sm:py-5 shadow-xl">
               <div className="absolute inset-0 opacity-10">
-                <div className="absolute top-0 right-0 w-96 h-96 bg-white rounded-full -translate-y-48 translate-x-48" />
+                <div className="absolute top-0 end-0 w-96 h-96 bg-white rounded-full -translate-y-48 translate-x-48 rtl:-translate-x-48" />
                 <div className="absolute bottom-0 left-1/2 w-64 h-64 bg-white rounded-full translate-y-32" />
               </div>
-              <div className="absolute right-6 top-0 bottom-0 w-40 sm:w-52 flex items-center opacity-20 pointer-events-none">
+              <div className="absolute end-6 top-0 bottom-0 w-40 sm:w-52 flex items-center opacity-20 pointer-events-none">
                 <MoleculeIllustration />
               </div>
               <div className="relative flex flex-col sm:flex-row sm:items-center gap-6">
@@ -880,6 +941,33 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
               onRemove={handleAiClear}
             />
 
+            {validationErrors.length > 0 && (
+              <section
+                id={validationSummaryId}
+                role="alert"
+                tabIndex={-1}
+                aria-labelledby={validationHeadingId}
+                className="scroll-mt-24 rounded-xl border border-red-200 bg-red-50 p-4 focus:outline-none focus:ring-2 focus:ring-teal-700 focus:ring-offset-2"
+              >
+                <h2 id={validationHeadingId} className="text-sm font-semibold text-red-900">
+                  Fix {validationErrors.length} field{validationErrors.length === 1 ? "" : "s"} before saving
+                </h2>
+                <ul className="mt-2 list-inside list-disc space-y-1">
+                  {validationErrors.map(([key, message]) => (
+                    <li key={key} className="text-sm text-red-800">
+                      <button
+                        type="button"
+                        onClick={() => revealAndFocusField(key)}
+                        className="min-h-[44px] text-start underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700 focus-visible:ring-offset-2"
+                      >
+                        {message}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
+
             {/* "Found in Your Catalogue" review surface (§14) — only renders
                 once an extraction has applied at least one field; absent
                 otherwise, matching §13 exactly with zero extra chrome. */}
@@ -901,6 +989,8 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
                 needsAttentionHeadingId={needsAttentionHeadingId}
                 foundHeadingId={foundHeadingId}
                 requiredHeadingId={requiredHeadingId}
+                completionTrackerId={completionTrackerId}
+                onFocusCompletion={() => focusDomId(completionTrackerId)}
               />
             )}
 
@@ -908,16 +998,18 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
               open={aiProcessing.modalOpen}
               onOpenChange={aiProcessing.handleModalOpenChange}
               phase={aiProcessing.modalPhase}
-              loadingMsg={aiProcessing.loadingMsg}
-              loadingSubMsg={aiProcessing.loadingSubMsg}
-              loadingStage={aiProcessing.loadingStage}
-              uploadedFileName={aiProcessing.uploadedFileName}
+              processingStage={aiProcessing.processingStage}
+              uploadedFile={aiProcessing.uploadedFile}
+              elapsedSeconds={aiProcessing.elapsedSeconds}
+              accepted={aiProcessing.accepted}
+              delayed={aiProcessing.delayed}
               readyDiff={aiProcessing.readyDiff}
               errorMsg={aiProcessing.modalErrorMsg}
               pickItems={aiProcessing.pickItems}
               usedIndices={aiProcessing.catalogMemory?.usedIndices}
               onFile={aiProcessing.handleFile}
               onMinimise={aiProcessing.minimise}
+              onStop={aiProcessing.cancelBg}
               onApplyDiff={aiProcessing.applyDiff}
               onPick={aiProcessing.pickProduct}
               onClearAll={aiFillCount > 0 || conflicts.length > 0 ? handleAiClear : undefined}
@@ -928,10 +1020,13 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
               bgFailReason={aiProcessing.bgFailReason}
               fieldCount={aiProcessing.fieldCount}
               pickCount={aiProcessing.pickItems?.length ?? 0}
-              loadingStage={aiProcessing.loadingStage}
-              fileName={aiProcessing.uploadedFileName ?? undefined}
-              onCancel={aiProcessing.cancelBg}
-              onApply={aiProcessing.applyReady}
+              stage={aiProcessing.processingStage}
+              file={aiProcessing.uploadedFile}
+              elapsedSeconds={aiProcessing.elapsedSeconds}
+              delayed={aiProcessing.delayed}
+              onStop={aiProcessing.cancelBg}
+              onViewProgress={aiProcessing.viewProgress}
+              onReplaceFile={aiProcessing.handleFile}
               onRetry={aiProcessing.retry}
               onDismiss={aiProcessing.dismissWidget}
             />
@@ -945,7 +1040,7 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
                     <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                   </div>
                   <div>
-                    <p id={requiredHeadingId} tabIndex={-1} className="text-sm font-semibold text-gray-900 outline-none">Required Information</p>
+                    <p id={requiredHeadingId} tabIndex={-1} className="scroll-mt-24 rounded text-sm font-semibold text-gray-900 focus:outline-none focus:ring-2 focus:ring-teal-700 focus:ring-offset-2">Required Information</p>
                     <p className="text-xs text-gray-400 mt-0.5">Fill in everything below to publish your listing — nothing here is optional.</p>
                   </div>
                 </div>
@@ -1003,7 +1098,7 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
                 onClick={() => setAdvancedOpen(v => !v)}
                 className="w-full flex items-center justify-between gap-4 px-5 py-4 min-h-[44px] flex-wrap"
               >
-                <div className="text-left">
+                <div className="text-start">
                   <p className="text-sm font-semibold text-gray-900">
                     {advancedOpen ? "Hide Advanced & Optional Details" : "Advanced & Optional Details"}
                   </p>
@@ -1079,12 +1174,13 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
                             data={data}
                             onFieldChange={(f, v) => onFieldChange(f, v as string | number | boolean | UploadedFile[] | undefined)}
                             packagingTypes={packagingTypes}
+                            clearAiField={clearAiField}
                           />
                         )}
                         {sec.id === "compliance" && (
                           <>
-                            <Environmental data={data} onFieldChange={onFieldChange} />
-                            <Certification data={data} onFieldChange={onFieldChange} />
+                            <Environmental data={data} onFieldChange={onFieldChange} clearAiField={clearAiField} />
+                            <Certification data={data} onFieldChange={onFieldChange} clearAiField={clearAiField} />
                           </>
                         )}
                         {sec.id === "documents" && <Documents data={data} onFieldChange={onFieldChange} />}
@@ -1114,14 +1210,18 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
           </div>
 
           {/* ── RIGHT: Sticky sidebar ── */}
-          <div className="w-full xl:w-[300px] shrink-0 xl:sticky xl:top-20 flex flex-col gap-4">
+          <div className="flex w-full shrink-0 flex-col gap-4 xl:sticky xl:top-20 xl:w-[320px] xl:max-h-[calc(100dvh-6rem)] xl:overflow-y-auto">
 
             {/* Completion tracker (§13.5) — required-vs-optional model, sole
                 source of truth for completion on this page. `id` is the
-                §14.8 mobile anchor target for the Needs Your Attention
-                "see the checklist in the sidebar" line. */}
-            <div id="completion-tracker" className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 scroll-mt-20">
-              <h3 className="font-semibold text-gray-900 text-sm mb-4">Product Completion</h3>
+                destination for the Needs Your Attention checklist action. */}
+            <div
+              id={completionTrackerId}
+              tabIndex={-1}
+              aria-labelledby={completionHeadingId}
+              className="scroll-mt-24 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-700 focus:ring-offset-2"
+            >
+              <h3 id={completionHeadingId} className="mb-4 text-sm font-semibold text-gray-900">Product Completion</h3>
 
               <div className="flex items-center justify-between mb-1.5">
                 <span className="text-xs font-semibold text-gray-700">Required fields</span>
@@ -1129,7 +1229,7 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
               </div>
               <div className="w-full bg-gray-100 rounded-full h-2 mb-4">
                 <div
-                  className="bg-emerald-500 h-2 rounded-full transition-all duration-500"
+                  className="h-2 rounded-full bg-emerald-500 transition-[width] duration-200 motion-reduce:transition-none"
                   style={{ width: `${totalRequired ? (completedRequired / totalRequired) * 100 : 0}%` }}
                 />
               </div>
@@ -1140,7 +1240,7 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
               </div>
               <div className="w-full bg-gray-100 rounded-full h-2">
                 <div
-                  className="bg-gray-400 h-2 rounded-full transition-all duration-500"
+                  className="h-2 rounded-full bg-gray-400 transition-[width] duration-200 motion-reduce:transition-none"
                   style={{ width: `${(completedOptional / totalOptional) * 100}%` }}
                 />
               </div>
@@ -1164,12 +1264,12 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
                     key={f.key}
                     type="button"
                     onClick={() => revealAndFocusField(f.key)}
-                    className="flex items-center justify-between gap-2 text-left"
+                    className="flex min-h-[44px] w-full items-center justify-between gap-2 rounded text-start focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700 focus-visible:ring-offset-2"
                   >
                     <span className="flex items-center gap-2">
                       <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0
                         ${f.done ? "border-emerald-500 bg-emerald-500" : "border-gray-300"}`}>
-                        {f.done && <CheckCircle2 className="w-3 h-3 text-white" />}
+                        {f.done && <CheckCircle2 aria-hidden="true" className="w-3 h-3 text-white" />}
                       </span>
                       <span className="text-xs text-gray-600">{f.label}</span>
                     </span>
@@ -1184,7 +1284,7 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
             {/* Live preview — unchanged (§13.6), reads directly off `data`. */}
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
               <div className="flex items-center gap-2 mb-4">
-                <Eye className="w-4 h-4 text-gray-400" />
+                <Eye aria-hidden="true" className="w-4 h-4 text-gray-400" />
                 <h3 className="font-semibold text-gray-900 text-sm">Live Preview</h3>
               </div>
 
@@ -1199,15 +1299,15 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
                       <span className="text-xs">No image</span>
                     </div>
                   )}
-                  <span className="absolute top-2 right-2 text-xs bg-gray-200 text-gray-500 px-2 py-0.5 rounded-full font-medium">Draft</span>
+                  <span className="absolute top-2 end-2 text-xs bg-gray-200 text-gray-500 px-2 py-0.5 rounded-full font-medium">Draft</span>
                 </div>
 
                 <div className="p-3">
                   <p className="font-semibold text-gray-900 text-sm truncate">
-                    {data.productName || "Product Name"}
+                    <bdi>{data.productName || "Product Name"}</bdi>
                   </p>
                   <p className="text-xs text-gray-400 truncate mb-2">
-                    {data.chemicalName || "Chemical Name"}
+                    <bdi>{data.chemicalName || "Chemical Name"}</bdi>
                   </p>
 
                   {data.price && (
@@ -1253,7 +1353,7 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
 
       {/* Floating save — edit mode */}
       {isEditMode && (
-        <div className="fixed bottom-5 right-5 z-50">
+        <div className="fixed z-50 [inset-block-end:max(1.25rem,env(safe-area-inset-bottom))] [inset-inline-end:max(1.25rem,env(safe-area-inset-right))]">
           <Button onClick={handleSubmit} disabled={saving} size="lg"
             className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white shadow-xl rounded-full px-6">
             <Save className="w-4 h-4" />{saving ? "Saving…" : "Save Changes"}

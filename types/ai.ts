@@ -114,6 +114,10 @@ export interface ConflictItem {
 
 export interface ApplyPayload {
   fields: Record<string, unknown>;
+  // Full successful-generation key snapshot. `fields` is filtered to values
+  // that may be written; this list also includes equal/no-op and conflict rows
+  // so a direct second-product choice can retire stale extraction-owned data.
+  extractedFieldKeys: string[];
   aiFilledFields: AiFilledFields;
   sessionId: string;
   // §14.2 "Needs Your Attention" — the persistent review surface needs this
@@ -143,7 +147,16 @@ export interface ReadyDiff {
 
 export type AiModalPhase = "idle" | "parsing" | "pick" | "diff" | "rejected" | "ocrFailed" | "error";
 export type BgState = "idle" | "processing" | "ready" | "failed";
-export type BgFailReason = "ocrFailed" | "timeout" | "error";
+export type BgFailReason = "upload" | "connection" | "expired" | "ocrFailed" | "timeout" | "error" | "rejected";
+
+/** Real, server-authored processing boundaries. Never infer these from time. */
+export type ProcessingStage = "uploaded" | "extracting" | "analysing" | "matching" | "preparing";
+
+export interface CatalogFileMeta {
+  name: string;
+  size: number;
+  type: string;
+}
 
 export interface AiParseResponse {
   success: boolean;
@@ -155,4 +168,6 @@ export interface AiParseResponse {
   rejectionReason?: string | null;
   extractionMethod: "text" | "vision";
   ocrFailed: boolean;
+  stage?: ProcessingStage;
+  createdAt?: string;
 }

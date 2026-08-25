@@ -6,10 +6,12 @@ import type {
   AiFilledFields, AiModalPhase, ApplyPayload, AiParseResponse,
   BgFailReason, BgState, DiffRow, ExtractedProduct, ReadyDiff,
   ParsedProductEntry, TaxonomyReviewItem, TaxonomyFieldKey,
+  CatalogFileMeta, ProcessingStage,
 } from "@/types/ai";
 import type { RefMatch, RefMatches } from "@/types/ai";
 import type { ConflictValue } from "@/types/ai";
 import { conflictSuppressionKey, partitionAiRows } from "@/lib/aiConflicts";
+import { isProcessingStage, PROCESSING_STAGE_ORDER, PROCESSING_STEPS } from "@/components/ai-import/CatalogProcessingWorkbench";
 
 // ── Field label map ───────────────────────────────────────────────────────────
 
@@ -155,13 +157,6 @@ function buildDiff(
   return { fields, filled, rows, taxonomyReview };
 }
 
-// ── OCR detection ─────────────────────────────────────────────────────────────
-
-const OCR_RE = /\.(jpg|jpeg|png|webp)$/i;
-function isOcrUpload(f: File) {
-  return OCR_RE.test(f.name) || ["image/jpeg", "image/png", "image/webp"].includes(f.type);
-}
-
 // ── Hook ──────────────────────────────────────────────────────────────────────
 
 interface UseAiProcessingOptions {
@@ -170,19 +165,29 @@ interface UseAiProcessingOptions {
   // Restrict extraction to these form keys (Quick Add only has 8 fields);
   // keeps toasts/widget counts honest about what will actually be applied
   allowedFields?: string[];
+  // Detailed form owns one atomic aria-live lifecycle for apply/conflict
+  // results. Suppress Sonner's separate live-region copy there so assistive
+  // technology receives the result once; compact callers keep their toast.
+  suppressResultToasts?: boolean;
+  onStatusMessage?: (message: string) => void;
+  onMinimiseFocus?: () => void;
   onApply: (payload: ApplyPayload) => void;
 }
 
-export function useAiProcessing({ isEditMode, existingData, allowedFields, onApply }: UseAiProcessingOptions) {
+export function useAiProcessing({ existingData, allowedFields, suppressResultToasts = false, onStatusMessage, onMinimiseFocus, onApply }: UseAiProcessingOptions) {
   // Ref-wrap options to avoid stale closures in async callbacks
-  const isEditModeRef = useRef(isEditMode);
   const onApplyRef = useRef(onApply);
   const existingDataRef = useRef(existingData);
   const allowedFieldsRef = useRef(allowedFields);
-  useEffect(() => { isEditModeRef.current = isEditMode; }, [isEditMode]);
+  const suppressResultToastsRef = useRef(suppressResultToasts);
+  const onStatusMessageRef = useRef(onStatusMessage);
+  const onMinimiseFocusRef = useRef(onMinimiseFocus);
   useEffect(() => { onApplyRef.current = onApply; }, [onApply]);
   useEffect(() => { existingDataRef.current = existingData; }, [existingData]);
   useEffect(() => { allowedFieldsRef.current = allowedFields; }, [allowedFields]);
+  useEffect(() => { suppressResultToastsRef.current = suppressResultToasts; }, [suppressResultToasts]);
+  useEffect(() => { onStatusMessageRef.current = onStatusMessage; }, [onStatusMessage]);
+  useEffect(() => { onMinimiseFocusRef.current = onMinimiseFocus; }, [onMinimiseFocus]);
 
   // Modal state
   const [modalOpen, setModalOpen_] = useState(false);
@@ -190,10 +195,14 @@ export function useAiProcessing({ isEditMode, existingData, allowedFields, onApp
   const setModalOpen = (val: boolean) => { setModalOpen_(val); modalOpenRef.current = val; };
 
   const [modalPhase, setModalPhase] = useState<AiModalPhase>("idle");
-  const [loadingMsg, setLoadingMsg] = useState("Reading your catalog…");
-  const [loadingSubMsg, setLoadingSubMsg] = useState("");
-  const [loadingStage, setLoadingStage] = useState<1 | 2 | 3 | 4>(1);
+  const [processingStage, setProcessingStage] = useState<ProcessingStage | null>(null);
+  const processingStageRef = useRef<ProcessingStage | null>(null);
+  const [acceptedAt, setAcceptedAt] = useState<number | null>(null);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [uploadedFile, setUploadedFile] = useState<CatalogFileMeta | null>(null);
+  const retainedFileRef = useRef<File | null>(null);
   const [modalErrorMsg, setModalErrorMsg] = useState("");
+  const [modalFailReason, setModalFailReason] = useState<BgFailReason | null>(null);
   const [readyDiff, setReadyDiff] = useState<ReadyDiff | null>(null);
 
   // Uploaded file name (for toasts and display)
@@ -226,22 +235,51 @@ export function useAiProcessing({ isEditMode, existingData, allowedFields, onApp
   // Polling refs
   const parseSeqRef = useRef(0);
   const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const activePollRef = useRef<null | (() => Promise<boolean>)>(null);
+  const activeSessionIdRef = useRef<string | null>(null);
   const cancelRef = useRef(false);
   const resolvedConflictsRef = useRef<Set<string>>(new Set());
-  // Stage timers (replaces single loadingTimerRef)
-  const stageTimerRefs = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const delayedAnnouncedRef = useRef(false);
+  const reopenedFromWidgetRef = useRef(false);
 
   const stopPolling = () => {
     if (pollIntervalRef.current) { clearInterval(pollIntervalRef.current); pollIntervalRef.current = null; }
   };
-  const stopStageTimers = () => {
-    stageTimerRefs.current.forEach(t => clearTimeout(t));
-    stageTimerRefs.current = [];
-  };
   const stopAll = () => {
     stopPolling();
-    stopStageTimers();
   };
+
+  const clearActiveSession = () => {
+    stopPolling();
+    activePollRef.current = null;
+    activeSessionIdRef.current = null;
+  };
+
+  const acceptStage = (candidate: unknown) => {
+    if (!isProcessingStage(candidate)) return;
+    const previous = processingStageRef.current;
+    if (previous && PROCESSING_STAGE_ORDER[candidate] < PROCESSING_STAGE_ORDER[previous]) return;
+    if (previous === candidate) return;
+    processingStageRef.current = candidate;
+    setProcessingStage(candidate);
+    const step = PROCESSING_STEPS[PROCESSING_STAGE_ORDER[candidate]];
+    onStatusMessageRef.current?.(`${step.title}. ${step.description}`);
+  };
+
+  useEffect(() => {
+    const active = modalPhase === "parsing" || bgState === "processing";
+    if (!active || acceptedAt == null) return;
+    const tick = () => setElapsedSeconds(Math.max(0, Math.floor((Date.now() - acceptedAt) / 1000)));
+    tick();
+    const interval = window.setInterval(tick, 1000);
+    return () => window.clearInterval(interval);
+  }, [acceptedAt, bgState, modalPhase]);
+
+  useEffect(() => {
+    if (elapsedSeconds < 60 || delayedAnnouncedRef.current || (modalPhase !== "parsing" && bgState !== "processing")) return;
+    delayedAnnouncedRef.current = true;
+    onStatusMessageRef.current?.("Some catalogues need more processing time. Your form entries are safe, and you can keep filling the form.");
+  }, [bgState, elapsedSeconds, modalPhase]);
 
   // ── Apply helpers ─────────────────────────────────────────────────────────
 
@@ -301,6 +339,7 @@ export function useAiProcessing({ isEditMode, existingData, allowedFields, onApp
 
     const payload: ApplyPayload = {
       fields,
+      extractedFieldKeys: Object.keys(fields),
       aiFilledFields: filled,
       sessionId,
       taxonomyReview: [],
@@ -312,35 +351,13 @@ export function useAiProcessing({ isEditMode, existingData, allowedFields, onApp
     setReadyDiff(diff);
 
     if (modalOpenRef.current) {
-      if (!isEditModeRef.current) {
-        // Create mode: auto-apply high/medium fields, fire toast
-        const applicable = diff.rows.filter(r => !r.skipped);
-        const target = applicable.filter(r => r.confidence === "high" || r.confidence === "medium");
-        applyFiltered(diff, false);
-
-        if (target.length > 0) {
-          const productName = products[idx].product.productName?.value ?? products[idx].product.tradeName?.value;
-          const isMultiCatalog = products.length > 1;
-          toast.success(
-            isMultiCatalog
-              ? `${target.length} fields filled${productName ? ` — ${productName}` : ""}`
-              : `${target.length} fields filled from ${uploadedFileNameRef.current ?? "catalog"}`,
-            {
-              duration: 4000,
-              description: target.length < 5 ? "Check orange fields before submitting." : undefined,
-            }
-          );
-        } else {
-          toast.info("No new fields to fill from this catalog.");
-        }
-
-        setModalOpen(false);
-        setModalPhase("idle");
-      } else {
-        setModalPhase("diff");
-      }
+      // M-P: extracted data is always reviewed before it is used, in create
+      // and edit mode alike. The existing diff remains the terminal UI.
+      setModalPhase("diff");
+      onStatusMessageRef.current?.("Catalogue ready. Review the extracted details before applying them.");
     } else {
       setBgState("ready");
+      onStatusMessageRef.current?.("Catalogue ready to review.");
     }
   };
 
@@ -367,6 +384,7 @@ export function useAiProcessing({ isEditMode, existingData, allowedFields, onApp
       setPendingPick({ products, extractionMethod, sessionId });
       if (modalOpenRef.current) setModalPhase("pick");
       else setBgState("ready");
+      onStatusMessageRef.current?.(`Catalogue ready. ${products.length} products found. Choose one to continue.`);
       return;
     }
 
@@ -411,60 +429,38 @@ export function useAiProcessing({ isEditMode, existingData, allowedFields, onApp
     parseSeqRef.current++;
     const seq = parseSeqRef.current;
     cancelRef.current = false;
+    reopenedFromWidgetRef.current = false;
     stopAll();
+    setModalOpen(false);
+    setModalPhase("idle");
     setBgState("idle");
     setReadyDiff(null);
     setPendingPick(null);
     setBgFailReason(null);
+    setModalFailReason(null);
     setModalErrorMsg("");
     setCatalogMemory(null); // new file = fresh catalog memory
+    delayedAnnouncedRef.current = false;
+    processingStageRef.current = null;
+    setProcessingStage(null);
+    setAcceptedAt(null);
+    setElapsedSeconds(0);
+    retainedFileRef.current = file;
+    setUploadedFile({ name: file.name, size: file.size, type: file.type });
 
     setUploadedFileName(file.name);
     setModalPhase("parsing");
-
-    if (isOcrUpload(file)) {
-      // OCR uploads start at stage 3 (they genuinely take longer from the start)
-      setLoadingStage(3);
-      setLoadingMsg("Working through this catalog…");
-      setLoadingSubMsg("Complex or multi-product catalogs can take 1–2 minutes");
-      stageTimerRefs.current.push(setTimeout(() => {
-        setLoadingMsg("Almost there — nearly done");
-        setLoadingSubMsg("You can minimize and come back when ready");
-        setLoadingStage(4);
-      }, 35000));
-      stageTimerRefs.current.push(setTimeout(() => {
-        setLoadingMsg("Still processing…");
-        setLoadingSubMsg("This is taking longer than usual — you can minimize and keep working");
-      }, 95000));
-    } else {
-      setLoadingStage(1);
-      setLoadingMsg("Reading your catalog…");
-      setLoadingSubMsg("");
-      stageTimerRefs.current.push(setTimeout(() => {
-        setLoadingMsg("Extracting product data…");
-        setLoadingSubMsg("Standard catalogs take 10–30 seconds");
-        setLoadingStage(2);
-      }, 8000));
-      stageTimerRefs.current.push(setTimeout(() => {
-        setLoadingMsg("Working through this catalog…");
-        setLoadingSubMsg("Complex or multi-product catalogs can take 1–2 minutes");
-        setLoadingStage(3);
-      }, 25000));
-      stageTimerRefs.current.push(setTimeout(() => {
-        setLoadingMsg("Almost there — nearly done");
-        setLoadingSubMsg("You can minimize and come back when ready");
-        setLoadingStage(4);
-      }, 60000));
-      stageTimerRefs.current.push(setTimeout(() => {
-        setLoadingMsg("Still processing…");
-        setLoadingSubMsg("This is taking longer than usual — you can minimize and keep working");
-      }, 120000));
-    }
+    setModalOpen(true);
 
     try {
       const form = new FormData();
       form.append("file", file);
-      const initRes = await axiosInstance.post<{ sessionId: string; status: string }>("/ai/parse", form, { timeout: 600000 });
+      const initRes = await axiosInstance.post<{
+        sessionId: string;
+        status: string;
+        stage?: ProcessingStage;
+        createdAt?: string;
+      }>("/ai/parse", form, { timeout: 600000 });
       if (cancelRef.current || parseSeqRef.current !== seq) {
         // ponytail: stale/cancelled request — not a bug, but log so a silent
         // dead-end (no polling, no UI change) is never mistaken for one again.
@@ -474,6 +470,15 @@ export function useAiProcessing({ isEditMode, existingData, allowedFields, onApp
       }
 
       const { sessionId } = initRes.data;
+      activeSessionIdRef.current = sessionId;
+      const serverCreatedAt = initRes.data.createdAt ? Date.parse(initRes.data.createdAt) : Number.NaN;
+      setAcceptedAt(Number.isFinite(serverCreatedAt) ? serverCreatedAt : Date.now());
+      // Older responses remain generic; the successful 202 is represented by
+      // the accepted flag, without inventing a named current server stage.
+      acceptStage(initRes.data.stage);
+      if (!isProcessingStage(initRes.data.stage)) {
+        onStatusMessageRef.current?.("Processing your catalogue. We’re preparing the file for review. You can keep filling the form while this runs.");
+      }
 
       // Fire the first status check immediately — don't wait a full interval tick
       // to discover the poll can't even reach the backend (this is what let a
@@ -486,25 +491,35 @@ export function useAiProcessing({ isEditMode, existingData, allowedFields, onApp
             ocrFailed?: boolean;
             products?: AiParseResponse["products"];
             sessionId?: string;
+            stage?: ProcessingStage;
+            createdAt?: string;
+            failureCode?: string;
           }>(`/ai/session/${sessionId}`);
 
-          if (cancelRef.current || parseSeqRef.current !== seq) { stopAll(); return; }
+          if (cancelRef.current || parseSeqRef.current !== seq) { stopAll(); return false; }
 
           const { status } = pollRes.data;
-          if (status === "processing") return;
+          if (pollRes.data.createdAt) {
+            const created = Date.parse(pollRes.data.createdAt);
+            if (Number.isFinite(created)) setAcceptedAt(created);
+          }
+          acceptStage(pollRes.data.stage);
+          if (status === "processing") return true;
 
-          stopAll();
+          clearActiveSession();
 
           if (status === "failed") {
-            const msg = "This catalog took too long to process. Try uploading a smaller section, or use a text-based PDF.";
+            const reason: BgFailReason = pollRes.data.failureCode === "timeout" ? "timeout" : "error";
+            const msg = "Try the file again, choose a smaller or text-based file, or continue manually.";
             if (modalOpenRef.current) {
               setModalErrorMsg(msg);
+              setModalFailReason(reason);
               setModalPhase("error");
             } else {
               setBgState("failed");
-              setBgFailReason("timeout");
+              setBgFailReason(reason);
             }
-            return;
+            return false;
           }
 
           handleComplete({
@@ -513,24 +528,32 @@ export function useAiProcessing({ isEditMode, existingData, allowedFields, onApp
             extractionMethod: pollRes.data.extractionMethod ?? "text",
             sessionId: pollRes.data.sessionId ?? sessionId,
           });
+          return false;
         } catch (pollErr) {
-          if (cancelRef.current || parseSeqRef.current !== seq) { stopAll(); return; }
+          if (cancelRef.current || parseSeqRef.current !== seq) { stopAll(); return false; }
           // Surface the real failure instead of dying silently — this is exactly
           // what let the staging polling failure go unnoticed for so long.
           console.error("[ai-import] session status poll failed", pollErr);
-          stopAll();
+          stopPolling();
+          const status = (pollErr as { response?: { status?: number } })?.response?.status;
+          const reason: BgFailReason = status === 404 ? "expired" : "connection";
           if (modalOpenRef.current) {
-            setModalErrorMsg("Upload failed — check your connection and try again.");
+            setModalErrorMsg(reason === "expired"
+              ? "Upload the catalogue again. Your form entries are unchanged."
+              : "Your catalogue may still be processing. Reconnect to check its status.");
+            setModalFailReason(reason);
             setModalPhase("error");
           } else {
             setBgState("failed");
-            setBgFailReason("error");
+            setBgFailReason(reason);
           }
+          return false;
         }
       };
 
-      pollIntervalRef.current = setInterval(poll, 4000);
-      poll();
+      activePollRef.current = poll;
+      pollIntervalRef.current = setInterval(() => { void poll(); }, 4000);
+      void poll();
 
     } catch (err: unknown) {
       stopAll();
@@ -542,10 +565,11 @@ export function useAiProcessing({ isEditMode, existingData, allowedFields, onApp
         : "Upload failed — check your connection and try again.";
       if (modalOpenRef.current) {
         setModalErrorMsg(msg);
+        setModalFailReason("upload");
         setModalPhase("error");
       } else {
         setBgState("failed");
-        setBgFailReason("error");
+        setBgFailReason("upload");
       }
     }
   }, [handleComplete]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -553,13 +577,23 @@ export function useAiProcessing({ isEditMode, existingData, allowedFields, onApp
   // ── Modal control ─────────────────────────────────────────────────────────
 
   const openModal = useCallback(() => {
+    reopenedFromWidgetRef.current = false;
     setModalPhase("idle");
     setModalOpen(true);
   }, []);
 
   const minimise = useCallback(() => {
+    const returnToProgress = reopenedFromWidgetRef.current;
     setModalOpen(false);
     setBgState("processing");
+    onStatusMessageRef.current?.("Catalogue processing continues in the background.");
+    window.requestAnimationFrame(() => window.requestAnimationFrame(() => {
+      if (returnToProgress) {
+        document.querySelector<HTMLElement>("[data-ai-view-progress]")?.focus();
+      } else {
+        onMinimiseFocusRef.current?.();
+      }
+    }));
     // cancelRef NOT touched — poll continues
   }, []);
 
@@ -578,6 +612,7 @@ export function useAiProcessing({ isEditMode, existingData, allowedFields, onApp
       setPendingPick(null);
       setBgFailReason(null);
       setModalErrorMsg("");
+      setModalFailReason(null);
     }
   }, [modalPhase, minimise]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -590,7 +625,7 @@ export function useAiProcessing({ isEditMode, existingData, allowedFields, onApp
       ? applicable
       : applicable.filter(r => r.confidence === "high" || r.confidence === "medium");
     applyFiltered(readyDiff, includeAll);
-    if (target.length > 0) {
+    if (target.length > 0 && !suppressResultToastsRef.current) {
       toast.success(
         `${target.length} fields updated from ${uploadedFileNameRef.current ?? "catalog"}`,
         { duration: 4000 }
@@ -624,12 +659,18 @@ export function useAiProcessing({ isEditMode, existingData, allowedFields, onApp
   const cancelBg = useCallback(() => {
     cancelRef.current = true;
     parseSeqRef.current++;
-    stopAll();
+    clearActiveSession();
+    setModalOpen(false);
+    setModalPhase("idle");
     setBgState("idle");
     setReadyDiff(null);
     setPendingPick(null);
     setBgFailReason(null);
     setCatalogMemory(null);
+    processingStageRef.current = null;
+    setProcessingStage(null);
+    setAcceptedAt(null);
+    setElapsedSeconds(0);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const applyReady = useCallback(() => {
@@ -641,34 +682,72 @@ export function useAiProcessing({ isEditMode, existingData, allowedFields, onApp
       return;
     }
     if (!readyDiff) return;
-    if (!isEditModeRef.current) {
-      const applicable = readyDiff.rows.filter(r => !r.skipped);
-      const target = applicable.filter(r => r.confidence === "high" || r.confidence === "medium");
-      applyFiltered(readyDiff, false);
-      if (target.length > 0) {
-        toast.success(
-          `${target.length} fields filled from ${uploadedFileNameRef.current ?? "catalog"}`,
-          { duration: 4000, description: target.length < 5 ? "Check orange fields before submitting." : undefined }
-        );
-      }
-      setBgState("idle");
-      setReadyDiff(null);
-    } else {
-      // Edit mode: reopen modal in diff state
-      setModalPhase("diff");
-      setModalOpen(true);
-      setBgState("idle");
-    }
+    setModalPhase("diff");
+    setModalOpen(true);
+    setBgState("idle");
   }, [readyDiff, pendingPick]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const retry = useCallback(() => {
+    const retained = retainedFileRef.current;
+    if (retained) {
+      handleFile(retained);
+      return;
+    }
     setBgState("idle");
     setReadyDiff(null);
     setPendingPick(null);
     setBgFailReason(null);
     setModalPhase("idle");
     setModalOpen(true);
-  }, []);
+  }, [handleFile]);
+
+  const checkAgain = useCallback(async () => {
+    const poll = activePollRef.current;
+    if (!poll || !activeSessionIdRef.current) return;
+    stopPolling();
+    setModalFailReason(null);
+    setBgFailReason(null);
+    if (modalOpenRef.current) setModalPhase("parsing");
+    else setBgState("processing");
+    const stillProcessing = await poll();
+    if (
+      stillProcessing &&
+      activePollRef.current === poll &&
+      activeSessionIdRef.current &&
+      !pollIntervalRef.current
+    ) {
+      pollIntervalRef.current = setInterval(() => { void poll(); }, 4000);
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const continueManually = useCallback(() => {
+    cancelRef.current = true;
+    parseSeqRef.current++;
+    clearActiveSession();
+    setModalOpen(false);
+    setModalPhase("idle");
+    setBgState("idle");
+    setReadyDiff(null);
+    setPendingPick(null);
+    setBgFailReason(null);
+    setModalFailReason(null);
+    window.requestAnimationFrame(() => window.requestAnimationFrame(() => onMinimiseFocusRef.current?.()));
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const viewProgress = useCallback(() => {
+    if (bgState === "ready") {
+      applyReady();
+      return;
+    }
+    if (bgState === "failed") {
+      setModalPhase(bgFailReason === "ocrFailed" ? "ocrFailed" : bgFailReason === "rejected" ? "rejected" : "error");
+    } else {
+      setModalPhase("parsing");
+    }
+    reopenedFromWidgetRef.current = true;
+    setBgState("idle");
+    setModalOpen(true);
+  }, [applyReady, bgFailReason, bgState]);
 
   const dismissWidget = useCallback(() => {
     setBgState("idle");
@@ -692,11 +771,14 @@ export function useAiProcessing({ isEditMode, existingData, allowedFields, onApp
     handleModalOpenChange,
     openModal,
     modalPhase,
-    loadingMsg,
-    loadingSubMsg,
-    loadingStage,
+    processingStage,
+    uploadedFile,
+    elapsedSeconds,
+    accepted: acceptedAt != null,
+    delayed: elapsedSeconds >= 60 && (modalPhase === "parsing" || bgState === "processing"),
     uploadedFileName,
     modalErrorMsg,
+    modalFailReason,
     readyDiff,
     handleFile,
     minimise,
@@ -714,8 +796,11 @@ export function useAiProcessing({ isEditMode, existingData, allowedFields, onApp
     bgFailReason,
     fieldCount,
     cancelBg,
+    viewProgress,
     applyReady,
     retry,
+    checkAgain,
+    continueManually,
     dismissWidget,
     onFormSubmit,
   };

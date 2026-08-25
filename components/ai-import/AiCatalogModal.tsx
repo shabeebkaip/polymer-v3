@@ -2,15 +2,16 @@
 
 import React, { useRef, useState } from "react";
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle,
+  Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
 import {
-  Upload, Loader2, AlertCircle, AlertTriangle, FileText,
-  FileSpreadsheet, Image as ImageIcon, Sparkles, ArrowRight,
+  Upload, AlertCircle, AlertTriangle, FileText,
+  FileSpreadsheet, Image as ImageIcon, Sparkles,
 } from "lucide-react";
 import ConfidenceBadge from "./ConfidenceBadge";
 import ProductPicker from "./ProductPicker";
-import type { AiModalPhase, ExtractedProduct, ReadyDiff } from "@/types/ai";
+import CatalogProcessingWorkbench from "./CatalogProcessingWorkbench";
+import type { AiModalPhase, CatalogFileMeta, ExtractedProduct, ProcessingStage, ReadyDiff } from "@/types/ai";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -23,10 +24,11 @@ interface AiCatalogModalProps {
 
   // Controlled state from useAiProcessing hook
   phase: AiModalPhase;
-  loadingMsg: string;
-  loadingSubMsg: string;
-  loadingStage: 1 | 2 | 3 | 4;
-  uploadedFileName?: string | null;
+  processingStage: ProcessingStage | null;
+  uploadedFile: CatalogFileMeta | null;
+  elapsedSeconds: number;
+  accepted: boolean;
+  delayed: boolean;
   readyDiff: ReadyDiff | null;
   errorMsg: string;
   pickItems: ExtractedProduct[] | null;
@@ -35,6 +37,7 @@ interface AiCatalogModalProps {
   // Callbacks
   onFile: (file: File) => void;
   onMinimise: () => void;
+  onStop: () => void;
   onApplyDiff: (includeAll: boolean) => void;
   onPick: (idx: number) => void;
   onClearAll?: () => void;
@@ -67,7 +70,7 @@ function Dropzone({ onFile, disabled }: { onFile: (f: File) => void; disabled: b
   return (
     <div>
       <label
-        className={`block w-full rounded-2xl border-2 border-dashed p-8 text-center cursor-pointer transition-colors
+        className={`block w-full rounded-2xl border-2 border-dashed p-8 text-center cursor-pointer transition-colors focus-within:ring-2 focus-within:ring-teal-700 focus-within:ring-offset-2 motion-reduce:transition-none
           ${dragging ? "border-teal-400 bg-teal-50" : "border-gray-200 bg-white hover:border-teal-400 hover:bg-teal-50/40"}
           ${disabled ? "pointer-events-none opacity-60" : ""}`}
         onDragOver={e => { e.preventDefault(); setDragging(true); }}
@@ -80,7 +83,7 @@ function Dropzone({ onFile, disabled }: { onFile: (f: File) => void; disabled: b
         />
         <div className="flex flex-col items-center gap-4">
           <div className="w-14 h-14 rounded-2xl flex items-center justify-center bg-gradient-to-br from-teal-600 to-emerald-600 shadow-md">
-            <Upload className="text-white" size={24} />
+            <Upload aria-hidden="true" className="text-white" size={24} />
           </div>
           <div>
             <p className="text-base font-semibold text-gray-900">Drop a polymer catalog</p>
@@ -95,20 +98,20 @@ function Dropzone({ onFile, disabled }: { onFile: (f: File) => void; disabled: b
               [ImageIcon, "WEBP"],
             ] as [React.ElementType, string][]).map(([Icon, label]) => (
               <span key={label} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gray-50 text-xs text-gray-600 border border-gray-100">
-                <Icon size={11} />{label}
+                <Icon aria-hidden="true" size={11} />{label}
               </span>
             ))}
           </div>
           <button type="button" onClick={e => { e.preventDefault(); inputRef.current?.click(); }}
             className="mt-1 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white shadow-md
-              bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 transition-all">
+              bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700 focus-visible:ring-offset-2 motion-reduce:transition-none">
             Choose a file
           </button>
         </div>
       </label>
       {localError && (
         <div className="mt-3 flex items-start gap-3 p-4 rounded-lg bg-red-50 border border-red-100 text-sm text-red-700">
-          <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+          <AlertCircle aria-hidden="true" className="w-4 h-4 shrink-0 mt-0.5" />
           <span>{localError}</span>
         </div>
       )}
@@ -120,9 +123,9 @@ function Dropzone({ onFile, disabled }: { onFile: (f: File) => void; disabled: b
 
 export default function AiCatalogModal({
   open, onOpenChange,
-  phase, loadingMsg, loadingSubMsg, loadingStage, uploadedFileName,
+  phase, processingStage, uploadedFile, elapsedSeconds, accepted, delayed,
   readyDiff, errorMsg, pickItems, usedIndices,
-  onFile, onMinimise, onApplyDiff, onPick, onClearAll,
+  onFile, onMinimise, onStop, onApplyDiff, onPick, onClearAll,
 }: AiCatalogModalProps) {
 
   // X during parsing → minimise; all other states → normal close
@@ -142,7 +145,7 @@ export default function AiCatalogModal({
   // Modal title per phase
   const title = phase === "diff" ? "Review extracted fields"
     : phase === "pick" ? "Choose a product"
-    : phase === "parsing" ? loadingMsg
+    : phase === "parsing" ? "Preparing your catalogue"
     : phase === "rejected" ? "No product data found"
     : phase === "ocrFailed" ? "Couldn't read this document"
     : phase === "error" ? (errorMsg.startsWith("Upload failed") ? "Upload failed" : "Something went wrong")
@@ -150,12 +153,22 @@ export default function AiCatalogModal({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-lg w-full max-h-[90dvh] overflow-y-auto">
-        <DialogHeader>
+      <DialogContent
+        closeLabel={phase === "parsing" ? "Close and keep processing" : "Close"}
+        className={`w-[calc(100%-1rem)] max-h-[calc(100dvh-1rem)] overflow-y-auto rounded-2xl p-4 sm:w-[calc(100%-2rem)] sm:max-h-[calc(100dvh-4rem)] sm:p-6 ${phase === "parsing" ? "sm:max-w-[560px]" : phase === "diff" ? "sm:max-w-7xl" : "sm:max-w-lg"}`}
+      >
+        <DialogHeader className="pe-10 text-start">
           <DialogTitle className="flex items-center gap-2 text-base font-semibold">
-            <Sparkles className="w-4 h-4 text-teal-600 shrink-0" />
+            {phase === "parsing"
+              ? <FileText aria-hidden="true" className="w-4 h-4 text-teal-700 shrink-0" />
+              : <Sparkles aria-hidden="true" className="w-4 h-4 text-teal-600 shrink-0" />}
             {title}
           </DialogTitle>
+          {phase === "parsing" && (
+            <DialogDescription className="sr-only">
+              You can keep filling the form while we prepare the file for review.
+            </DialogDescription>
+          )}
         </DialogHeader>
 
         {/* IDLE */}
@@ -163,50 +176,15 @@ export default function AiCatalogModal({
 
         {/* PARSING */}
         {phase === "parsing" && (
-          <div className="flex flex-col items-center gap-3 py-10 px-2">
-            <div className="w-14 h-14 rounded-2xl bg-teal-50 flex items-center justify-center">
-              <Loader2 className="w-7 h-7 text-teal-600 animate-spin motion-reduce:animate-none" />
-            </div>
-
-            {uploadedFileName && (
-              <p className="text-xs text-gray-400 max-w-full truncate px-4">{uploadedFileName}</p>
-            )}
-
-            <div className="text-center space-y-1">
-              <p className="text-sm font-semibold text-gray-900">{loadingMsg}</p>
-              {loadingSubMsg && <p className="text-xs text-gray-500">{loadingSubMsg}</p>}
-            </div>
-
-            {/* Stage progress dots (decorative) */}
-            <div className="flex gap-2" aria-hidden="true">
-              {[1, 2, 3, 4].map(i => (
-                <span key={i} className={`w-2 h-2 rounded-full ${
-                  i < loadingStage ? "bg-teal-200" : i === loadingStage ? "bg-teal-500" : "bg-gray-200"
-                }`} />
-              ))}
-            </div>
-
-            {/* Stage 1-2: text link; Stage 3+: pill button */}
-            {loadingStage >= 3 ? (
-              <button
-                type="button"
-                onClick={onMinimise}
-                className="mt-2 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-teal-200 bg-teal-50 text-sm font-medium text-teal-700 hover:bg-teal-100 transition-colors"
-              >
-                <ArrowRight className="w-4 h-4" />
-                Continue in background
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={onMinimise}
-                className="text-xs text-teal-600 underline underline-offset-2 hover:text-teal-700 transition-colors"
-                style={{ minHeight: "44px", display: "flex", alignItems: "center" }}
-              >
-                Continue in background →
-              </button>
-            )}
-          </div>
+          <CatalogProcessingWorkbench
+            file={uploadedFile}
+            stage={processingStage}
+            elapsedSeconds={elapsedSeconds}
+            accepted={accepted}
+            delayed={delayed}
+            onMinimise={onMinimise}
+            onStop={onStop}
+          />
         )}
 
         {/* PRODUCT PICK (multi-product catalog) */}
@@ -251,16 +229,16 @@ export default function AiCatalogModal({
               </div>
             )}
 
-            <div className="max-h-64 overflow-y-auto rounded-xl border border-gray-100 divide-y divide-gray-50">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {diffRows.map(row => (
                 <div
                   key={row.key}
-                  className={`flex items-center justify-between gap-3 px-4 py-3 ${row.skipped ? "opacity-50" : ""}`}
+                  className={`flex items-start justify-between gap-2 rounded-xl border border-gray-100 px-4 py-3 ${row.skipped ? "opacity-50" : ""}`}
                   aria-label={row.skipped ? `${row.label} — already set, will not be overwritten` : undefined}
                 >
                   <div className="min-w-0">
-                    <p className={`text-xs font-medium truncate ${row.skipped ? "text-gray-400 line-through" : "text-gray-700"}`}>{row.label}</p>
-                    <p className="text-xs text-gray-400 truncate">{row.displayValue}</p>
+                    <p className={`break-words text-xs font-medium ${row.skipped ? "text-gray-400 line-through" : "text-gray-700"}`}><bdi>{row.label}</bdi></p>
+                    <p className="break-words text-xs text-gray-400"><bdi>{row.displayValue}</bdi></p>
                   </div>
                   {row.skipped
                     ? <span className="shrink-0 text-[10px] px-2 py-0.5 rounded-full bg-gray-100 text-gray-400 border border-gray-200">already set</span>
@@ -274,7 +252,7 @@ export default function AiCatalogModal({
               <button
                 onClick={() => onApplyDiff(false)}
                 style={{ minHeight: "44px" }}
-                className="flex-1 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-sm font-semibold transition-colors"
+                className="flex-1 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700 focus-visible:ring-offset-2 motion-reduce:transition-none"
               >
                 {highMedCount > 0
                   ? `Apply ${highMedCount} field${highMedCount !== 1 ? "s" : ""}`
@@ -286,7 +264,7 @@ export default function AiCatalogModal({
                 <button
                   onClick={() => onApplyDiff(true)}
                   style={{ minHeight: "44px" }}
-                  className="flex-1 py-2.5 rounded-xl border border-gray-200 text-gray-700 text-sm font-medium hover:bg-gray-50 transition-colors"
+                  className="flex-1 py-2.5 rounded-xl border border-gray-200 text-gray-700 text-sm font-medium hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700 focus-visible:ring-offset-2 motion-reduce:transition-none"
                 >
                   Apply all ({activeRows.length})
                 </button>
@@ -297,7 +275,7 @@ export default function AiCatalogModal({
               <button
                 type="button"
                 onClick={onClearAll}
-                className="w-full text-center text-xs text-gray-400 hover:text-red-500 transition-colors py-1"
+                className="w-full rounded text-center text-xs text-gray-400 hover:text-red-500 transition-colors py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700 focus-visible:ring-offset-2 motion-reduce:transition-none"
                 style={{ minHeight: "44px" }}
               >
                 Clear all AI data

@@ -1,13 +1,16 @@
 import { expect, Page, test } from "@playwright/test";
-import { requireE2ECredentials } from "./test-config";
 
-async function login(page: Page) {
-  const { email, password } = requireE2ECredentials();
-  await page.goto("/auth/login");
-  await page.fill("#email", email);
-  await page.fill("#password", password);
-  await page.click('button:has-text("Sign In")');
-  await page.waitForURL(/\/user\/dashboard/, { timeout: 15_000 });
+async function authenticateWithoutCredentials(page: Page) {
+  const baseURL = String(test.info().project.use.baseURL);
+  const payload = Buffer.from(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 3600 })).toString("base64url");
+  await page.context().addCookies([
+    { name: "token", value: `e2e.${payload}.signature`, url: baseURL },
+    {
+      name: "userInfo",
+      value: JSON.stringify({ user_type: "seller", firstName: "Findings regression seller" }),
+      url: baseURL,
+    },
+  ]);
 }
 
 function visible(page: Page, selector: string) {
@@ -22,16 +25,18 @@ async function mockDropdown(page: Page, endpoint: string, data: Array<{ _id: str
   }));
 }
 
-async function selectMultiSelectOptionByKeyboard(page: Page, triggerName: string, optionName: string) {
-  const trigger = visible(page, `button[aria-label="${triggerName}"]`);
+async function selectMultiSelectOptionByKeyboard(page: Page, triggerName: string, optionName: string, searchName = triggerName) {
+  const trigger = page.getByRole("button", { name: triggerName, exact: true }).locator("visible=true").first();
   await trigger.focus();
   await page.keyboard.press("Enter");
   await expect(trigger).toHaveAttribute("aria-expanded", "true");
 
   const option = page.getByRole("option", { name: optionName, exact: true }).locator("visible=true").first();
-  await expect(page.getByRole("textbox", { name: new RegExp(`Search ${triggerName} options`, "i") }).locator("visible=true").first()).toBeFocused();
-  await page.keyboard.type(optionName);
-  await page.keyboard.press("Tab");
+  const search = page.getByRole("textbox", { name: new RegExp(`Search ${searchName} options`, "i") }).locator("visible=true").first();
+  await expect(search).toBeFocused();
+  await search.pressSequentially(optionName, { delay: 10 });
+  await expect(search).toHaveValue(optionName);
+  await page.keyboard.press("ArrowDown");
   await expect(option).toBeFocused();
   await page.keyboard.press("Space");
   await expect(option).toHaveAttribute("aria-selected", "true");
@@ -43,7 +48,7 @@ async function selectMultiSelectOptionByKeyboard(page: Page, triggerName: string
 }
 
 test("unit-bearing logistics values remain editable, labelled, unique, and reach the save payload; Grade works by keyboard", async ({ page }) => {
-  await login(page);
+  await authenticateWithoutCredentials(page);
 
   await Promise.all([
     mockDropdown(page, "chemical-family", [{ _id: "family-pp", name: "Polyolefin" }]),
@@ -125,6 +130,9 @@ test("unit-bearing logistics values remain editable, labelled, unique, and reach
     mimeType: "application/pdf",
     buffer: Buffer.from("%PDF-1.4 deterministic fixture"),
   });
+  const review = page.getByRole("dialog", { name: "Review extracted fields" });
+  await expect(review).toBeVisible();
+  await review.getByRole("button", { name: /^Apply \d+ fields$/ }).click();
   await expect(visible(page, "text=fields found")).toBeVisible({ timeout: 15_000 });
 
   const cardLabels = page.locator('div[class*="bg-teal-50/20"] label').locator("visible=true");
@@ -204,7 +212,7 @@ test("unit-bearing logistics values remain editable, labelled, unique, and reach
 });
 
 test("shared MultiSelect remains keyboard-operable for Industries, Product Families, Incoterms, and Packaging Type", async ({ page }) => {
-  await login(page);
+  await authenticateWithoutCredentials(page);
 
   await Promise.all([
     mockDropdown(page, "chemical-family", []),
@@ -227,5 +235,5 @@ test("shared MultiSelect remains keyboard-operable for Industries, Product Famil
   await selectMultiSelectOptionByKeyboard(page, "Select Product Families", "Film Family");
 
   await page.locator("button").filter({ hasText: "Provide packaging and pallet information" }).locator("visible=true").first().click();
-  await selectMultiSelectOptionByKeyboard(page, "Select packaging types", "Bag");
+  await selectMultiSelectOptionByKeyboard(page, "Packaging Type", "Bag", "Select packaging types");
 });

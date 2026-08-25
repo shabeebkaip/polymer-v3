@@ -358,18 +358,10 @@ test("§14.9 focus moves to Needs Your Attention (or Found in Catalogue) heading
 
   await expect.poll(() => page.evaluate(() => document.activeElement?.id), { timeout: 5000 }).toMatch(new RegExp(`${expectedIdSuffix}$`));
 
-  // The aria-live region's actual text content (not just visual copy).
-  // Pre-existing dual desktop/mobile render tree (app/user/layout.tsx,
-  // unrelated to this feature — noted elsewhere in this suite) means TWO
-  // #ai-import-status divs exist (a real, if minor, duplicate-id issue);
-  // scope to whichever instance actually has content.
-  const liveRegions = page.locator("#ai-import-status");
-  const liveRegionCount = await liveRegions.count();
-  let liveMsg = "";
-  for (let i = 0; i < liveRegionCount; i++) {
-    const t = (await liveRegions.nth(i).textContent()) ?? "";
-    if (t.trim()) { liveMsg = t; break; }
-  }
+  // One atomic active-tree status region owns the extraction announcement.
+  const catalogueStatus = page.locator('[role="status"][aria-atomic="true"][id$="-catalogue-status"]');
+  await expect(catalogueStatus).toHaveCount(1);
+  const liveMsg = (await catalogueStatus.textContent()) ?? "";
   console.log("aria-live message:", liveMsg);
-  expect(liveMsg).toMatch(/^Catalogue processed — \d+ fields? found\.(\s\d+ needs?\syour attention\.)?$/);
+  expect(liveMsg).toMatch(/^Catalogue processed\. \d+ fields? found\. \d+ need review\.$/);
 });

@@ -37,7 +37,7 @@ const CERTIFICATIONS = [
   },
 ];
 
-const Certification: React.FC<CertificationProps> = ({ data, onFieldChange }) => {
+const Certification: React.FC<CertificationProps> = ({ data, onFieldChange, clearAiField }) => {
   const [certificates, setCertificates] = useState<ProductCertificate[]>(data.certificates || []);
 
   const getSelectedCount = () => {
@@ -113,7 +113,7 @@ const Certification: React.FC<CertificationProps> = ({ data, onFieldChange }) =>
               key={String(cert.key)}
               id={`${certificateFieldKey}-field`}
               tabIndex={-1}
-              className={`transition-all ${
+              className={`scroll-mt-24 transition-all focus-within:ring-2 focus-within:ring-teal-700 focus-within:ring-offset-2 focus:outline-none focus:ring-2 focus:ring-teal-700 focus:ring-offset-2 ${
                 isSelected ? 'border-gray-400 bg-gray-50' : 'border-gray-200 bg-white'
               }`}
             >
@@ -132,6 +132,7 @@ const Certification: React.FC<CertificationProps> = ({ data, onFieldChange }) =>
                           id={String(cert.key)}
                           checked={isSelected}
                           onCheckedChange={(checked) => {
+                            clearAiField?.(String(cert.key));
                             onFieldChange(cert.key, Boolean(checked));
                             if (!checked) {
                               onFieldChange(certificateFieldKey, {});

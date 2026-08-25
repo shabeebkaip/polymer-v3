@@ -14,14 +14,23 @@ function Input({
   type = "text",
   error = false,
   helperText,
+  id,
+  "aria-describedby": describedBy,
   ...props
 }: InputProps) {
+  const generatedId = React.useId().replace(/:/g, "");
+  const inputId = id ?? `input-${generatedId}`;
+  const errorId = `${inputId}-error`;
+  const descriptionIds = [describedBy, error && helperText ? errorId : undefined].filter(Boolean).join(" ") || undefined;
+
   return (
     <div className="w-full">
       <input
+        id={inputId}
         type={type}
         data-slot="input"
         aria-invalid={error || undefined}
+        aria-describedby={descriptionIds}
         className={cn(
           "file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground",
           "flex h-9 w-full min-w-0 rounded-md border px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none md:text-sm",
@@ -35,7 +44,7 @@ function Input({
         {...props}
       />
       {error && helperText && (
-        <p className="text-sm text-red-500 mt-1">{helperText}</p>
+        <p id={errorId} className="text-sm text-red-500 mt-1">{helperText}</p>
       )}
     </div>
   );

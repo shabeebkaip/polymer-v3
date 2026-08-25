@@ -456,6 +456,7 @@ export interface UserProductCardProps {
 export interface CertificationProps {
   data: ProductFormData;
   onFieldChange: (field: keyof ProductFormData, value: boolean | any[] | Record<string, any>) => void;
+  clearAiField?: (field: string) => void;
 }
 
 export interface DocumentsProps {
@@ -466,6 +467,7 @@ export interface DocumentsProps {
 export interface EnvironmentalProps {
   data: ProductFormData;
   onFieldChange: (field: keyof ProductFormData, value: boolean) => void;
+  clearAiField?: (field: string) => void;
 }
 
 export interface GeneralInformationProps {
@@ -491,6 +493,7 @@ export interface PackageInformationProps {
   };
   onFieldChange: (field: string, value: string | string[]) => void;
   packagingTypes?: PackagingType[];
+  clearAiField?: (field: string) => void;
 }
 
 export interface ProductDetailsProps {
