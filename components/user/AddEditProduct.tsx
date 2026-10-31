@@ -742,9 +742,10 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
   // ── Validation ──────────────────────────────────────────────────────────────
   const validate = (): ValidationErrors => {
     const errs: ValidationErrors = {};
+    // Required in edit mode too — older products saved without a name must get one before saving
+    if (!data.productName?.trim()) errs.productName = "Product Name is required";
     if (!isEditMode) {
       const required: RequiredField[] = [
-        { field: "productName", label: "Product Name" },
         { field: "chemicalName", label: "Chemical Name" },
         { field: "chemicalFamily", label: "Chemical Family" },
         { field: "polymerType", label: "Polymer Type" },
@@ -857,8 +858,9 @@ const AddEditProduct = ({ product, id, onBackToQuickAdd }: AddEditProductProps) 
         toast.error(isEditMode ? "Error updating product" : "Error creating product", { id: toastId });
       }
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { message?: string } }; message?: string })?.response?.data?.message
-        ?? (err as { message?: string })?.message ?? "Something went wrong";
+      const body = (err as { response?: { data?: { message?: string; errors?: string[] } } })?.response?.data;
+      const msg = (Array.isArray(body?.errors) && body.errors.join(", ")) || body?.message
+        || (err as { message?: string })?.message || "Something went wrong";
       toast.error(msg, { id: toastId });
       setAriaLiveMsg(`Save failed. ${msg}`);
     } finally {

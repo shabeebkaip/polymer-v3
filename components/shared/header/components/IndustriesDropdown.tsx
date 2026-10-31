@@ -34,7 +34,9 @@ const IndustriesDropdown: React.FC = () => {
   const [industries, setIndustries] = useState<IndustryItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const hoverOpenedRef = useRef(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
   const { industries: storeIndustries } = useSharedState();
 
   useEffect(() => {
@@ -57,21 +59,38 @@ const IndustriesDropdown: React.FC = () => {
     const handler = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) setIsOpen(false);
     };
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      if (menuRef.current?.contains(document.activeElement)) triggerRef.current?.focus();
+      setIsOpen(false);
+    };
     document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', handler);
+      document.removeEventListener('keydown', onKeyDown);
+    };
   }, [isOpen]);
 
-  const handleMouseEnter = () => { if (timeoutRef.current) clearTimeout(timeoutRef.current); setIsOpen(true); };
+  const handleMouseEnter = () => { if (timeoutRef.current) clearTimeout(timeoutRef.current); if (!isOpen) hoverOpenedRef.current = true; setIsOpen(true); };
   const handleMouseLeave = () => { timeoutRef.current = setTimeout(() => setIsOpen(false), 150); };
+  // Mouse hover already opened the menu — the click that follows must not toggle it shut.
+  // Hover is mouse-only (pointerType check) so touch taps just toggle.
+  const handleTriggerClick = () => {
+    const keepOpen = isOpen && hoverOpenedRef.current;
+    hoverOpenedRef.current = false;
+    setIsOpen(keepOpen || !isOpen);
+  };
   const close = () => setIsOpen(false);
 
   const displayed = industries.slice(0, 12);
 
   return (
-    <div ref={menuRef} className="relative" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+    <div ref={menuRef} className="relative" onPointerEnter={(e) => e.pointerType === 'mouse' && handleMouseEnter()} onPointerLeave={(e) => e.pointerType === 'mouse' && handleMouseLeave()}>
       {/* Trigger */}
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        ref={triggerRef}
+        onClick={handleTriggerClick}
         className={`flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
           isOpen ? 'text-primary-600 bg-primary-50' : 'text-gray-700 hover:text-primary-600 hover:bg-primary-50'
         }`}

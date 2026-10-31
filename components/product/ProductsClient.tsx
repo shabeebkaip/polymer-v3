@@ -26,12 +26,14 @@ const ProductsClient: React.FC = () => {
   const initialIndustry = searchParams.get("industry");
   const initialProductFamily = searchParams.get("productFamily");
   const initialCreatedBy = searchParams.get("createdBy");
+  const initialSearch = searchParams.get("search");
 
   // --- Construct initial query object ---
   const initialQuery: Record<string, string[] | string> = {};
   if (initialCreatedBy) initialQuery.createdBy = [initialCreatedBy];
   if (initialIndustry) initialQuery.industry = [initialIndustry];
   if (initialProductFamily) initialQuery.productFamily = [initialProductFamily];
+  if (initialSearch) initialQuery.search = initialSearch;
 
   const [query, setQuery] = useState<Record<string, string[] | string>>(initialQuery);
   const [products, setProducts] = useState<ProductCardTypes[]>([]);

@@ -92,11 +92,24 @@ test.describe("T2.3-REV — AI catalog import removed from Quick Add", () => {
     await expect(page.getByText("Field 8")).toHaveCount(0);
   });
 
-  test("product still creatable from Quick Add by typing (only polymerTypes required)", async ({ page }) => {
+  test("Quick Add blocks a product without a name", async ({ page }) => {
+    await login(page);
+    await clearDraft(page);
+    await page.goto("/user/products/add");
+    let createCalls = 0;
+    page.on("request", (r) => { if (r.url().includes("/product/create")) createCalls++; });
+    await selectTwoPolymerTypes(page);
+    await visible(page, 'button[type="submit"]').click();
+    await expect(page.getByText("Please enter a product name")).toBeVisible();
+    expect(createCalls).toBe(0);
+  });
+
+  test("product creatable from Quick Add with polymer types + name", async ({ page }) => {
     await login(page);
     await clearDraft(page);
     await page.goto("/user/products/add");
     await selectTwoPolymerTypes(page);
+    await visible(page, 'input[placeholder="e.g. LDPE Film, PP Homopolymer"]').fill(`${E2E_PRODUCT_PREFIX}Quick Add Product`);
     await visible(page, 'button[type="submit"]').click();
     await expect(page.getByText("Product created")).toBeVisible({ timeout: 10000 });
   });

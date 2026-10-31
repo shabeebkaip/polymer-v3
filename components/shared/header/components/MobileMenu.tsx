@@ -169,7 +169,7 @@ const MobileMenu: React.FC<mobileMenuType> = ({
           {user ? (
             <>
               <button
-                onClick={() => navigate('/user/profile')}
+                onClick={() => navigate('/user/dashboard')}
                 className="w-full py-3 bg-primary-500 hover:bg-primary-600 text-white rounded-xl font-semibold text-sm transition-colors"
               >
                 My Dashboard

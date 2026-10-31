@@ -75,7 +75,7 @@ const Header: React.FC = () => {
             {/* Right Section */}
             <div className="flex items-center gap-3 flex-shrink-0">
               {user && <Notification />}
-              {user && <UserButton />}
+              {user && <UserButton onLogout={handleLogout} />}
               {!user && <AuthButtons />}
               <MobileMenuButton isOpen={isOpen} toggleMenu={toggleMenu} />
             </div>

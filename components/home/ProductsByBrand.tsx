@@ -194,7 +194,8 @@ const ProductsByBrand: React.FC = () => {
   const allProducts = useMemo<EnrichedProduct[]>(() => {
     if (!sellers) return [];
     return sellers.flatMap((seller: any) =>
-      (seller.products || []).map((p: ProductCardTypes) => ({
+      // Products saved before Product Name became required may have no name — don't show blank cards
+      (seller.products || []).filter((p: ProductCardTypes) => p.productName?.trim()).map((p: ProductCardTypes) => ({
         ...p,
         supplierName:
           seller.company?.trim() ||
@@ -245,15 +246,12 @@ const ProductsByBrand: React.FC = () => {
   );
 
   const handleProductClick = useCallback(
-    (product: EnrichedProduct) => {
-      if (!user) {
-        router.push(`/auth/login?redirect=/products/${product._id}`);
-      } else {
-        router.push(`/products/${product._id}`);
-      }
-    },
-    [user, router]
+    (product: EnrichedProduct) => router.push(`/products/${product._id}`),
+    [router]
   );
+
+  // Guests can't view suppliers, so this supplier showcase is for logged-in users only
+  if (!user) return null;
 
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-white via-gray-50/50 to-white py-16 md:py-20 lg:py-24">

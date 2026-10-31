@@ -25,10 +25,12 @@ const HeroSearch = () => {
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(false);
     const [highlighted, setHighlighted] = useState(-1);
     const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 300 });
     const [placeholderIndex, setPlaceholderIndex] = useState(0);
     const inputRef = useRef<HTMLInputElement>(null);
+    const formRef = useRef<HTMLFormElement>(null);
     const resultsRef = useRef<HTMLDivElement>(null);
     
     const placeholderTexts = ['polymer', 'type', 'supplier'];
@@ -49,12 +51,14 @@ const HeroSearch = () => {
             return;
         }
         setLoading(true);
+        setError(false);
         try {
             const response = await getProductList({ search: query.trim() });
             setProducts(response.data || []);
         } catch (error) {
             console.error('Error fetching products:', error);
             setProducts([]);
+            setError(true);
         } finally {
             setLoading(false);
         }
@@ -108,10 +112,6 @@ const HeroSearch = () => {
                 setHighlighted((h) => Math.min(h + 1, products.length - 1));
             } else if (e.key === 'ArrowUp') {
                 setHighlighted((h) => Math.max(h - 1, 0));
-            } else if (e.key === 'Enter' && highlighted >= 0 && products[highlighted]) {
-                router.push(`/products/${products[highlighted]._id}`);
-                setSearchQuery('');
-                setProducts([]);
             } else if (e.key === 'Escape') {
                 setSearchQuery('');
                 setProducts([]);
@@ -119,7 +119,21 @@ const HeroSearch = () => {
         };
         window.addEventListener('keydown', handler);
         return () => window.removeEventListener('keydown', handler);
-    }, [searchQuery, products, highlighted, router]);
+    }, [searchQuery, products]);
+
+    // Enter / search button: open the highlighted suggestion, else the full results page
+    const submitSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        const query = searchQuery.trim();
+        if (!query) return;
+        router.push(
+            highlighted >= 0 && products[highlighted]
+                ? `/products/${products[highlighted]._id}`
+                : `/products?search=${encodeURIComponent(query)}`
+        );
+        setSearchQuery('');
+        setProducts([]);
+    };
 
     // Close dropdown on outside click
     useEffect(() => {
@@ -127,8 +141,8 @@ const HeroSearch = () => {
             if (
                 resultsRef.current &&
                 !resultsRef.current.contains(e.target as Node) &&
-                inputRef.current &&
-                !inputRef.current.contains(e.target as Node)
+                formRef.current &&
+                !formRef.current.contains(e.target as Node)
             ) {
                 setSearchQuery('');
                 setProducts([]);
@@ -147,17 +161,21 @@ const HeroSearch = () => {
 
     return (
         <div className="mt-6 sm:mt-8 lg:mt-10 w-full relative mx-auto">
-            <div className="relative drop-shadow-lg w-full max-w-xs sm:max-w-md md:max-w-2xl lg:max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <form ref={formRef} role="search" action="/products" onSubmit={submitSearch} className="relative drop-shadow-lg w-full max-w-xs sm:max-w-md md:max-w-2xl lg:max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="relative">
                     <input
                         ref={inputRef}
                         type="text"
+                        name="search"
+                        aria-label="Search products"
+                        enterKeyHint="search"
                         placeholder={`Search by ${placeholderTexts[placeholderIndex]} name...`}
                         className="w-full px-4 sm:px-6 lg:px-8 py-3 sm:py-4 lg:py-6 rounded-full border-2 border-primary-500/30 focus:ring-4 focus:ring-primary-500/30 focus:border-primary-500 shadow-xl transition-all duration-300 pr-12 sm:pr-14 lg:pr-16 text-sm sm:text-base lg:text-lg font-medium placeholder:text-gray-400 bg-white/95 backdrop-blur-sm hover:shadow-2xl"
                         value={searchQuery}
                         onChange={(e) => {
                             setSearchQuery(e.target.value);
                             setHighlighted(-1);
+                            setError(false);
                         }}
                         onFocus={() => {
                             // Just focus, no additional logic needed
@@ -170,22 +188,24 @@ const HeroSearch = () => {
                         }
                     `}</style>
                 </div>
-                <div
-                    className="absolute right-6 sm:right-8 lg:right-12 top-1/2 -translate-y-1/2 flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 bg-primary-500 rounded-full shadow-md hover:bg-primary-600 transition-colors duration-200"
+                <button
+                    type="submit"
+                    aria-label="Search"
+                    className="absolute right-6 sm:right-8 lg:right-12 top-1/2 -translate-y-1/2 flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 bg-primary-500 rounded-full shadow-md hover:bg-primary-600 transition-colors duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
                 >
                     {loading ? (
                         <span className="animate-spin w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 border-2 border-white border-t-transparent rounded-full"></span>
                     ) : (
                         <Image
                             src="/icons/search.svg"
-                            alt="Search Icon"
+                            alt=""
                             width={20}
                             height={20}
                             className="filter brightness-0 invert w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6"
                         />
                     )}
-                </div>
-            </div>
+                </button>
+            </form>
             {searchQuery.trim() && typeof window !== 'undefined' && dropdownPosition.width > 0 && createPortal(
                 <div
                     ref={resultsRef}
@@ -201,6 +221,10 @@ const HeroSearch = () => {
                 >
                     {loading ? (
                         <div className="p-3 sm:p-4 text-center text-gray-500 text-sm sm:text-base">Loading...</div>
+                    ) : error ? (
+                        <div role="alert" className="p-3 sm:p-4 text-center text-gray-500 text-sm sm:text-base">
+                            Search isn&apos;t available right now. Please try again.
+                        </div>
                     ) : products?.length > 0 ? (
                         <div>
                             {products.map((product, index) => (

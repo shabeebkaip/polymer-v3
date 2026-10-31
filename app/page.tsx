@@ -7,6 +7,7 @@ import { getBenefitsOfBuyers, getBenefitsOfSuppliers, getHeroSection, getPolymer
 import { getBuyerOpportunities, getSuppliersSpecialDeals } from "@/apiServices/dealsAndRequests";
 import { HomePageData } from "@/types/home";
 import HomePageClient from "@/components/pages/HomePageClient";
+import { cookies } from "next/headers";
 
 // Enable static generation with revalidation for better performance
 // export const revalidate = 300; // Revalidate every 5 minutes
@@ -15,6 +16,9 @@ export const dynamic = "force-dynamic"; // Enable for debugging API calls
 // Server Component - Data fetched on server with caching
 export default async function HomePage() {
   try {
+    // Guests can't view suppliers — don't send supplier data to their browser
+    const isLoggedIn = (await cookies()).has("token");
+
     // Fetch all data in parallel on the server
     const [
       industriesRes,
@@ -30,7 +34,7 @@ export default async function HomePage() {
     ] = await Promise.allSettled([
       getIndustryList(),
       getProductFamilies(),
-      getSellers(),
+      isLoggedIn ? getSellers() : Promise.resolve({ data: [], total: 0 }),
       getBenefitsOfBuyers(),
       getBenefitsOfSuppliers(),
       getBuyerOpportunities(),

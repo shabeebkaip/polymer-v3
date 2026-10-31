@@ -309,6 +309,7 @@ export default function QuickAddProduct({ onSwitchToAdvanced, onSuccess }: Quick
     e.preventDefault();
     const newErrors: Partial<Record<keyof QuickAddFormData, string>> = {};
     if (form.polymerTypes.length === 0) newErrors.polymerTypes = "Please select at least one polymer type";
+    if (!form.productName?.trim()) newErrors.productName = "Please enter a product name";
     if (Object.keys(newErrors).length > 0) { setErrors(newErrors); return; }
 
     setSubmitting(true);
@@ -330,9 +331,7 @@ export default function QuickAddProduct({ onSwitchToAdvanced, onSuccess }: Quick
         const pid = res._id || res.data?._id || res.data?.product?._id;
         // ponytail: placeholder success feedback — full in-modal aria-live success view is Milestone 2 (DESIGN_SPEC §5.5)
         toast.success("Product created", {
-          description: form.productName
-            ? `${form.productName} is now visible to buyers.`
-            : "Your product is now visible to buyers.",
+          description: `${form.productName?.trim()} is now visible to buyers.`,
         });
         sessionStorage.removeItem(QUICK_ADD_DRAFT_KEY);
         onSuccess?.(pid);
@@ -359,13 +358,13 @@ export default function QuickAddProduct({ onSwitchToAdvanced, onSuccess }: Quick
       <form onSubmit={handleSubmit} className="flex flex-col h-full min-h-0">
         <div className="flex-1 min-h-0 overflow-y-auto">
 
-          {/* Row 1: Polymer Types — the only required field, anchor card (DESIGN_SPEC §12.4) */}
+          {/* Row 1: Polymer Types — required, anchor card (DESIGN_SPEC §12.4) */}
           <div className="px-4 py-4 sm:px-6 sm:py-5">
             <div className="rounded-2xl bg-emerald-50/40 border border-emerald-100 p-4 sm:p-5">
               <FieldWrapper
                 required
                 label="Polymer Types"
-                hint="Select all polymer types you supply. This is the only required field — everything else can be added later."
+                hint="Select all polymer types you supply. Only this and Product Name are required — everything else can be added later."
               >
                 <SearchableMultiSelect
                   options={polymersTypes}
@@ -391,14 +390,25 @@ export default function QuickAddProduct({ onSwitchToAdvanced, onSuccess }: Quick
 
             {/* Product Name */}
             <div className="px-4 py-4 sm:px-6 sm:py-5">
-              <FieldWrapper label="Product Name" hint="A clear name helps buyers identify your product.">
+              <FieldWrapper required label="Product Name" hint="A clear name helps buyers identify your product.">
                 <input
                   type="text"
                   value={form.productName || ""}
-                  onChange={(e) => setForm((prev) => ({ ...prev, productName: e.target.value }))}
+                  onChange={(e) => {
+                    setForm((prev) => ({ ...prev, productName: e.target.value }));
+                    setErrors((prev) => ({ ...prev, productName: "" }));
+                  }}
                   placeholder="e.g. LDPE Film, PP Homopolymer"
-                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-100 focus:border-emerald-400 focus:bg-white hover:border-gray-300 transition-all placeholder:text-gray-400"
+                  aria-invalid={!!errors.productName}
+                  className={`w-full px-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-emerald-100 focus:border-emerald-400 focus:bg-white transition-all placeholder:text-gray-400 ${
+                    errors.productName ? "border-red-300 bg-red-50" : "border-gray-200 bg-gray-50 hover:border-gray-300"
+                  }`}
                 />
+                {errors.productName && (
+                  <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
+                    <AlertCircle className="w-3 h-3" />{errors.productName}
+                  </p>
+                )}
               </FieldWrapper>
             </div>
 
@@ -566,8 +576,8 @@ export default function QuickAddProduct({ onSwitchToAdvanced, onSuccess }: Quick
 }
 
 // Reusable field wrapper — label + hint. No numbered badge (DESIGN_SPEC §12.4):
-// only the sole required field (Polymer Types) gets a "Required" pill; the 6
-// optional fields get no pill and no "(optional)" tag.
+// only the required fields (Polymer Types, Product Name) get a "Required" pill;
+// the optional fields get no pill and no "(optional)" tag.
 function FieldWrapper({
   label, hint, required, children,
 }: {
